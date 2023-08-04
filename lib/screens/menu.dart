@@ -1,37 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/models.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
-  static const List<String> menuItems = [
-    'Inicio',
-    'Abonos',
-    'Historial',
-    'Productos',
-    'Categorias',
-    'Descuentos',
-    'Clientes',
-    'Empresa',
-    'Configuracion',
-    'Suscripcion',
-    'Salir'
-  ];
-
-  static const List<String> menuRoutes = [
-    'home',
-    'nvo-abono',
-    'historial',
-    'productos',
-    'categorias',
-    'descuentos',
-    'clientes',
-    'negocio',
-    'config',
-    'negocio',
-    'login'
-  ];
   @override
   Widget build(BuildContext context) {
+    List<String> menuItems = [];
+    List<String> menuRoutes = [];
+
+    if (sesion.idNegocio != 0) {
+      menuItems = [
+        'Inicio',
+        'Abonos',
+        'Historial',
+        'Productos',
+        'Categorias',
+        'Descuentos',
+        'Clientes',
+        'Empresa',
+        'Configuracion',
+        'Suscripcion',
+        'Salir'
+      ];
+
+      menuRoutes = [
+        'home',
+        'nvo-abono',
+        'historial',
+        'productos',
+        'categorias',
+        'descuentos',
+        'clientes',
+        'negocio',
+        'config',
+        'negocio',
+        'login'
+      ];
+    } else {
+      menuItems = [
+        'Inicio',
+        'Empresa',
+        'Configuracion',
+        'Suscripcion',
+        'Salir'
+      ];
+
+      menuRoutes = ['home', 'negocio', 'config', 'negocio', 'login'];
+    }
+
     return Scaffold(
       body: GridView.builder(
         padding: const EdgeInsets.all(16.0),

@@ -125,6 +125,11 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
       appBar: AppBar(
         title: Text(title),
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu');
+              },
+              icon: const Icon(Icons.menu)),
           if (args.id != 0)
             IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
         ],

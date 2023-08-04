@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ConfigScreen extends StatelessWidget {
-  const ConfigScreen({super.key});
+class SuscripcionScreen extends StatelessWidget {
+  const SuscripcionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configuración'),
+        title: const Text('Suscripción'),
         actions: [
           IconButton(
               onPressed: () {
@@ -16,7 +16,7 @@ class ConfigScreen extends StatelessWidget {
               icon: const Icon(Icons.menu)),
         ],
       ),
-      body: const Text('Pantalla configuración'),
+      body: const Text('Pantalla suscripcion y pagos'),
     );
   }
 }

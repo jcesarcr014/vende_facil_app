@@ -42,10 +42,14 @@ class _RegistroScreenState extends State<RegistroScreen> {
         });
         String latitud = '0.0';
         String longitud = '0.0';
+        String municipio = '';
         try {
           final ubicacion = await location.determinePosition();
           latitud = ubicacion.latitude.toString();
           longitud = ubicacion.longitude.toString();
+          final datos = await location.getPosData(
+              ubicacion.latitude, ubicacion.longitude);
+          municipio = (datos[0].locality) ?? '';
         } catch (e) {
           mostrarAlerta(context, 'ERROR',
               'Ocurrio el siguiente error: $e, se registrará sin guardar su ubicación.');
@@ -57,7 +61,8 @@ class _RegistroScreenState extends State<RegistroScreen> {
         newUser.telefono = controllerTelefono.text;
         newUser.tipoUsuario = globals.tipoUserPropiertario;
         usuariosProvider
-            .nuevoUsuario(newUser, controllerPassword1.text, latitud, longitud)
+            .nuevoUsuario(
+                newUser, controllerPassword1.text, latitud, longitud, municipio)
             .then((value) {
           setState(() {
             isLoading = false;
@@ -67,8 +72,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
             mostrarAlerta(context, 'Bienvenido',
                 'Sus datos se han registrado correctamente. Inicie sesión y vaya a configuración para dar de alta su negocio.');
           } else {
-            mostrarAlerta(
-                context, 'ERROR', value.mensaje ?? 'Error al crear la cuenta');
+            mostrarAlerta(context, 'ERROR', value.mensaje!);
           }
         });
       }

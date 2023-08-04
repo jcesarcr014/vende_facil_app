@@ -8,7 +8,7 @@ class AgregarAbonoScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Abono a venta'),
-        actions: [],
+        actions: const [],
       ),
       // drawer: const Menu(),
       body: const Text('HomeScreen'),

@@ -9,21 +9,30 @@ class UsuarioProvider {
   final location = Location();
   Resultado respuesta = Resultado();
 
-  Future<Resultado> nuevoUsuario(
-      Usuario user, String pass, String latitud, String longitud) async {
+  Future<Resultado> nuevoUsuario(Usuario user, String pass, String latitud,
+      String longitud, String municipio) async {
     var url = Uri.parse('$baseUrl/register');
     location
         .getPosData(double.parse(latitud), double.parse(longitud))
         .then((marcador) async {
+      print('============= DATOS REGISTRO =============');
+      print('name: ${user.nombre}');
+      print('email: ${user.email}');
+      print('phone: ${user.telefono}');
+      print('password: $pass');
+      print('latitud: $latitud');
+      print('longitud: $longitud');
+      print('municipio: $municipio');
+
       try {
         final resp = await http.post(url, body: {
           'name': user.nombre,
           'email': user.email,
           'phone': user.telefono,
-          'tipo_usuario': user.tipoUsuario.toString(),
           'password': pass,
           'latitud': latitud,
-          'longitud': longitud
+          'longitud': longitud,
+          'municipio': municipio
         });
         final decodedData = jsonDecode(resp.body);
         if (decodedData['status'] == 1) {
@@ -35,7 +44,7 @@ class UsuarioProvider {
         }
       } catch (e) {
         respuesta.status = 0;
-        respuesta.mensaje = 'Error en la peticion, $e';
+        respuesta.mensaje = 'Error en la petición, $e';
       }
     });
 
