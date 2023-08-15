@@ -43,8 +43,9 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Categorias'),
+        automaticallyImplyLeading: false,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           IconButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'menu');
@@ -105,31 +106,32 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
 
   _categorias() {
     List<Widget> listaCat = [];
-    for (Categoria cat in listaCategorias) {
-      for (ColorCategoria color in listaColores) {
-        if (color.id == cat.idColor) {
-          listaCat.add(Column(
-            children: [
-              ListTile(
-                onTap: () => Navigator.pushNamed(context, 'nva-categoria',
-                    arguments: cat),
-                leading: Icon(
-                  Icons.square,
-                  color: color.color,
-                  size: 36,
+    if (listaCategorias.isNotEmpty) {
+      for (Categoria cat in listaCategorias) {
+        for (ColorCategoria color in listaColores) {
+          if (color.id == cat.idColor) {
+            listaCat.add(Column(
+              children: [
+                ListTile(
+                  onTap: () => Navigator.pushNamed(context, 'nva-categoria',
+                      arguments: cat),
+                  leading: Icon(
+                    Icons.square,
+                    color: color.color,
+                    size: 36,
+                  ),
+                  title: Text(
+                    cat.categoria!,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                title: Text(
-                  cat.categoria!,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Divider(),
-            ],
-          ));
+                const Divider(),
+              ],
+            ));
+          }
         }
       }
-    }
-    if (listaCat.isEmpty) {
+    } else {
       final TextTheme textTheme = Theme.of(context).textTheme;
 
       listaCat.add(Column(
@@ -151,6 +153,7 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
         ],
       ));
     }
+
     return listaCat;
   }
 }

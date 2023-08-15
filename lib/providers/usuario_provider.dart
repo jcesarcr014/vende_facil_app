@@ -15,15 +15,6 @@ class UsuarioProvider {
     location
         .getPosData(double.parse(latitud), double.parse(longitud))
         .then((marcador) async {
-      print('============= DATOS REGISTRO =============');
-      print('name: ${user.nombre}');
-      print('email: ${user.email}');
-      print('phone: ${user.telefono}');
-      print('password: $pass');
-      print('latitud: $latitud');
-      print('longitud: $longitud');
-      print('municipio: $municipio');
-
       try {
         final resp = await http.post(url, body: {
           'name': user.nombre,
@@ -62,10 +53,9 @@ class UsuarioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        sesion.token = decodedData['token'];
+        sesion.token = decodedData['Token'];
         sesion.idUsuario = decodedData['usuario'];
         sesion.idNegocio = decodedData['empresa_id'];
-        sesion.tipoUsuario = decodedData['tipo_usuario'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

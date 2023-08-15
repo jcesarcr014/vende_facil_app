@@ -34,7 +34,7 @@ class MenuScreen extends StatelessWidget {
         'clientes',
         'negocio',
         'config',
-        'negocio',
+        'suscripcion',
         'login'
       ];
     } else {
@@ -46,7 +46,7 @@ class MenuScreen extends StatelessWidget {
         'Salir'
       ];
 
-      menuRoutes = ['home', 'negocio', 'config', 'negocio', 'login'];
+      menuRoutes = ['home', 'negocio', 'config', 'suscripcion', 'login'];
     }
 
     return Scaffold(

@@ -20,7 +20,6 @@ class NegocioProvider {
         'telefono': negocio.telefono,
         'razon_social': negocio.razonSocial,
       });
-
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;

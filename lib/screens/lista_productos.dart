@@ -24,13 +24,15 @@ class _ProductosScreenState extends State<ProductosScreen> {
       textLoading = 'Leyendo articulos';
       isLoading = true;
     });
-
     categoriasProvider.listarCategorias().then((respuesta) {
-      articulosProvider.listarProductos().then((value) {});
+      articulosProvider.listarProductos().then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+      });
     });
-    articulosProvider.listarProductos().then((value) {
-      categoriasProvider.listarCategorias().then((respuesta) {});
-    });
+
     super.initState();
   }
 
@@ -41,9 +43,10 @@ class _ProductosScreenState extends State<ProductosScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Productos'),
+        automaticallyImplyLeading: false,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
+          //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          //IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
           IconButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'menu');
@@ -51,7 +54,6 @@ class _ProductosScreenState extends State<ProductosScreen> {
               icon: const Icon(Icons.menu)),
         ],
       ),
-      drawer: const Menu(),
       body: (isLoading)
           ? Center(
               child: Column(
@@ -106,47 +108,90 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    for (Producto producto in listaProductos) {
-      for (Categoria categoria in listaCategorias) {
-        if (producto.idCategoria == categoria.id) {
-          for (ColorCategoria color in listaColores) {
-            if (color.id == categoria.idColor) {
-              listaProd.add(ListTile(
-                leading: (producto.imagen == null)
-                    ? Icon(
-                        Icons.category,
-                        color: color.color,
-                      )
-                    : FadeInImage(
-                        placeholder: const AssetImage('assets/loading.gif'),
-                        image: NetworkImage(producto.imagen!),
-                        width: windowWidth * 0.1,
-                      ),
-                onTap: (() => Navigator.pushNamed(context, 'nvo-producto',
-                    arguments: producto)),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: windowWidth * 0.45,
-                      child: Text(
-                        producto.producto!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+    if (listaProductos.isNotEmpty) {
+      for (Producto producto in listaProductos) {
+        for (Categoria categoria in listaCategorias) {
+          if (producto.idCategoria == categoria.id) {
+            for (ColorCategoria color in listaColores) {
+              if (color.id == categoria.idColor) {
+                listaProd.add(ListTile(
+                  leading: (producto.imagen == null)
+                      ? Icon(
+                          Icons.category,
+                          color: color.color,
+                        )
+                      : FadeInImage(
+                          placeholder: const AssetImage('assets/loading.gif'),
+                          image: NetworkImage(producto.imagen!),
+                          width: windowWidth * 0.1,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                  onTap: (() {
+                    setState(() {
+                      textLoading = 'Leyendo producto';
+                      isLoading = true;
+                    });
+
+                    articulosProvider
+                        .consultaProducto(producto.id!)
+                        .then((value) {
+                      setState(() {
+                        textLoading = '';
+                        isLoading = false;
+                      });
+                      if (value.id != 0) {
+                        Navigator.pushNamed(context, 'nvo-producto',
+                            arguments: value);
+                      } else {
+                        mostrarAlerta(context, 'ERROR',
+                            'Error en la consulta: ${value.producto}');
+                      }
+                    });
+                  }),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: windowWidth * 0.45,
+                        child: Text(
+                          producto.producto!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    Text('\$ ${producto.precio!.toStringAsFixed(2)}')
-                  ],
-                ),
-                subtitle: Text(categoria.categoria!),
-              ));
+                      // Text('\$ ${producto.precio!.toStringAsFixed(2)}')
+                    ],
+                  ),
+                  subtitle: Text(categoria.categoria!),
+                ));
+              }
             }
           }
         }
       }
+    } else {
+      final TextTheme textTheme = Theme.of(context).textTheme;
+
+      listaProd.add(Column(
+        children: [
+          const Opacity(
+            opacity: 0.2,
+            child: Icon(
+              Icons.filter_alt_off,
+              size: 130,
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'No hay productos guardados.',
+            style: textTheme.titleMedium,
+          )
+        ],
+      ));
     }
 
     return listaProd;

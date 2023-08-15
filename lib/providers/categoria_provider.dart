@@ -35,13 +35,12 @@ class CategoriaProvider {
 
   Future<Resultado> listarCategorias() async {
     listaCategorias.clear();
-    var url = Uri.parse('$baseUrl/listarC/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/listarCat/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       Map decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Categoria catTemporal = Categoria();
@@ -98,6 +97,7 @@ class CategoriaProvider {
       }, body: {
         'categoria': categoria.categoria,
         'color': categoria.idColor.toString(),
+        'empresa_id': sesion.idNegocio.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

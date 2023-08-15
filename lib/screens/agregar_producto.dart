@@ -15,6 +15,7 @@ class AgregaProductoScreen extends StatefulWidget {
 
 class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final articulosProvider = ArticuloProvider();
+  final categoriasProvider = CategoriaProvider();
   final controllerProducto = TextEditingController();
   final controllerPrecio = TextEditingController();
   final controllercosto = TextEditingController();
@@ -25,7 +26,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
-  int _valueIdCategoria = 0;
+  String _valueIdCategoria = '0';
   bool firstLoad = true;
   bool _valuePieza = true;
   bool _valueInventario = true;
@@ -42,9 +43,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     final numProductos = (listaProductos.length + 1).toString();
     final numEmpresa = sesion.idNegocio.toString();
     final numUsuario = sesion.idUsuario.toString();
-    final tipoUSer = sesion.tipoUsuario.toString();
+
     final codigo =
-        '${numEmpresa}000-$numUsuario${tipoUSer}000-000$numProductos';
+        '${numEmpresa.padRight(6, '0')}-${numUsuario.padRight(6, '0')}-${numProductos.padLeft(8, '0')}';
 
     return codigo;
   }
@@ -60,28 +61,29 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       });
       Producto producto = Producto();
       producto.producto = controllerProducto.text;
-      producto.idCategoria = _valueIdCategoria; // int
+      producto.idCategoria = int.parse(_valueIdCategoria); // int
       producto.unidad = (_valuePieza) ? '1' : '0';
       producto.precio = double.parse(controllerPrecio.text); // double
       producto.costo = double.parse(controllercosto.text); // double
       producto.clave = controllerClave.text;
       producto.codigoBarras = controllerCodigoB.text;
       producto.inventario = (_valueInventario) ? 1 : 0;
-      producto.imagen = '';
+      producto.imagen =
+          'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930';
       producto.apartado = (_valueApartado) ? 1 : 0;
       if (args.id == 0) {
         /*
               AQUI GUARDAR LA IMAGEN
         */
         articulosProvider.nuevoProducto(producto).then((value) {
-          setState(() {
-            isLoading = false;
-            textLoading = '';
-          });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'productos');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
+            setState(() {
+              isLoading = false;
+              textLoading = '';
+            });
             mostrarAlerta(context, '', value.mensaje!);
           }
         });
@@ -93,6 +95,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         producto.id = args.id;
         articulosProvider.editaProducto(producto).then((value) {
           setState(() {
+            _valueIdCategoria = '0';
             isLoading = false;
             textLoading = '';
           });
@@ -169,8 +172,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   @override
   void dispose() {
     controllerProducto.dispose();
-    controllerPrecio.dispose();
-    controllercosto.dispose();
+    // controllerPrecio.dispose();
+    // controllercosto.dispose();
     controllerClave.dispose();
     controllerCodigoB.dispose();
     controllerCantidad.dispose();
@@ -179,6 +182,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
   @override
   void initState() {
+    textLoading = 'Leyendo categorias';
+    isLoading = true;
+    setState(() {});
+    categoriasProvider.listarCategorias().then((value) {
+      textLoading = '';
+      isLoading = false;
+      setState(() {});
+    });
     if (args.id == 0) {
       controllerClave.text = _generaCodigo();
     }
@@ -250,7 +261,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    _categorias(windowWidth * 0.8),
+                    _categorias(),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -265,18 +276,11 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    InputField(
-                        labelText:
-                            (_valuePieza) ? 'Precio unitario' : 'Precio ',
-                        keyboardType: TextInputType.number,
-                        controller: controllerPrecio),
+                    InputFieldMoney(controller: controllerPrecio),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    InputField(
-                        labelText: (_valuePieza) ? 'Costo unitario' : 'Costo ',
-                        keyboardType: TextInputType.number,
-                        controller: controllercosto),
+                    InputFieldMoney(controller: controllercosto),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -404,23 +408,26 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               ));
   }
 
-  _categorias(double width) {
+  _categorias() {
     var listaCat = [
-      DropdownMenuItem(
-          value: _valueIdCategoria,
-          child: SizedBox(width: width, child: const Text('Categoría')))
+      const DropdownMenuItem(
+          value: '0', child: SizedBox(child: Text('Seleccione categoría')))
     ];
 
     for (Categoria categoria in listaCategorias) {
       listaCat.add(DropdownMenuItem(
-          value: categoria.id, child: Text(categoria.categoria!)));
+          value: categoria.id.toString(), child: Text(categoria.categoria!)));
     }
-
+    if (_valueIdCategoria.isEmpty) {
+      _valueIdCategoria = '0';
+    }
     return DropdownButton(
         items: listaCat,
+        isExpanded: true,
         value: _valueIdCategoria,
         onChanged: (value) {
           _valueIdCategoria = value!;
+          setState(() {});
         });
   }
 

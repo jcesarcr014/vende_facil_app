@@ -23,6 +23,7 @@ class AppRoutes {
     'bar-code': (BuildContext context) => const BarCode(),
     'negocio': (BuildContext context) => const AgregarEmpresa(),
     'menu': (BuildContext context) => const MenuScreen(),
+    'suscripcion': (BuildContext context) => const SuscripcionScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

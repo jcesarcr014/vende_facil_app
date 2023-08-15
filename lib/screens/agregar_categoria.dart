@@ -38,7 +38,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'categorias');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -52,7 +52,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'categorias');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -112,7 +112,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
         isLoading = false;
       });
       if (value.status == 1) {
-        Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pushReplacementNamed(context, 'categorias');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
