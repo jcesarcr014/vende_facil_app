@@ -13,6 +13,8 @@ class InputField extends StatelessWidget {
   final bool? readOnly;
   final TextEditingController controller;
   final Map<String, String>? formValues;
+  final String? Function(String?)? validator;
+  final String? errorText;
 
   const InputField({
     Key? key,
@@ -28,6 +30,8 @@ class InputField extends StatelessWidget {
     this.readOnly,
     required this.controller,
     this.onChangeText,
+    this.validator,
+    this.errorText,
   }) : super(key: key);
 
   @override
@@ -45,10 +49,12 @@ class InputField extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(10))),
         hintText: hintText,
         labelText: labelText,
+        errorText: errorText,
         helperText: helperText,
         suffixIcon: sufixIcon,
         icon: icon == null ? null : Icon(icon),
       ),
+      validator: validator,
     );
   }
 }

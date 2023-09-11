@@ -8,6 +8,7 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> menuItems = [];
     List<String> menuRoutes = [];
+    List<String> menuIcons = [];
 
     if (sesion.idNegocio != 0) {
       menuItems = [
@@ -37,6 +38,20 @@ class MenuScreen extends StatelessWidget {
         'suscripcion',
         'login'
       ];
+
+      menuIcons = [
+        'assets/i_inicio.png',
+        'assets/i_abonos.png',
+        'assets/i_historial.png',
+        'assets/i_productos.png',
+        'assets/i_categorias.png',
+        'assets/i_descuentos.png',
+        'assets/i_clientes.png',
+        'assets/i_empresa.png',
+        'assets/i_ajustes.png',
+        'assets/i_suscripcion.png',
+        'assets/i_salir.png',
+      ];
     } else {
       menuItems = [
         'Inicio',
@@ -47,6 +62,14 @@ class MenuScreen extends StatelessWidget {
       ];
 
       menuRoutes = ['home', 'negocio', 'config', 'suscripcion', 'login'];
+
+      menuIcons = [
+        'assets/i_inicio.png',
+        'assets/i_empresa.png',
+        'assets/i_ajustes.png',
+        'assets/i_suscripcion.png',
+        'assets/i_salir.png',
+      ];
     }
 
     return Scaffold(
@@ -66,7 +89,7 @@ class MenuScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/logoVF.png',
+                  menuIcons[index],
                   width: 64,
                   height: 64,
                 ),

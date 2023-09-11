@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,10 +11,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final articulosProvider = ArticuloProvider();
+  final categoriasProvider = CategoriaProvider();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+  @override
+  void initState() {
+    setState(() {
+      textLoading = 'Leyendo articulos';
+      isLoading = true;
+    });
+    categoriasProvider.listarCategorias().then((respuesta) {
+      articulosProvider.listarProductos().then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

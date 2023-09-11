@@ -24,6 +24,7 @@ class AppRoutes {
     'negocio': (BuildContext context) => const AgregarEmpresa(),
     'menu': (BuildContext context) => const MenuScreen(),
     'suscripcion': (BuildContext context) => const SuscripcionScreen(),
+    'tarjetas': (BuildContext context) => const TarjetaScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

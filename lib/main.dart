@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/router/app_routes.dart';
+import 'app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,14 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      initialRoute: AppRoutes.initialRoute,
-      routes: AppRoutes.routes,
-      onGenerateRoute: AppRoutes.onGenerateRoute,
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Vendo Facil',
+        initialRoute: AppRoutes.initialRoute,
+        routes: AppRoutes.routes,
+        onGenerateRoute: AppRoutes.onGenerateRoute,
+        theme: appTheme);
   }
 }

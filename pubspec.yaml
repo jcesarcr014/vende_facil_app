@@ -47,7 +47,7 @@ dependencies:
   intl: ^0.18.1
 
 flutter_icons:
-    image_path: "assets/logoVF.png"
+    image_path: "assets/logo.png"
     android: true 
     
 
