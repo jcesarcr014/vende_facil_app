@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 
 class InputFieldMoney extends StatefulWidget {
   final TextEditingController? controller;
+  final String? labelText;
 
-  const InputFieldMoney({Key? key, this.controller}) : super(key: key);
+  const InputFieldMoney({Key? key, this.controller, this.labelText})
+      : super(key: key);
 
   @override
   State<InputFieldMoney> createState() => _InputFieldMoneyState();
@@ -14,12 +16,14 @@ class InputFieldMoney extends StatefulWidget {
 class _InputFieldMoneyState extends State<InputFieldMoney> {
   late TextEditingController _controller;
   late NumberFormat _currencyFormat;
+  late String _labelText;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController(text: '0.00');
     _currencyFormat = NumberFormat.currency(decimalDigits: 2, symbol: '');
+    _labelText = widget.labelText ?? 'Monto';
   }
 
   @override
@@ -33,12 +37,12 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
     return TextFormField(
       controller: _controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))),
         hintText: '0.00',
-        labelText: 'Monto',
-        prefixIcon: Icon(Icons.attach_money),
+        labelText: _labelText,
+        prefixIcon: const Icon(Icons.attach_money),
       ),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?(\d{0,2})?')),

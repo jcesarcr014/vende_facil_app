@@ -17,4 +17,9 @@ class TarjetaOP {
       this.titular});
 }
 
-List<TarjetaOP> listatarjetas = [];
+List<TarjetaOP> listatarjetas = [
+  TarjetaOP(id: 1, digitos: '1234', banco: 'HSBC'),
+  TarjetaOP(id: 2, digitos: '2345', banco: 'BBVA'),
+  TarjetaOP(id: 3, digitos: '3456', banco: 'HEY!'),
+  TarjetaOP(id: 4, digitos: '4567', banco: 'STP'),
+];
