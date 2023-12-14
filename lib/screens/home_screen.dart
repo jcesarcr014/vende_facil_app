@@ -40,31 +40,37 @@ class _HomeScreenState extends State<HomeScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vende Facil'),
+        title: const Text('Vende Fácil'),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu)),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, 'menu');
+            },
+            icon: const Icon(Icons.menu),
+          ),
         ],
       ),
       body: (isLoading)
           ? Center(
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    const CircularProgressIndicator(),
-                  ]),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Espere...$textLoading'),
+                  SizedBox(
+                    height: windowHeight * 0.01,
+                  ),
+                  const CircularProgressIndicator(),
+                ],
+              ),
             )
           : SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
               child: Column(
-                children: _listaWidgets(),
+                children: [
+                  ..._listaWidgets(),
+                  const Divider(),
+                  ..._productos(),
+                ],
               ),
             ),
     );
@@ -124,63 +130,87 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: const Center(child: Icon(Icons.qr_code_scanner))))
         ],
       ),
-      const Divider(),
-      Column(
-        children: _listaProductos(),
-      )
     ];
 
     return listaItems;
   }
 
-  _listaProductos() {
+  _productos() {
     List<Widget> listaProd = [];
-    for (Producto producto in listaProductos) {
-      for (Existencia existencia in inventario) {
-        if (producto.id == existencia.idArticulo && existencia.cantidad! > 0) {
-          for (Categoria categoria in listaCategorias) {
-            if (producto.idCategoria == categoria.id) {
-              for (ColorCategoria color in listaColores) {
-                if (color.id == categoria.idColor) {
-                  listaProd.add(ListTile(
-                    leading: (producto.imagen == null)
-                        ? Icon(
-                            Icons.category,
-                            color: color.color,
-                          )
-                        : FadeInImage(
-                            placeholder: const AssetImage('assets/loading.gif'),
-                            image: NetworkImage(producto.imagen!),
-                            width: windowWidth * 0.1,
-                          ),
-                    onTap: () {
-                      _agregaProductoVenta(producto);
-                    },
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.45,
-                          child: Text(
-                            producto.producto!,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+    if (listaProductos.isNotEmpty) {
+      for (Producto producto in listaProductos) {
+        for (Categoria categoria in listaCategorias) {
+          if (producto.idCategoria == categoria.id) {
+            for (ColorCategoria color in listaColores) {
+              if (color.id == categoria.idColor) {
+                listaProd.add(ListTile(
+                  leading: (producto.imagen == null)
+                      ? Icon(
+                          Icons.category,
+                          color: color.color,
+                        )
+                      : FadeInImage(
+                          placeholder: const AssetImage('assets/loading.gif'),
+                          image: NetworkImage(producto.imagen!),
+                          width: windowWidth * 0.1,
                         ),
-                        Text('\$ ${producto.precio!.toStringAsFixed(2)}')
-                      ],
-                    ),
-                    subtitle: Text(categoria.categoria!),
-                  ));
-                }
+                  onTap: (() {
+                    articulosProvider
+                        .consultaProducto(producto.id!)
+                        .then((value) {
+                      if (value.id != 0) {
+                        _agregaProductoVenta(value);
+                      } else {
+                        mostrarAlerta(context, 'ERROR',
+                            'Error en la consulta: ${value.producto}');
+                      }
+                    });
+                  }),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: windowWidth * 0.45,
+                        child: Text(
+                          producto.producto!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      // Text('\$ ${producto.precio!.toStringAsFixed(2)}')
+                    ],
+                  ),
+                  subtitle: Text(categoria.categoria!),
+                ));
               }
             }
           }
         }
       }
+    } else {
+      final TextTheme textTheme = Theme.of(context).textTheme;
+
+      listaProd.add(Column(
+        children: [
+          const Opacity(
+            opacity: 0.2,
+            child: Icon(
+              Icons.filter_alt_off,
+              size: 130,
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'No hay productos guardados.',
+            style: textTheme.titleMedium,
+          )
+        ],
+      ));
     }
 
     return listaProd;

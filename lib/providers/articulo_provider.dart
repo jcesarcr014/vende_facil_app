@@ -29,6 +29,8 @@ class ArticuloProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
+        print("inventario. $producto");
+
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
