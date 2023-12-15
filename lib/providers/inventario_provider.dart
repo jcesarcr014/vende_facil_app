@@ -1,7 +1,8 @@
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
-import 'package:http/http.dart' as http;
 
 class InventarioProvider {
   final baseUrl = globals.baseUrl;

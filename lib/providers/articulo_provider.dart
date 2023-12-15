@@ -29,7 +29,6 @@ class ArticuloProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        print("inventario. $producto");
 
       } else {
         respuesta.status = 0;
@@ -151,9 +150,9 @@ class ArticuloProvider {
   }
 
   Future<Resultado> eliminaProducto(int idProd) async {
-    var url = Uri.parse('$baseUrl/destoyA/$idProd');
+    var url = Uri.parse('$baseUrl/articles/$idProd');
     try {
-      final resp = await http.put(url, headers: {
+      final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);

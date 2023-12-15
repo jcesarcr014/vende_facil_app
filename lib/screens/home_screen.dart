@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .consultaProducto(producto.id!)
                         .then((value) {
                       if (value.id != 0) {
-                        _agregaProductoVenta(value);
+
                       } else {
                         mostrarAlerta(context, 'ERROR',
                             'Error en la consulta: ${value.producto}');
