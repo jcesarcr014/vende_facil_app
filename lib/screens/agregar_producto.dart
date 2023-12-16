@@ -81,7 +81,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           if (value.status == 1) {
             if (producto.inventario == 1) {
               Existencia Inventario = Existencia();
-              Inventario.idArticulo = 6;
+              Inventario.idArticulo = value.id;
               var valor = double.parse(controllerCantidad.text);
               Inventario.cantidad = valor;
               Inventario.apartado = valor;
@@ -183,7 +183,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         isLoading = false;
       });
       if (value.status == 1) {
-        Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pushReplacementNamed(context, 'productos');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
@@ -194,8 +194,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   @override
   void dispose() {
     controllerProducto.dispose();
-    // controllerPrecio.dispose();
-    // controllercosto.dispose();
+    //controllerPrecio.dispose();
+    //controllercosto.dispose();
     controllerClave.dispose();
     controllerCodigoB.dispose();
     controllerCantidad.dispose();
@@ -256,7 +256,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             if (args.id != 0)
               IconButton(
                   onPressed: () {
-                    _eliminarProducto();
+                    _alertaElimnar();
                   },
                   icon: const Icon(Icons.delete))
           ],
