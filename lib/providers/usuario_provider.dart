@@ -26,6 +26,7 @@ class UsuarioProvider {
           'municipio': municipio
         });
         final decodedData = jsonDecode(resp.body);
+        print("resultados $decodedData");
         if (decodedData['status'] == 1) {
           respuesta.status = 1;
           respuesta.mensaje = decodedData['msg'];
