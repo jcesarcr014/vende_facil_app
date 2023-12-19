@@ -5,9 +5,10 @@ import 'package:http/http.dart' as http;
 
 class ArticuloProvider {
   final baseUrl = globals.baseUrl;
+  ResultadoC respuesta2 = ResultadoC();
   Resultado respuesta = Resultado();
 
-  Future<Resultado> nuevoProducto(Producto producto) async {
+  Future<ResultadoC> nuevoProducto(Producto producto) async {
     var url = Uri.parse('$baseUrl/articles');
     try {
       final resp = await http.post(url, headers: {
@@ -28,18 +29,20 @@ class ArticuloProvider {
       final decodedData = jsonDecode(resp.body);
       print(decodedData);
       if (decodedData['status'] == 1) {
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
+        respuesta2.status = 1;
+        respuesta2.mensaje = decodedData['msg'];
+        respuesta2.id= decodedData['empresa_id'];
+
       } else {
-        respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
+        respuesta2.status = 0;
+        respuesta2.mensaje = decodedData['msg'];
       }
     } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion. $e';
+      respuesta2.status = 0;
+      respuesta2.mensaje = 'Error en la peticion. $e';
     }
 
-    return respuesta;
+    return respuesta2;
   }
 
   Future<Resultado> listarProductos() async {
@@ -151,9 +154,9 @@ class ArticuloProvider {
   }
 
   Future<Resultado> eliminaProducto(int idProd) async {
-    var url = Uri.parse('$baseUrl/destoyA/$idProd');
+    var url = Uri.parse('$baseUrl/articles/$idProd');
     try {
-      final resp = await http.put(url, headers: {
+      final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);

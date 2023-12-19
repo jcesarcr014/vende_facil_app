@@ -1,7 +1,8 @@
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
-import 'package:http/http.dart' as http;
 
 class InventarioProvider {
   final baseUrl = globals.baseUrl;
@@ -14,10 +15,10 @@ class InventarioProvider {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'empresa_id': sesion.idNegocio.toString(),
-        'articulo_id': inventario.idArticulo.toString,
-        'cantidad': inventario.cantidad.toString,
-        'apartado': inventario.apartado.toString,
-        'disponibles': inventario.disponible.toString,
+        'articulo_id': inventario.idArticulo.toString(),
+        'cantidad': inventario.cantidad.toString(),
+        'apartado': inventario.apartado.toString(),
+        'disponibles': inventario.disponible.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -29,6 +30,7 @@ class InventarioProvider {
       }
     } catch (e) {
       respuesta.status = 0;
+      print(e);
       respuesta.mensaje = 'Error en la peticion. $e';
     }
     return respuesta;

@@ -15,6 +15,7 @@ class AgregaProductoScreen extends StatefulWidget {
 
 class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final articulosProvider = ArticuloProvider();
+  final inventarioProvider = InventarioProvider();
   final categoriasProvider = CategoriaProvider();
   final controllerProducto = TextEditingController();
   final controllerPrecio = TextEditingController();
@@ -22,7 +23,11 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final controllerClave = TextEditingController();
   final controllerCodigoB = TextEditingController();
   final controllerCantidad = TextEditingController();
+<<<<<<< HEAD
   final GlobalKey<FormState> formProducto = GlobalKey<FormState>();
+=======
+
+>>>>>>> a97579b68c6cd7ae8a2e2eee7dc54de4d2983c44
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -78,8 +83,29 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         */
         articulosProvider.nuevoProducto(producto).then((value) {
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'productos');
-            mostrarAlerta(context, '', value.mensaje!);
+            if (producto.inventario == 1) {
+              Existencia Inventario = Existencia();
+              Inventario.idArticulo = value.id;
+              var valor = double.parse(controllerCantidad.text);
+              Inventario.cantidad = valor;
+              Inventario.apartado = valor;
+              Inventario.disponible = valor;
+              inventarioProvider.guardar(Inventario).then((value) {
+                if (value.status == 1) {
+                  Navigator.pushReplacementNamed(context, 'productos');
+                  mostrarAlerta(context, '', value.mensaje!);
+                } else {
+                  setState(() {
+                    isLoading = false;
+                    textLoading = '';
+                  });
+                  mostrarAlerta(context, '', value.mensaje!);
+                }
+              });
+            } else {
+              Navigator.pushReplacementNamed(context, 'productos');
+              mostrarAlerta(context, '', value.mensaje!);
+            }
           } else {
             setState(() {
               isLoading = false;
@@ -155,14 +181,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       textLoading = 'Eliminando articulo';
       isLoading = true;
     });
-
     articulosProvider.eliminaProducto(args.id!).then((value) {
       setState(() {
         textLoading = '';
         isLoading = false;
       });
       if (value.status == 1) {
-        Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pushReplacementNamed(context, 'productos');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
@@ -173,8 +198,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   @override
   void dispose() {
     controllerProducto.dispose();
-    // controllerPrecio.dispose();
-    // controllercosto.dispose();
+    //controllerPrecio.dispose();
+    //controllercosto.dispose();
     controllerClave.dispose();
     controllerCodigoB.dispose();
     controllerCantidad.dispose();
@@ -233,7 +258,11 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           title: Text(title),
           actions: [
             if (args.id != 0)
-              IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
+              IconButton(
+                  onPressed: () {
+                    _alertaElimnar();
+                  },
+                  icon: const Icon(Icons.delete))
           ],
         ),
         body: (isLoading)
