@@ -65,8 +65,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.producto = controllerProducto.text;
       producto.idCategoria = int.parse(_valueIdCategoria); // int
       producto.unidad = (_valuePieza) ? '1' : '0';
-      producto.precio = double.parse(controllerPrecio.text); // double
-      producto.costo = double.parse(controllercosto.text); // double
+      producto.precio = double.parse(controllerPrecio.text.replaceAll(',', ''));
+      producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = controllerCodigoB.text;
       producto.inventario = (_valueInventario) ? 1 : 0;

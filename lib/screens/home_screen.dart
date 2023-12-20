@@ -157,16 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: windowWidth * 0.1,
                         ),
                   onTap: (() {
-                    articulosProvider
-                        .consultaProducto(producto.id!)
-                        .then((value) {
-                      if (value.id != 0) {
-                        _agregaProductoVenta(value);
-                      } else {
-                        mostrarAlerta(context, 'ERROR',
-                            'Error en la consulta: ${value.producto}');
-                      }
-                    });
+                    _agregaProductoVenta(producto);
                   }),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,13 +211,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _agregaProductoVenta(Producto producto) {
     bool existe = false;
-    print(producto.precio);
-    print(producto.unidad);
+    int id = int.parse(producto.id as String);
     if (producto.unidad == "1") {
-      print("entro al primero if");
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
-          print("entro al segundo if");
           existe = true;
           item.cantidad++;
           item.subTotalItem = item.precio * item.cantidad;
@@ -247,14 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {}
 
     _actualizaTotalTemporal();
-    setState(() {});
   }
 
   _actualizaTotalTemporal() {
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
     }
-    print(totalVentaTemporal);
     setState(() {});
   }
 }
