@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+  double totalVentaTemporal = 0.0;
   @override
   void initState() {
     setState(() {
@@ -85,15 +86,16 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
-              onPressed: () {},
-              child: SizedBox(
-                height: windowHeight * 0.1,
-                width: windowWidth * 0.4,
-                child: Center(
-                  child:
-                      Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
-                ),
-              )),
+            onPressed: () {},
+            child: SizedBox(
+              height: windowHeight * 0.1,
+              width: windowWidth * 0.4,
+              child: Center(
+                child:
+                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+              ),
+            ),
+          ),
           SizedBox(
             width: windowWidth * 0.05,
           ),
@@ -159,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .consultaProducto(producto.id!)
                         .then((value) {
                       if (value.id != 0) {
-
+                        _agregaProductoVenta(value);
                       } else {
                         mostrarAlerta(context, 'ERROR',
                             'Error en la consulta: ${value.producto}');
@@ -218,9 +220,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _agregaProductoVenta(Producto producto) {
     bool existe = false;
-    if (producto.unidad == 'p') {
+    print(producto.precio);
+    print(producto.unidad);
+    if (producto.unidad == "1") {
+      print("entro al primero if");
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
+          print("entro al segundo if");
           existe = true;
           item.cantidad++;
           item.subTotalItem = item.precio * item.cantidad;
@@ -229,24 +235,26 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (!existe) {
         ventaTemporal.add(ItemVenta(
-            idArticulo: producto.id!,
-            cantidad: 1,
-            precio: producto.precio!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: producto.precio!,
-            totalItem: producto.precio!));
+          idArticulo: producto.id!,
+          cantidad: 1,
+          precio: producto.precio!,
+          idDescuento: 0,
+          descuento: 0,
+          subTotalItem: producto.precio!,
+          totalItem: producto.precio!,
+        ));
       }
     } else {}
 
     _actualizaTotalTemporal();
+    setState(() {});
   }
 
   _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
     }
+    print(totalVentaTemporal);
     setState(() {});
   }
 }

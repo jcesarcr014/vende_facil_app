@@ -348,7 +348,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       InputField(
                           labelText: 'Cantidad:',
                           keyboardType: TextInputType.number,
-                          controller: controllerCantidad),
+                          controller: controllerCantidad,
+                          readOnly: (args.id != 0),),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
