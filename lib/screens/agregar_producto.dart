@@ -55,80 +55,88 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   _guardaProducto() {
     if (controllerProducto.text.isNotEmpty &&
         controllerPrecio.text.isNotEmpty) {
-      setState(() {
-        textLoading = (args.id == 0)
-            ? 'Agregando nuevo articulo'
-            : 'Actualizando articulo';
-        isLoading = true;
-      });
-      Producto producto = Producto();
-      producto.producto = controllerProducto.text;
-      producto.idCategoria = int.parse(_valueIdCategoria); // int
-      producto.unidad = (_valuePieza) ? '1' : '0';
-      producto.precio = double.parse(controllerPrecio.text.replaceAll(',', ''));
-      producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
-      producto.clave = controllerClave.text;
-      producto.codigoBarras = controllerCodigoB.text;
-      producto.inventario = (_valueInventario) ? 1 : 0;
-      producto.imagen =
-          'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930';
-      producto.apartado = (_valueApartado) ? 1 : 0;
-      if (args.id == 0) {
-        /*
+     var valor = double.tryParse(controllerCantidad.text);
+      var dato = (_valueInventario) ? 1 : 0;
+      if (valor != null && dato == 1 && valor > 0) {
+        setState(() {
+          textLoading = (args.id == 0)
+              ? 'Agregando nuevo articulo'
+              : 'Actualizando articulo';
+          isLoading = true;
+        });
+        Producto producto = Producto();
+        producto.producto = controllerProducto.text;
+        producto.idCategoria = int.parse(_valueIdCategoria); // int
+        producto.unidad = (_valuePieza) ? '1' : '0';
+        producto.precio =
+            double.parse(controllerPrecio.text.replaceAll(',', ''));
+        producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
+        producto.clave = controllerClave.text;
+        producto.codigoBarras = controllerCodigoB.text;
+        producto.inventario = (_valueInventario) ? 1 : 0;
+        producto.imagen =
+            'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930';
+        producto.apartado = (_valueApartado) ? 1 : 0;
+        if (args.id == 0) {
+          /*
               AQUI GUARDAR LA IMAGEN
         */
-        articulosProvider.nuevoProducto(producto).then((value) {
-          if (value.status == 1) {
-            if (producto.inventario == 1) {
-              Existencia Inventario = Existencia();
-              Inventario.idArticulo = value.id;
-              var valor = double.parse(controllerCantidad.text);
-              Inventario.cantidad = valor;
-              Inventario.apartado = valor;
-              Inventario.disponible = valor;
-              inventarioProvider.guardar(Inventario).then((value) {
-                if (value.status == 1) {
-                  Navigator.pushReplacementNamed(context, 'productos');
-                  mostrarAlerta(context, '', value.mensaje!);
-                } else {
-                  setState(() {
-                    isLoading = false;
-                    textLoading = '';
-                  });
-                  mostrarAlerta(context, '', value.mensaje!);
-                }
-              });
+          articulosProvider.nuevoProducto(producto).then((value) {
+            if (value.status == 1) {
+              if (producto.inventario == 1) {
+                Existencia Inventario = Existencia();
+                Inventario.idArticulo = value.id;
+                var valor = double.parse(controllerCantidad.text);
+                Inventario.cantidad = valor;
+                Inventario.apartado = valor;
+                Inventario.disponible = valor;
+                inventarioProvider.guardar(Inventario).then((value) {
+                  if (value.status == 1) {
+                    Navigator.pushReplacementNamed(context, 'productos');
+                    mostrarAlerta(context, '', value.mensaje!);
+                  } else {
+                    setState(() {
+                      isLoading = false;
+                      textLoading = '';
+                    });
+                    mostrarAlerta(context, '', value.mensaje!);
+                  }
+                });
+              } else {
+                Navigator.pushReplacementNamed(context, 'productos');
+                mostrarAlerta(context, '', value.mensaje!);
+              }
             } else {
-              Navigator.pushReplacementNamed(context, 'productos');
+              setState(() {
+                isLoading = false;
+                textLoading = '';
+              });
               mostrarAlerta(context, '', value.mensaje!);
             }
-          } else {
-            setState(() {
-              isLoading = false;
-              textLoading = '';
-            });
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
-      } else {
-        /*
+          });
+        } else {
+          /*
           VALIDAR IMAGEN  Y ACTUALIZAR
           
         */
-        producto.id = args.id;
-        articulosProvider.editaProducto(producto).then((value) {
-          setState(() {
-            _valueIdCategoria = '0';
-            isLoading = false;
-            textLoading = '';
+          producto.id = args.id;
+          articulosProvider.editaProducto(producto).then((value) {
+            setState(() {
+              _valueIdCategoria = '0';
+              isLoading = false;
+              textLoading = '';
+            });
+            if (value.status == 1) {
+              Navigator.pushReplacementNamed(context, 'home');
+              mostrarAlerta(context, '', value.mensaje!);
+            } else {
+              mostrarAlerta(context, '', value.mensaje!);
+            }
           });
-          if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
+        }
+      } else {
+        mostrarAlerta(context, 'ERROR',
+            'el valor del inventario  tiene que ser mayor a cero y no puede estar vacio ');
       }
     } else {
       mostrarAlerta(
@@ -302,11 +310,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    InputFieldMoney(controller: controllerPrecio, labelText: 'Precio'),
+                    InputFieldMoney(
+                        controller: controllerPrecio, labelText: 'Precio'),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    InputFieldMoney(controller: controllercosto, labelText: 'costo'),
+                    InputFieldMoney(
+                        controller: controllercosto, labelText: 'costo'),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -346,10 +356,11 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     ),
                     if (_valueInventario)
                       InputField(
-                          labelText: 'Cantidad:',
-                          keyboardType: TextInputType.number,
-                          controller: controllerCantidad,
-                          readOnly: (args.id != 0),),
+                        labelText: 'Cantidad:',
+                        keyboardType: TextInputType.number,
+                        controller: controllerCantidad,
+                        readOnly: (args.id != 0),
+                      ),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),

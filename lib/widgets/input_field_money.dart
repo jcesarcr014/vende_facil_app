@@ -23,11 +23,6 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
     _currencyFormat = NumberFormat.currency(decimalDigits: 2, symbol: '');
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
