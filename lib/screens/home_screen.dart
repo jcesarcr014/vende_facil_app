@@ -211,7 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _agregaProductoVenta(Producto producto) {
     bool existe = false;
-    int id = int.parse(producto.id as String);
     if (producto.unidad == "1") {
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
