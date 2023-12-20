@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+  double totalVentaTemporal = 0.0;
   @override
   void initState() {
     setState(() {
@@ -85,15 +86,16 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
-              onPressed: () {},
-              child: SizedBox(
-                height: windowHeight * 0.1,
-                width: windowWidth * 0.4,
-                child: Center(
-                  child:
-                      Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
-                ),
-              )),
+            onPressed: () {},
+            child: SizedBox(
+              height: windowHeight * 0.1,
+              width: windowWidth * 0.4,
+              child: Center(
+                child:
+                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+              ),
+            ),
+          ),
           SizedBox(
             width: windowWidth * 0.05,
           ),
@@ -155,16 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: windowWidth * 0.1,
                         ),
                   onTap: (() {
-                    articulosProvider
-                        .consultaProducto(producto.id!)
-                        .then((value) {
-                      if (value.id != 0) {
-
-                      } else {
-                        mostrarAlerta(context, 'ERROR',
-                            'Error en la consulta: ${value.producto}');
-                      }
-                    });
+                    _agregaProductoVenta(producto);
                   }),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -218,7 +211,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _agregaProductoVenta(Producto producto) {
     bool existe = false;
-    if (producto.unidad == 'p') {
+    print(producto.unidad);
+    if (producto.unidad == "1") {
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
           existe = true;
@@ -229,13 +223,14 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (!existe) {
         ventaTemporal.add(ItemVenta(
-            idArticulo: producto.id!,
-            cantidad: 1,
-            precio: producto.precio!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: producto.precio!,
-            totalItem: producto.precio!));
+          idArticulo: producto.id!,
+          cantidad: 1,
+          precio: producto.precio!,
+          idDescuento: 0,
+          descuento: 0,
+          subTotalItem: producto.precio!,
+          totalItem: producto.precio!,
+        ));
       }
     } else {}
 
@@ -243,7 +238,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
     }

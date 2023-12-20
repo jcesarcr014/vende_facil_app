@@ -4,8 +4,9 @@ import 'package:flutter/services.dart';
 
 class InputFieldMoney extends StatefulWidget {
   final TextEditingController? controller;
+  final String labelText;
 
-  const InputFieldMoney({Key? key, this.controller}) : super(key: key);
+  const InputFieldMoney({Key? key, this.controller, this.labelText = 'Monto'}) : super(key: key);
 
   @override
   State<InputFieldMoney> createState() => _InputFieldMoneyState();
@@ -22,23 +23,19 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
     _currencyFormat = NumberFormat.currency(decimalDigits: 2, symbol: '');
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: _controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
         hintText: '0.00',
-        labelText: 'Monto',
-        prefixIcon: Icon(Icons.attach_money),
+        labelText: widget.labelText, // Utiliza el valor proporcionado en el constructor
+        prefixIcon: const Icon(Icons.attach_money),
       ),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?(\d{0,2})?')),

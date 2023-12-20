@@ -7,7 +7,6 @@ import 'package:vende_facil/providers/globals.dart' as globals;
 class InventarioProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
-
   Future<Resultado> guardar(Existencia inventario) async {
     var url = Uri.parse('$baseUrl/inventories');
     try {
