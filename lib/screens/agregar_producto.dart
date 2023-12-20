@@ -276,7 +276,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             : SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
@@ -302,11 +302,11 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    InputFieldMoney(controller: controllerPrecio),
+                    InputFieldMoney(controller: controllerPrecio, labelText: 'Precio'),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    InputFieldMoney(controller: controllercosto),
+                    InputFieldMoney(controller: controllercosto, labelText: 'costo'),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
