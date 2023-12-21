@@ -55,7 +55,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   _guardaProducto() {
     if (controllerProducto.text.isNotEmpty &&
         controllerPrecio.text.isNotEmpty) {
-     var valor = double.tryParse(controllerCantidad.text);
+      var valor = double.tryParse(controllerCantidad.text);
       var dato = (_valueInventario) ? 1 : 0;
       if (valor != null && dato == 1 && valor > 0) {
         setState(() {

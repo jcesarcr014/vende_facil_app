@@ -13,7 +13,6 @@ class RegistroScreen extends StatefulWidget {
 
 class _RegistroScreenState extends State<RegistroScreen> {
   final usuariosProvider = UsuarioProvider();
-  final location = Location();
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
   final controllerTelefono = TextEditingController();
@@ -40,20 +39,6 @@ class _RegistroScreenState extends State<RegistroScreen> {
         setState(() {
           isLoading = true;
         });
-        String latitud = '0.0';
-        String longitud = '0.0';
-        String municipio = '';
-        try {
-          final ubicacion = await location.determinePosition();
-          latitud = ubicacion.latitude.toString();
-          longitud = ubicacion.longitude.toString();
-          final datos = await location.getPosData(
-              ubicacion.latitude, ubicacion.longitude);
-          municipio = (datos[0].locality) ?? '';
-        } catch (e) {
-          mostrarAlerta(context, 'ERROR',
-              'Ocurrio el siguiente error: $e, se registrará sin guardar su ubicación.');
-        }
 
         Usuario newUser = Usuario();
         newUser.nombre = controllerNombre.text;
@@ -62,7 +47,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
         newUser.tipoUsuario = globals.tipoUserPropiertario;
         usuariosProvider
             .nuevoUsuario(
-                newUser, controllerPassword1.text, latitud, longitud, municipio)
+                newUser, controllerPassword1.text)
             .then((value) {
           setState(() {
             isLoading = false;
