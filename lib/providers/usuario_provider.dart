@@ -1,32 +1,23 @@
 import 'dart:convert';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/geolocator.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 
 class UsuarioProvider {
   final baseUrl = globals.baseUrl;
-  final location = Location();
   Resultado respuesta = Resultado();
 
-  Future<Resultado> nuevoUsuario(Usuario user, String pass, String latitud,
-      String longitud, String municipio) async {
+  Future<Resultado> nuevoUsuario(Usuario user, String pass) async {
     var url = Uri.parse('$baseUrl/register');
-    location
-        .getPosData(double.parse(latitud), double.parse(longitud))
-        .then((marcador) async {
+
       try {
         final resp = await http.post(url, body: {
           'name': user.nombre,
           'email': user.email,
           'phone': user.telefono,
           'password': pass,
-          'latitud': latitud,
-          'longitud': longitud,
-          'municipio': municipio
         });
         final decodedData = jsonDecode(resp.body);
-        print("resultados $decodedData");
         if (decodedData['status'] == 1) {
           respuesta.status = 1;
           respuesta.mensaje = decodedData['msg'];
@@ -37,8 +28,7 @@ class UsuarioProvider {
       } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'Error en la petición, $e';
-      }
-    });
+      };
 
     return respuesta;
   }

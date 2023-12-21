@@ -17,9 +17,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
-  double totalVentaTemporal = 0.0;
   @override
   void initState() {
+    ventaTemporal.clear();
     setState(() {
       textLoading = 'Leyendo articulos';
       isLoading = true;
@@ -157,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: windowWidth * 0.1,
                         ),
                   onTap: (() {
+                    print(producto.producto);
                     _agregaProductoVenta(producto);
                   }),
                   title: Row(
@@ -210,34 +211,52 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _agregaProductoVenta(Producto producto) {
+    print("que llega a la funcion  ${producto.producto}");
     bool existe = false;
-    print(producto.unidad);
-    if (producto.unidad == "1") {
-      for (ItemVenta item in ventaTemporal) {
-        if (item.idArticulo == producto.id) {
-          existe = true;
-          item.cantidad++;
-          item.subTotalItem = item.precio * item.cantidad;
-          item.totalItem = item.subTotalItem - item.descuento;
+    print("el id que llega ${producto.id!.toInt()}");
+    articulosProvider.consultaProducto(producto.id!.toInt()).then((value) {
+      print(" el dato que llega de la consulta ${value.producto}");
+      print(" el dato que llega de la unidad ${value.unidad}");
+      if (value.unidad == "1") {
+        print('entro al primer if ');
+        print('el arreglo  esta $ventaTemporal');
+        for (ItemVenta item in ventaTemporal) {
+          print("el itemventa  esta  ${item.idArticulo}");
+          if (item.idArticulo == value.id) {
+            print("entro al segundo  if ");
+            print("el id del value ${value.id}");
+            print("el id del item ${item.idArticulo}");
+            existe = true;
+            item.cantidad++;
+            item.subTotalItem = item.precio * item.cantidad;
+            print("el precio es ${item.precio}");
+            print("la cantidad es ${item.cantidad}");
+            print("el  subtotal es ${item.subTotalItem}");
+            item.totalItem = item.subTotalItem - item.descuento;
+            print(" el total ${item.totalItem}");
+            print(" el descuento es ${item.descuento}");
+          }
         }
-      }
-      if (!existe) {
-        ventaTemporal.add(ItemVenta(
-          idArticulo: producto.id!,
-          cantidad: 1,
-          precio: producto.precio!,
-          idDescuento: 0,
-          descuento: 0,
-          subTotalItem: producto.precio!,
-          totalItem: producto.precio!,
-        ));
-      }
-    } else {}
+        if (!existe) {
+          ventaTemporal.add(ItemVenta(
+            idArticulo: value.id!,
+            cantidad: 1,
+            precio: value.precio!,
+            idDescuento: 0,
+            descuento: 0,
+            subTotalItem: value.precio!,
+            totalItem: value.precio!,
+          ));
+          print(" el arreglo  esta lleno $ventaTemporal");
+        }
+      } else {}
+    });
 
     _actualizaTotalTemporal();
   }
 
   _actualizaTotalTemporal() {
+    //totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
     }
