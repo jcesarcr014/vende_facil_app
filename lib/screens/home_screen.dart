@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/widgets/widgets.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -123,8 +123,15 @@ class _HomeScreenState extends State<HomeScreen> {
             width: windowWidth * 0.05,
           ),
           ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'bar-code');
+              onPressed: () async {
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SimpleBarcodeScannerPage(),
+                    ));
+                setState(() {
+                  if (res is String) {}
+                });
               },
               child: SizedBox(
                   width: windowWidth * 0.25,
@@ -157,7 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: windowWidth * 0.1,
                         ),
                   onTap: (() {
-                    print(producto.producto);
                     _agregaProductoVenta(producto);
                   }),
                   title: Row(
@@ -211,30 +217,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _agregaProductoVenta(Producto producto) {
-    print("que llega a la funcion  ${producto.producto}");
     bool existe = false;
-    print("el id que llega ${producto.id!.toInt()}");
+
     articulosProvider.consultaProducto(producto.id!.toInt()).then((value) {
-      print(" el dato que llega de la consulta ${value.producto}");
-      print(" el dato que llega de la unidad ${value.unidad}");
       if (value.unidad == "1") {
-        print('entro al primer if ');
-        print('el arreglo  esta $ventaTemporal');
         for (ItemVenta item in ventaTemporal) {
-          print("el itemventa  esta  ${item.idArticulo}");
           if (item.idArticulo == value.id) {
-            print("entro al segundo  if ");
-            print("el id del value ${value.id}");
-            print("el id del item ${item.idArticulo}");
             existe = true;
             item.cantidad++;
             item.subTotalItem = item.precio * item.cantidad;
-            print("el precio es ${item.precio}");
-            print("la cantidad es ${item.cantidad}");
-            print("el  subtotal es ${item.subTotalItem}");
             item.totalItem = item.subTotalItem - item.descuento;
-            print(" el total ${item.totalItem}");
-            print(" el descuento es ${item.descuento}");
           }
         }
         if (!existe) {
@@ -247,7 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
             subTotalItem: value.precio!,
             totalItem: value.precio!,
           ));
-          print(" el arreglo  esta lleno $ventaTemporal");
         }
       } else {}
     });

@@ -6,7 +6,7 @@ class ConfigScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double windowWidth = MediaQuery.of(context).size.width;
-    double windowHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configuración'),

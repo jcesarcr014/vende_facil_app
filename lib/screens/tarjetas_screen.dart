@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/widgets/widgets.dart';
 
 class TarjetaScreen extends StatefulWidget {
   const TarjetaScreen({super.key});
