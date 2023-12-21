@@ -58,15 +58,14 @@ class ArticuloProvider {
           productoTemp.id = decodedData['data'][x]['id'];
           productoTemp.producto = decodedData['data'][x]['articulo'];
           productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
-          //productoTemp.unidad = decodedData['data'][x]['unidad'];
+          productoTemp.unidad = decodedData['data'][x]['unidad'];
           productoTemp.precio = double.parse(decodedData['data'][x]['precio']);
           //productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
           productoTemp.clave = decodedData['data'][x]['clave'];
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
-          // productoTemp.inventario =
-          //     int.parse(decodedData['data'][x]['inventario']);
+          productoTemp.inventario =decodedData['data'][x]['inventario'];
           // productoTemp.imagen = decodedData['data'][x]['imagen'];
-          // productoTemp.apartado = int.parse(decodedData['data'][x]['apartado']);
+          productoTemp.apartado = decodedData['data'][x]['apartado'];
 
           listaProductos.add(productoTemp);
         }

@@ -42,6 +42,46 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     height: windowHeight * 0.02,
                   ),
                   Column(children: _listaTemporal()),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Subtotal ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth* 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Descuento ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Total ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ]),
+                                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      height: windowHeight* 0.2,
+                    ),
+                  ]),
                   Center(
                     child: ElevatedButton(
                         onPressed: () {},
