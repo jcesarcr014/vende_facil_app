@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     ventaTemporal.clear();
+    _actualizaTotalTemporal();
     setState(() {
       textLoading = 'Leyendo articulos';
       isLoading = true;
@@ -116,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
           OutlinedButton(
               onPressed: () {},
               child: SizedBox(
-                  width: windowWidth * 0.25,
+                  width: windowWidth * 0.10,
                   height: windowHeight * 0.05,
                   child: const Center(child: Icon(Icons.search)))),
           SizedBox(
@@ -134,9 +135,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               child: SizedBox(
-                  width: windowWidth * 0.25,
+                  width: windowWidth * 0.10,
                   height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.qr_code_scanner))))
+                  child: const Center(child: Icon(Icons.qr_code_scanner)))),
+          SizedBox(
+            width: windowWidth * 0.05,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                _alertaElimnar();
+              },
+              child: SizedBox(
+                  width: windowWidth * 0.10,
+                  height: windowHeight * 0.05,
+                  child: const Center(child: Icon(Icons.delete)))),
         ],
       ),
     ];
@@ -218,39 +230,75 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _agregaProductoVenta(Producto producto) {
     bool existe = false;
-
-    articulosProvider.consultaProducto(producto.id!.toInt()).then((value) {
-      if (value.unidad == "1") {
-        for (ItemVenta item in ventaTemporal) {
-          if (item.idArticulo == value.id) {
-            existe = true;
-            item.cantidad++;
-            item.subTotalItem = item.precio * item.cantidad;
-            item.totalItem = item.subTotalItem - item.descuento;
-          }
+    if (producto.unidad == "1") {
+      for (ItemVenta item in ventaTemporal) {
+        if (item.idArticulo == producto.id) {
+          existe = true;
+          item.cantidad++;
+          item.subTotalItem = item.precio * item.cantidad;
+          item.totalItem = item.subTotalItem - item.descuento;
         }
-        if (!existe) {
-          ventaTemporal.add(ItemVenta(
-            idArticulo: value.id!,
-            cantidad: 1,
-            precio: value.precio!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: value.precio!,
-            totalItem: value.precio!,
-          ));
-        }
-      } else {}
-    });
+      }
+      if (!existe) {
+        ventaTemporal.add(ItemVenta(
+          idArticulo: producto.id!,
+          cantidad: 1,
+          precio: producto.precio!,
+          idDescuento: 0,
+          descuento: 0,
+          subTotalItem: producto.precio!,
+          totalItem: producto.precio!,
+        ));
+      }
+    } else {}
+    ;
 
     _actualizaTotalTemporal();
   }
 
   _actualizaTotalTemporal() {
-    //totalVentaTemporal = 0;
+    totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
     }
     setState(() {});
+  }
+
+  _alertaElimnar() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text(
+              'ATENCIÓN',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
+                )
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    ventaTemporal.clear();
+                    setState(() {});
+                    totalVentaTemporal = 0.0;
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Eliminar')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
+            ],
+          );
+        });
   }
 }

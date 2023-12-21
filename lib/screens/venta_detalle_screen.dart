@@ -21,6 +21,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de venta'),
+        
       ),
       body: (isLoading)
           ? Center(
@@ -42,6 +43,71 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     height: windowHeight * 0.02,
                   ),
                   Column(children: _listaTemporal()),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Subtotal ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.5),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        "12.10",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth* 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Descuento ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.5),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        "12.10",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      )),
+                  ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Total ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                                        SizedBox(width: windowWidth * 0.5),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        "12.10",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      )),
+                  ]),
+                                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      height: windowHeight* 0.1,
+                    ),
+                  ]),
                   Center(
                     child: ElevatedButton(
                         onPressed: () {},
@@ -87,7 +153,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                               item.subTotalItem = item.precio * item.cantidad;
                               item.totalItem =
                                   item.subTotalItem - item.descuento;
-                              setState(() {});
+                              _actualizaTotalTemporal();
                             },
                             icon: const Icon(Icons.remove_circle_outline))),
                     SizedBox(
@@ -104,7 +170,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                               item.subTotalItem = item.precio * item.cantidad;
                               item.totalItem =
                                   item.subTotalItem - item.descuento;
-                              setState(() {});
+                              _actualizaTotalTemporal();
                             },
                             icon: const Icon(Icons.add_circle_outline))),
                   ],
@@ -118,5 +184,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     }
     return productos;
+  }
+  _actualizaTotalTemporal() {
+    totalVentaTemporal = 0;
+    for (ItemVenta item in ventaTemporal) {
+      totalVentaTemporal += item.totalItem;
+    }
+    setState(() {});
   }
 }
