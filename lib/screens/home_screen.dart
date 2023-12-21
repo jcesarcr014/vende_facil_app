@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     ventaTemporal.clear();
+    _actualizaTotalTemporal();
     setState(() {
       textLoading = 'Leyendo articulos';
       isLoading = true;
