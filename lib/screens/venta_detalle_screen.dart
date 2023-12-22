@@ -13,6 +13,13 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+  double subTotalItem = 0.0;
+  double descuento = 0.0;
+  @override
+  void initState() {
+    _actualizaTotalTemporal();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de venta'),
-        
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton( onPressed: () { Navigator.pushNamed(context, 'home');},  icon: const Icon(Icons.arrow_back)),
+        ],
       ),
       body: (isLoading)
           ? Center(
@@ -56,15 +66,15 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     SizedBox(width: windowWidth * 0.5),
                     SizedBox(
                       width: windowWidth * 0.2,
-                      child: const Text(
-                        "12.10",
+                      child: Text(
+                        '\$${subTotalItem.toStringAsFixed(2)}',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ]),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth* 0.1),
+                    SizedBox(width: windowWidth * 0.1),
                     SizedBox(
                       width: windowWidth * 0.2,
                       child: const Text(
@@ -75,12 +85,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     ),
                     SizedBox(width: windowWidth * 0.5),
                     SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        "12.10",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )),
+                        width: windowWidth * 0.2,
+                        child: Text(
+                          "\$${descuento.toStringAsFixed(2)}",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        )),
                   ]),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
@@ -92,20 +102,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                                        SizedBox(width: windowWidth * 0.5),
+                    SizedBox(width: windowWidth * 0.5),
                     SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        "12.10",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )),
+                        width: windowWidth * 0.2,
+                        child: Text(
+                          '\$${totalVentaTemporal.toStringAsFixed(2)}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        )),
                   ]),
-                                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
                     SizedBox(
                       width: windowWidth * 0.2,
-                      height: windowHeight* 0.1,
+                      height: windowHeight * 0.1,
                     ),
                   ]),
                   Center(
@@ -151,8 +161,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             onPressed: () {
                               item.cantidad--;
                               item.subTotalItem = item.precio * item.cantidad;
-                              item.totalItem =
-                                  item.subTotalItem - item.descuento;
+                              item.totalItem =item.subTotalItem - item.descuento;
                               _actualizaTotalTemporal();
                             },
                             icon: const Icon(Icons.remove_circle_outline))),
@@ -168,8 +177,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             onPressed: () {
                               item.cantidad++;
                               item.subTotalItem = item.precio * item.cantidad;
-                              item.totalItem =
-                                  item.subTotalItem - item.descuento;
+                              item.totalItem =item.subTotalItem - item.descuento;
                               _actualizaTotalTemporal();
                             },
                             icon: const Icon(Icons.add_circle_outline))),
@@ -185,10 +193,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     }
     return productos;
   }
+
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
+
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
+      subTotalItem += item.subTotalItem;
+      descuento += item.descuento;
     }
     setState(() {});
   }

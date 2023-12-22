@@ -42,7 +42,8 @@ class ClienteProvider {
 
   Future<Resultado> listarClientes() async {
     listaClientes.clear();
-    var url = Uri.parse('$baseUrl/listarCu/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/listarCust/${sesion.idNegocio}');
+    print(url);
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -80,6 +81,7 @@ class ClienteProvider {
   Future<Cliente> consultaCliente(int idCliente) async {
     Cliente cliente = Cliente();
     var url = Uri.parse('$baseUrl/customers/$idCliente');
+    print(url);
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -112,6 +114,7 @@ class ClienteProvider {
 
   Future<Resultado> editaCliente(Cliente cliente) async {
     var url = Uri.parse('$baseUrl/customers/${cliente.id}');
+    print(url);
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -144,9 +147,9 @@ class ClienteProvider {
   }
 
   Future<Resultado> eliminaCliente(int idCliente) async {
-    var url = Uri.parse('$baseUrl/destoyCu/$idCliente');
+    var url = Uri.parse('$baseUrl/customers/$idCliente');
     try {
-      final resp = await http.put(url, headers: {
+      final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);

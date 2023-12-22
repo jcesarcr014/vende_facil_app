@@ -282,7 +282,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                     height: windowHeight * 0.03,
                   ),
                   InputField(
-                      readOnly: true,
+                      readOnly: false,
                       labelText: 'Codigo:',
                       textCapitalization: TextCapitalization.words,
                       sufixIcon: IconButton(

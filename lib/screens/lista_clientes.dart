@@ -44,6 +44,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Clientes'),
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
             IconButton(
@@ -107,6 +108,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
   _clientes() {
     List<Widget> clientes = [];
     for (Cliente cliente in listaClientes) {
+      print(cliente.id);
       clientes.add(
         Column(
           children: [

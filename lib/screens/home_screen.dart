@@ -19,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   double windowHeight = 0.0;
   @override
   void initState() {
-    ventaTemporal.clear();
     _actualizaTotalTemporal();
     setState(() {
       textLoading = 'Leyendo articulos';
@@ -43,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vende Fácil'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             onPressed: () {
@@ -103,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
           OutlinedButton(
               onPressed: () {
                 Navigator.pushNamed(context, 'detalle-venta');
+                setState(() {});
               },
               child: SizedBox(
                   height: windowHeight * 0.1,
