@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
