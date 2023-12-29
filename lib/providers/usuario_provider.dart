@@ -10,25 +10,25 @@ class UsuarioProvider {
   Future<Resultado> nuevoUsuario(Usuario user, String pass) async {
     var url = Uri.parse('$baseUrl/register');
 
-      try {
-        final resp = await http.post(url, body: {
-          'name': user.nombre,
-          'email': user.email,
-          'phone': user.telefono,
-          'password': pass,
-        });
-        final decodedData = jsonDecode(resp.body);
-        if (decodedData['status'] == 1) {
-          respuesta.status = 1;
-          respuesta.mensaje = decodedData['msg'];
-        } else {
-          respuesta.status = 0;
-          respuesta.mensaje = '${decodedData['msg']}: ${decodedData['errors']}';
-        }
-      } catch (e) {
+    try {
+      final resp = await http.post(url, body: {
+        'name': user.nombre,
+        'email': user.email,
+        'phone': user.telefono,
+        'password': pass,
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
         respuesta.status = 0;
-        respuesta.mensaje = 'Error en la petición, $e';
-      };
+        respuesta.mensaje = '${decodedData['msg']}: ${decodedData['errors']}';
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición, $e';
+    }
 
     return respuesta;
   }

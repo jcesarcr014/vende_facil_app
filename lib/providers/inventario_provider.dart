@@ -29,7 +29,7 @@ class InventarioProvider {
       }
     } catch (e) {
       respuesta.status = 0;
-      print(e);
+
       respuesta.mensaje = 'Error en la peticion. $e';
     }
     return respuesta;

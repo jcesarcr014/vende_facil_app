@@ -1,5 +1,6 @@
 class Resultado {
   int? status;
   String? mensaje;
-  Resultado({this.status, this.mensaje});
+  int? id;
+  Resultado({this.status, this.mensaje, this.id});
 }

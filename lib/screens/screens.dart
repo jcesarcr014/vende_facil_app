@@ -7,7 +7,6 @@ export 'package:vende_facil/screens/agregar_cliente.dart';
 export 'package:vende_facil/screens/agregar_descuento.dart';
 export 'package:vende_facil/screens/agregar_empresa.dart';
 export 'package:vende_facil/screens/agregar_producto.dart';
-export 'package:vende_facil/screens/bar_code.dart';
 export 'package:vende_facil/screens/configuracion_screen.dart';
 export 'package:vende_facil/screens/error_screen.dart';
 export 'package:vende_facil/screens/historial_screen.dart';

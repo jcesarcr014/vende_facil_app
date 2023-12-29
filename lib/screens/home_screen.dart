@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/widgets/widgets.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -126,8 +126,15 @@ class _HomeScreenState extends State<HomeScreen> {
             width: windowWidth * 0.05,
           ),
           ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'bar-code');
+              onPressed: () async {
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SimpleBarcodeScannerPage(),
+                    ));
+                setState(() {
+                  if (res is String) {}
+                });
               },
               child: SizedBox(
                   width: windowWidth * 0.10,

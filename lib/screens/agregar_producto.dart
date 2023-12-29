@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class AgregaProductoScreen extends StatefulWidget {
   const AgregaProductoScreen({super.key});
@@ -84,13 +85,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           articulosProvider.nuevoProducto(producto).then((value) {
             if (value.status == 1) {
               if (producto.inventario == 1) {
-                Existencia Inventario = Existencia();
-                Inventario.idArticulo = value.id;
+                Existencia inventario = Existencia();
+                inventario.idArticulo = value.id;
                 var valor = double.parse(controllerCantidad.text);
-                Inventario.cantidad = valor;
-                Inventario.apartado = valor;
-                Inventario.disponible = valor;
-                inventarioProvider.guardar(Inventario).then((value) {
+                inventario.cantidad = valor;
+                inventario.apartado = valor;
+                inventario.disponible = valor;
+                inventarioProvider.guardar(inventario).then((value) {
                   if (value.status == 1) {
                     Navigator.pushReplacementNamed(context, 'productos');
                     mostrarAlerta(context, '', value.mensaje!);
@@ -334,10 +335,17 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                         sufixIcon: IconButton(
                           icon: const Icon(Icons.qr_code_scanner),
                           onPressed: () async {
-                            var codigo =
-                                await Navigator.pushNamed(context, 'bar-code');
-
-                            controllerCodigoB.text = codigo.toString();
+                            var res = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SimpleBarcodeScannerPage(),
+                                ));
+                            setState(() {
+                              if (res is String) {
+                                controllerCodigoB.text = res;
+                              }
+                            });
                           },
                         ),
                         controller: controllerCodigoB),
