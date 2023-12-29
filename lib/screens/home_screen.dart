@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final articulosProvider = ArticuloProvider();
   final categoriasProvider = CategoriaProvider();
+  final CantidadConttroller = TextEditingController();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -170,8 +171,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: windowWidth * 0.1,
                         ),
                   onTap: (() {
-                    print(producto.producto);
-                    _agregaProductoVenta(producto);
+                    if (producto.unidad == "0") {
+                      _alertaProducto();
+                    } else {
+                      _agregaProductoVenta(producto);
+                    }
                   }),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -289,6 +293,47 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.pop(context);
                   },
                   child: const Text('Eliminar')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
+            ],
+          );
+        });
+  }
+
+  _alertaProducto() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text(
+              'ATENCIÓN',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Este producto se vende en gramos, Introduce la cantidad  ',
+                ),
+                InputField(
+                      labelText: 'cantidad:',
+                      textCapitalization: TextCapitalization.words,
+                      controller: CantidadConttroller)
+
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {});
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Aceptar ')),
               ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cancelar'))
