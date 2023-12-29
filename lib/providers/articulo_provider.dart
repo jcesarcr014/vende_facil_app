@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 class ArticuloProvider {
   final baseUrl = globals.baseUrl;
-
   Resultado respuesta = Resultado();
 
   Future<Resultado> nuevoProducto(Producto producto) async {
@@ -30,7 +29,8 @@ class ArticuloProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        respuesta.id = decodedData['empresa_id'];
+        respuesta.id= decodedData['empresa_id'];
+
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -59,15 +59,13 @@ class ArticuloProvider {
           productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
           productoTemp.unidad = decodedData['data'][x]['unidad'];
           productoTemp.precio = double.parse(decodedData['data'][x]['precio']);
+          //productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
           productoTemp.clave = decodedData['data'][x]['clave'];
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
-          productoTemp.inventario = decodedData['data'][x]['inventario'];
+          productoTemp.inventario =decodedData['data'][x]['inventario'];
           // productoTemp.imagen = decodedData['data'][x]['imagen'];
           productoTemp.apartado = decodedData['data'][x]['apartado'];
 
-          productoTemp.inventario = decodedData['data'][x]['inventario'];
-          productoTemp.inventario = decodedData['data'][x]['unidad'];
-          productoTemp.apartado = decodedData['data'][x]['apartado'];
           listaProductos.add(productoTemp);
         }
         respuesta.status = 1;

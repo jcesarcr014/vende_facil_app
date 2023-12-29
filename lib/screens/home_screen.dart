@@ -161,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
+    print(listaProd);
     if (listaProductos.isNotEmpty) {
       for (Producto producto in listaProductos) {
         for (Categoria categoria in listaCategorias) {
@@ -329,10 +330,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Este producto se vende en gramos, Introduce la cantidad  ',
                 ),
                 InputField(
-                      labelText: 'cantidad:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: CantidadConttroller)
-
+                    labelText: 'cantidad:',
+                    textCapitalization: TextCapitalization.words,
+                    controller: CantidadConttroller)
               ],
             ),
             actions: [
