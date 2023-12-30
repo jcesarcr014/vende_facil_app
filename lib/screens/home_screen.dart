@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -118,7 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                showSearch(context: context, delegate: Search());
+              },
               child: SizedBox(
                   width: windowWidth * 0.10,
                   height: windowHeight * 0.05,
@@ -161,7 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    print(listaProd);
     if (listaProductos.isNotEmpty) {
       for (Producto producto in listaProductos) {
         for (Categoria categoria in listaCategorias) {
