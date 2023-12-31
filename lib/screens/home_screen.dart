@@ -183,7 +183,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                   onTap: (() {
                     if (producto.unidad == "0") {
-                      _alertaProducto();
+                      _alertaProducto(
+                        producto,
+                      );
                     } else {
                       _agregaProductoVenta(producto);
                     }
@@ -266,6 +268,37 @@ class _HomeScreenState extends State<HomeScreen> {
     _actualizaTotalTemporal();
   }
 
+  _agregaProductoVentaGramos(Producto producto, cantidad) {
+    print(cantidad);
+    bool existe = false;
+    print("llego");
+    if (producto.unidad == "0") {
+      for (ItemVenta item in ventaTemporal) {
+        if (item.idArticulo == producto.id) {
+          existe = true;
+          item.cantidad++;
+          print(item.cantidad);
+          item.subTotalItem = item.precio * item.cantidad;
+          item.totalItem = item.subTotalItem - item.descuento;
+        }
+      }
+      if (!existe) {
+        ventaTemporal.add(ItemVenta(
+          idArticulo: producto.id!,
+          cantidad: cantidad,
+          precio: producto.precio!,
+          idDescuento: 0,
+          descuento: 0,
+          subTotalItem: producto.precio!,
+          totalItem: producto.precio!,
+        ));
+      }
+    } else {}
+    ;
+
+    _actualizaTotalTemporal();
+  }
+
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
@@ -312,7 +345,9 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  _alertaProducto() {
+  _alertaProducto(
+    Producto producto,
+  ) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -342,6 +377,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     setState(() {});
                     Navigator.pop(context);
+                    _agregaProductoVentaGramos(
+                        producto, double.parse(CantidadConttroller.text));
                   },
                   child: const Text('Aceptar ')),
               ElevatedButton(
