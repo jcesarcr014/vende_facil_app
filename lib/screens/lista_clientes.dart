@@ -108,7 +108,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
   _clientes() {
     List<Widget> clientes = [];
     for (Cliente cliente in listaClientes) {
-      print(cliente.id);
+  
       clientes.add(
         Column(
           children: [

@@ -263,21 +263,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
       }
     } else {}
-    ;
 
     _actualizaTotalTemporal();
   }
 
   _agregaProductoVentaGramos(Producto producto, cantidad) {
-    print(cantidad);
     bool existe = false;
-    print("llego");
     if (producto.unidad == "0") {
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
           existe = true;
           item.cantidad++;
-          print(item.cantidad);
           item.subTotalItem = item.precio * item.cantidad;
           item.totalItem = item.subTotalItem - item.descuento;
         }
@@ -294,7 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
       }
     } else {}
-    ;
 
     _actualizaTotalTemporal();
   }
