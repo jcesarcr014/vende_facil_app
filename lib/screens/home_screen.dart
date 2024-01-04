@@ -81,6 +81,44 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  _alertaElimnar() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text(
+              'ATENCIÓN',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
+                )
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    ventaTemporal.clear();
+                    setState(() {});
+                    totalVentaTemporal = 0.0;
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Eliminar')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
+            ],
+          );
+        });
+  }
+
   _listaWidgets() {
     List<Widget> listaItems = [
       SizedBox(
@@ -162,6 +200,47 @@ class _HomeScreenState extends State<HomeScreen> {
     return listaItems;
   }
 
+  _alertaProducto(Producto producto) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text(
+              'ATENCIÓN',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Este producto se vende en gramos, Introduce la cantidad  ',
+                ),
+                InputField(
+                    labelText: 'cantidad:',
+                    textCapitalization: TextCapitalization.words,
+                    controller: CantidadConttroller)
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _agregaProductoVenta(
+                        producto, double.parse(CantidadConttroller.text));
+                  },
+                  child: const Text('Aceptar ')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
+            ],
+          );
+        });
+  }
+
   _productos() {
     List<Widget> listaProd = [];
     if (listaProductos.isNotEmpty) {
@@ -183,11 +262,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                   onTap: (() {
                     if (producto.unidad == "0") {
-                      _alertaProducto(
-                        producto,
-                      );
+                      _alertaProducto(producto);
                     } else {
-                      _agregaProductoVenta(producto);
+                      _agregaProductoVenta(producto, 0);
                     }
                   }),
                   title: Row(
@@ -204,7 +281,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      // Text('\$ ${producto.precio!.toStringAsFixed(2)}')
                     ],
                   ),
                   subtitle: Text(categoria.categoria!),
@@ -240,7 +316,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return listaProd;
   }
 
-  _agregaProductoVenta(Producto producto) {
+  _actualizaTotalTemporal() {
+    totalVentaTemporal = 0;
+    for (ItemVenta item in ventaTemporal) {
+      totalVentaTemporal += item.totalItem;
+    }
+    setState(() {});
+  }
+
+  _agregaProductoVenta(Producto producto, cantidad) {
     bool existe = false;
     if (producto.unidad == "1") {
       for (ItemVenta item in ventaTemporal) {
@@ -262,125 +346,31 @@ class _HomeScreenState extends State<HomeScreen> {
           totalItem: producto.precio!,
         ));
       }
-    } else {}
-
-    _actualizaTotalTemporal();
-  }
-
-  _agregaProductoVentaGramos(Producto producto, cantidad) {
-    bool existe = false;
-    if (producto.unidad == "0") {
-      for (ItemVenta item in ventaTemporal) {
-        if (item.idArticulo == producto.id) {
-          existe = true;
-          item.cantidad++;
-          item.subTotalItem = item.precio * item.cantidad;
-          item.totalItem = item.subTotalItem - item.descuento;
+      _actualizaTotalTemporal();
+    } else {
+      if (producto.unidad == "0") {
+        for (ItemVenta item in ventaTemporal) {
+          if (item.idArticulo == producto.id) {
+            existe = true;
+            item.cantidad++;
+            item.subTotalItem = item.precio * cantidad;
+            item.totalItem = item.subTotalItem - item.descuento;
+          }
         }
-      }
-      if (!existe) {
-        ventaTemporal.add(ItemVenta(
-          idArticulo: producto.id!,
-          cantidad: cantidad,
-          precio: producto.precio!,
-          idDescuento: 0,
-          descuento: 0,
-          subTotalItem: producto.precio!,
-          totalItem: producto.precio!,
-        ));
-      }
-    } else {}
-
-    _actualizaTotalTemporal();
-  }
-
-  _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
-    for (ItemVenta item in ventaTemporal) {
-      totalVentaTemporal += item.totalItem;
+        if (!existe) {
+          ventaTemporal.add(ItemVenta(
+            idArticulo: producto.id!,
+            cantidad: cantidad,
+            precio: producto.precio!,
+            idDescuento: 0,
+            descuento: 0,
+            subTotalItem: producto.precio!,
+            totalItem: producto.precio! * cantidad,
+          ));
+        }
+        _actualizaTotalTemporal();
+      } else {}
+      _actualizaTotalTemporal();
     }
-    setState(() {});
-  }
-
-  _alertaElimnar() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text(
-              'ATENCIÓN',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
-            ),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
-                )
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    ventaTemporal.clear();
-                    setState(() {});
-                    totalVentaTemporal = 0.0;
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Eliminar')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
-            ],
-          );
-        });
-  }
-
-  _alertaProducto(
-    Producto producto,
-  ) {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text(
-              'ATENCIÓN',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Este producto se vende en gramos, Introduce la cantidad  ',
-                ),
-                InputField(
-                    labelText: 'cantidad:',
-                    textCapitalization: TextCapitalization.words,
-                    controller: CantidadConttroller)
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {});
-                    Navigator.pop(context);
-                    _agregaProductoVentaGramos(
-                        producto, double.parse(CantidadConttroller.text));
-                  },
-                  child: const Text('Aceptar ')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
-            ],
-          );
-        });
   }
 }
