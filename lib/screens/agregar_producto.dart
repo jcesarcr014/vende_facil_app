@@ -261,7 +261,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
+          automaticallyImplyLeading: false,
           actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'productos');
+              },
+              icon: const Icon(Icons.arrow_back)),
             if (args.id != 0)
               IconButton(
                   onPressed: () {
