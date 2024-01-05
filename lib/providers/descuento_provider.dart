@@ -14,10 +14,10 @@ class DescuentoProvider {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'nombre': descuento.nombre,
-        'empresa_id': sesion.idNegocio,
-        'tipo_valor': descuento.tipoValor,
-        'valor': descuento.valor,
-        'valor_predeterminado': descuento.valorPred,
+        'empresa_id': sesion.idNegocio.toString(),
+        'tipo_valor': descuento.tipoValor.toString(),
+        'valor': descuento.valor?.toStringAsFixed(2),
+        'valor_predeterminado': descuento.valorPred.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -36,7 +36,7 @@ class DescuentoProvider {
 
   Future<Resultado> listarDescuentos() async {
     listaDescuentos.clear();
-    var url = Uri.parse('$baseUrl/categories/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/listarDesc/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -47,10 +47,11 @@ class DescuentoProvider {
           Descuento descTemporal = Descuento();
           descTemporal.id = decodedData['data'][x]['id'];
           descTemporal.nombre = decodedData['data'][x]['nombre'];
-          descTemporal.valor = decodedData['data'][x]['valor'];
-          descTemporal.tipoValor = decodedData['data'][x]['tipo_valor'];
+          descTemporal.valor = double.parse(decodedData['data'][x]['valor'].toString());
+          descTemporal.tipoValor =
+              int.parse(decodedData['data'][x]['tipo_valor']);
           descTemporal.valorPred =
-              decodedData['data'][x]['valor_predeterminado'];
+              int.parse(decodedData['data'][x]['valor_predeterminado']);
           listaDescuentos.add(descTemporal);
         }
         respuesta.status = 1;

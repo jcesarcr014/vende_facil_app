@@ -16,7 +16,9 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   final controllerValor = TextEditingController();
   bool firstLoad = true;
   bool _tipoValor = true;
+  bool _tipoValorS = true;
   bool isLoading = false;
+  bool showAdditionalWidgets = true;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
@@ -39,6 +41,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
           : 0;
       descuento.valorPred = (controllerValor.text.isNotEmpty) ? 1 : 0;
       if (args.id == 0) {
+        print("entro al if");
         descuentosProvider.nuevoDescuento(descuento).then((value) {
           setState(() {
             isLoading = false;
@@ -48,6 +51,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
             Navigator.pushReplacementNamed(context, 'home');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
+            print("el mesaje es ${value.mensaje}");
             mostrarAlerta(context, '', value.mensaje!);
           }
         });
@@ -151,6 +155,11 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
     return Scaffold(
         appBar: AppBar(
           actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'descuentos');
+                },
+                icon: const Icon(Icons.arrow_back)),
             if (args.id != 0)
               IconButton(
                   onPressed: () {
@@ -186,18 +195,19 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    SwitchListTile.adaptive(
-                        title: Row(
-                          children: [
-                            const Text('Tipo descuento: '),
-                            Text((_tipoValor) ? '%' : '\$')
-                          ],
-                        ),
-                        value: _tipoValor,
-                        onChanged: (value) {
-                          _tipoValor = value;
-                          setState(() {});
-                        }),
+                    if (showAdditionalWidgets)
+                      SwitchListTile.adaptive(
+                          title: Row(
+                            children: [
+                              const Text('Tipo descuento: '),
+                              Text((_tipoValor) ? '%' : '\$')
+                            ],
+                          ),
+                          value: _tipoValor,
+                          onChanged: (value) {
+                            _tipoValor = value;
+                            setState(() {});
+                          }),
                     InputField(
                         labelText: 'Descuento:',
                         keyboardType: TextInputType.number,
@@ -214,7 +224,24 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
+                    SwitchListTile.adaptive(
+                        title: Row(
+                          children: [
+                            const Text('cambio '),
+                            Text((_tipoValorS) ? '%' : '\$')
+                          ],
+                        ),
+                        value: _tipoValorS,
+                        onChanged: (value) {
+                          _tipoValorS = value;
+                          setState(() {});
+                          showAdditionalWidgets = !_tipoValorS;
+                        }),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
                     ElevatedButton(
+                        //vilmar12@gmail.com
                         onPressed: () => _guardaDescuento(),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,

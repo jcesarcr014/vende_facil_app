@@ -142,7 +142,17 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     for (ItemVenta item in ventaTemporal) {
       for (Producto prod in listaProductos) {
         if (prod.id == item.idArticulo) {
-          productos.add(ListTile(
+          productos.add(
+            Dismissible(
+            key: Key(item.idArticulo.toString()),
+            onDismissed: (direction) {
+              _removerItemTemporal(item);
+            },
+            background: Container(
+              color: Colors.red,
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+            child:ListTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -195,12 +205,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               ],
             ),
             subtitle: const Divider(),
-          ));
+          )));
         }
       }
     }
     return productos;
   }
+  _removerItemTemporal(ItemVenta item) {
+  setState(() {
+    ventaTemporal.remove(item);
+    _actualizaTotalTemporal();
+  });
+}
 
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
