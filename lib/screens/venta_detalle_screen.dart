@@ -3,11 +3,9 @@ import 'package:vende_facil/models/models.dart';
 
 class VentaDetalleScreen extends StatefulWidget {
   const VentaDetalleScreen({Key? key}) : super(key: key);
-
   @override
   State<VentaDetalleScreen> createState() => _VentaDetalleScreenState();
 }
-
 class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   bool isLoading = false;
   String textLoading = '';
@@ -30,7 +28,11 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         title: const Text('Detalle de venta'),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton( onPressed: () { Navigator.pushNamed(context, 'home');},  icon: const Icon(Icons.arrow_back)),
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'home');
+              },
+              icon: const Icon(Icons.arrow_back)),
         ],
       ),
       body: (isLoading)
@@ -156,15 +158,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                        width: windowWidth * 0.1,
-                        child: IconButton(
-                            onPressed: () {
-                              item.cantidad--;
-                              item.subTotalItem = item.precio * item.cantidad;
-                              item.totalItem =item.subTotalItem - item.descuento;
-                              _actualizaTotalTemporal();
-                            },
-                            icon: const Icon(Icons.remove_circle_outline))),
+                      width: windowWidth * 0.1,
+                      child: IconButton(
+                        onPressed: item.totalItem > 0.00
+                            ? () {
+                                item.cantidad--;
+                                item.subTotalItem = item.precio * item.cantidad;
+                                item.totalItem =
+                                    item.subTotalItem - item.descuento;
+                                _actualizaTotalTemporal();
+                              }
+                            : null,
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                    ),
                     SizedBox(
                         width: windowWidth * 0.15,
                         child: Text(
@@ -177,7 +184,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             onPressed: () {
                               item.cantidad++;
                               item.subTotalItem = item.precio * item.cantidad;
-                              item.totalItem =item.subTotalItem - item.descuento;
+                              item.totalItem =
+                                  item.subTotalItem - item.descuento;
                               _actualizaTotalTemporal();
                             },
                             icon: const Icon(Icons.add_circle_outline))),
@@ -196,7 +204,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
-
+    subTotalItem = 0;
+    descuento = 0;
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
       subTotalItem += item.subTotalItem;

@@ -202,43 +202,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _alertaProducto(Producto producto) {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text(
-              'ATENCIÓN',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Este producto se vende en gramos, Introduce la cantidad  ',
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Row(
+            children: [
+              const Flexible(
+                child: Text(
+                  'Cantidad :',
+                  style: TextStyle(color: Colors.red),
                 ),
-                InputField(
-                    labelText: 'cantidad:',
-                    textCapitalization: TextCapitalization.words,
-                    controller: CantidadConttroller)
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _agregaProductoVenta(
-                        producto, double.parse(CantidadConttroller.text));
-                  },
-                  child: const Text('Aceptar ')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
+              ),
+              SizedBox(
+                width: windowWidth * 0.05,
+              ),
+              Flexible(
+                child: InputField(
+                  textCapitalization: TextCapitalization.words,
+                  controller: CantidadConttroller,
+                ),
+              ),
             ],
-          );
-        });
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (CantidadConttroller.text == "0.0" ||
+                    CantidadConttroller.text == "0"||
+                    CantidadConttroller.text == ".0"||
+                    CantidadConttroller.text == "0.") {
+                } else {
+                  _agregaProductoVenta(
+                    producto,
+                    double.parse(CantidadConttroller.text),
+                  );
+                }
+              },
+              child: const Text('Aceptar '),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _productos() {
