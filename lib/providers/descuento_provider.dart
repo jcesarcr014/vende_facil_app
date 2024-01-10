@@ -101,10 +101,10 @@ class DescuentoProvider {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'nombre': descuento.nombre,
-        'empresa_id': sesion.idNegocio,
-        'tipo_valor': descuento.tipoValor,
-        'valor': descuento.valor,
-        'valor_predeterminado': descuento.valorPred,
+        'empresa_id': sesion.idNegocio.toString(),
+        'tipo_valor': descuento.tipoValor.toString(),
+        'valor': descuento.valor?.toStringAsFixed(2),
+        'valor_predeterminado': descuento.valorPred.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
