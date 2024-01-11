@@ -18,7 +18,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   bool _tipoValor = true;
   bool _tipoValorS = true;
   bool isLoading = false;
-  bool showAdditionalWidgets = true;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
@@ -39,9 +38,8 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       descuento.valor = (controllerValor.text.isNotEmpty)
           ? double.parse(controllerValor.text)
           : 0;
-      descuento.valorPred = (controllerValor.text.isNotEmpty) ? 1 : 0;
+      descuento.valorPred = (_tipoValorS) ? 1 : 0;
       if (args.id == 0) {
-        print("entro al if");
         descuentosProvider.nuevoDescuento(descuento).then((value) {
           setState(() {
             isLoading = false;
@@ -51,7 +49,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
             Navigator.pushReplacementNamed(context, 'home');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
-            print("el mesaje es ${value.mensaje}");
             mostrarAlerta(context, '', value.mensaje!);
           }
         });
@@ -63,7 +60,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'descuentos');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -195,7 +192,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    if (showAdditionalWidgets)
                       SwitchListTile.adaptive(
                           title: Row(
                             children: [
@@ -208,6 +204,19 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                             _tipoValor = value;
                             setState(() {});
                           }),
+                      SwitchListTile.adaptive(
+                        title: Row(
+                          children: [
+                            const Text('Tipo de descuento: '),
+                            Text((_tipoValorS) ? 'variable' : 'fijo' )
+                          ],
+                        ),
+                        value: _tipoValorS,
+                        onChanged: (value) {
+                          _tipoValorS = value;
+                          setState(() {});
+                        }),
+                    if (!_tipoValorS)
                     InputField(
                         labelText: 'Descuento:',
                         keyboardType: TextInputType.number,
@@ -224,19 +233,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
-                    SwitchListTile.adaptive(
-                        title: Row(
-                          children: [
-                            const Text('cambio '),
-                            Text((_tipoValorS) ? '%' : '\$')
-                          ],
-                        ),
-                        value: _tipoValorS,
-                        onChanged: (value) {
-                          _tipoValorS = value;
-                          setState(() {});
-                          showAdditionalWidgets = !_tipoValorS;
-                        }),
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
