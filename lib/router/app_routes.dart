@@ -24,6 +24,7 @@ class AppRoutes {
     'menu': (BuildContext context) => const MenuScreen(),
     'suscripcion': (BuildContext context) => const SuscripcionScreen(),
     'tarjetas': (BuildContext context) => const TarjetaScreen(),
+    'nvo-tarjetas':(BuildContext context) => const AgregaTarjetaScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

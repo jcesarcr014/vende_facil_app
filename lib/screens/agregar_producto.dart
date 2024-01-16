@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vende_facil/models/models.dart';
@@ -243,8 +242,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
       controllerCodigoB.text =
           (args.codigoBarras != null) ? args.codigoBarras! : '';
-
-      //REVISAR CANTIDAD EN INVENTARIO
       _valueInventario = (args.inventario == 0) ? false : true;
       _valueApartado = (args.apartado == 0) ? false : true;
       if (_valueInventario) {

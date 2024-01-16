@@ -19,3 +19,4 @@ export 'package:vende_facil/screens/login.dart';
 export 'package:vende_facil/screens/registro_screen.dart';
 export 'package:vende_facil/screens/venta_detalle_screen.dart';
 export 'package:vende_facil/screens/search_screen.dart';
+export 'package:vende_facil/screens/agregar_tarjeta.dart';

@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final articulosProvider = ArticuloProvider();
   final categoriasProvider = CategoriaProvider();
+  // ignore: non_constant_identifier_names
   final CantidadConttroller = TextEditingController();
   bool isLoading = false;
   String textLoading = '';
