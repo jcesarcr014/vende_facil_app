@@ -14,7 +14,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
-  String _valueIdCategoria = '0';
+  String _valueIdDescuento = '0';
+  String _valueIdcliente = '0';
   double descuento = 0.0;
   // ignore: non_constant_identifier_names
   final CantidadConttroller = TextEditingController();
@@ -125,6 +126,23 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         )),
+                  ]),
+                  const SizedBox(height: 10),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'selecione el  cliente',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
+                    Expanded(
+                      child: _clientes(),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
                   ]),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
@@ -246,25 +264,25 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _descuentos() {
-    var listaCat = [
+    var listades = [
       const DropdownMenuItem(
         value: '0',
         child: SizedBox(child: Text('Ninguno')),
       )
     ];
     for (Descuento descuentos in listaDescuentos) {
-      listaCat.add(DropdownMenuItem(
+      listades.add(DropdownMenuItem(
           value: descuentos.id.toString(), child: Text(descuentos.nombre!)));
     }
-    if (_valueIdCategoria.isEmpty) {
-      _valueIdCategoria = '0';
+    if (_valueIdDescuento.isEmpty) {
+      _valueIdDescuento = '0';
     }
     return DropdownButton(
-      items: listaCat,
+      items: listades,
       isExpanded: true,
-      value: _valueIdCategoria,
+      value: _valueIdDescuento,
       onChanged: (value) {
-        _valueIdCategoria = value!;
+        _valueIdDescuento = value!;
         if (value == "0") {
           setState(() {});
           descuento = 0.00;
@@ -297,6 +315,38 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       },
     );
   }
+
+  _clientes() {
+    var listaClien = [
+      const DropdownMenuItem(
+        value: '0',
+        child: SizedBox(child: Text('Ninguno')),
+      )
+    ];
+    for (Cliente cliente in listaClientes) {
+      listaClien.add(DropdownMenuItem(
+          value: cliente.id.toString(), child: Text(cliente.nombre!)));
+    }
+    if (_valueIdcliente.isEmpty) {
+      _valueIdcliente = '0';
+    }
+    return DropdownButton(
+      items: listaClien,
+      isExpanded: true,
+      value: _valueIdcliente,
+      onChanged: (value) {
+        _valueIdcliente = value!;
+        if (value == "0") {
+          setState(() {});
+        } else {
+          //print('valor seleccionado ${listaClientes.firstWhere((cliente) => cliente.id.toString() == value).id}');
+        }
+        setState(() {});
+      },
+    );
+  }
+
+  _compra() {}
 
   _alertadescuento(Descuento descuentos) {
     showDialog(

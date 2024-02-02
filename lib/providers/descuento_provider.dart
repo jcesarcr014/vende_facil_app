@@ -8,16 +8,17 @@ class DescuentoProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> nuevoDescuento(Descuento descuento) async {
-    var url = Uri.parse('$baseUrl/discounts');
+    var url = Uri.parse('$baseUrl/descuentos/${sesion.idNegocio}');
+    print(url);
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'nombre': descuento.nombre,
-        'empresa_id': sesion.idNegocio.toString(),
-        'tipo_valor': descuento.tipoValor.toString(),
+        'tipo': descuento.tipoValor.toString(),
         'valor': descuento.valor?.toStringAsFixed(2),
         'valor_predeterminado': descuento.valorPred.toString(),
+        'estatus': '1',
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -36,7 +37,7 @@ class DescuentoProvider {
 
   Future<Resultado> listarDescuentos() async {
     listaDescuentos.clear();
-    var url = Uri.parse('$baseUrl/listarDesc/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/descuentos/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -49,7 +50,7 @@ class DescuentoProvider {
           descTemporal.nombre = decodedData['data'][x]['nombre'];
           descTemporal.valor = double.parse(decodedData['data'][x]['valor'].toString());
           descTemporal.tipoValor =
-              int.parse(decodedData['data'][x]['tipo_valor']);
+              int.parse(decodedData['data'][x]['tipo']);
           descTemporal.valorPred =
               int.parse(decodedData['data'][x]['valor_predeterminado']);
           listaDescuentos.add(descTemporal);
@@ -69,7 +70,7 @@ class DescuentoProvider {
 
   Future<Descuento> consultaDescuento(int idDesc) async {
     Descuento descuento = Descuento();
-    var url = Uri.parse('$baseUrl/discounts/$idDesc');
+    var url = Uri.parse('$baseUrl/descuento/$idDesc');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -80,7 +81,7 @@ class DescuentoProvider {
         descuento.id = decodedData['data'][0]['id'];
         descuento.nombre = decodedData['data'][0]['nombre'];
         descuento.valor = decodedData['data'][0]['valor'];
-        descuento.tipoValor = decodedData['data'][0]['tipo_valor'];
+        descuento.tipoValor = decodedData['data'][0]['tipo'];
         descuento.valorPred = decodedData['data'][0]['valor_predeterminado'];
       } else {
         descuento.id = 0;
@@ -95,16 +96,16 @@ class DescuentoProvider {
   }
 
   Future<Resultado> editaDescuento(Descuento descuento) async {
-    var url = Uri.parse('$baseUrl/discounts/${descuento.id}');
+    var url = Uri.parse('$baseUrl/descuentos/${descuento.id}');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'nombre': descuento.nombre,
-        'empresa_id': sesion.idNegocio.toString(),
-        'tipo_valor': descuento.tipoValor.toString(),
+        'tipo': descuento.tipoValor.toString(),
         'valor': descuento.valor?.toStringAsFixed(2),
         'valor_predeterminado': descuento.valorPred.toString(),
+        'estatus': '1',
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -123,9 +124,9 @@ class DescuentoProvider {
   }
 
   Future<Resultado> eliminaDescuento(int idDesc) async {
-    var url = Uri.parse('$baseUrl/destoyD/$idDesc');
+    var url = Uri.parse('$baseUrl/descuentos/$idDesc');
     try {
-      final resp = await http.put(url, headers: {
+      final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);

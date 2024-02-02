@@ -15,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final articulosProvider = ArticuloProvider();
   final categoriasProvider = CategoriaProvider();
+  final descuentoProvider = DescuentoProvider();
+  final clienteProvider = ClienteProvider();
   // ignore: non_constant_identifier_names
   final CantidadConttroller = TextEditingController();
   bool isLoading = false;
@@ -28,13 +30,17 @@ class _HomeScreenState extends State<HomeScreen> {
       textLoading = 'Leyendo articulos';
       isLoading = true;
     });
-    categoriasProvider.listarCategorias().then((respuesta) {
-      articulosProvider.listarProductos().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
+    clienteProvider.listarClientes().then((value) {
+    descuentoProvider.listarDescuentos().then((value) {
+      categoriasProvider.listarCategorias().then((respuesta) {
+        articulosProvider.listarProductos().then((value) {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
         });
       });
+    });
     });
     super.initState();
   }

@@ -171,6 +171,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('args: ${args.correo}');
     if (ModalRoute.of(context)?.settings.arguments != null && firstLoad) {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Cliente;
@@ -234,7 +235,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                   InputField(
                       labelText: 'e-mail:',
                       keyboardType: TextInputType.emailAddress,
-                      textCapitalization: TextCapitalization.none,
+                      textCapitalization: TextCapitalization.words,
                       controller: controllerCorreo),
                   SizedBox(
                     height: windowHeight * 0.03,
