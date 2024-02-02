@@ -8,7 +8,7 @@ class UsuarioProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> nuevoUsuario(Usuario user, String pass) async {
-    var url = Uri.parse('$baseUrl/register');
+    var url = Uri.parse('$baseUrl/usuario-registro');
 
     try {
       final resp = await http.post(url, body: {
@@ -34,7 +34,7 @@ class UsuarioProvider {
   }
 
   Future<Resultado> login(String email, String pass) async {
-    var url = Uri.parse('$baseUrl/login');
+    var url = Uri.parse('$baseUrl/usuario-login');
     try {
       final resp = await http.post(url, body: {
         'email': email,
@@ -45,7 +45,7 @@ class UsuarioProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = decodedData['Token'];
-        sesion.idUsuario = decodedData['usuario'];
+        sesion.idUsuario = decodedData['usuario']['id'];
         sesion.idNegocio = decodedData['empresa_id'];
       } else {
         respuesta.status = 0;

@@ -8,16 +8,13 @@ class InventarioProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
   Future<Resultado> guardar(Existencia inventario) async {
-    var url = Uri.parse('$baseUrl/inventories');
+    var url = Uri.parse('$baseUrl/inventario/${inventario.idArticulo}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
-        'empresa_id': sesion.idNegocio.toString(),
-        'articulo_id': inventario.idArticulo.toString(),
         'cantidad': inventario.cantidad.toString(),
         'apartado': inventario.apartado.toString(),
-        'disponibles': inventario.disponible.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -28,8 +25,8 @@ class InventarioProvider {
         respuesta.mensaje = decodedData['msg'];
       }
     } catch (e) {
-      respuesta.status = 0;
 
+      respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
     }
     return respuesta;

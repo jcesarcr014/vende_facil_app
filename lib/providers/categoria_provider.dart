@@ -8,7 +8,7 @@ class CategoriaProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> nuevaCategoria(Categoria categoria) async {
-    var url = Uri.parse('$baseUrl/categories');
+    var url = Uri.parse('$baseUrl/categoria/${sesion.idNegocio}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -35,7 +35,7 @@ class CategoriaProvider {
 
   Future<Resultado> listarCategorias() async {
     listaCategorias.clear();
-    var url = Uri.parse('$baseUrl/listarCat/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/categoria/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -90,7 +90,7 @@ class CategoriaProvider {
   }
 
   Future<Resultado> editaCategoria(Categoria categoria) async {
-    var url = Uri.parse('$baseUrl/categories/${categoria.id}');
+    var url = Uri.parse('$baseUrl/categoria/${categoria.id}');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -116,9 +116,9 @@ class CategoriaProvider {
   }
 
   Future<Resultado> eliminaCategoria(int idCat) async {
-    var url = Uri.parse('$baseUrl/destoyC/$idCat');
+    var url = Uri.parse('$baseUrl/categoria/$idCat');
     try {
-      final resp = await http.put(url, headers: {
+      final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);

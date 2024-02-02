@@ -328,7 +328,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                print("llego");
                 Navigator.pop(context);
                 if (descuentos.tipoValor == 1) {
                   double.parse(CantidadConttroller.text);

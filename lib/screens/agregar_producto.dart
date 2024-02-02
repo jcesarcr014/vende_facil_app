@@ -16,6 +16,7 @@ class AgregaProductoScreen extends StatefulWidget {
 class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final articulosProvider = ArticuloProvider();
   final inventarioProvider = InventarioProvider();
+  final imagenProvider = ImagenProvider();
   final categoriasProvider = CategoriaProvider();
   final controllerProducto = TextEditingController();
   final controllerPrecio = TextEditingController();
@@ -74,8 +75,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         producto.clave = controllerClave.text;
         producto.codigoBarras = controllerCodigoB.text;
         producto.inventario = (_valueInventario) ? 1 : 0;
-        producto.imagen =
-            'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg?20200913095930';
+        producto.imagen = args.imagen;
         producto.apartado = (_valueApartado) ? 1 : 0;
         if (args.id == 0) {
           /*
@@ -261,10 +261,10 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'productos');
-              },
-              icon: const Icon(Icons.arrow_back)),
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'productos');
+                },
+                icon: const Icon(Icons.arrow_back)),
             if (args.id != 0)
               IconButton(
                   onPressed: () {
@@ -419,6 +419,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                           children: [
                             TextButton.icon(
                               onPressed: (() {
+                                print('tomar foto');
                                 fotoProducto(ImageSource.camera);
                               }),
                               icon: const Icon(Icons.camera_alt_outlined),
@@ -426,6 +427,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             ),
                             TextButton.icon(
                               onPressed: (() {
+                                print('galeria');
                                 fotoProducto(ImageSource.gallery);
                               }),
                               icon: const Icon(Icons.photo),
@@ -485,6 +487,12 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     if (pickedFile != null) {
       imagenProducto = File(pickedFile.path);
       _rutaProducto = pickedFile.path;
+      final resultado = await imagenProvider.subirImagen(imagenProducto);
+      if (resultado.status == 1) {
+        args.imagen = resultado.url;
+      } else {
+        mostrarAlerta(context, 'Error', resultado.mensaje!);
+      }
       setState(() {});
     }
   }

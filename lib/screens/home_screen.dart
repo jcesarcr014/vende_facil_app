@@ -232,7 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                if (CantidadConttroller.text.isEmpty || double.parse(CantidadConttroller.text) >= 0) {
+                if (CantidadConttroller.text.isEmpty ||
+                    double.parse(CantidadConttroller.text) >= 0) {
                 } else {
                   _agregaProductoVenta(
                     producto,
