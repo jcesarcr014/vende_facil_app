@@ -1,30 +1,21 @@
 class VentaCabecera {
   int? id;
-  int idCliente;
-  double subtotal;
-  double descuento;
-  double total;
-  String fecha;
-  int idCajero;
-  String tipo;
-  double importeEfectivo;
-  double importeTarjeta;
-  double? saldo;
-  String? fechaUltimaMod;
-
+  int? idCliente;
+  double? subtotal;
+  int? idDescuento;
+  double? descuento;
+  double? total;
+  double? importeEfectivo;
+  double? importeTarjeta;
   VentaCabecera({
     this.id,
     required this.idCliente,
     required this.subtotal,
+    required this.idDescuento,
     required this.descuento,
     required this.total,
-    required this.fecha,
-    required this.idCajero,
-    required this.tipo,
     required this.importeEfectivo,
     required this.importeTarjeta,
-    this.saldo,
-    this.fechaUltimaMod,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,13 +25,8 @@ class VentaCabecera {
       'subtotal': subtotal,
       'descuento': descuento,
       'total': total,
-      'fecha': fecha,
-      'idCajero': idCajero,
-      'tipo': tipo,
       'importeEfectivo': importeEfectivo,
       'importeTarjeta': importeTarjeta,
-      'saldo': saldo,
-      'fechaUltimaMod': fechaUltimaMod,
     };
   }
 }

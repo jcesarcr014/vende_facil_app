@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class VentaDetalleScreen extends StatefulWidget {
@@ -17,6 +18,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   String _valueIdDescuento = '0';
   String _valueIdcliente = '0';
   double descuento = 0.0;
+  int  idcliente=0;
+  int idDescuento=0;
+  final ventaCabecera = VentaCabProvider();
   // ignore: non_constant_identifier_names
   final CantidadConttroller = TextEditingController();
   @override
@@ -153,7 +157,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ]),
                   Center(
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _compra();
+                        },
                         child: SizedBox(
                           height: windowHeight * 0.1,
                           width: windowWidth * 0.6,
@@ -293,6 +299,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           if (descuentoSeleccionado.valorPred == 0) {
             if (descuentoSeleccionado.tipoValor == 1) {
               setState(() {
+                idDescuento = descuentoSeleccionado.id!;
                 descuento = 0.00;
                 descuento = descuentoSeleccionado.valor!;
                 totalVentaTemporal = subTotalItem;
@@ -301,6 +308,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               });
             } else {
               setState(() {
+                idDescuento = descuentoSeleccionado.id!;
                 descuento = 0.00;
                 descuento = descuentoSeleccionado.valor!;
                 totalVentaTemporal = subTotalItem;
@@ -339,14 +347,94 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         if (value == "0") {
           setState(() {});
         } else {
-          //print('valor seleccionado ${listaClientes.firstWhere((cliente) => cliente.id.toString() == value).id}');
+        idcliente = listaClientes.firstWhere((cliente) => cliente.id.toString() == value).id!;
         }
         setState(() {});
       },
     );
   }
 
-  _compra() {}
+  _compra() {
+    VentaCabecera venta = VentaCabecera(
+      idCliente: idcliente,
+      subtotal: subTotalItem,
+      idDescuento: idDescuento,
+      descuento: descuento,
+      total: totalVentaTemporal,
+      importeEfectivo: 0.00,
+      importeTarjeta: 0.00,
+    );
+    ventaCabecera.guardarVenta(venta).then((value) {
+      if (value.status == 1) {
+//        ventaTemporal.clear();
+//        _actualizaTotalTemporal();
+//        _valueIdDescuento = '0';
+//        _valueIdcliente = '0';
+//        idcliente = 0;
+//        idDescuento = 0;
+//        descuento = 0.00;
+//        totalVentaTemporal = 0.00;
+       print(ventaTemporal.length);
+        for (ItemVenta item in ventaTemporal) {
+          VentaDetalle ventaDetalle = VentaDetalle(
+            idProd: item.idArticulo,
+            cantidad: item.cantidad,
+            precio: item.precio,
+            idDesc: idDescuento,
+            cantidadDescuento: descuento,
+            total: item.totalItem,
+            subtotal: item.subTotalItem,
+          );
+          ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
+            if (value.status == 1) {
+              print('Venta detalle guardado');
+            } else {
+              print('Error al guardar venta detalle');
+            }
+          });
+        }
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              content: const Text('Venta realizada con exito'),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Aceptar '),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              content: Text('${value.mensaje}'),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Aceptar '),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
+  }
 
   _alertadescuento(Descuento descuentos) {
     showDialog(
@@ -382,6 +470,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                 if (descuentos.tipoValor == 1) {
                   double.parse(CantidadConttroller.text);
                   setState(() {
+                    idDescuento = descuentos.id!;
                     descuento = 0.00;
                     descuento = double.parse(CantidadConttroller.text);
                     totalVentaTemporal = subTotalItem;
@@ -390,6 +479,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   });
                 } else {
                   setState(() {
+                    idDescuento = descuentos.id!;
                     descuento = 0.00;
                     descuento = double.parse(CantidadConttroller.text);
                     totalVentaTemporal = subTotalItem;
