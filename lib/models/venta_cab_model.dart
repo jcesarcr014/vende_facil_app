@@ -9,15 +9,14 @@ class VentaCabecera {
   double? importeTarjeta;
   VentaCabecera({
     this.id,
-    required this.idCliente,
-    required this.subtotal,
-    required this.idDescuento,
-    required this.descuento,
-    required this.total,
-    required this.importeEfectivo,
-    required this.importeTarjeta,
+    this.idCliente,
+    this.subtotal,
+    this.idDescuento,
+    this.descuento,
+    this.total,
+    this.importeEfectivo,
+    this.importeTarjeta,
   });
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -30,3 +29,4 @@ class VentaCabecera {
     };
   }
 }
+List<VentaCabecera> listaVentaCabecera = [];

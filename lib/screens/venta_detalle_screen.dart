@@ -377,6 +377,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
        print(ventaTemporal.length);
         for (ItemVenta item in ventaTemporal) {
           VentaDetalle ventaDetalle = VentaDetalle(
+            idVenta: value.id,
             idProd: item.idArticulo,
             cantidad: item.cantidad,
             precio: item.precio,

@@ -1,14 +1,16 @@
 class VentaDetalle {
   int? id;
+  int? idVenta;
   int? idProd;
   double? cantidad;
   double? precio;
   int? idDesc;
   double? cantidadDescuento;
   double? total;
-  double?subtotal;
+  double? subtotal;
   VentaDetalle({
     this.id,
+    required this.idVenta,
     required this.idProd,
     required this.cantidad,
     required this.precio,
@@ -27,7 +29,7 @@ class VentaDetalle {
       'idDesc': idDesc,
       'cantidadDescuento': cantidadDescuento,
       'total': total,
-      'subtotal':subtotal,
+      'subtotal': subtotal,
     };
   }
 }

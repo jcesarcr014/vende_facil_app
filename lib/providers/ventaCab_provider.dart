@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/models/venta_cab_model.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 
@@ -15,12 +16,12 @@ class VentaCabProvider {
       }, body: {
         'usuario_id': sesion.idUsuario.toString(),
         'cliente_id': venta.idCliente.toString(),
-        'subtotal': venta.subtotal.toStringAsFixed(2),
+        'subtotal': venta.subtotal!.toStringAsFixed(2),
         'id_descuento': venta.idDescuento.toString(),
-        'descuento': venta.descuento.toStringAsFixed(2),
-        'total': venta.total.toStringAsFixed(2),
-        'pago_efectivo': venta.importeEfectivo.toStringAsFixed(2),
-        'pago_tarjeta': venta.importeTarjeta.toStringAsFixed(2),
+        'descuento': venta.descuento!.toStringAsFixed(2),
+        'total': venta.total!.toStringAsFixed(2),
+        'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
+        'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
       });
       print(resp.statusCode);
       final decodedData = jsonDecode(resp.body);
@@ -41,7 +42,7 @@ class VentaCabProvider {
     return respuesta;
   }
   Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
-    var url = Uri.parse('$baseUrl/ventas-detalle/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/ventas-detalle/${venta.idVenta}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -54,7 +55,6 @@ class VentaCabProvider {
         'total': venta.total,
         'descuento_id': venta.idDesc.toString(),
       });
-      print(resp.statusCode);
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
@@ -82,19 +82,15 @@ class VentaCabProvider {
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
-          VentaCabecera clienteTemp = VentaCabecera();
-          clienteTemp.id = decodedData['data'][x]['id'];
-          clienteTemp.nombre = decodedData['data'][x]['nombre'];
-          clienteTemp.correo = decodedData['data'][x]['email'];
-          clienteTemp.telefono = decodedData['data'][x]['telefono'];
-          clienteTemp.direccion = decodedData['data'][x]['direccion'];
-          clienteTemp.ciudad = decodedData['data'][x]['ciudad'];
-          clienteTemp.estado = decodedData['data'][x]['estado'];
-          clienteTemp.cp = decodedData['data'][x]['cp'];
-          clienteTemp.pais = decodedData['data'][x]['pais'];
-          clienteTemp.codigoCliente = decodedData['data'][x]['codigo_cliente'];
-          clienteTemp.nota = decodedData['data'][x]['nota'];
-          listaClientes.add(clienteTemp);
+          VentaCabecera ventaCabecera =VentaCabecera();
+          ventaCabecera.id = decodedData['data'][x]['id'];
+          ventaCabecera.idCliente = decodedData['data'][x]['idCliente'];
+          ventaCabecera.idDescuento = decodedData['data'][x]['idDescuento'];
+          ventaCabecera.importeEfectivo = decodedData['data'][x]['importeEfectivo'];
+          ventaCabecera.importeTarjeta = decodedData['data'][x]['importeTarjeta'];
+          ventaCabecera.descuento = decodedData['data'][x]['descuento'];
+          ventaCabecera.subtotal = decodedData['data'][x]['subtotal'];
+          listaVentaCabecera.add(ventaCabecera);
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
