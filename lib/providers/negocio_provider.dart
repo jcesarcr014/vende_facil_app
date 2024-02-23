@@ -13,7 +13,6 @@ class NegocioProvider {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
-        'user_id': negocio.idUsuario.toString(),
         'nombre_negocio': negocio.nombreNegocio,
         'direccion': negocio.direccion,
         'rfc': negocio.rfc,

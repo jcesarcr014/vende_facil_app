@@ -1,6 +1,6 @@
 class CuentaSesion {
   int? idUsuario;
-  int? tipoUsuario;
+  String? tipoUsuario;
   int? idNegocio;
   String? token;
 

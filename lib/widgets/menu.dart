@@ -67,7 +67,6 @@ class Menu extends StatelessWidget {
             onTap: () {
               sesion.idUsuario = 0;
               sesion.idNegocio = 0;
-              sesion.tipoUsuario = 0;
               sesion.token = '';
               Navigator.pushReplacementNamed(context, 'login');
             },

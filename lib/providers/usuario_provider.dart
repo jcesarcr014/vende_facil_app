@@ -18,9 +18,14 @@ class UsuarioProvider {
         'password': pass,
       });
       final decodedData = jsonDecode(resp.body);
+
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
+        sesion.token = decodedData['token'];
+        sesion.idUsuario = decodedData['usuario']['id'];
+        sesion.idNegocio = decodedData['empresa_id'];
+        sesion.tipoUsuario = decodedData['tipo_usuario'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = '${decodedData['msg']}: ${decodedData['errors']}';
@@ -44,9 +49,10 @@ class UsuarioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        sesion.token = decodedData['Token'];
+        sesion.token = decodedData['token'];
         sesion.idUsuario = decodedData['usuario']['id'];
         sesion.idNegocio = decodedData['empresa_id'];
+        sesion.tipoUsuario = decodedData['tipo_usuario'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -60,7 +66,7 @@ class UsuarioProvider {
 
   Future<Usuario> consultaUsuario() async {
     Usuario user = Usuario();
-    var url = Uri.parse('$baseUrl/showU/${sesion.idUsuario}');
+    var url = Uri.parse('$baseUrl/usuario/${sesion.idUsuario}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -68,11 +74,11 @@ class UsuarioProvider {
       final decodedData = jsonDecode(resp.body);
 
       if (decodedData['status'] == 1) {
-        user.id = decodedData['data'][0]['id'];
-        user.nombre = decodedData['data'][0]['name'];
-        user.telefono = decodedData['data'][0]['phone'];
-        user.email = decodedData['data'][0]['email'];
-        user.tipoUsuario = decodedData['data'][0]['tipo_usuario'];
+        user.id = decodedData['usuario']['id'];
+        user.nombre = decodedData['usuario']['name'];
+        user.telefono = decodedData['usuario']['phone'];
+        user.email = decodedData['usuario']['email'];
+        user.tipoUsuario = decodedData['tipo_usuario'];
       } else {
         user.id = 0;
         user.nombre = decodedData['msg'];
@@ -85,17 +91,39 @@ class UsuarioProvider {
     return user;
   }
 
-  Future<Resultado> editaUsuario(Usuario user, String pass, int idUser) async {
-    var url = Uri.parse('$baseUrl/update/$idUser');
+  Future<Resultado> editaUsuario(Usuario user, int idUser) async {
+    var url = Uri.parse('$baseUrl/usuario-actualizar/$idUser');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'name': user.nombre,
-        'email': user.email,
         'phone': user.telefono,
-        'tipo_usuario': user.tipoUsuario,
-        'password': pass,
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> editaPassword(
+      String oldPass, String newPass, int idUser) async {
+    var url = Uri.parse('$baseUrl/usuario-cambiar-contrasena/$idUser');
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'old_pass': oldPass,
+        'new_pass': newPass,
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -113,7 +141,7 @@ class UsuarioProvider {
   }
 
   Future<Resultado> eliminaUsuario(int id) async {
-    var url = Uri.parse('$baseUrl/deleteU/$id');
+    var url = Uri.parse('$baseUrl/usuario-eliminar/$id');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
