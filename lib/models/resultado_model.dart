@@ -3,5 +3,6 @@ class Resultado {
   String? mensaje;
   int? id;
   String? url;
-  Resultado({this.status, this.mensaje, this.id, this.url});
+  String? folio;
+  Resultado({this.status, this.mensaje, this.id, this.url, this.folio});
 }

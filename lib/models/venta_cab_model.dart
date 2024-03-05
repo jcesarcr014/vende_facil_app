@@ -17,16 +17,6 @@ class VentaCabecera {
     this.importeEfectivo,
     this.importeTarjeta,
   });
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'idCliente': idCliente,
-      'subtotal': subtotal,
-      'descuento': descuento,
-      'total': total,
-      'importeEfectivo': importeEfectivo,
-      'importeTarjeta': importeTarjeta,
-    };
-  }
 }
+
 List<VentaCabecera> listaVentaCabecera = [];

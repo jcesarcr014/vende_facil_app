@@ -3,7 +3,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 
-class VentaCabProvider {
+class VentasProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
@@ -16,7 +16,7 @@ class VentaCabProvider {
         'usuario_id': sesion.idUsuario.toString(),
         'cliente_id': venta.idCliente.toString(),
         'subtotal': venta.subtotal!.toStringAsFixed(2),
-        // 'id_descuento': venta.idDescuento!.toString(),
+        'id_descuento': venta.idDescuento.toString(),
         'descuento': venta.descuento!.toStringAsFixed(2),
         'total': venta.total!.toStringAsFixed(2),
         'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
@@ -28,6 +28,7 @@ class VentaCabProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['venta_id'];
+        respuesta.folio = decodedData['folio'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

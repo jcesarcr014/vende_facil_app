@@ -9,15 +9,16 @@ class ArticuloProvider {
 
   Future<Resultado> nuevoProducto(Producto producto) async {
     var url = Uri.parse('$baseUrl/productos/${sesion.idNegocio}');
+
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'categoria_id': producto.idCategoria.toString(),
         'nombre': producto.producto,
-        'descripcion': "datos de prueba",
+        'descripcion': producto.descripcion,
         'imagen': producto.imagen,
-        'unidad': producto.unidad,
+        'unidad': producto.unidad.toString(),
         'precio': producto.precio!.toStringAsFixed(2),
         'costo': producto.costo!.toStringAsFixed(2),
         'clave': producto.clave,
@@ -26,6 +27,7 @@ class ArticuloProvider {
         'aplica_apartado': producto.apartado.toString(),
       });
       final decodedData = jsonDecode(resp.body);
+
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -92,6 +94,7 @@ class ArticuloProvider {
       if (decodedData['status'] == 1) {
         productoTemp.id = decodedData['producto']['id'];
         productoTemp.producto = decodedData['producto']['nombre'];
+        productoTemp.descripcion = decodedData['producto']['descripcion'];
         productoTemp.idCategoria = decodedData['producto']['categoria_id'];
         productoTemp.unidad = decodedData['producto']['unidad'];
         productoTemp.precio = double.parse(decodedData['producto']['precio']);
@@ -119,17 +122,17 @@ class ArticuloProvider {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
-        'empresa_id': sesion.idNegocio,
-        'articulo': producto.producto,
-        'categoria_id': producto.idCategoria,
+        'categoria_id': producto.idCategoria.toString(),
+        'nombre': producto.producto,
+        'descripcion': producto.descripcion,
         'imagen': producto.imagen,
-        'unidad': producto.unidad,
-        'precio': producto.precio,
-        'costo': producto.costo,
+        'unidad': producto.unidad.toString(),
+        'precio': producto.precio.toString(),
+        'costo': producto.costo.toString(),
         'clave': producto.clave,
         'codigo_barras': producto.codigoBarras,
-        'inventario': producto.inventario,
-        'apartado': producto.apartado,
+        'aplica_inventario': producto.inventario.toString(),
+        'aplica_apartado': producto.apartado.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

@@ -9,7 +9,7 @@ class DescuentoProvider {
 
   Future<Resultado> nuevoDescuento(Descuento descuento) async {
     var url = Uri.parse('$baseUrl/descuentos/${sesion.idNegocio}');
-    print(url);
+
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -48,9 +48,9 @@ class DescuentoProvider {
           Descuento descTemporal = Descuento();
           descTemporal.id = decodedData['data'][x]['id'];
           descTemporal.nombre = decodedData['data'][x]['nombre'];
-          descTemporal.valor = double.parse(decodedData['data'][x]['valor'].toString());
-          descTemporal.tipoValor =
-              int.parse(decodedData['data'][x]['tipo']);
+          descTemporal.valor =
+              double.parse(decodedData['data'][x]['valor'].toString());
+          descTemporal.tipoValor = int.parse(decodedData['data'][x]['tipo']);
           descTemporal.valorPred =
               int.parse(decodedData['data'][x]['valor_predeterminado']);
           listaDescuentos.add(descTemporal);

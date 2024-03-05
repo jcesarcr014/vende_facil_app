@@ -19,17 +19,4 @@ class VentaDetalle {
     required this.total,
     required this.subtotal,
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'idProd': idProd,
-      'cantidad': cantidad,
-      'precio': precio,
-      'idDesc': idDesc,
-      'cantidadDescuento': cantidadDescuento,
-      'total': total,
-      'subtotal': subtotal,
-    };
-  }
 }

@@ -96,7 +96,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '¿Desea eliminar la categoría  ${args.nombre} ? Esta acción no podrá revertirse.',
+                  '¿Desea eliminar el descuento  ${args.nombre} ? Esta acción no podrá revertirse.',
                 )
               ],
             ),
@@ -152,11 +152,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
     return Scaffold(
         appBar: AppBar(
           actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, 'descuentos');
-                },
-                icon: const Icon(Icons.arrow_back)),
             if (args.id != 0)
               IconButton(
                   onPressed: () {
@@ -192,23 +187,23 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                      SwitchListTile.adaptive(
-                          title: Row(
-                            children: [
-                              const Text('Tipo descuento: '),
-                              Text((_tipoValor) ? '%' : '\$')
-                            ],
-                          ),
-                          value: _tipoValor,
-                          onChanged: (value) {
-                            _tipoValor = value;
-                            setState(() {});
-                          }),
-                      SwitchListTile.adaptive(
+                    SwitchListTile.adaptive(
+                        title: Row(
+                          children: [
+                            const Text('Tipo descuento: '),
+                            Text((_tipoValor) ? '%' : '\$')
+                          ],
+                        ),
+                        value: _tipoValor,
+                        onChanged: (value) {
+                          _tipoValor = value;
+                          setState(() {});
+                        }),
+                    SwitchListTile.adaptive(
                         title: Row(
                           children: [
                             const Text('Tipo de descuento: '),
-                            Text((_tipoValorS) ? 'variable' : 'fijo' )
+                            Text((_tipoValorS) ? 'Variable' : 'Fijo')
                           ],
                         ),
                         value: _tipoValorS,
@@ -217,11 +212,11 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                           setState(() {});
                         }),
                     if (!_tipoValorS)
-                    InputField(
-                        labelText: 'Descuento:',
-                        keyboardType: TextInputType.number,
-                        textCapitalization: TextCapitalization.none,
-                        controller: controllerValor),
+                      InputField(
+                          labelText: 'Descuento:',
+                          keyboardType: TextInputType.number,
+                          textCapitalization: TextCapitalization.none,
+                          controller: controllerValor),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
