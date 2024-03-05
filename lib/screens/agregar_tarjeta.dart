@@ -5,9 +5,8 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
-
 class AgregaTarjetaScreen extends StatefulWidget {
-  const AgregaTarjetaScreen({Key? key}) : super(key: key);
+  const AgregaTarjetaScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -42,6 +41,7 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
     controllerCantidad.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     if (ModalRoute.of(context)?.settings.arguments != null && firstLoad) {
@@ -59,15 +59,12 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'tarjetas');
-              },
-              icon: const Icon(Icons.arrow_back)),
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'tarjetas');
+                },
+                icon: const Icon(Icons.arrow_back)),
             if (args.id != 0)
-              IconButton(
-                  onPressed: () {
-                  },
-                  icon: const Icon(Icons.delete))
+              IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
           ],
         ),
         body: (isLoading)
@@ -102,17 +99,19 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                      InputField(
-                        labelText: 'numero de cuenta',
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: controllerPrecio,),
+                    InputField(
+                      labelText: 'numero de cuenta',
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: controllerPrecio,
+                    ),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
                     InputField(
-                        labelText: 'caducidad',
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: controllerPrecio,),
+                      labelText: 'caducidad',
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: controllerPrecio,
+                    ),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -128,7 +127,7 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                       height: windowHeight * 0.03,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                        onPressed: () {},
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -145,5 +144,4 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                 ),
               ));
   }
-
 }

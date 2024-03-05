@@ -19,6 +19,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final imagenProvider = ImagenProvider();
   final categoriasProvider = CategoriaProvider();
   final controllerProducto = TextEditingController();
+  final controllerDescripcion = TextEditingController();
   final controllerPrecio = TextEditingController();
   final controllercosto = TextEditingController();
   final controllerClave = TextEditingController();
@@ -34,10 +35,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   bool _valuePieza = true;
   bool _valueInventario = true;
   bool _valueApartado = true;
+  bool _valueImagen = false;
+  bool _puedeGurdar = false;
+  bool _cambioImagen = false;
+
   final picker = ImagePicker();
   late File imagenProducto;
   String _rutaProducto = '';
-
+  Producto producto = Producto();
   Producto args = Producto(
     id: 0,
   );
@@ -53,34 +58,81 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return codigo;
   }
 
-  _guardaProducto() {
-    if (controllerProducto.text.isNotEmpty &&
-        controllerPrecio.text.isNotEmpty) {
-      var valor = double.tryParse(controllerCantidad.text);
-      var dato = (_valueInventario) ? 1 : 0;
-      if (valor != null && dato == 1 && valor > 0) {
-        setState(() {
-          textLoading = (args.id == 0)
-              ? 'Agregando nuevo articulo'
-              : 'Actualizando articulo';
-          isLoading = true;
+  _validaciones() {
+    int errores = 0;
+    String mensaje = 'Faltan los siguientes datos: ';
+    if (controllerProducto.text.isEmpty) {
+      mensaje += 'Nombre del producto, ';
+      errores++;
+    }
+    if (controllerDescripcion.text.isEmpty) {
+      mensaje += 'Descripcion, ';
+      errores++;
+    }
+    if (_valueIdCategoria == '0') {
+      mensaje += 'Categoria, ';
+      errores++;
+    }
+    if (controllerPrecio.text.isEmpty) {
+      mensaje += 'Precio, ';
+      errores++;
+    }
+    if (controllercosto.text.isEmpty) {
+      mensaje += 'Costo, ';
+      errores++;
+    }
+    if (_valueInventario && controllerCantidad.text.isEmpty) {
+      mensaje += 'Cantidad, ';
+      errores++;
+    }
+    if (errores > 0) {
+      mensaje = mensaje.substring(0, mensaje.length - 2);
+      mostrarAlerta(context, 'ERROR', mensaje);
+    } else {
+      _puedeGurdar = true;
+    }
+  }
+
+  _guardaProducto() async {
+    _validaciones();
+    if (_puedeGurdar) {
+      setState(() {
+        textLoading = (args.id == 0)
+            ? 'Agregando nuevo articulo'
+            : 'Actualizando articulo';
+        isLoading = true;
+      });
+      if (_rutaProducto != '') {
+        await imagenProvider.subirImagen(imagenProducto).then((value) {
+          if (value.status == 1) {
+            producto.imagen = value.url;
+          } else {
+            setState(() {
+              isLoading = false;
+              textLoading = '';
+            });
+            mostrarAlerta(context, '', value.mensaje!);
+          }
         });
-        Producto producto = Producto();
-        producto.producto = controllerProducto.text;
-        producto.idCategoria = int.parse(_valueIdCategoria); // int
-        producto.unidad = (_valuePieza) ? '1' : '0';
-        producto.precio =
-            double.parse(controllerPrecio.text.replaceAll(',', ''));
-        producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
-        producto.clave = controllerClave.text;
-        producto.codigoBarras = controllerCodigoB.text;
-        producto.inventario = (_valueInventario) ? 1 : 0;
-        producto.imagen = args.imagen;
-        producto.apartado = (_valueApartado) ? 1 : 0;
-        if (args.id == 0) {
-          /*
-              AQUI GUARDAR LA IMAGEN
-        */
+      } else {
+        _valueImagen = true;
+        producto.imagen = '';
+      }
+      producto.producto = controllerProducto.text;
+      producto.descripcion = controllerDescripcion.text;
+      producto.idCategoria = int.parse(_valueIdCategoria);
+      producto.unidad = (_valuePieza) ? '1' : '0';
+      producto.precio = double.parse(controllerPrecio.text.replaceAll(',', ''));
+      producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
+      producto.clave = controllerClave.text;
+      producto.codigoBarras = (controllerCodigoB.text.isEmpty)
+          ? controllerClave.text
+          : controllerCodigoB.text;
+      producto.inventario = (_valueInventario) ? 1 : 0;
+      producto.apartado = (_valueApartado) ? 1 : 0;
+
+      if (args.id == 0) {
+        if (_valueImagen) {
           articulosProvider.nuevoProducto(producto).then((value) {
             if (value.status == 1) {
               if (producto.inventario == 1) {
@@ -114,33 +166,38 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               mostrarAlerta(context, '', value.mensaje!);
             }
           });
-        } else {
-          /*
-          VALIDAR IMAGEN  Y ACTUALIZAR
-          
-        */
-          producto.id = args.id;
-          articulosProvider.editaProducto(producto).then((value) {
-            setState(() {
-              _valueIdCategoria = '0';
-              isLoading = false;
-              textLoading = '';
-            });
+        }
+      } else {
+        if (_cambioImagen) {
+          await imagenProvider.subirImagen(imagenProducto).then((value) {
             if (value.status == 1) {
-              Navigator.pushReplacementNamed(context, 'home');
-              mostrarAlerta(context, '', value.mensaje!);
+              producto.imagen = value.url;
             } else {
+              setState(() {
+                isLoading = false;
+                textLoading = '';
+              });
               mostrarAlerta(context, '', value.mensaje!);
             }
           });
+        } else {
+          producto.imagen = args.imagen;
         }
-      } else {
-        mostrarAlerta(context, 'ERROR',
-            'el valor del inventario  tiene que ser mayor a cero y no puede estar vacio ');
+        producto.id = args.id;
+        articulosProvider.editaProducto(producto).then((value) {
+          setState(() {
+            _valueIdCategoria = '0';
+            isLoading = false;
+            textLoading = '';
+          });
+          if (value.status == 1) {
+            Navigator.pushReplacementNamed(context, 'productos');
+            mostrarAlerta(context, '', value.mensaje!);
+          } else {
+            mostrarAlerta(context, '', value.mensaje!);
+          }
+        });
       }
-    } else {
-      mostrarAlerta(
-          context, 'ERROR', 'Los campos Nombre y Precio son obligatorios');
     }
   }
 
@@ -232,6 +289,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Producto;
       controllerProducto.text = args.producto!;
+      controllerDescripcion.text = args.descripcion!;
       controllerPrecio.text =
           (args.precio != null) ? args.precio!.toStringAsFixed(2) : '0.00';
 
@@ -258,13 +316,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'productos');
-                },
-                icon: const Icon(Icons.arrow_back)),
             if (args.id != 0)
               IconButton(
                   onPressed: () {
@@ -296,6 +349,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                         labelText: 'Producto:',
                         textCapitalization: TextCapitalization.sentences,
                         controller: controllerProducto),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Descripción:',
+                        textCapitalization: TextCapitalization.sentences,
+                        controller: controllerDescripcion),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -387,7 +447,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     ),
                     Row(
                       children: [
-                        (args.imagen == '' || args.imagen == null)
+                        (args.imagen == '' ||
+                                args.imagen == null ||
+                                _cambioImagen)
                             ? Container(
                                 decoration: BoxDecoration(border: Border.all()),
                                 width: windowWidth * 0.5,
@@ -419,7 +481,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                           children: [
                             TextButton.icon(
                               onPressed: (() {
-                                print('tomar foto');
                                 fotoProducto(ImageSource.camera);
                               }),
                               icon: const Icon(Icons.camera_alt_outlined),
@@ -427,7 +488,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             ),
                             TextButton.icon(
                               onPressed: (() {
-                                print('galeria');
                                 fotoProducto(ImageSource.gallery);
                               }),
                               icon: const Icon(Icons.photo),
@@ -487,11 +547,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     if (pickedFile != null) {
       imagenProducto = File(pickedFile.path);
       _rutaProducto = pickedFile.path;
-      final resultado = await imagenProvider.subirImagen(imagenProducto);
-      if (resultado.status == 1) {
-        args.imagen = resultado.url;
-      } else {
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
+      _valueImagen = true;
+      if (args.id != 0) {
+        _cambioImagen = true;
       }
       setState(() {});
     }

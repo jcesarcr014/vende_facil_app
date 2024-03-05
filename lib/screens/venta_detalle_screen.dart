@@ -4,7 +4,7 @@ import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class VentaDetalleScreen extends StatefulWidget {
-  const VentaDetalleScreen({Key? key}) : super(key: key);
+  const VentaDetalleScreen({super.key});
   @override
   State<VentaDetalleScreen> createState() => _VentaDetalleScreenState();
 }
@@ -18,11 +18,11 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   String _valueIdDescuento = '0';
   String _valueIdcliente = '0';
   double descuento = 0.0;
-  int  idcliente=0;
-  int idDescuento=0;
-  final ventaCabecera = VentaCabProvider();
-  // ignore: non_constant_identifier_names
-  final CantidadConttroller = TextEditingController();
+  int idcliente = 0;
+  int idDescuento = 0;
+  final ventaCabecera = VentasProvider();
+
+  final cantidadConttroller = TextEditingController();
   @override
   void initState() {
     _actualizaTotalTemporal();
@@ -37,14 +37,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de venta'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'home');
-              },
-              icon: const Icon(Icons.arrow_back)),
-        ],
+        automaticallyImplyLeading: true,
       ),
       body: (isLoading)
           ? Center(
@@ -137,7 +130,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     SizedBox(
                       width: windowWidth * 0.2,
                       child: const Text(
-                        'selecione el  cliente',
+                        'Selecione el  cliente',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -156,18 +149,34 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     ),
                   ]),
                   Center(
-                    child: ElevatedButton(
-                        onPressed: () {
-                          _compra();
-                        },
-                        child: SizedBox(
-                          height: windowHeight * 0.1,
-                          width: windowWidth * 0.6,
-                          child: Center(
-                            child: Text(
-                                'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
-                          ),
-                        )),
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              _compra();
+                            },
+                            child: SizedBox(
+                              height: windowHeight * 0.1,
+                              width: windowWidth * 0.6,
+                              child: Center(
+                                child: Text(
+                                    'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+                              ),
+                            )),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {},
+                            child: SizedBox(
+                              height: windowHeight * 0.07,
+                              width: windowWidth * 0.6,
+                              child: const Center(
+                                child: Text('Apartar'),
+                              ),
+                            )),
+                      ],
+                    ),
                   ),
                 ],
               )),
@@ -347,7 +356,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         if (value == "0") {
           setState(() {});
         } else {
-        idcliente = listaClientes.firstWhere((cliente) => cliente.id.toString() == value).id!;
+          idcliente = listaClientes
+              .firstWhere((cliente) => cliente.id.toString() == value)
+              .id!;
         }
         setState(() {});
       },
@@ -374,7 +385,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 //        idDescuento = 0;
 //        descuento = 0.00;
 //        totalVentaTemporal = 0.00;
-       print(ventaTemporal.length);
+
         for (ItemVenta item in ventaTemporal) {
           VentaDetalle ventaDetalle = VentaDetalle(
             idVenta: value.id,
@@ -388,10 +399,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           );
           ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
             if (value.status == 1) {
-              print('Venta detalle guardado');
-            } else {
-              print('Error al guardar venta detalle');
-            }
+            } else {}
           });
         }
         showDialog(
@@ -419,8 +427,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           barrierDismissible: false,
           builder: (context) {
             return AlertDialog(
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
               content: Text('${value.mensaje}'),
               actions: [
                 ElevatedButton(
@@ -459,7 +467,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               Flexible(
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
-                  controller: CantidadConttroller,
+                  controller: cantidadConttroller,
                 ),
               ),
             ],
@@ -469,11 +477,11 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               onPressed: () {
                 Navigator.pop(context);
                 if (descuentos.tipoValor == 1) {
-                  double.parse(CantidadConttroller.text);
+                  double.parse(cantidadConttroller.text);
                   setState(() {
                     idDescuento = descuentos.id!;
                     descuento = 0.00;
-                    descuento = double.parse(CantidadConttroller.text);
+                    descuento = double.parse(cantidadConttroller.text);
                     totalVentaTemporal = subTotalItem;
                     descuento = (totalVentaTemporal * descuento) / 100;
                     totalVentaTemporal = totalVentaTemporal - descuento;
@@ -482,7 +490,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   setState(() {
                     idDescuento = descuentos.id!;
                     descuento = 0.00;
-                    descuento = double.parse(CantidadConttroller.text);
+                    descuento = double.parse(cantidadConttroller.text);
                     totalVentaTemporal = subTotalItem;
                     totalVentaTemporal = totalVentaTemporal - descuento;
                   });

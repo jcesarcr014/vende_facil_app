@@ -6,7 +6,7 @@ class InputFieldMoney extends StatefulWidget {
   final TextEditingController? controller;
   final String labelText;
 
-  const InputFieldMoney({Key? key, this.controller, this.labelText = 'Monto'}) : super(key: key);
+  const InputFieldMoney({super.key, this.controller, this.labelText = 'Monto'});
 
   @override
   State<InputFieldMoney> createState() => _InputFieldMoneyState();
@@ -23,7 +23,6 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
     _currencyFormat = NumberFormat.currency(decimalDigits: 2, symbol: '');
   }
 
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -34,7 +33,8 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         hintText: '0.00',
-        labelText: widget.labelText, // Utiliza el valor proporcionado en el constructor
+        labelText: widget
+            .labelText, // Utiliza el valor proporcionado en el constructor
         prefixIcon: const Icon(Icons.attach_money),
       ),
       inputFormatters: [

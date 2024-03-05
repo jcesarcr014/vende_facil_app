@@ -1,17 +1,21 @@
-class AbonoDetalle {
+class Abono {
   int? id;
-  int idMov;
-  double cantidad;
-  String fecha;
+  int? apartadoId;
+  double? saldoAnterior;
+  double? cantidadEfectivo;
+  double? cantidadTarjeta;
+  double? saldoActual;
+  String? fechaAbono;
 
-  AbonoDetalle({
+  Abono({
     this.id,
-    required this.idMov,
-    required this.cantidad,
-    required this.fecha,
+    this.apartadoId,
+    this.saldoAnterior,
+    this.cantidadEfectivo,
+    this.cantidadTarjeta,
+    this.saldoActual,
+    this.fechaAbono,
   });
-
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'idMov': idMov, 'cantidad': cantidad, 'fecha': fecha};
-  }
 }
+
+List<Abono> listaAbonos = [];
