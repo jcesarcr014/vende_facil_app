@@ -37,7 +37,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de venta'),
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+              onPressed: () {
+                initState() {
+                  _actualizaTotalTemporal();
+                }
+
+                Navigator.pushReplacementNamed(context, 'home');
+              },
+              icon: const Icon(Icons.arrow_back)),
+        ],
       ),
       body: (isLoading)
           ? Center(
@@ -377,15 +388,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     );
     ventaCabecera.guardarVenta(venta).then((value) {
       if (value.status == 1) {
-//        ventaTemporal.clear();
-//        _actualizaTotalTemporal();
-//        _valueIdDescuento = '0';
-//        _valueIdcliente = '0';
-//        idcliente = 0;
-//        idDescuento = 0;
-//        descuento = 0.00;
-//        totalVentaTemporal = 0.00;
-
         for (ItemVenta item in ventaTemporal) {
           VentaDetalle ventaDetalle = VentaDetalle(
             idVenta: value.id,
@@ -413,6 +415,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               actions: [
                 ElevatedButton(
                   onPressed: () {
+                    ventaTemporal.clear();
+                    _actualizaTotalTemporal();
+                    _valueIdDescuento = '0';
+                    _valueIdcliente = '0';
+                    idcliente = 0;
+                    idDescuento = 0;
+                    descuento = 0.00;
+                    totalVentaTemporal = 0.00;
                     Navigator.pop(context);
                   },
                   child: const Text('Aceptar '),

@@ -53,6 +53,7 @@ class UsuarioProvider {
         sesion.idUsuario = decodedData['usuario']['id'];
         sesion.idNegocio = decodedData['empresa_id'];
         sesion.tipoUsuario = decodedData['tipo_usuario'];
+        sesion.nombreUsuario = decodedData['usuario']['name'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

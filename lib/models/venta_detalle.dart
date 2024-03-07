@@ -10,13 +10,14 @@ class VentaDetalle {
   double? subtotal;
   VentaDetalle({
     this.id,
-    required this.idVenta,
-    required this.idProd,
-    required this.cantidad,
-    required this.precio,
-    required this.idDesc,
-    required this.cantidadDescuento,
-    required this.total,
-    required this.subtotal,
+    this.idVenta,
+    this.idProd,
+    this.cantidad,
+    this.precio,
+    this.idDesc,
+    this.cantidadDescuento,
+    this.total,
+    this.subtotal,
   });
 }
+List<VentaDetalle> listaVentadetalles = [];
