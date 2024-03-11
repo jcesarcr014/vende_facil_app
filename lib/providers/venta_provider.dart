@@ -183,4 +183,55 @@ class VentasProvider {
     }
     return respuesta;
   }
+
+  Future<Resultado> consultarVentasFecha(
+      String inicio, String finalF) async {
+    listaVentaCabecera.clear();
+    print('la fecha de inicio es $inicio y la fecha final es $finalF');
+    var url =
+        Uri.parse('$baseUrl/ventas-fecha/${sesion.idNegocio}/$inicio/$finalF');
+    try {
+      print('la url es $url');
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          VentaCabecera ventasCabezera = VentaCabecera();
+          ventasCabezera.id = decodedData['data'][x]['id'];
+          ventasCabezera.negocioId = decodedData['data'][x]['negocio_id'];
+          ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
+          ventasCabezera.idCliente = decodedData['data'][x]['cliente_id'];
+          ventasCabezera.folio = decodedData['data'][x]['folio'];
+          ventasCabezera.subtotal =
+              double.parse(decodedData['data'][x]['subtotal']);
+          ventasCabezera.idDescuento = decodedData['data'][x]['descuento_id'];
+          ventasCabezera.descuento =
+              double.parse(decodedData['data'][x]['descuento']);
+          ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
+          ventasCabezera.importeEfectivo =
+              double.parse(decodedData['data'][x]['pago_efectivo']);
+          ventasCabezera.importeTarjeta =
+              double.parse(decodedData['data'][x]['pago_tarjeta']);
+          ventasCabezera.cancelado =
+              int.parse(decodedData['data'][x]['cancelado']);
+          ventasCabezera.fecha_venta = decodedData['data'][x]['fecha_venta'];
+          ventasCabezera.fecha_cancelacion =
+              decodedData['data'][x]['fecha_cancelacion'];
+          listaVentaCabecera.add(ventasCabezera);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      print('error en la peticion $e');
+      respuesta.mensaje = 'Error en la peticion: $e';
+    }
+    return respuesta;
+  }
 }
