@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
@@ -19,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final clienteProvider = ClienteProvider();
   // ignore: non_constant_identifier_names
   final CantidadConttroller = TextEditingController();
+  final TotalConttroller = TextEditingController();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -135,7 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              _alertadescuento();
+            },
             child: SizedBox(
               height: windowHeight * 0.1,
               width: windowWidth * 0.4,
@@ -390,5 +395,121 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {}
       _actualizaTotalTemporal();
     }
+  }
+    _alertadescuento() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content:
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [Container(
+                width: windowWidth * 0.5,
+                child: Row(
+                  children: [
+                    const Flexible(child:Text(
+                      'Total :',
+                      style: TextStyle(color: Colors.black),
+                    ),),
+                    SizedBox(
+                      width: windowWidth * 0.05,
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: TotalConttroller,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    )
+
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: windowHeight * 0.05,
+              ),
+              Container(
+                width: windowWidth * 0.5,
+                child: Row(
+                  children: [
+                    const Flexible(child:Text(
+                      'Efectivo :',
+                      style: TextStyle(color: Colors.black),
+                    ),),
+                    SizedBox(
+                      width: windowWidth * 0.05,
+                    ),
+                    Flexible(child:InputField(
+                      textCapitalization: TextCapitalization.words,
+                      controller: TotalConttroller,
+                    ),),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: windowHeight * 0.05,
+              ),
+              Container(
+                width: windowWidth * 0.5,
+                child: Row(
+                  children: [
+                    const Flexible(child:Text(
+                      'Tarjeta :',
+                      style: TextStyle(color: Colors.black),
+                    ),),
+                    SizedBox(
+                      width: windowWidth * 0.05,
+                    ),
+                    Flexible(child:InputField(
+                      textCapitalization: TextCapitalization.words,
+                      controller: TotalConttroller,
+                    ),)
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: windowHeight * 0.05,
+              ),
+              Container(
+                width: windowWidth * 0.5,
+                child: Row(
+                  children: [
+                      const Flexible(child: Text('Cambio :',style: TextStyle(color: Colors.black),) ),
+                    SizedBox(
+                      width: windowWidth * 0.05,
+                    ),
+                    Flexible(child:  InputField(
+                      textCapitalization: TextCapitalization.words,
+                      controller: TotalConttroller,
+                    ),)
+                  ],
+                ),
+              ),],),
+            
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Aceptar '),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
