@@ -23,6 +23,11 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   final ventaCabecera = VentasProvider();
 
   final cantidadConttroller = TextEditingController();
+  final totalConttroller = TextEditingController();
+  final efectivoConttroller = TextEditingController();
+  final tarjetaConttroller = TextEditingController();
+  final cambioConttroller = TextEditingController();
+  
   @override
   void initState() {
     _actualizaTotalTemporal();
@@ -164,7 +169,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              _compra();
+                              totalConttroller.text =totalVentaTemporal.toStringAsFixed(2);
+                              _alertaVenta();
                             },
                             child: SizedBox(
                               height: windowHeight * 0.1,
@@ -178,7 +184,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                           height: 30,
                         ),
                         ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _alertaApartados();
+                            },
                             child: SizedBox(
                               height: windowHeight * 0.07,
                               width: windowWidth * 0.6,
@@ -383,8 +391,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       idDescuento: idDescuento,
       descuento: descuento,
       total: totalVentaTemporal,
-      importeEfectivo: 0.00,
-      importeTarjeta: 0.00,
+      importeEfectivo: efectivoConttroller.text.isNotEmpty
+          ? double.parse(efectivoConttroller.text)
+          : 0.00,
+      importeTarjeta: tarjetaConttroller.text.isNotEmpty
+          ? double.parse(tarjetaConttroller.text)
+          : 0.00,
     );
     ventaCabecera.guardarVenta(venta).then((value) {
       if (value.status == 1) {
@@ -415,6 +427,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               actions: [
                 ElevatedButton(
                   onPressed: () {
+                    totalConttroller.clear();
+                    efectivoConttroller.clear();
+                    tarjetaConttroller.clear();
+                    cambioConttroller.clear();
                     ventaTemporal.clear();
                     _actualizaTotalTemporal();
                     _valueIdDescuento = '0';
@@ -517,4 +533,329 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       },
     );
   }
+
+_alertaVenta() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Total :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: totalConttroller,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: windowWidth * 0.9,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Efectivo :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: efectivoConttroller,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          // Llama a la función que deseas ejecutar cuando cambie el valor del campo de entrada de efectivo
+                          tuFuncion();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: windowWidth * 0.9,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Tarjeta :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      child: InputField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: tarjetaConttroller,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: windowWidth * 0.9,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Cambio :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: cambioConttroller,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              _compra();
+              Navigator.pop(context);
+            },
+            child: const Text('Aceptar '),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+        ],
+      );
+    },
+  );
+}
+_alertaApartados() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: windowHeight * 0.05),
+                            Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Apartado :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: totalConttroller,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Total :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: totalConttroller,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: windowWidth * 0.9,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Efectivo :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: efectivoConttroller,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          tuFuncion();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: windowWidth * 0.9,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Tarjeta :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      child: InputFieldMoney(
+                        controller: tarjetaConttroller,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: windowHeight * 0.05),
+              Container(
+                width: windowWidth * 0.9,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      child: Text(
+                        'Cambio :',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.05),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.words,
+                        controller: cambioConttroller,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              _compra();
+              Navigator.pop(context);
+            },
+            child: const Text('Aceptar '),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+        ],
+      );
+    },
+  );
+}
+tuFuncion() {
+  try {
+    double total = double.parse(totalConttroller.text);
+    double efectivo = double.parse(efectivoConttroller.text);
+    var cambio = efectivo - total;
+    cambioConttroller.text = cambio.toStringAsFixed(2);
+    setState(() {
+      // Actualiza el estado
+    });
+  } catch (e) {
+    print("Error: $e");
+  }
+}
 }

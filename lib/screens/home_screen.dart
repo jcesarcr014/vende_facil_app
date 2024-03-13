@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,9 +21,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final categoriasProvider = CategoriaProvider();
   final descuentoProvider = DescuentoProvider();
   final clienteProvider = ClienteProvider();
-  // ignore: non_constant_identifier_names
   final CantidadConttroller = TextEditingController();
   final TotalConttroller = TextEditingController();
+  final EfectivoConttroller = TextEditingController();
+  final TarjetaConttroller = TextEditingController();
+  final CambioConttroller = TextEditingController();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -139,7 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           ElevatedButton(
             onPressed: () {
-              _alertadescuento();
+                Navigator.pushNamed(context, 'detalle-venta');
+                setState(() {});
             },
             child: SizedBox(
               height: windowHeight * 0.1,
@@ -153,15 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: windowWidth * 0.05,
           ),
-          OutlinedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'detalle-venta');
-                setState(() {});
-              },
-              child: SizedBox(
-                  height: windowHeight * 0.1,
-                  width: windowWidth * 0.25,
-                  child: const Center(child: Text('Detalle'))))
         ],
       ),
       const Divider(),
@@ -396,120 +392,5 @@ class _HomeScreenState extends State<HomeScreen> {
       _actualizaTotalTemporal();
     }
   }
-    _alertadescuento() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content:
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Container(
-                width: windowWidth * 0.5,
-                child: Row(
-                  children: [
-                    const Flexible(child:Text(
-                      'Total :',
-                      style: TextStyle(color: Colors.black),
-                    ),),
-                    SizedBox(
-                      width: windowWidth * 0.05,
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: TextFormField(
-                        textCapitalization: TextCapitalization.words,
-                        controller: TotalConttroller,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 1.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                    )
 
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: windowHeight * 0.05,
-              ),
-              Container(
-                width: windowWidth * 0.5,
-                child: Row(
-                  children: [
-                    const Flexible(child:Text(
-                      'Efectivo :',
-                      style: TextStyle(color: Colors.black),
-                    ),),
-                    SizedBox(
-                      width: windowWidth * 0.05,
-                    ),
-                    Flexible(child:InputField(
-                      textCapitalization: TextCapitalization.words,
-                      controller: TotalConttroller,
-                    ),),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: windowHeight * 0.05,
-              ),
-              Container(
-                width: windowWidth * 0.5,
-                child: Row(
-                  children: [
-                    const Flexible(child:Text(
-                      'Tarjeta :',
-                      style: TextStyle(color: Colors.black),
-                    ),),
-                    SizedBox(
-                      width: windowWidth * 0.05,
-                    ),
-                    Flexible(child:InputField(
-                      textCapitalization: TextCapitalization.words,
-                      controller: TotalConttroller,
-                    ),)
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: windowHeight * 0.05,
-              ),
-              Container(
-                width: windowWidth * 0.5,
-                child: Row(
-                  children: [
-                      const Flexible(child: Text('Cambio :',style: TextStyle(color: Colors.black),) ),
-                    SizedBox(
-                      width: windowWidth * 0.05,
-                    ),
-                    Flexible(child:  InputField(
-                      textCapitalization: TextCapitalization.words,
-                      controller: TotalConttroller,
-                    ),)
-                  ],
-                ),
-              ),],),
-            
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Aceptar '),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:vende_facil/app_theme.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -28,6 +29,7 @@ class VentasProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['venta_id'];
+        print(respuesta.id);
         respuesta.folio = decodedData['folio'];
       } else {
         respuesta.status = 0;
@@ -150,7 +152,6 @@ class VentasProvider {
         ventasCabezera.fecha_cancelacion =
             decodedData['venta']['fecha_cancelacion'];
         listaVentaCabecera.add(ventasCabezera);
-        print("la venta en el provider es ${listaVentaCabecera.length}");
         for (int x = 0; x < decodedData['detalles'].length; x++) {
           VentaDetalle ventasDetalle = VentaDetalle();
           ventasDetalle.id = decodedData['detalles'][x]['id'];
@@ -172,13 +173,11 @@ class VentasProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
       } else {
-        print('error en la peticion');
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
       }
     } catch (e) {
       respuesta.status = 0;
-      print('error en la peticion $e');
       respuesta.mensaje = 'Error en la peticion: $e';
     }
     return respuesta;
@@ -187,11 +186,9 @@ class VentasProvider {
   Future<Resultado> consultarVentasFecha(
       String inicio, String finalF) async {
     listaVentaCabecera.clear();
-    print('la fecha de inicio es $inicio y la fecha final es $finalF');
     var url =
         Uri.parse('$baseUrl/ventas-fecha/${sesion.idNegocio}/$inicio/$finalF');
     try {
-      print('la url es $url');
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
@@ -229,7 +226,6 @@ class VentasProvider {
       }
     } catch (e) {
       respuesta.status = 0;
-      print('error en la peticion $e');
       respuesta.mensaje = 'Error en la peticion: $e';
     }
     return respuesta;

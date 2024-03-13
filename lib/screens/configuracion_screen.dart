@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ConfigScreen extends StatelessWidget {
@@ -49,6 +50,34 @@ class ConfigScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: const Text('Edita tus datos personales'),
+                trailing: const Icon(Icons.arrow_right),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(CupertinoIcons.tag),
+                title: const Text(
+                  'Apartdados',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: const Text('Edita importe minimo requerido para apartar'),
+                trailing: const Icon(Icons.arrow_right),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(CupertinoIcons.ticket),
+                title: const Text(
+                  'Ticket',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: const Text('Generacion de ticket de compra'),
                 trailing: const Icon(Icons.arrow_right),
                 onTap: () {},
               )
