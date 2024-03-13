@@ -51,7 +51,9 @@ class ConfigScreen extends StatelessWidget {
                 ),
                 subtitle: const Text('Edita tus datos personales'),
                 trailing: const Icon(Icons.arrow_right),
-                onTap: () {},
+                onTap: () {
+                Navigator.pushNamed(context, 'perfil');
+                },
               ),
               ListTile(
                 leading: const Icon(CupertinoIcons.tag),
