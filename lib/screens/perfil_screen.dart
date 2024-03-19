@@ -78,12 +78,14 @@ class PerfilScreen extends StatelessWidget {
                           children: [
                             SizedBox(height: windowHeight * 0.05),
                             Container(
-                              width: MediaQuery.of(context).size.width,
+
+                              width: MediaQuery.of(context).size.width*1,color: Colors.yellow,
+
                               child: Row(
                                 children: [
                                   const Flexible(
                                     child: Text(
-                                      'contrasena vieja :',
+                                      'Contraseña vieja',
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ),
@@ -116,7 +118,7 @@ class PerfilScreen extends StatelessWidget {
                                 children: [
                                   const Flexible(
                                     child: Text(
-                                      'contrasena nueva :',
+                                      'Contraseña nueva',
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ),
@@ -153,7 +155,6 @@ class PerfilScreen extends StatelessWidget {
                                 .editaPassword(oldPassword.text,
                                     newPassword.text, sesion.idUsuario!)
                                 .then((value) {
-                                  print(value.status);
                               if (value.status == 1) {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(const SnackBar(

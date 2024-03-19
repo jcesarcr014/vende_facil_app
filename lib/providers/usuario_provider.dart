@@ -132,19 +132,14 @@ class UsuarioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        print(decodedData['msg']);
-        print(decodedData['status']);
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
-        print(decodedData['msg']);
-        print(decodedData['status']);
       }
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
-      print(respuesta.mensaje);
-      print(respuesta.status);
+
     }
     return respuesta;
   }

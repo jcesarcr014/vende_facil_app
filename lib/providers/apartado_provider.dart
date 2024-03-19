@@ -23,14 +23,16 @@ class ApartadoProvider {
         'pago_efectivo': apartado.pagoEfectivo!.toStringAsFixed(2),
         'pago_tarjeta': apartado.pagoTarjeta!.toStringAsFixed(2),
         'saldo_pendiente': apartado.saldoPendiente!.toStringAsFixed(2),
-        'fecha_apartado': apartado.fechaApartado,
-        'fecha_vencimiento': apartado.fechaVencimiento,
+        'fecha_apartado': apartado.fechaApartado.toString(),
+        'fecha_vencimiento': apartado.fechaVencimiento.toString(),
+        'fecha_pago_total': apartado.fechaApartado.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        respuesta.id = decodedData['venta_id'];
+        respuesta.id = decodedData['apartado_id'];
+        print('id apartado ${respuesta.id}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -38,24 +40,27 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
+      print('Error en la peticion. $e');
     }
 
     return respuesta;
   }
 
   Future<Resultado> guardaApartadoDetalle(
-      ApartadoDetalle apartado, int idApartado) async {
-    var url = Uri.parse('$baseUrl/apartado-detalle/$idApartado');
+    ApartadoDetalle apartado,
+  ) async {
+    print(apartado.apartadoId);
+    var url = Uri.parse('$baseUrl/apartado-detalle/${apartado.apartadoId}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'producto_id': apartado.productoId.toString(),
         'cantidad': apartado.cantidad.toString(),
-        'precio': apartado.precio,
-        'subtotal': apartado.subtotal,
-        'descuento': apartado.descuento,
-        'total': apartado.total,
+        'precio': apartado.precio.toString(),
+        'subtotal': apartado.subtotal.toString(),
+        'descuento': apartado.descuento.toString(),
+        'total': apartado.total.toString(),
         'descuento_id': apartado.descuentoId.toString(),
       });
 
@@ -70,6 +75,7 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
+      print('Error en la peticion. $e');
     }
 
     return respuesta;
