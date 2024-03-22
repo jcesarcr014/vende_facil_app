@@ -38,7 +38,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'folio: ${ listaApartados[0].folio}',
+                    'folio: ${ listaApartados2[0].folio}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
@@ -48,17 +48,17 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'fecha de Abono: ${listaApartados[0].fechaApartado}',
+                    'fecha de Abono: ${listaApartados2[0].fechaApartado}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Saldo Pediente: ${ listaApartados[0].saldoPendiente}',
+                    'Saldo Pediente: ${ listaApartados2[0].saldoPendiente}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Descuento: ${ listaApartados[0].descuento}',
+                    'Descuento: ${ listaApartados2[0].descuento}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),

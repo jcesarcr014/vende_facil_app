@@ -48,3 +48,4 @@ class ApartadoCabecera {
 
 ApartadoCabecera apartadoSeleccionado = ApartadoCabecera();
 List<ApartadoCabecera> listaApartados = [];
+List<ApartadoCabecera> listaApartados2 = [];

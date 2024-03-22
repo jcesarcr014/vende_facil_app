@@ -174,7 +174,7 @@ class ApartadoProvider {
   Future<Resultado> detallesApartado(int idApartado) async {
     print('id apartado ${idApartado}');
     var url = Uri.parse('$baseUrl/apartado-detalle/${idApartado}');
-    listaApartados.clear();
+    listaApartados2.clear();
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -188,7 +188,6 @@ class ApartadoProvider {
         apartadoSeleccionado.clienteId = decodedData['apartado']['cliente_id'];
         apartadoSeleccionado.folio = decodedData['apartado']['folio'];
         apartadoSeleccionado.subtotal = double.parse(decodedData['apartado']['subtotal']);
-
         apartadoSeleccionado.descuentoId =decodedData['apartado']['descuento_id'];
         apartadoSeleccionado.descuento = double.parse(decodedData['apartado']['descuento']);
         apartadoSeleccionado.total = double.parse(decodedData['apartado']['total']);
@@ -200,11 +199,11 @@ class ApartadoProvider {
         apartadoSeleccionado.fechaVencimiento =decodedData['apartado']['fecha_vencimiento'];
         apartadoSeleccionado.fechaPagoTotal =decodedData['apartado']['fecha_pago_total'];
         apartadoSeleccionado.fechaEntrega =decodedData['apartado']['fecha_entrega'];
-        apartadoSeleccionado.cancelado = decodedData['apartado']['cancelado'];
-        apartadoSeleccionado.pagado = decodedData['apartado']['pagado'];
-        apartadoSeleccionado.entregado = decodedData['apartado']['entregado'];
+        apartadoSeleccionado.cancelado = int.parse(decodedData['apartado']['cancelado']);
+        apartadoSeleccionado.pagado = int.parse(decodedData['apartado']['pagado']);
+        apartadoSeleccionado.entregado = int.parse(decodedData['apartado']['entregado']);
         apartadoSeleccionado.fechaCancelacion =decodedData['apartado']['fecha_cancelacion'];
-        listaApartados.add(apartadoSeleccionado);
+        listaApartados2.add(apartadoSeleccionado);
 
         detalleApartado.clear();
         for (int x = 0; x < decodedData['detalle'].length; x++) {
