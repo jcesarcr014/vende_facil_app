@@ -60,8 +60,23 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
                   subtitle: Text(listaApartados[index].fechaVencimiento.toString()),
                   trailing: Text(listaApartados[index].total.toString()),
                   onTap: () {
-                    // Navigator.pushNamed(context, 'detalle_venta',
-                    //     arguments: listaVentas[index]);
+                    apartados.detallesApartado(listaApartados[index].id!).then((value) {
+                      setState(() {
+                        textLoading = '';
+                        isLoading = false;
+                      });
+                      if (value.id != 0) {
+                              Navigator.pushNamed(context, 'abono_detalle',
+                                  arguments: value);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(value.mensaje!),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                    });
                   },
                 );
               },

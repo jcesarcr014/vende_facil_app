@@ -128,22 +128,34 @@ class ApartadoProvider {
           apartado.usuarioId = decodedData['apartados'][x]['usuario_id'];
           apartado.clienteId = decodedData['apartados'][x]['cliente_id'];
           apartado.folio = decodedData['apartados'][x]['folio'];
-          apartado.subtotal =double.parse(decodedData['apartados'][x]['subtotal']);
+          apartado.subtotal =
+              double.parse(decodedData['apartados'][x]['subtotal']);
           apartado.descuentoId = decodedData['apartados'][x]['descuento_id'];
-          apartado.descuento =double.parse(decodedData['apartados'][x]['descuento']);
+          apartado.descuento =
+              double.parse(decodedData['apartados'][x]['descuento']);
           apartado.total = double.parse(decodedData['apartados'][x]['total']);
-          apartado.anticipo =double.parse(decodedData['apartados'][x]['anticipo']);
-          apartado.pagoEfectivo =double.parse(decodedData['apartados'][x]['pago_efectivo']);
-          apartado.pagoTarjeta =double.parse(decodedData['apartados'][x]['pago_tarjeta']);
-          apartado.saldoPendiente = double.parse(decodedData['apartados'][x]['saldo_pendiente']);
-          apartado.fechaApartado =decodedData['apartados'][x]['fecha_apartado'];
-          apartado.fechaVencimiento =decodedData['apartados'][x]['fecha_vencimiento'];
-          apartado.fechaPagoTotal =decodedData['apartados'][x]['fecha_pago_total'];
+          apartado.anticipo =
+              double.parse(decodedData['apartados'][x]['anticipo']);
+          apartado.pagoEfectivo =
+              double.parse(decodedData['apartados'][x]['pago_efectivo']);
+          apartado.pagoTarjeta =
+              double.parse(decodedData['apartados'][x]['pago_tarjeta']);
+          apartado.saldoPendiente =
+              double.parse(decodedData['apartados'][x]['saldo_pendiente']);
+          apartado.fechaApartado =
+              decodedData['apartados'][x]['fecha_apartado'];
+          apartado.fechaVencimiento =
+              decodedData['apartados'][x]['fecha_vencimiento'];
+          apartado.fechaPagoTotal =
+              decodedData['apartados'][x]['fecha_pago_total'];
           apartado.fechaEntrega = decodedData['apartados'][x]['fecha_entrega'];
-          apartado.cancelado = int.parse(decodedData['apartados'][x]['cancelado']);
+          apartado.cancelado =
+              int.parse(decodedData['apartados'][x]['cancelado']);
           apartado.pagado = int.parse(decodedData['apartados'][x]['pagado']);
-          apartado.entregado = int.parse(decodedData['apartados'][x]['entregado']);
-          apartado.fechaCancelacion =decodedData['apartados'][x]['fecha_cancelacion'];
+          apartado.entregado =
+              int.parse(decodedData['apartados'][x]['entregado']);
+          apartado.fechaCancelacion =
+              decodedData['apartados'][x]['fecha_cancelacion'];
           listaApartados.add(apartado);
         }
       } else {
@@ -160,7 +172,9 @@ class ApartadoProvider {
   }
 
   Future<Resultado> detallesApartado(int idApartado) async {
-    var url = Uri.parse('$baseUrl/apartado-detalle/${sesion.idNegocio}');
+    print('id apartado ${idApartado}');
+    var url = Uri.parse('$baseUrl/apartado-detalle/${idApartado}');
+    listaApartados.clear();
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -169,36 +183,28 @@ class ApartadoProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        apartadoSeleccionado.id = decodedData['apartado']['id'];
+        apartadoSeleccionado.id =  decodedData['apartado']['id'];
         apartadoSeleccionado.usuarioId = decodedData['apartado']['usuario_id'];
         apartadoSeleccionado.clienteId = decodedData['apartado']['cliente_id'];
         apartadoSeleccionado.folio = decodedData['apartado']['folio'];
-        apartadoSeleccionado.subtotal = decodedData['apartado']['subtotal'];
+        apartadoSeleccionado.subtotal = double.parse(decodedData['apartado']['subtotal']);
 
-        apartadoSeleccionado.descuentoId =
-            decodedData['apartado']['descuento_id'];
-        apartadoSeleccionado.descuento = decodedData['apartado']['descuento'];
-        apartadoSeleccionado.total = decodedData['apartado']['total'];
-        apartadoSeleccionado.anticipo = decodedData['apartado']['anticipo'];
-        apartadoSeleccionado.pagoEfectivo =
-            decodedData['apartado']['pago_efectivo'];
-        apartadoSeleccionado.pagoTarjeta =
-            decodedData['apartado']['pago_tarjeta'];
-        apartadoSeleccionado.saldoPendiente =
-            decodedData['apartado']['saldo_pendiente'];
-        apartadoSeleccionado.fechaApartado =
-            decodedData['apartado']['fecha_apartado'];
-        apartadoSeleccionado.fechaVencimiento =
-            decodedData['apartado']['fecha_vencimiento'];
-        apartadoSeleccionado.fechaPagoTotal =
-            decodedData['apartado']['fecha_pago_total'];
-        apartadoSeleccionado.fechaEntrega =
-            decodedData['apartado']['fecha_entrega'];
+        apartadoSeleccionado.descuentoId =decodedData['apartado']['descuento_id'];
+        apartadoSeleccionado.descuento = double.parse(decodedData['apartado']['descuento']);
+        apartadoSeleccionado.total = double.parse(decodedData['apartado']['total']);
+        apartadoSeleccionado.anticipo = double.parse(decodedData['apartado']['anticipo']);
+        apartadoSeleccionado.pagoEfectivo = double.parse(decodedData['apartado']['pago_efectivo']);
+        apartadoSeleccionado.pagoTarjeta =  double.parse(decodedData['apartado']['pago_tarjeta']);
+        apartadoSeleccionado.saldoPendiente = double.parse(decodedData['apartado']['saldo_pendiente']);
+        apartadoSeleccionado.fechaApartado =decodedData['apartado']['fecha_apartado'];
+        apartadoSeleccionado.fechaVencimiento =decodedData['apartado']['fecha_vencimiento'];
+        apartadoSeleccionado.fechaPagoTotal =decodedData['apartado']['fecha_pago_total'];
+        apartadoSeleccionado.fechaEntrega =decodedData['apartado']['fecha_entrega'];
         apartadoSeleccionado.cancelado = decodedData['apartado']['cancelado'];
         apartadoSeleccionado.pagado = decodedData['apartado']['pagado'];
         apartadoSeleccionado.entregado = decodedData['apartado']['entregado'];
-        apartadoSeleccionado.fechaCancelacion =
-            decodedData['apartado']['fecha_cancelacion'];
+        apartadoSeleccionado.fechaCancelacion =decodedData['apartado']['fecha_cancelacion'];
+        listaApartados.add(apartadoSeleccionado);
 
         detalleApartado.clear();
         for (int x = 0; x < decodedData['detalle'].length; x++) {
@@ -206,11 +212,11 @@ class ApartadoProvider {
           detalleTemp.id = decodedData['detalle'][x]['id'];
           detalleTemp.apartadoId = decodedData['detalle'][x]['apartado_id'];
           detalleTemp.productoId = decodedData['detalle'][x]['producto_id'];
-          detalleTemp.cantidad = decodedData['detalle'][x]['cantidad'];
-          detalleTemp.precio = decodedData['detalle'][x]['precio'];
-          detalleTemp.subtotal = decodedData['detalle'][x]['subtotal'];
-          detalleTemp.descuento = decodedData['detalle'][x]['descuento'];
-          detalleTemp.total = decodedData['detalle'][x]['total'];
+          detalleTemp.cantidad = double.parse(decodedData['detalle'][x]['cantidad']);
+          detalleTemp.precio = double.parse(decodedData['detalle'][x]['precio']);
+          detalleTemp.subtotal = double.parse(decodedData['detalle'][x]['subtotal']);
+          detalleTemp.descuento =double.parse(decodedData['detalle'][x]['descuento']);
+          detalleTemp.total = double.parse(decodedData['detalle'][x]['total']);
           detalleTemp.descuentoId = decodedData['detalle'][x]['descuento_id'];
           detalleApartado.add(detalleTemp);
         }
@@ -236,6 +242,7 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
+      print('Error en la peticion. $e');
     }
 
     return respuesta;
