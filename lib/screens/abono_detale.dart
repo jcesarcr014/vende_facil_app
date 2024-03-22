@@ -87,7 +87,9 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
           : Expanded(
   child: SingleChildScrollView(
     scrollDirection: Axis.horizontal,
-    child: SizedBox(
+    child:Column(
+      children: [
+        SizedBox(
       width: MediaQuery.of(context).size.width,
       child: DataTable(
         columnSpacing: 20, // Espacio entre columnas
@@ -105,7 +107,53 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
         ])).toList(),
       ),
     ),
+    SizedBox(
+      height: windowHeight * 0.1,
+    ),
+              const Center(
+            child: Text(
+              'Abonos',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+    SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: DataTable(
+        columnSpacing: 20, // Espacio entre columnas
+        columns: const [
+          DataColumn(label: Text('Fecha Abono')),
+          DataColumn(label: Text('Saldo Actual')),
+          DataColumn(label: Text('Saldo Anterior')),
+        ],
+        rows: listaAbonos.map((detalle) => DataRow(cells: [
+          DataCell(Text(detalle.fechaAbono.toString())),
+          DataCell(Text(detalle.saldoActual.toString())),
+          DataCell(Text(detalle.saldoAnterior.toString())),
+        ])).toList(),
+      ),
+    ),
+    SizedBox(
+      height: windowHeight * 0.1,
+    ),
+    Center(
+            child: ElevatedButton(
+            onPressed: () {
+
+            },
+            child: SizedBox(
+              height: windowHeight * 0.1,
+              width: windowWidth * 0.4,
+              child: const Center(
+                child:
+                    Text('Agregar Abono', style: TextStyle(fontSize: 16)),
+              ),
+            ),
+          ),
+          ),
+      ],
+    )
   ),
+  
 ),
 
         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/screens/search_screen_abonos.dart';
 
 class AgregarAbonoScreen extends StatefulWidget {
   const AgregarAbonoScreen({super.key});
@@ -42,9 +43,15 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
            IconButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, 'menu');
+              
             },
             icon: const Icon(Icons.menu),
           ),
+            IconButton(
+              onPressed: () {
+                showSearch(context: context, delegate: SearchAbonos());
+              },
+            icon:  Icon(Icons.search)),
         ],
       ),
       // drawer: const Menu(),
@@ -56,7 +63,7 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
               itemCount: listaApartados.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  title: Text(listaApartados[index].fechaApartado.toString()),
+                  title: Text(listaApartados[index].folio.toString()),
                   subtitle: Text(listaApartados[index].fechaVencimiento.toString()),
                   trailing: Text(listaApartados[index].total.toString()),
                   onTap: () {

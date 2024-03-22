@@ -172,7 +172,6 @@ class ApartadoProvider {
   }
 
   Future<Resultado> detallesApartado(int idApartado) async {
-    print('id apartado ${idApartado}');
     var url = Uri.parse('$baseUrl/apartado-detalle/${idApartado}');
     listaApartados2.clear();
     try {
