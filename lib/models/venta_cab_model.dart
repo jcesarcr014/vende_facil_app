@@ -14,6 +14,7 @@ class VentaCabecera {
   int? cancelado;
   String? fecha_venta;
   String? fecha_cancelacion;
+  String? nombreCliente;
   VentaCabecera({
     this.id,
     this.negocioId,
@@ -29,7 +30,9 @@ class VentaCabecera {
     this.cancelado,
     this.fecha_venta,
     this.fecha_cancelacion,
+    this.nombreCliente,
   });
 }
 
 List<VentaCabecera> listaVentaCabecera = [];
+List<VentaCabecera> listaVentaCabecera2 = [];

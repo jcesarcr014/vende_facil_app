@@ -38,27 +38,27 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'folio: ${listaVentaCabecera[0].folio}',
+                    'folio: ${listaVentaCabecera2[0].folio}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'cliente: ${sesion.nombreUsuario}',
+                    'cliente: ${listaVentaCabecera2[0].nombreCliente}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'fecha de compra: ${listaVentaCabecera[0].fecha_venta}',
+                    'fecha de compra: ${listaVentaCabecera2[0].fecha_venta}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Total: ${listaVentaCabecera[0].total}',
+                    'Total: ${listaVentaCabecera2[0].total}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Descuento: ${listaVentaCabecera[0].descuento}',
+                    'Descuento: ${listaVentaCabecera2[0].descuento}',
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.bold),
                   ),
@@ -98,7 +98,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
           DataColumn(label: Text('Total')),
         ],
         rows: listaVentadetalles.map((detalle) => DataRow(cells: [
-          DataCell(Text(detalle.idProd.toString())),
+          DataCell(Text(detalle.nombreProducto.toString())),
           DataCell(Text(detalle.cantidad.toString())),
           DataCell(Text(detalle.cantidadDescuento.toString())),
           DataCell(Text(detalle.total.toString())),

@@ -11,8 +11,7 @@ class AgregarAbonoScreen extends StatefulWidget {
 }
 
 class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
-
-  final apartados =  ApartadoProvider();
+  final apartados = ApartadoProvider();
 
   bool isLoading = false;
   String textLoading = '';
@@ -25,33 +24,44 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
       textLoading = 'Leyendo apartados';
       isLoading = true;
     });
-      apartados.listarApartados().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-        });
+    apartados.listarApartados().then((value) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
       });
+    });
 
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Abono a venta'),
         actions: [
-           IconButton(
+          Container(
+            width: 150,
+            
+            child: TextField(
+              onTap: () {
+                showSearch(context: context, delegate: SearchAbonos());
+              },
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Buscar...',
+                hintStyle: TextStyle(color: Colors.white),
+                prefixIconColor: Colors.white,
+                iconColor: Colors.white,
+              ),
+            ),
+          ),
+          IconButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, 'menu');
-              
             },
             icon: const Icon(Icons.menu),
           ),
-            IconButton(
-              onPressed: () {
-                showSearch(context: context, delegate: SearchAbonos());
-              },
-            icon:  Icon(Icons.search)),
         ],
       ),
       // drawer: const Menu(),
@@ -64,31 +74,33 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   title: Text(listaApartados[index].folio.toString()),
-                  subtitle: Text(listaApartados[index].fechaVencimiento.toString()),
+                  subtitle:
+                      Text(listaApartados[index].fechaVencimiento.toString()),
                   trailing: Text(listaApartados[index].total.toString()),
                   onTap: () {
-                    apartados.detallesApartado(listaApartados[index].id!).then((value) {
+                    apartados
+                        .detallesApartado(listaApartados[index].id!)
+                        .then((value) {
                       setState(() {
                         textLoading = '';
-                        isLoading = false;
+                        isLoading = true;
                       });
                       if (value.id != 0) {
-                              Navigator.pushNamed(context, 'abono_detalle',
-                                  arguments: value);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(value.mensaje!),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            }
+                        Navigator.pushNamed(context, 'abono_detalle',
+                            arguments: value);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(value.mensaje!),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     });
                   },
                 );
               },
             ),
     );
-
   }
 }

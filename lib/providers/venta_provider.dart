@@ -122,7 +122,7 @@ class VentasProvider {
   }
 
   Future<Resultado> consultarventa(int idVenta) async {
-    listaVentaCabecera.clear();
+    listaVentaCabecera2.clear();
     listaVentadetalles.clear();
     var url = Uri.parse('$baseUrl/venta/$idVenta');
     try {
@@ -132,26 +132,22 @@ class VentasProvider {
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         VentaCabecera ventasCabezera = VentaCabecera();
-        ventasCabezera.id = decodedData['venta']['id'];
-        ventasCabezera.negocioId = decodedData['venta']['negocio_id'];
-        ventasCabezera.usuarioId = decodedData['venta']['usuario_id'];
-        ventasCabezera.idCliente = decodedData['venta']['cliente_id'];
-        ventasCabezera.folio = decodedData['venta']['folio'];
-        ventasCabezera.subtotal =
-            double.parse(decodedData['venta']['subtotal']);
-        ventasCabezera.idDescuento = decodedData['venta']['descuento_id'];
-        ventasCabezera.descuento =
-            double.parse(decodedData['venta']['descuento']);
-        ventasCabezera.total = double.parse(decodedData['venta']['total']);
-        ventasCabezera.importeEfectivo =
-            double.parse(decodedData['venta']['pago_efectivo']);
-        ventasCabezera.importeTarjeta =
-            double.parse(decodedData['venta']['pago_tarjeta']);
-        ventasCabezera.cancelado = int.parse(decodedData['venta']['cancelado']);
-        ventasCabezera.fecha_venta = decodedData['venta']['fecha_venta'];
-        ventasCabezera.fecha_cancelacion =
-            decodedData['venta']['fecha_cancelacion'];
-        listaVentaCabecera.add(ventasCabezera);
+        ventasCabezera.id = decodedData['venta'][0]['id'];
+        ventasCabezera.negocioId = decodedData['venta'][0]['negocio_id'];
+        ventasCabezera.usuarioId = decodedData['venta'][0]['usuario_id'];
+        ventasCabezera.idCliente = decodedData['venta'][0]['cliente_id'];
+        ventasCabezera.folio = decodedData['venta'][0]['folio'];
+        ventasCabezera.subtotal =double.parse(decodedData['venta'][0]['subtotal']);
+        ventasCabezera.idDescuento = decodedData['venta'][0]['descuento_id'];
+        ventasCabezera.descuento =double.parse(decodedData['venta'][0]['descuento']);
+        ventasCabezera.total = double.parse(decodedData['venta'][0]['total']);
+        ventasCabezera.importeEfectivo =double.parse(decodedData['venta'][0]['pago_efectivo']);
+        ventasCabezera.importeTarjeta =double.parse(decodedData['venta'][0]['pago_tarjeta']);
+        ventasCabezera.fecha_venta = decodedData['venta'][0]['fecha_venta'];
+        ventasCabezera.fecha_cancelacion = decodedData['venta'][0]['fecha_cancelacion'];
+        ventasCabezera.cancelado =int.parse(decodedData['venta'][0]['cancelado']);
+        ventasCabezera.nombreCliente = decodedData['venta'][0]['cliente_nombre'];
+        listaVentaCabecera2.add(ventasCabezera);
         for (int x = 0; x < decodedData['detalles'].length; x++) {
           VentaDetalle ventasDetalle = VentaDetalle();
           ventasDetalle.id = decodedData['detalles'][x]['id'];
@@ -161,13 +157,13 @@ class VentasProvider {
               double.parse(decodedData['detalles'][x]['cantidad']);
           ventasDetalle.precio =
               double.parse(decodedData['detalles'][x]['precio']);
-          ventasDetalle.idDesc = decodedData['detalles'][x]['descuento_id'];
           ventasDetalle.cantidadDescuento =
               double.parse(decodedData['detalles'][x]['descuento']);
           ventasDetalle.total =
               double.parse(decodedData['detalles'][x]['total']);
           ventasDetalle.subtotal =
               double.parse(decodedData['detalles'][x]['subtotal']);
+          ventasDetalle.nombreProducto = decodedData['detalles'][x]['producto'];
           listaVentadetalles.add(ventasDetalle);
         }
         respuesta.status = 1;
@@ -179,12 +175,12 @@ class VentasProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion: $e';
+      print(respuesta.mensaje);
     }
     return respuesta;
   }
 
-  Future<Resultado> consultarVentasFecha(
-      String inicio, String finalF) async {
+  Future<Resultado> consultarVentasFecha(String inicio, String finalF) async {
     listaVentaCabecera.clear();
     var url =
         Uri.parse('$baseUrl/ventas-fecha/${sesion.idNegocio}/$inicio/$finalF');
@@ -226,6 +222,7 @@ class VentasProvider {
       }
     } catch (e) {
       respuesta.status = 0;
+
       respuesta.mensaje = 'Error en la peticion: $e';
     }
     return respuesta;

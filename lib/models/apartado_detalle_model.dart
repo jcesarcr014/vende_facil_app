@@ -8,6 +8,7 @@ class ApartadoDetalle {
   double? descuento;
   double? total;
   int? descuentoId;
+  String? producto;
 
   ApartadoDetalle(
       {this.id,
@@ -18,7 +19,9 @@ class ApartadoDetalle {
       this.subtotal,
       this.descuento,
       this.total,
-      this.descuentoId});
+      this.descuentoId,
+      this.producto
+      });
 }
 
 List<ApartadoDetalle> detalleApartado = [];

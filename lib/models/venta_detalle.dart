@@ -8,6 +8,7 @@ class VentaDetalle {
   double? cantidadDescuento;
   double? total;
   double? subtotal;
+  String? nombreProducto;
   VentaDetalle({
     this.id,
     this.idVenta,
@@ -18,6 +19,7 @@ class VentaDetalle {
     this.cantidadDescuento,
     this.total,
     this.subtotal,
+    this.nombreProducto,
   });
 }
 List<VentaDetalle> listaVentadetalles = [];

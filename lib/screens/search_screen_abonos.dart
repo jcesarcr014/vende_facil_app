@@ -33,11 +33,10 @@ Widget buildResults(BuildContext context) {
           apartado.folio?.toLowerCase().contains(query.toLowerCase()) ??
           false)
       .toList();
-  // Muestra los resultados
   return ListView.builder(
     itemCount: resultados.length,
     itemBuilder: (context, index) {
-      ApartadoCabecera apartado = resultados[index]; // Obtén el apartado actual
+      ApartadoCabecera apartado = resultados[index];
       return ListTile(
         onTap: (() {
                       apartados.detallesApartado(listaApartados[index].id!).then((value) {
@@ -61,7 +60,7 @@ Widget buildResults(BuildContext context) {
           ),
         ),
         subtitle: Text(
-          'Cliente: ${apartado.clienteId}', // Aquí puedes mostrar más detalles del apartado si lo deseas
+          'Cliente: ${apartado.clienteId}',
         ),
       );
     },
