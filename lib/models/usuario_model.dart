@@ -3,7 +3,7 @@ class Usuario {
   String? nombre;
   String? email;
   String? telefono;
-  int? tipoUsuario;
+  String? tipoUsuario;
   String? token;
 
   Usuario(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
@@ -13,7 +12,6 @@ class RegistroScreen extends StatefulWidget {
 
 class _RegistroScreenState extends State<RegistroScreen> {
   final usuariosProvider = UsuarioProvider();
-  final location = Location();
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
   final controllerTelefono = TextEditingController();
@@ -38,39 +36,23 @@ class _RegistroScreenState extends State<RegistroScreen> {
         mostrarAlerta(context, 'ERROR', 'Las contraseñas no coinciden');
       } else {
         setState(() {
+          textLoading = 'Guardando información';
           isLoading = true;
         });
-        String latitud = '0.0';
-        String longitud = '0.0';
-        String municipio = '';
-        try {
-          final ubicacion = await location.determinePosition();
-          latitud = ubicacion.latitude.toString();
-          longitud = ubicacion.longitude.toString();
-          final datos = await location.getPosData(
-              ubicacion.latitude, ubicacion.longitude);
-          municipio = (datos[0].locality) ?? '';
-        } catch (e) {
-          mostrarAlerta(context, 'ERROR',
-              'Ocurrio el siguiente error: $e, se registrará sin guardar su ubicación.');
-        }
-
         Usuario newUser = Usuario();
         newUser.nombre = controllerNombre.text;
         newUser.email = controllerEmail.text;
         newUser.telefono = controllerTelefono.text;
-        newUser.tipoUsuario = globals.tipoUserPropiertario;
         usuariosProvider
-            .nuevoUsuario(
-                newUser, controllerPassword1.text, latitud, longitud, municipio)
+            .nuevoUsuario(newUser, controllerPassword1.text)
             .then((value) {
           setState(() {
             isLoading = false;
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'login');
+            Navigator.pushReplacementNamed(context, 'home');
             mostrarAlerta(context, 'Bienvenido',
-                'Sus datos se han registrado correctamente. Inicie sesión y vaya a configuración para dar de alta su negocio.');
+                'Sus datos se han registrado correctamente. Vaya a configuración para dar de alta su negocio.');
           } else {
             mostrarAlerta(context, 'ERROR', value.mensaje!);
           }
@@ -182,7 +164,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                             SizedBox(
                               width: 10,
                             ),
-                            Text('Registrase'),
+                            Text('Registrarse'),
                           ],
                         ))
                   ],

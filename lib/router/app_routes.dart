@@ -20,11 +20,11 @@ class AppRoutes {
     'historial': (BuildContext context) => const HistorialScreen(),
     'config': (BuildContext context) => const ConfigScreen(),
     'detalle-venta': (BuildContext context) => const VentaDetalleScreen(),
-    'bar-code': (BuildContext context) => const BarCode(),
     'negocio': (BuildContext context) => const AgregarEmpresa(),
     'menu': (BuildContext context) => const MenuScreen(),
     'suscripcion': (BuildContext context) => const SuscripcionScreen(),
     'tarjetas': (BuildContext context) => const TarjetaScreen(),
+    'nvo-tarjetas':(BuildContext context) => const AgregaTarjetaScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

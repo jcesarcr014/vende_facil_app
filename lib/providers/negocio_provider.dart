@@ -8,12 +8,11 @@ class NegocioProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> nuevoNegocio(Negocio negocio) async {
-    var url = Uri.parse('$baseUrl/companies');
+    var url = Uri.parse('$baseUrl/negocio/${sesion.idUsuario}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
-        'user_id': negocio.idUsuario.toString(),
         'nombre_negocio': negocio.nombreNegocio,
         'direccion': negocio.direccion,
         'rfc': negocio.rfc,
@@ -21,7 +20,7 @@ class NegocioProvider {
         'razon_social': negocio.razonSocial,
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
+
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -40,7 +39,7 @@ class NegocioProvider {
 
   Future<Negocio> consultaNegocio() async {
     Negocio negocio = Negocio();
-    var url = Uri.parse('$baseUrl/companies/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/negocio/${sesion.idUsuario}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -49,11 +48,11 @@ class NegocioProvider {
 
       if (decodedData['status'] == 1) {
         negocio.id = sesion.idNegocio;
-        negocio.nombreNegocio = decodedData['data']['nombre_negocio'];
-        negocio.razonSocial = decodedData['data']['razon_social'];
-        negocio.rfc = decodedData['data']['rfc'];
-        negocio.direccion = decodedData['data']['direccion'];
-        negocio.telefono = decodedData['data']['telefono'];
+        negocio.nombreNegocio = decodedData['data'][0]['nombre_negocio'];
+        negocio.razonSocial = decodedData['data'][0]['razon_social'];
+        negocio.rfc = decodedData['data'][0]['rfc'];
+        negocio.direccion = decodedData['data'][0]['direccion'];
+        negocio.telefono = decodedData['data'][0]['telefono'];
       } else {
         negocio.id = 0;
         negocio.nombreNegocio = decodedData['msg'];
@@ -67,7 +66,7 @@ class NegocioProvider {
   }
 
   Future<Resultado> editaNegocio(Negocio negocio) async {
-    var url = Uri.parse('$baseUrl/companies/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/negocio/${sesion.idNegocio}');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

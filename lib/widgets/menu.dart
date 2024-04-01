@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class Menu extends StatelessWidget {
   const Menu({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,6 @@ class Menu extends StatelessWidget {
             onTap: () {
               sesion.idUsuario = 0;
               sesion.idNegocio = 0;
-              sesion.tipoUsuario = 0;
               sesion.token = '';
               Navigator.pushReplacementNamed(context, 'login');
             },

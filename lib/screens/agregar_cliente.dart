@@ -42,9 +42,8 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
   _guardaCliente() {
     if (controllerNombre.text.isNotEmpty) {
       setState(() {
-        textLoading = (args.id == 0)
-            ? 'Registrando nueva categoria'
-            : 'Actualizando categoria';
+        textLoading =
+            (args.id == 0) ? 'Registrando cliente' : 'Actualizando cliente';
         isLoading = true;
       });
       Cliente cliente = Cliente();
@@ -65,7 +64,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'clientes');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -234,7 +233,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                   InputField(
                       labelText: 'e-mail:',
                       keyboardType: TextInputType.emailAddress,
-                      textCapitalization: TextCapitalization.none,
+                      textCapitalization: TextCapitalization.words,
                       controller: controllerCorreo),
                   SizedBox(
                     height: windowHeight * 0.03,
@@ -294,7 +293,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                   ),
                   InputField(
                       labelText: 'Nota:',
-                      textCapitalization: TextCapitalization.words,
+                      textCapitalization: TextCapitalization.sentences,
                       controller: controllerNota),
                   SizedBox(
                     height: windowHeight * 0.05,

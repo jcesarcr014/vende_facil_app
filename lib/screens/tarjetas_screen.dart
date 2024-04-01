@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:vende_facil/app_theme.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+=======
+>>>>>>> 19a980dbe31c4065349feb9e1a43bd41ef6772d7
 
 class TarjetaScreen extends StatefulWidget {
   const TarjetaScreen({super.key});
@@ -24,6 +27,7 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
   String fechaA = '00';
 
   @override
+<<<<<<< HEAD
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -195,5 +199,82 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
 
           setState(() {});
         });
+=======
+
+  @override
+  void initState() {
+    super.initState();
+>>>>>>> 19a980dbe31c4065349feb9e1a43bd41ef6772d7
   }
+
+  @override
+  Widget build(BuildContext context) {
+    windowWidth = MediaQuery.of(context).size.width;
+    windowHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Productos'),
+        automaticallyImplyLeading: false,
+        actions: [
+          //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          //IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
+          IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu');
+              },
+              icon: const Icon(Icons.menu)),
+        ],
+      ),
+      body: (isLoading)
+          ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Espere...$textLoading'),
+                    SizedBox(
+                      height: windowHeight * 0.01,
+                    ),
+                    const CircularProgressIndicator(),
+                  ]),
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: windowHeight * 0.02,
+                  ),
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: windowWidth * 0.07),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'nvo-tarjetas');
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text('nuevas targeta'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: windowHeight * 0.02,
+                  ),
+                  const Divider(),
+                  SizedBox(
+                    height: windowHeight * 0.01,
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
 }
+
