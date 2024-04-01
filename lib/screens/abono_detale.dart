@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
-import 'package:vende_facil/widgets/input_field.dart';
 
 class AbonoDetallesScreen extends StatefulWidget {
   const AbonoDetallesScreen({Key? key}) : super(key: key);
@@ -286,7 +283,6 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                             );
                                             apartado
                                                 .abono(listaApartados2[0].id!,
-                                                
                                                     abono)
                                                 .then((value) {
                                               print(value.status);
@@ -304,8 +300,11 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                                         ElevatedButton(
                                                           onPressed: () {
                                                             setState(() {});
-                                                        Navigator.pushNamed(context, 'nvo-abono',
-                            arguments: value);
+                                                            Navigator.pushNamed(
+                                                                context,
+                                                                'nvo-abono',
+                                                                arguments:
+                                                                    value);
                                                           },
                                                           child: const Text(
                                                               'Aceptar'),
