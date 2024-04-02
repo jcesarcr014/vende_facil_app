@@ -28,10 +28,18 @@ class ArticuloProvider {
       });
       final decodedData = jsonDecode(resp.body);
 
+
+      print(decodedData);
       if (decodedData['status'] == 1) {
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-        respuesta.id = decodedData['data']['id'];
+        respuesta2.status = 1;
+        respuesta2.mensaje = decodedData['msg'];
+        respuesta2.id= decodedData['empresa_id'];
+
+
+//       if (decodedData['status'] == 1) {
+//         respuesta.status = 1;
+//         respuesta.mensaje = decodedData['msg'];
+//         respuesta.id = decodedData['data']['id'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -52,6 +60,7 @@ class ArticuloProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
+
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
@@ -63,9 +72,17 @@ class ArticuloProvider {
           productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
           productoTemp.clave = decodedData['data'][x]['clave'];
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+
           productoTemp.inventario = decodedData['data'][x]['inventario'];
           productoTemp.imagen = decodedData['data'][x]['imagen'];
           productoTemp.apartado = decodedData['data'][x]['apartado'];
+
+//           productoTemp.inventario =
+//               int.parse(decodedData['data'][x]['inventario']);
+//           productoTemp.imagen = decodedData['data'][x]['imagen'];
+//           productoTemp.apartado = int.parse(decodedData['data'][x]['apartado']);
+
+
           listaProductos.add(productoTemp);
         }
         respuesta.status = 1;

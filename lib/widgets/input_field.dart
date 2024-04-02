@@ -39,6 +39,7 @@ class InputField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       autofocus: false,
+      validator: validator,
       initialValue: null,
       readOnly: readOnly ?? false,
       textCapitalization: textCapitalization ?? TextCapitalization.none,
@@ -54,7 +55,6 @@ class InputField extends StatelessWidget {
         suffixIcon: sufixIcon,
         icon: icon == null ? null : Icon(icon),
       ),
-      validator: validator,
     );
   }
 }
