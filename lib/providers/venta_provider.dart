@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:vende_facil/app_theme.dart';
+
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -137,16 +137,23 @@ class VentasProvider {
         ventasCabezera.usuarioId = decodedData['venta'][0]['usuario_id'];
         ventasCabezera.idCliente = decodedData['venta'][0]['cliente_id'];
         ventasCabezera.folio = decodedData['venta'][0]['folio'];
-        ventasCabezera.subtotal =double.parse(decodedData['venta'][0]['subtotal']);
+        ventasCabezera.subtotal =
+            double.parse(decodedData['venta'][0]['subtotal']);
         ventasCabezera.idDescuento = decodedData['venta'][0]['descuento_id'];
-        ventasCabezera.descuento =double.parse(decodedData['venta'][0]['descuento']);
+        ventasCabezera.descuento =
+            double.parse(decodedData['venta'][0]['descuento']);
         ventasCabezera.total = double.parse(decodedData['venta'][0]['total']);
-        ventasCabezera.importeEfectivo =double.parse(decodedData['venta'][0]['pago_efectivo']);
-        ventasCabezera.importeTarjeta =double.parse(decodedData['venta'][0]['pago_tarjeta']);
+        ventasCabezera.importeEfectivo =
+            double.parse(decodedData['venta'][0]['pago_efectivo']);
+        ventasCabezera.importeTarjeta =
+            double.parse(decodedData['venta'][0]['pago_tarjeta']);
         ventasCabezera.fecha_venta = decodedData['venta'][0]['fecha_venta'];
-        ventasCabezera.fecha_cancelacion = decodedData['venta'][0]['fecha_cancelacion'];
-        ventasCabezera.cancelado =int.parse(decodedData['venta'][0]['cancelado']);
-        ventasCabezera.nombreCliente = decodedData['venta'][0]['cliente_nombre'];
+        ventasCabezera.fecha_cancelacion =
+            decodedData['venta'][0]['fecha_cancelacion'];
+        ventasCabezera.cancelado =
+            int.parse(decodedData['venta'][0]['cancelado']);
+        ventasCabezera.nombreCliente =
+            decodedData['venta'][0]['cliente_nombre'];
         listaVentaCabecera2.add(ventasCabezera);
         for (int x = 0; x < decodedData['detalles'].length; x++) {
           VentaDetalle ventasDetalle = VentaDetalle();
