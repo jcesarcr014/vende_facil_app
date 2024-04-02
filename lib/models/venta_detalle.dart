@@ -1,39 +1,25 @@
 class VentaDetalle {
   int? id;
-  int idMov;
-  int idProd;
-  double cantidad;
-  double precio;
-  int aplicoDesc;
+  int? idVenta;
+  int? idProd;
+  double? cantidad;
+  double? precio;
   int? idDesc;
-  double cantidadDescuento;
+  double? cantidadDescuento;
   double? total;
-  int apartado;
+  double? subtotal;
+  String? nombreProducto;
   VentaDetalle({
     this.id,
-    required this.idMov,
-    required this.idProd,
-    required this.cantidad,
-    required this.precio,
-    required this.aplicoDesc,
+    this.idVenta,
+    this.idProd,
+    this.cantidad,
+    this.precio,
     this.idDesc,
-    required this.cantidadDescuento,
-    required this.total,
-    required this.apartado,
+    this.cantidadDescuento,
+    this.total,
+    this.subtotal,
+    this.nombreProducto,
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'idMov': idMov,
-      'idProd': idProd,
-      'cantidad': cantidad,
-      'precio': precio,
-      'aplicoDesc': aplicoDesc,
-      'idDesc': idDesc,
-      'cantidadDescuento': cantidadDescuento,
-      'total': total,
-      'apartado': apartado,
-    };
-  }
 }
+List<VentaDetalle> listaVentadetalles = [];

@@ -119,15 +119,17 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
               children: [
                 Text(descuento.nombre!),
                 Text((descuento.tipoValor == 1)
-                    ? '${descuento.valor!.toStringAsFixed(2)}%'
-                    : '\$${descuento.valor!.toStringAsFixed(2)}')
+                    ? '${descuento.valor!.toStringAsFixed(2)} %'
+                    : '${descuento.valor!.toStringAsFixed(2)} \$'),
               ],
             ),
             subtitle: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Tipo'),
-                Text((descuento.valorPred == 1) ? 'Fijo' : 'Variable')
+                Text((descuento.valorPred == 1)
+                    ? 'Variable'
+                    : 'Fijo')
               ],
             ),
           )

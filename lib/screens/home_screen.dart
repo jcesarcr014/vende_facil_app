@@ -1,6 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,23 +19,35 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final articulosProvider = ArticuloProvider();
   final categoriasProvider = CategoriaProvider();
+  final descuentoProvider = DescuentoProvider();
+  final clienteProvider = ClienteProvider();
+  final CantidadConttroller = TextEditingController();
+  final TotalConttroller = TextEditingController();
+  final EfectivoConttroller = TextEditingController();
+  final TarjetaConttroller = TextEditingController();
+  final CambioConttroller = TextEditingController();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   @override
   void initState() {
+    _actualizaTotalTemporal();
     setState(() {
       textLoading = 'Leyendo articulos';
       isLoading = true;
     });
-    categoriasProvider.listarCategorias().then((respuesta) {
-      articulosProvider.listarProductos().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
+    clienteProvider.listarClientes().then((value) {
+    descuentoProvider.listarDescuentos().then((value) {
+      categoriasProvider.listarCategorias().then((respuesta) {
+        articulosProvider.listarProductos().then((value) {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
         });
       });
+    });
     });
     super.initState();
   }
@@ -41,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vende Fácil'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             onPressed: () {
@@ -76,6 +95,44 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  _alertaElimnar() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text(
+              'ATENCIÓN',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
+                )
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    ventaTemporal.clear();
+                    setState(() {});
+                    totalVentaTemporal = 0.0;
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Eliminar')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
+            ],
+          );
+        });
+  }
+
   _listaWidgets() {
     List<Widget> listaItems = [
       SizedBox(
@@ -85,26 +142,22 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
-              onPressed: () {},
-              child: SizedBox(
-                height: windowHeight * 0.1,
-                width: windowWidth * 0.4,
-                child: Center(
-                  child:
-                      Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
-                ),
-              )),
+            onPressed: () {
+                Navigator.pushNamed(context, 'detalle-venta');
+                setState(() {});
+            },
+            child: SizedBox(
+              height: windowHeight * 0.1,
+              width: windowWidth * 0.4,
+              child: Center(
+                child:
+                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+              ),
+            ),
+          ),
           SizedBox(
             width: windowWidth * 0.05,
           ),
-          OutlinedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'detalle-venta');
-              },
-              child: SizedBox(
-                  height: windowHeight * 0.1,
-                  width: windowWidth * 0.25,
-                  child: const Center(child: Text('Detalle'))))
         ],
       ),
       const Divider(),
@@ -112,27 +165,99 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                showSearch(context: context, delegate: Search());
+              },
               child: SizedBox(
-                  width: windowWidth * 0.25,
+                  width: windowWidth * 0.10,
                   height: windowHeight * 0.05,
                   child: const Center(child: Icon(Icons.search)))),
           SizedBox(
             width: windowWidth * 0.05,
           ),
           ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'bar-code');
+              onPressed: () async {
+                var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SimpleBarcodeScannerPage(),
+                    ));
+                setState(() {
+                  if (res is String) {}
+                });
               },
               child: SizedBox(
-                  width: windowWidth * 0.25,
+                  width: windowWidth * 0.10,
                   height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.qr_code_scanner))))
+                  child: const Center(child: Icon(Icons.qr_code_scanner)))),
+          SizedBox(
+            width: windowWidth * 0.05,
+          ),
+          ElevatedButton(
+              onPressed: () {
+                _alertaElimnar();
+              },
+              child: SizedBox(
+                  width: windowWidth * 0.10,
+                  height: windowHeight * 0.05,
+                  child: const Center(child: Icon(Icons.delete)))),
         ],
       ),
     ];
 
     return listaItems;
+  }
+
+  _alertaProducto(Producto producto) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Row(
+            children: [
+              const Flexible(
+                child: Text(
+                  'Cantidad :',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SizedBox(
+                width: windowWidth * 0.05,
+              ),
+              Flexible(
+                child: InputField(
+                  textCapitalization: TextCapitalization.words,
+                  controller: CantidadConttroller,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (CantidadConttroller.text.isEmpty ||
+                    double.parse(CantidadConttroller.text) >= 0) {
+                } else {
+                  _agregaProductoVenta(
+                    producto,
+                    double.parse(CantidadConttroller.text),
+                  );
+                }
+              },
+              child: const Text('Aceptar '),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _productos() {
@@ -155,16 +280,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: windowWidth * 0.1,
                         ),
                   onTap: (() {
-                    articulosProvider
-                        .consultaProducto(producto.id!)
-                        .then((value) {
-                      if (value.id != 0) {
-
-                      } else {
-                        mostrarAlerta(context, 'ERROR',
-                            'Error en la consulta: ${value.producto}');
-                      }
-                    });
+                    if (producto.unidad == "0") {
+                      _alertaProducto(producto);
+                    } else {
+                      _agregaProductoVenta(producto, 0);
+                    }
                   }),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,7 +300,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      // Text('\$ ${producto.precio!.toStringAsFixed(2)}')
                     ],
                   ),
                   subtitle: Text(categoria.categoria!),
@@ -216,9 +335,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return listaProd;
   }
 
-  _agregaProductoVenta(Producto producto) {
+  _actualizaTotalTemporal() {
+    totalVentaTemporal = 0;
+    for (ItemVenta item in ventaTemporal) {
+      totalVentaTemporal += item.totalItem;
+    }
+    setState(() {});
+  }
+
+  _agregaProductoVenta(Producto producto, cantidad) {
     bool existe = false;
-    if (producto.unidad == 'p') {
+    if (producto.unidad == "1") {
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
           existe = true;
@@ -229,24 +356,41 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (!existe) {
         ventaTemporal.add(ItemVenta(
+          idArticulo: producto.id!,
+          cantidad: 1,
+          precio: producto.precio!,
+          idDescuento: 0,
+          descuento: 0,
+          subTotalItem: producto.precio!,
+          totalItem: producto.precio!,
+        ));
+      }
+      _actualizaTotalTemporal();
+    } else {
+      if (producto.unidad == "0") {
+        for (ItemVenta item in ventaTemporal) {
+          if (item.idArticulo == producto.id) {
+            existe = true;
+            item.cantidad++;
+            item.subTotalItem = item.precio * cantidad;
+            item.totalItem = item.subTotalItem - item.descuento;
+          }
+        }
+        if (!existe) {
+          ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
-            cantidad: 1,
+            cantidad: cantidad,
             precio: producto.precio!,
             idDescuento: 0,
             descuento: 0,
             subTotalItem: producto.precio!,
-            totalItem: producto.precio!));
-      }
-    } else {}
-
-    _actualizaTotalTemporal();
-  }
-
-  _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
-    for (ItemVenta item in ventaTemporal) {
-      totalVentaTemporal += item.totalItem;
+            totalItem: producto.precio! * cantidad,
+          ));
+        }
+        _actualizaTotalTemporal();
+      } else {}
+      _actualizaTotalTemporal();
     }
-    setState(() {});
   }
+
 }

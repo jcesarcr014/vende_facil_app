@@ -16,6 +16,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   final controllerValor = TextEditingController();
   bool firstLoad = true;
   bool _tipoValor = true;
+  bool _tipoValorS = true;
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -37,7 +38,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       descuento.valor = (controllerValor.text.isNotEmpty)
           ? double.parse(controllerValor.text)
           : 0;
-      descuento.valorPred = (controllerValor.text.isNotEmpty) ? 1 : 0;
+      descuento.valorPred = (_tipoValorS) ? 1 : 0;
       if (args.id == 0) {
         descuentosProvider.nuevoDescuento(descuento).then((value) {
           setState(() {
@@ -59,7 +60,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'descuentos');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -95,7 +96,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '¿Desea eliminar la categoría  ${args.nombre} ? Esta acción no podrá revertirse.',
+                  '¿Desea eliminar el descuento  ${args.nombre} ? Esta acción no podrá revertirse.',
                 )
               ],
             ),
@@ -198,11 +199,24 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                           _tipoValor = value;
                           setState(() {});
                         }),
-                    InputField(
-                        labelText: 'Descuento:',
-                        keyboardType: TextInputType.number,
-                        textCapitalization: TextCapitalization.none,
-                        controller: controllerValor),
+                    SwitchListTile.adaptive(
+                        title: Row(
+                          children: [
+                            const Text('Tipo de descuento: '),
+                            Text((_tipoValorS) ? 'Variable' : 'Fijo')
+                          ],
+                        ),
+                        value: _tipoValorS,
+                        onChanged: (value) {
+                          _tipoValorS = value;
+                          setState(() {});
+                        }),
+                    if (!_tipoValorS)
+                      InputField(
+                          labelText: 'Descuento:',
+                          keyboardType: TextInputType.number,
+                          textCapitalization: TextCapitalization.none,
+                          controller: controllerValor),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -214,7 +228,11 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
                     ElevatedButton(
+                        //vilmar12@gmail.com
                         onPressed: () => _guardaDescuento(),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,

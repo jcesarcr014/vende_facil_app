@@ -1,6 +1,7 @@
 class Producto {
   int? id;
   String? producto;
+  String? descripcion;
   int? idCategoria;
   String? unidad;
   double? precio;
@@ -14,6 +15,7 @@ class Producto {
   Producto({
     this.id,
     this.producto,
+    this.descripcion,
     this.idCategoria,
     this.unidad,
     this.precio,

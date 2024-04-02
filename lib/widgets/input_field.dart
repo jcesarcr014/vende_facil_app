@@ -17,7 +17,7 @@ class InputField extends StatelessWidget {
   final String? errorText;
 
   const InputField({
-    Key? key,
+    super.key,
     this.hintText,
     this.labelText,
     this.helperText,
@@ -32,7 +32,7 @@ class InputField extends StatelessWidget {
     this.onChangeText,
     this.validator,
     this.errorText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

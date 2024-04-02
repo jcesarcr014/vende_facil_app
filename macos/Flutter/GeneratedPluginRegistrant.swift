@@ -5,10 +5,8 @@
 import FlutterMacOS
 import Foundation
 
-import geolocator_apple
-import mobile_scanner
+import file_selector_macos
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
-  MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))
+  FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
 }

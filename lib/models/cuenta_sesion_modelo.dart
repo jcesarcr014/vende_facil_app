@@ -1,10 +1,13 @@
 class CuentaSesion {
   int? idUsuario;
-  int? tipoUsuario;
+  String? tipoUsuario;
   int? idNegocio;
   String? token;
+  String? nombreUsuario;
+  String? email;
+  String? telefono;
 
-  CuentaSesion({this.idUsuario, this.tipoUsuario, this.idNegocio, this.token});
+  CuentaSesion({this.idUsuario, this.tipoUsuario, this.idNegocio, this.token, this.nombreUsuario});
 }
 
 CuentaSesion sesion = CuentaSesion();

@@ -78,10 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           height: windowHeight * 0.1,
                         ),
-                        // const Image(image: AssetImage('assets/textoVF.png')),
-                        // SizedBox(
-                        //   height: windowHeight * 0.10,
-                        // ),
                         InputField(
                             icon: Icons.person,
                             labelText: 'Usuario',

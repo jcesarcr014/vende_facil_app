@@ -1,3 +1,5 @@
+export 'package:vende_facil/models/apartado_cab_model.dart';
+export 'package:vende_facil/models/apartado_detalle_model.dart';
 export 'package:vende_facil/models/tarjeta_moldel.dart';
 export 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 export 'package:vende_facil/models/abono_model.dart';
@@ -13,4 +15,3 @@ export 'package:vende_facil/models/resultado_model.dart';
 export 'package:vende_facil/models/usuario_model.dart';
 export 'package:vende_facil/models/venta_cab_model.dart';
 export 'package:vende_facil/models/venta_detalle.dart';
-export 'package:vende_facil/models/resultaodosC.dart';

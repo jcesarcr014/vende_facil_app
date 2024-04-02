@@ -123,6 +123,7 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(title),
         actions: [
           IconButton(
@@ -130,8 +131,6 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
                 Navigator.pushReplacementNamed(context, 'menu');
               },
               icon: const Icon(Icons.menu)),
-          if (args.id != 0)
-            IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
         ],
       ),
       body: (isLoading)
@@ -162,14 +161,14 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
                   ),
                   InputField(
                       labelText: 'Dirección:',
-                      textCapitalization: TextCapitalization.words,
+                      textCapitalization: TextCapitalization.sentences,
                       controller: controllerDireccion),
                   SizedBox(
                     height: windowHeight * 0.03,
                   ),
                   InputField(
                       labelText: 'Telefono:',
-                      textCapitalization: TextCapitalization.words,
+                      keyboardType: TextInputType.phone,
                       controller: controllerTelefono),
                   SizedBox(
                     height: windowHeight * 0.03,
