@@ -26,8 +26,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final controllerCodigoB = TextEditingController();
   final controllerCantidad = TextEditingController();
 
-//   final GlobalKey<FormState> formProducto = GlobalKey<FormState>();
-
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -342,7 +340,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               )
             : SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-
                 child: Column(
                   children: <Widget>[
                     SizedBox(
@@ -463,187 +460,61 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                                         child: Image.file(
                                           File(_rutaProducto),
                                           fit: BoxFit.contain,
-
-//                 child: Form(
-//                   key: formProducto,
-//                   child: Column(
-//                     children: [
-//                       SizedBox(
-//                         height: windowHeight * 0.05,
-//                       ),
-//                       InputField(
-//                         labelText: 'Producto:',
-//                         textCapitalization: TextCapitalization.sentences,
-//                         controller: controllerProducto,
-//                         validator: (value) {
-//                           if (value == null || value.isEmpty) {
-//                             return 'Nombre de producto obligatorio';
-//                           }
-//                           return null;
-//                         },
-//                       ),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       _categorias(),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       SwitchListTile.adaptive(
-//                           title: const Text('Vendido por: '),
-//                           subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
-//                           value: _valuePieza,
-//                           onChanged: (value) {
-//                             _valuePieza = value;
-//                             setState(() {});
-//                           }),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       InputFieldMoney(
-//                           labelText: 'Precio', controller: controllerPrecio),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       InputFieldMoney(
-//                           labelText: 'Costo', controller: controllercosto),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       InputField(
-//                           readOnly: true,
-//                           labelText: 'Clave:',
-//                           textCapitalization: TextCapitalization.none,
-//                           controller: controllerClave),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       InputField(
-//                           labelText: 'Código de barras:',
-//                           textCapitalization: TextCapitalization.none,
-//                           sufixIcon: IconButton(
-//                             icon: const Icon(Icons.qr_code_scanner),
-//                             onPressed: () async {
-//                               var codigo = await Navigator.pushNamed(
-//                                   context, 'bar-code');
-
-//                               controllerCodigoB.text = codigo.toString();
-//                             },
-//                           ),
-//                           controller: controllerCodigoB),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       SwitchListTile.adaptive(
-//                           title: const Text('Inventario'),
-//                           value: _valueInventario,
-//                           onChanged: (value) {
-//                             _valueInventario = value;
-//                             setState(() {});
-//                           }),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       if (_valueInventario)
-//                         InputField(
-//                           labelText: 'Cantidad:',
-//                           keyboardType: TextInputType.number,
-//                           controller: controllerCantidad,
-//                           validator: (value) {
-//                             if (_valueInventario) {
-//                               if (value == null || value.isEmpty) {
-//                                 return 'Cantidad obligatorias';
-//                               }
-//                               return null;
-//                             }
-//                             return null;
-//                           },
-//                         ),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       SwitchListTile.adaptive(
-//                           title: const Text('Se puede apartar'),
-//                           value: _valueApartado,
-//                           onChanged: (value) {
-//                             _valueApartado = value;
-//                             setState(() {});
-//                           }),
-//                       SizedBox(
-//                         height: windowHeight * 0.03,
-//                       ),
-//                       Row(
-//                         children: [
-//                           (args.imagen == '' || args.imagen == null)
-//                               ? Container(
-//                                   decoration:
-//                                       BoxDecoration(border: Border.all()),
-//                                   width: windowWidth * 0.5,
-//                                   height: windowHeight * 0.2,
-//                                   child: (_rutaProducto.isNotEmpty)
-//                                       ? SizedBox(
-//                                           height: windowHeight * 0.15,
-//                                           child: Image.file(
-//                                             File(_rutaProducto),
-//                                             fit: BoxFit.contain,
-//                                           ),
-//                                         )
-//                                       : SizedBox(
-//                                           height: windowHeight * 0.15,
-
                                         ),
-                                )
-                              : Container(
-                                  decoration:
-                                      BoxDecoration(border: Border.all()),
-                                  width: windowWidth * 0.5,
-                                  height: windowHeight * 0.2,
-                                  child: FadeInImage(
-                                    image: NetworkImage(args.imagen!),
-                                    placeholder:
-                                        const AssetImage('assets/loading.gif'),
-                                  ),
-                                ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextButton.icon(
-                                onPressed: (() {
-                                  fotoProducto(ImageSource.camera);
-                                }),
-                                icon: const Icon(Icons.camera_alt_outlined),
-                                label: const Text('Tomar foto'),
-                              ),
-                              TextButton.icon(
-                                onPressed: (() {
-                                  fotoProducto(ImageSource.gallery);
-                                }),
-                                icon: const Icon(Icons.photo),
-                                label: const Text('Galería'),
+                                      )
+                                    : SizedBox(
+                                        height: windowHeight * 0.15,
+                                      ),
                               )
-                            ],
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                      ElevatedButton(
-                          onPressed: () => _guardaProducto(),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.save),
-                              SizedBox(
-                                width: 5,
+                            : Container(
+                                decoration: BoxDecoration(border: Border.all()),
+                                width: windowWidth * 0.5,
+                                height: windowHeight * 0.2,
+                                child: FadeInImage(
+                                  image: NetworkImage(args.imagen!),
+                                  placeholder:
+                                      const AssetImage('assets/loading.gif'),
+                                ),
                               ),
-                              Text(
-                                'Guardar',
-                              ),
-                            ],
-                          ))
-                    ],
-                  ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextButton.icon(
+                              onPressed: (() {
+                                fotoProducto(ImageSource.camera);
+                              }),
+                              icon: const Icon(Icons.camera_alt_outlined),
+                              label: const Text('Tomar foto'),
+                            ),
+                            TextButton.icon(
+                              onPressed: (() {
+                                fotoProducto(ImageSource.gallery);
+                              }),
+                              icon: const Icon(Icons.photo),
+                              label: const Text('Galería'),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
+                    ElevatedButton(
+                        onPressed: () => _guardaProducto(),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.save),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Guardar',
+                            ),
+                          ],
+                        ))
+                  ],
                 ),
               ));
   }
