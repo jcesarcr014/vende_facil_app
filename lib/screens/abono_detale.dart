@@ -232,7 +232,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                                 children: [
                                                   const Flexible(
                                                     child: Text(
-                                                      'Tarjeta :',
+                                                      'Tarjeta  :',
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     ),
