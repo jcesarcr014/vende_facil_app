@@ -38,16 +38,16 @@ class _HomeScreenState extends State<HomeScreen> {
       isLoading = true;
     });
     clienteProvider.listarClientes().then((value) {
-    descuentoProvider.listarDescuentos().then((value) {
-      categoriasProvider.listarCategorias().then((respuesta) {
-        articulosProvider.listarProductos().then((value) {
-          setState(() {
-            textLoading = '';
-            isLoading = false;
+      descuentoProvider.listarDescuentos().then((value) {
+        categoriasProvider.listarCategorias().then((respuesta) {
+          articulosProvider.listarProductos().then((value) {
+            setState(() {
+              textLoading = '';
+              isLoading = false;
+            });
           });
         });
       });
-    });
     });
     super.initState();
   }
@@ -143,8 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           ElevatedButton(
             onPressed: () {
-                Navigator.pushNamed(context, 'detalle-venta');
-                setState(() {});
+              Navigator.pushNamed(context, 'detalle-venta');
+              setState(() {});
             },
             child: SizedBox(
               height: windowHeight * 0.1,
@@ -278,6 +278,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           placeholder: const AssetImage('assets/loading.gif'),
                           image: NetworkImage(producto.imagen!),
                           width: windowWidth * 0.1,
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return Image.asset('assets/no-image.jpg');
+                          },
                         ),
                   onTap: (() {
                     if (producto.unidad == "0") {
@@ -392,5 +395,4 @@ class _HomeScreenState extends State<HomeScreen> {
       _actualizaTotalTemporal();
     }
   }
-
 }

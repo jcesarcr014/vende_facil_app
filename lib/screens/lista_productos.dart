@@ -124,6 +124,9 @@ class _ProductosScreenState extends State<ProductosScreen> {
                           placeholder: const AssetImage('assets/loading.gif'),
                           image: NetworkImage(producto.imagen!),
                           width: windowWidth * 0.1,
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return Image.asset('assets/no-image.jpg');
+                          },
                         ),
                   onTap: (() {
                     setState(() {
