@@ -10,6 +10,7 @@ class ConfigScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Configuración'),
         actions: [
           IconButton(
@@ -52,20 +53,21 @@ class ConfigScreen extends StatelessWidget {
                 subtitle: const Text('Edita tus datos personales'),
                 trailing: const Icon(Icons.arrow_right),
                 onTap: () {
-                Navigator.pushNamed(context, 'perfil');
+                  Navigator.pushNamed(context, 'perfil');
                 },
               ),
               ListTile(
                 leading: const Icon(CupertinoIcons.tag),
                 title: const Text(
-                  'Apartdados',
+                  'Ajustes de apartado',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                subtitle: const Text('Edita importe minimo requerido para apartar'),
+                subtitle:
+                    const Text('Edita importe minimo requerido para apartar'),
                 trailing: const Icon(Icons.arrow_right),
                 onTap: () {},
               ),
@@ -79,7 +81,7 @@ class ConfigScreen extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                subtitle: const Text('Generacion de ticket de compra'),
+                subtitle: const Text('Configura tu ticket de compra'),
                 trailing: const Icon(Icons.arrow_right),
                 onTap: () {},
               )
