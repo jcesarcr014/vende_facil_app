@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 
@@ -28,6 +27,33 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
     controllerPorcentaje.dispose();
     controllerArticulos.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    setState(() {
+      textLoading = 'Leyendo valores.';
+      isLoading = true;
+    });
+    apartadoProvider.variablesApartado().then((value) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      if (value.status == 1) {
+        for (VariableConf varTemp in listaVariables) {
+          if (varTemp.nombre == 'porcentaje_anticipo') {
+            controllerPorcentaje.text = varTemp.valor;
+          } else if (varTemp.nombre == 'productos_apartados') {
+            controllerArticulos.text = varTemp.valor;
+          }
+        }
+      } else {
+        Navigator.pop(context);
+        mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
+      }
+    });
+    super.initState();
   }
 
   @override

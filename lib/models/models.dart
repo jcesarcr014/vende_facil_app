@@ -15,3 +15,4 @@ export 'package:vende_facil/models/resultado_model.dart';
 export 'package:vende_facil/models/usuario_model.dart';
 export 'package:vende_facil/models/venta_cab_model.dart';
 export 'package:vende_facil/models/venta_detalle.dart';
+export 'package:vende_facil/models/variable_model.dart';

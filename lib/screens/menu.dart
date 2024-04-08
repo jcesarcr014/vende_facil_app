@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/widgets/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -88,76 +88,45 @@ class _MenuScreenState extends State<MenuScreen> {
     }
 
     return Scaffold(
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: windowHeight * 0.15,
+      body: GridView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: menuItems.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1.0,
+        ),
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () async {
+              if (menuRoutes[index] == 'login') {
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                prefs.setString('token', '');
+              }
+              Navigator.pushReplacementNamed(context, menuRoutes[index]);
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  menuIcons[index],
+                  width: 64,
+                  height: 64,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  menuItems[index],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text('Espere...$textLoading',
-                      style: const TextStyle(fontSize: 20)),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  const CircularProgressIndicator(),
-                ],
-              ),
-            )
-          : GridView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: menuItems.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.0,
-              ),
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    if (menuRoutes[index] == 'login') {
-                      setState(() {
-                        isLoading = true;
-                        textLoading = 'Cerrando sesion...';
-                      });
-                      usuarioProvider.logout().then((value) {
-                        setState(() {
-                          isLoading = false;
-                          textLoading = '';
-                        });
-                        if (value.status == 1) {
-                          Navigator.pushReplacementNamed(context, 'login');
-                        } else {
-                          mostrarAlerta(context, 'ERROR',
-                              'Ocurrio el sigiente error: ${value.mensaje}');
-                        }
-                      });
-                    } else {
-                      Navigator.pushReplacementNamed(
-                          context, menuRoutes[index]);
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        menuIcons[index],
-                        width: 64,
-                        height: 64,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        menuItems[index],
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                ),
+              ],
             ),
+          );
+        },
+      ),
     );
   }
 }
