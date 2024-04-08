@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UsuarioProvider {
   final baseUrl = globals.baseUrl;
@@ -20,6 +21,8 @@ class UsuarioProvider {
       final decodedData = jsonDecode(resp.body);
 
       if (decodedData['status'] == 1) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', decodedData['token']);
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = decodedData['token'];
@@ -38,6 +41,42 @@ class UsuarioProvider {
     return respuesta;
   }
 
+  Future<Resultado> userInfo() async {
+    var url = Uri.parse('$baseUrl/usuario-info');
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    if (token == null || token.isEmpty) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No hay token';
+      return respuesta;
+    }
+
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        sesion.token = token;
+        sesion.idUsuario = decodedData['usuario']['id'];
+        sesion.idNegocio = decodedData['empresa_id'];
+        sesion.tipoUsuario = decodedData['tipo_usuario'];
+        sesion.nombreUsuario = decodedData['usuario']['name'];
+        sesion.email = decodedData['usuario']['email'];
+        sesion.telefono = decodedData['usuario']['phone'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
   Future<Resultado> login(String email, String pass) async {
     var url = Uri.parse('$baseUrl/usuario-login');
     try {
@@ -47,6 +86,8 @@ class UsuarioProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', decodedData['token']);
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = decodedData['token'];
@@ -139,7 +180,6 @@ class UsuarioProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
-
     }
     return respuesta;
   }

@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
 
   @override
+  State<MenuScreen> createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  final usuarioProvider = UsuarioProvider();
+  bool isLoading = false;
+  String textLoading = '';
+  double windowWidth = 0.0;
+  double windowHeight = 0.0;
+
+  @override
   Widget build(BuildContext context) {
+    windowWidth = MediaQuery.of(context).size.width;
+    windowHeight = MediaQuery.of(context).size.height;
     List<String> menuItems = [];
     List<String> menuRoutes = [];
     List<String> menuIcons = [];
@@ -82,7 +97,12 @@ class MenuScreen extends StatelessWidget {
         ),
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
+              if (menuRoutes[index] == 'login') {
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                prefs.setString('token', '');
+              }
               Navigator.pushReplacementNamed(context, menuRoutes[index]);
             },
             child: Column(

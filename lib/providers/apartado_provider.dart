@@ -8,6 +8,36 @@ class ApartadoProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
+  Future<Resultado> variablesApartado() async {
+    var url = Uri.parse('$baseUrl/variables/${sesion.idNegocio}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        listaVariables.clear();
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          VariableConf variable = VariableConf(
+            id: decodedData['data'][x]['id'],
+            nombre: decodedData['data'][x]['nombre'],
+            valor: decodedData['data'][x]['valor'],
+          );
+          listaVariables.add(variable);
+        }
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
   Future<Resultado> guardaApartado(ApartadoCabecera apartado) async {
     var url = Uri.parse('$baseUrl/apartado/${sesion.idNegocio}');
     try {
@@ -33,7 +63,6 @@ class ApartadoProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['apartado_id'];
-        print('id apartado ${respuesta.id}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -41,7 +70,6 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
-      print('Error en la peticion. $e');
     }
 
     return respuesta;
@@ -109,7 +137,6 @@ class ApartadoProvider {
   }
 
   Future<Resultado> listarApartados() async {
-    print('id negocio ${sesion.idNegocio}');
     var url = Uri.parse('$baseUrl/apartado/${sesion.idNegocio}');
 
     try {
@@ -165,7 +192,6 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
-      print('Error en la peticion. $e');
     }
 
     return respuesta;
@@ -265,7 +291,6 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
-      print('Error en la peticion. $e');
     }
 
     return respuesta;
@@ -313,9 +338,9 @@ class ApartadoProvider {
     return respuesta;
   }
 
-  Future<Resultado> abono(int idApartado,Abono abono) async {
+  Future<Resultado> abono(int idApartado, Abono abono) async {
     var url = Uri.parse('$baseUrl/apartado-abono/$idApartado');
-        try {
+    try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
@@ -335,7 +360,6 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
-      print('Error en la peticion. $e');
     }
     return respuesta;
   }

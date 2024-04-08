@@ -93,7 +93,7 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       SizedBox(
                         height: windowHeight * 0.05,
                       ),
