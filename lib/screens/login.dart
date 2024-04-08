@@ -25,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _inicioSesion() {
     if (_formKey.currentState!.validate()) {
       setState(() {
+        textLoading = 'Iniciando sesión.';
         isLoading = true;
       });
       usuariosProvider
@@ -45,6 +46,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void initState() {
+    setState(() {
+      textLoading = 'Leyendo datos de sesión.';
+      isLoading = true;
+    });
+    usuariosProvider.userInfo().then((value) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      if (value.status == 1) {
+        Navigator.pushReplacementNamed(context, 'home');
+      }
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     controllerUser.dispose();
     controllerPass.dispose();
@@ -58,8 +77,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
         body: (isLoading)
-            ? const Center(
-                child: CircularProgressIndicator(),
+            ? Center(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: windowHeight * 0.15,
+                    ),
+                    SizedBox(
+                        width: windowWidth * 0.4,
+                        child:
+                            const Image(image: AssetImage('assets/logo.png'))),
+                    SizedBox(
+                      height: windowHeight * 0.1,
+                    ),
+                    Text('Espere...$textLoading',
+                        style: const TextStyle(fontSize: 20)),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
+                    const CircularProgressIndicator(),
+                  ],
+                ),
               )
             : SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.05),

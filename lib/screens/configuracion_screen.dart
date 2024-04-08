@@ -69,7 +69,9 @@ class ConfigScreen extends StatelessWidget {
                 subtitle:
                     const Text('Edita importe minimo requerido para apartar'),
                 trailing: const Icon(Icons.arrow_right),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, 'config-apartado');
+                },
               ),
               ListTile(
                 leading: const Icon(CupertinoIcons.ticket),

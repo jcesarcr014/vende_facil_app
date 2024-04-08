@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/screens/abono_detale.dart';
+import 'package:vende_facil/screens/abono_detalle.dart';
 import 'package:vende_facil/screens/screens.dart';
 
 class AppRoutes {
@@ -25,10 +25,11 @@ class AppRoutes {
     'menu': (BuildContext context) => const MenuScreen(),
     'suscripcion': (BuildContext context) => const SuscripcionScreen(),
     'tarjetas': (BuildContext context) => const TarjetaScreen(),
-    'nvo-tarjetas':(BuildContext context) => const AgregaTarjetaScreen(),
+    'nvo-tarjetas': (BuildContext context) => const AgregaTarjetaScreen(),
     "ventasD": (BuildContext context) => const VentaDetallesScreen(),
     'perfil': (BuildContext context) => const PerfilScreen(),
     'abono_detalle': (BuildContext context) => const AbonoDetallesScreen(),
+    'config-apartado': (BuildContext context) => const AjustesApartadoScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

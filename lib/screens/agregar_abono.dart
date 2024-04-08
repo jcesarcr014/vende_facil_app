@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
-import 'package:vende_facil/screens/search_screen_abonos.dart';
+import 'package:vende_facil/providers/providers.dart';
+import 'package:vende_facil/screens/screens.dart';
 
 class AgregarAbonoScreen extends StatefulWidget {
   const AgregarAbonoScreen({super.key});
@@ -42,7 +42,6 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
         actions: [
           Container(
             width: 150,
-            
             child: TextField(
               onTap: () {
                 showSearch(context: context, delegate: SearchAbonos());
