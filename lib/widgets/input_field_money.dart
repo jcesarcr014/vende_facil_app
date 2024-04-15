@@ -37,13 +37,10 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
             .labelText, // Utiliza el valor proporcionado en el constructor
         prefixIcon: const Icon(Icons.attach_money),
       ),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?(\d{0,2})?')),
-      ],
       onChanged: (value) {
+
         setState(() {
           if (value.isEmpty) return;
-
           final numericValue = value.replaceAll(RegExp(r'[^\d.]'), '');
 
           try {
