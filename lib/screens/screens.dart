@@ -24,3 +24,5 @@ export 'package:vende_facil/screens/detalles_venta.dart';
 export 'package:vende_facil/screens/perfil_screen.dart';
 export 'package:vende_facil/screens/config_apartado_screen.dart';
 export 'package:vende_facil/screens/search_screen_abonos.dart';
+export 'package:vende_facil/screens/agregar_empleado_screen.dart';
+export 'package:vende_facil/screens/lista_empleados.dart';

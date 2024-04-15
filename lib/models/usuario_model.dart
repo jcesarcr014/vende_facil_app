@@ -14,3 +14,5 @@ class Usuario {
       this.tipoUsuario,
       this.token});
 }
+
+List<Usuario> listaEmpleados = [];
