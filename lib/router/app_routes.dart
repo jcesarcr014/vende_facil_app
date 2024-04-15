@@ -30,6 +30,8 @@ class AppRoutes {
     'perfil': (BuildContext context) => const PerfilScreen(),
     'abono_detalle': (BuildContext context) => const AbonoDetallesScreen(),
     'config-apartado': (BuildContext context) => const AjustesApartadoScreen(),
+    'empleados': (BuildContext context) => const ListaEmpleadosScreen(),
+    'nvo-empleado': (BuildContext context) => const RegistroEmpleadoScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

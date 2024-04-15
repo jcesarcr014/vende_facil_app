@@ -204,4 +204,66 @@ class UsuarioProvider {
     }
     return respuesta;
   }
+
+  //Empleados
+  Future<Resultado> nuevoEmpleado(Usuario user, String pass) async {
+    var url =
+        Uri.parse('$baseUrl/empleado-registro/${sesion.idUsuario.toString()}');
+
+    try {
+      final resp = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'name': user.nombre,
+        'email': user.email,
+        'phone': user.telefono,
+        'password': pass,
+      });
+      final decodedData = jsonDecode(resp.body);
+
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = '${decodedData['msg']}: ${decodedData['errors']}';
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición, $e';
+    }
+
+    return respuesta;
+  }
+
+  Future<Resultado> obtenerEmpleados() async {
+    var url = Uri.parse('$baseUrl/empleados/${sesion.idUsuario}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        listaEmpleados.clear();
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          Usuario empleadoTemp = Usuario();
+          empleadoTemp.id = decodedData['data'][x]['id'];
+          empleadoTemp.nombre = decodedData['data'][x]['name'];
+          empleadoTemp.email = decodedData['data'][x]['email'];
+          empleadoTemp.telefono = decodedData['data'][x]['phone'];
+          empleadoTemp.tipoUsuario = decodedData['data'][x]['tipo'];
+          listaEmpleados.add(empleadoTemp);
+        }
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
 }

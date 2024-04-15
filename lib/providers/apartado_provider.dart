@@ -78,7 +78,6 @@ class ApartadoProvider {
   Future<Resultado> guardaApartadoDetalle(
     ApartadoDetalle apartado,
   ) async {
-    print(apartado.apartadoId);
     var url = Uri.parse('$baseUrl/apartado-detalle/${apartado.apartadoId}');
     try {
       final resp = await http.post(url, headers: {
