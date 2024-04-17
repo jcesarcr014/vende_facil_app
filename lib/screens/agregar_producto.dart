@@ -5,7 +5,6 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:image/image.dart' as img;
 
 class AgregaProductoScreen extends StatefulWidget {
   const AgregaProductoScreen({super.key});
@@ -304,11 +303,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       _valueInventario = (args.inventario == 0) ? false : true;
       _valueApartado = (args.apartado == 0) ? false : true;
       if (_valueInventario) {
-        for (var existencia in inventario) {
-          if (args.id == existencia.idArticulo) {
-            controllerCantidad.text = existencia.disponible.toString();
-          }
-        }
+            controllerCantidad.text = (args.disponible != null)
+                ? args.disponible!.toStringAsFixed(2)
+                : '0.00';
       }
     }
     final title = (args.id == 0) ? 'Nuevo producto' : 'Editar producto';
@@ -520,19 +517,30 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               ));
   }
 
-  _categorias() {
+  Widget _categorias() {
     var listaCat = [
       const DropdownMenuItem(
           value: '0', child: SizedBox(child: Text('Seleccione categoría')))
     ];
 
-    for (Categoria categoria in listaCategorias) {
-      listaCat.add(DropdownMenuItem(
-          value: categoria.id.toString(), child: Text(categoria.categoria!)));
+    if (args.id == 0) {
+      for (Categoria categoria in listaCategorias) {
+        listaCat.add(DropdownMenuItem(
+            value: categoria.id.toString(), child: Text(categoria.categoria!)));
+      }
+    } else {
+      for (Categoria categoria in listaCategorias) {
+        listaCat.add(DropdownMenuItem(
+            value: categoria.id.toString(), child: Text(categoria.categoria!)));
+        if (categoria.id == args.idCategoria) {
+          _valueIdCategoria = categoria.id.toString();
+        }
+      }
     }
     if (_valueIdCategoria.isEmpty) {
       _valueIdCategoria = '0';
     }
+
     return DropdownButton(
         items: listaCat,
         isExpanded: true,

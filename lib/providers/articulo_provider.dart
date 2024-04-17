@@ -101,9 +101,21 @@ class ArticuloProvider {
         productoTemp.costo = double.parse(decodedData['producto']['costo']);
         productoTemp.clave = decodedData['producto']['clave'];
         productoTemp.codigoBarras = decodedData['producto']['codigo_barras'];
-        productoTemp.inventario = decodedData['producto']['inventario'];
+        productoTemp.inventario =int.parse(decodedData['producto']['aplica_inventario']);
         productoTemp.imagen = decodedData['producto']['imagen'];
-        productoTemp.apartado = decodedData['producto']['apartado'];
+        productoTemp.apartado =int.parse(decodedData['producto']['aplica_apartado']);
+        productoTemp.idInventario = decodedData['inventario']['id'];
+        print(" id inventario ${productoTemp.idInventario}");
+        productoTemp.idNegocio = decodedData['inventario']['negocio_id'];
+        print(" negocio id ${productoTemp.idNegocio}");
+        productoTemp.idproducto = decodedData['inventario']['producto_id'];
+        print(" producto id ${productoTemp.idproducto}");
+        productoTemp.cantidad =double.parse(decodedData['inventario']['cantidad']);
+        print(" cantidad ${productoTemp.cantidad}");
+        productoTemp.catidadApartado =double.parse(decodedData['inventario']['apartado']);
+        print(" apartado ${productoTemp.catidadApartado}");
+        productoTemp.disponible =double.parse(decodedData['inventario']['disponibles']);
+        print(" disponible ${productoTemp.disponible}");
         listaProductos.add(productoTemp);
       } else {
         productoTemp.id = 0;

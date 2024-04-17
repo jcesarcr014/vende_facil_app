@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
@@ -34,8 +33,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   final cantidadConttroller = TextEditingController();
   final totalConttroller = TextEditingController();
-  final efectivoConttroller = TextEditingController();
-  final tarjetaConttroller = TextEditingController();
+  final efectivoConttroller = TextEditingController(text: "0.00");
+  final tarjetaConttroller = TextEditingController(text: "0.00");
   final cambioConttroller = TextEditingController();
 
   @override
@@ -461,7 +460,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     idDescuento = 0;
                     descuento = 0.00;
                     totalVentaTemporal = 0.00;
-                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, 'home');
                   },
                   child: const Text('Aceptar '),
                 ),

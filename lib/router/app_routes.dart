@@ -32,8 +32,8 @@ class AppRoutes {
     'config-apartado': (BuildContext context) => const AjustesApartadoScreen(),
     'empleados': (BuildContext context) => const ListaEmpleadosScreen(),
     'nvo-empleado': (BuildContext context) => const RegistroEmpleadoScreen(),
+    'perfil-empleado': (BuildContext context) =>  PerfilEmpleadosScreen(empleadoId: ModalRoute.of(context)!.settings.arguments as String,listaEmpleados: ModalRoute.of(context)) 
   };
-
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return MaterialPageRoute(builder: (context) => const ErrorScreen());
   }

@@ -111,7 +111,7 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
           subtitle: Text(empleado.email!),
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
-            // Navigator.pushNamed(context, 'editar-empleado', arguments: empleado);
+             Navigator.pushNamed(context, 'perfil-empleado',arguments: empleado.id);
           },
         ),
       );
