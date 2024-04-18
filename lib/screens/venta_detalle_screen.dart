@@ -716,7 +716,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             ),
                           ),
                           onChanged: (value) {
-                            // Llama a la función que deseas ejecutar cuando cambie el valor del campo de entrada de efectivo
                             tuFuncion();
                           },
                         ),
