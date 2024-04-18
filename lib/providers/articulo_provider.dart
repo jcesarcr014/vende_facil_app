@@ -101,9 +101,15 @@ class ArticuloProvider {
         productoTemp.costo = double.parse(decodedData['producto']['costo']);
         productoTemp.clave = decodedData['producto']['clave'];
         productoTemp.codigoBarras = decodedData['producto']['codigo_barras'];
-        productoTemp.inventario = decodedData['producto']['inventario'];
+        productoTemp.inventario =int.parse(decodedData['producto']['aplica_inventario']);
         productoTemp.imagen = decodedData['producto']['imagen'];
-        productoTemp.apartado = decodedData['producto']['apartado'];
+        productoTemp.apartado =int.parse(decodedData['producto']['aplica_apartado']);
+        productoTemp.idInventario = decodedData['inventario']['id'];
+        productoTemp.idNegocio = decodedData['inventario']['negocio_id'];
+        productoTemp.idproducto = decodedData['inventario']['producto_id'];
+        productoTemp.cantidad =double.parse(decodedData['inventario']['cantidad']);
+        productoTemp.catidadApartado =double.parse(decodedData['inventario']['apartado']);
+        productoTemp.disponible =double.parse(decodedData['inventario']['disponibles']);
         listaProductos.add(productoTemp);
       } else {
         productoTemp.id = 0;

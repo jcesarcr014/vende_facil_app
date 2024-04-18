@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
@@ -34,8 +33,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   final cantidadConttroller = TextEditingController();
   final totalConttroller = TextEditingController();
-  final efectivoConttroller = TextEditingController();
-  final tarjetaConttroller = TextEditingController();
+  final efectivoConttroller = TextEditingController(text: "0.00");
+  final tarjetaConttroller = TextEditingController(text: "0.00");
   final cambioConttroller = TextEditingController();
 
   @override
@@ -66,9 +65,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                initState() {
-                  _actualizaTotalTemporal();
-                }
 
                 Navigator.pushReplacementNamed(context, 'home');
               },
@@ -461,7 +457,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     idDescuento = 0;
                     descuento = 0.00;
                     totalVentaTemporal = 0.00;
-                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, 'home');
                   },
                   child: const Text('Aceptar '),
                 ),
@@ -664,6 +660,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -694,6 +691,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -727,6 +725,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -748,6 +747,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -808,9 +808,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
                   double resultado = efectivo + tarjeta;
                   // ignore: avoid_print
-                  print(" el dato de la suma es $resultado");
                   if (resultado >= total) {
-                    print("el efectivo es mayor al total");
                     _compra();
                     Navigator.pop(context);
                   } else {
@@ -903,6 +901,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             ),
           ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -933,6 +932,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -963,6 +963,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -995,6 +996,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -1027,6 +1029,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -1072,8 +1075,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   _apartadoCabecera();
                   Navigator.pop(context);
 
+                // ignore: empty_catches
                 }catch(e){
-                  print("Error: $e");
+              
                 }
               },
               child: const Text('Aceptar '),
@@ -1102,8 +1106,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
+    // ignore: empty_catches
     } catch (e) {
-      print("Error: $e");
     }
   }
 
@@ -1121,8 +1125,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
+    // ignore: empty_catches
     } catch (e) {
-      print("Error: $e");
     }
   }
 }

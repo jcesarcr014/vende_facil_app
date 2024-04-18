@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/models/usuario_model.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
@@ -94,50 +95,51 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
               ));
   }
 
-  _empleados() {
-    List<Widget> empleados = [];
-    for (Usuario empleado in listaEmpleados) {
-      empleados.add(
-        ListTile(
-          leading: const Icon(Icons.account_circle_rounded),
-          title: Text(
-            empleado.nombre!,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+ _empleados() {
+  List<Widget> empleados = [];
+  for (int i = 0; i < listaEmpleados.length; i++) {
+    Usuario empleado = listaEmpleados[i];
+    empleados.add(
+      ListTile(
+        leading: const Icon(Icons.account_circle_rounded),
+        title: Text(
+          empleado.nombre!,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
           ),
-          subtitle: Text(empleado.email!),
-          trailing: const Icon(Icons.arrow_right),
-          onTap: () {
-            // Navigator.pushNamed(context, 'editar-empleado', arguments: empleado);
-          },
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
-      );
-    }
-    if (empleados.isEmpty) {
-      final TextTheme textTheme = Theme.of(context).textTheme;
-
-      empleados.add(Column(
-        children: [
-          const Opacity(
-            opacity: 0.2,
-            child: Icon(
-              Icons.no_accounts,
-              size: 130,
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Text(
-            'No hay empleados guardados.',
-            style: textTheme.titleMedium,
-          )
-        ],
-      ));
-    }
-    return empleados;
+        subtitle: Text(empleado.email!),
+        trailing: const Icon(Icons.arrow_right),
+        onTap: () {
+           Navigator.pushNamed(context, 'perfil-empleado', arguments: i);
+        },
+      ),
+    );
   }
+  if (empleados.isEmpty) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    empleados.add(Column(
+      children: [
+        const Opacity(
+          opacity: 0.2,
+          child: Icon(
+            Icons.no_accounts,
+            size: 130,
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        Text(
+          'No hay empleados guardados.',
+          style: textTheme.titleMedium,
+        )
+      ],
+    ));
+  }
+  return empleados;
+}
 }

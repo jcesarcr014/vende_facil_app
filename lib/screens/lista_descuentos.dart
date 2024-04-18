@@ -43,6 +43,7 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Descuentos'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           IconButton(
