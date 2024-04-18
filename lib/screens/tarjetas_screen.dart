@@ -18,6 +18,7 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
+  // ignore: unused_element
   _alertaEliminar() {
     return AlertDialog(
       title: const Text('Eliminar tarjeta'),

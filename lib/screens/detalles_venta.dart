@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 
 class VentaDetallesScreen extends StatefulWidget {
-  const VentaDetallesScreen({super.key});
+  // ignore: use_super_parameters
+  const VentaDetallesScreen({Key? key}) : super(key: key);
 
   @override
   State<VentaDetallesScreen> createState() => _VentaDetallesScreenState();

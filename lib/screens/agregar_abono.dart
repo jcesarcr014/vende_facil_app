@@ -40,7 +40,8 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
       appBar: AppBar(
         title: const Text('Abono a venta'),
         actions: [
-          SizedBox(
+          // ignore: sized_box_for_whitespace
+          Container(
             width: 150,
             child: TextField(
               onTap: () {

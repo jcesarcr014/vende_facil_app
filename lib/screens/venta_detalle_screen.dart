@@ -33,8 +33,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   final cantidadConttroller = TextEditingController();
   final totalConttroller = TextEditingController();
-  final efectivoConttroller = TextEditingController();
-  final tarjetaConttroller = TextEditingController();
+  final efectivoConttroller = TextEditingController(text: "0.00");
+  final tarjetaConttroller = TextEditingController(text: "0.00");
   final cambioConttroller = TextEditingController();
 
   @override
@@ -65,9 +65,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                initState() {
-                  _actualizaTotalTemporal();
-                }
 
                 Navigator.pushReplacementNamed(context, 'home');
               },
@@ -461,7 +458,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     idDescuento = 0;
                     descuento = 0.00;
                     totalVentaTemporal = 0.00;
-                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, 'home');
                   },
                   child: const Text('Aceptar '),
                 ),
@@ -662,6 +659,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -692,6 +690,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -725,6 +724,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -746,7 +746,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+<<<<<<< HEAD
                 SizedBox(
+=======
+                // ignore: sized_box_for_whitespace
+                Container(
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -806,7 +811,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
                   double resultado = efectivo + tarjeta;
                   // ignore: avoid_print
-                  print(" el dato de la suma es $resultado");
                   if (resultado >= total) {
                     _compra();
                     Navigator.pop(context);
@@ -902,7 +906,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+<<<<<<< HEAD
                 SizedBox(
+=======
+                // ignore: sized_box_for_whitespace
+                Container(
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
@@ -932,7 +941,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+<<<<<<< HEAD
                 SizedBox(
+=======
+                // ignore: sized_box_for_whitespace
+                Container(
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
@@ -962,7 +976,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+<<<<<<< HEAD
                 SizedBox(
+=======
+                // ignore: sized_box_for_whitespace
+                Container(
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -994,7 +1013,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+<<<<<<< HEAD
                 SizedBox(
+=======
+                // ignore: sized_box_for_whitespace
+                Container(
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1026,7 +1050,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+<<<<<<< HEAD
                 SizedBox(
+=======
+                // ignore: sized_box_for_whitespace
+                Container(
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1070,8 +1099,15 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   restate = total - restate;
                   _apartadoCabecera();
                   Navigator.pop(context);
+<<<<<<< HEAD
                 } catch (e) {
                   print("Error: $e");
+=======
+
+                // ignore: empty_catches
+                }catch(e){
+              
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                 }
               },
               child: const Text('Aceptar '),
@@ -1100,7 +1136,13 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
+<<<<<<< HEAD
     } catch (e) {}
+=======
+    // ignore: empty_catches
+    } catch (e) {
+    }
+>>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
   }
 
   apartadosomprobacion() {
@@ -1117,8 +1159,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
+    // ignore: empty_catches
     } catch (e) {
-      print("Error: $e");
     }
   }
 }

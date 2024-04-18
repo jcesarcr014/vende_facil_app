@@ -1,3 +1,5 @@
+// ignore_for_file: sized_box_for_whitespace
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
@@ -98,7 +100,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                     )
                   : Column(
                       children: [
-                        SizedBox(
+                        Container(
                           width: MediaQuery.of(context).size.width,
                           child: DataTable(
                             columnSpacing: 20, // Espacio entre columnas
@@ -174,7 +176,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                                 EdgeInsetsDirectional.all(5.0),
                                           ),
                                           SizedBox(height: windowHeight * 0.05),
-                                          SizedBox(
+                                          Container(
                                             width: windowWidth * 0.9,
                                             child: Row(
                                               children: [
@@ -215,7 +217,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                             ),
                                           ),
                                           SizedBox(height: windowHeight * 0.05),
-                                          SizedBox(
+                                          Container(
                                             width: windowWidth * 0.9,
                                             child: Row(
                                               children: [

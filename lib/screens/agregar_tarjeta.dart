@@ -7,6 +7,7 @@ class AgregaTarjetaScreen extends StatefulWidget {
   const AgregaTarjetaScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AgregaTarjetaScreenState createState() => _AgregaTarjetaScreenState();
 }
 

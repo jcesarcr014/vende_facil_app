@@ -103,6 +103,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     await SharedPreferences.getInstance();
                 prefs.setString('token', '');
               }
+              // ignore: use_build_context_synchronously
               Navigator.pushReplacementNamed(context, menuRoutes[index]);
             },
             child: Column(

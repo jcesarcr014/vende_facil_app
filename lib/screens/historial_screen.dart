@@ -4,6 +4,7 @@ import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
 
 class HistorialScreen extends StatefulWidget {
+  // ignore: use_key_in_widget_constructors
   const HistorialScreen({Key? key});
 
   @override

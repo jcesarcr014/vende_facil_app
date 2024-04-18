@@ -11,6 +11,12 @@ class Producto {
   int? inventario;
   String? imagen;
   int? apartado;
+  int? idInventario;
+  int? idNegocio;
+  int? idproducto;
+  double? cantidad;
+  double? catidadApartado;
+  double? disponible;
 
   Producto({
     this.id,
@@ -25,6 +31,12 @@ class Producto {
     this.inventario,
     this.imagen,
     this.apartado,
+    this.idInventario,
+    this.idNegocio,
+    this.idproducto,
+    this.cantidad,
+    this.catidadApartado,
+    this.disponible,
   });
 }
 

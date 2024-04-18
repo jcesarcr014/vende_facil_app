@@ -1,11 +1,9 @@
-// ignore_for_file: use_super_parameters
-
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
+import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
 
-class PerfilScreen extends StatelessWidget {
-  const PerfilScreen({Key? key}) : super(key: key);
+class PerfilEmpleadosScreen extends StatelessWidget {
+  const PerfilEmpleadosScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +12,7 @@ class PerfilScreen extends StatelessWidget {
     final oldPassword = TextEditingController();
     final newPassword = TextEditingController();
     final usuario = UsuarioProvider();
+    final String empleadoId = ModalRoute.of(context)!.settings.arguments.toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -39,15 +38,15 @@ class PerfilScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Nombre : ${sesion.nombreUsuario}",
+                  Text("Nombre : ${listaEmpleados[int.parse(empleadoId)].nombre}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
-                  Text("email : ${sesion.email}",
+                  Text("email : ${listaEmpleados[int.parse(empleadoId)].email}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
-                  Text("Telefono : ${sesion.telefono}",
+                  Text("Telefono : ${listaEmpleados[int.parse(empleadoId)].telefono}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
@@ -80,9 +79,8 @@ class PerfilScreen extends StatelessWidget {
                           children: [
                             SizedBox(height: windowHeight * 0.05),
                             Container(
-
-                              width: MediaQuery.of(context).size.width*1,color: Colors.yellow,
-
+                              width: MediaQuery.of(context).size.width * 1,
+                              color: Colors.yellow,
                               child: Row(
                                 children: [
                                   const Flexible(
@@ -114,7 +112,6 @@ class PerfilScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: windowHeight * 0.05),
-                            // ignore: sized_box_for_whitespace
                             Container(
                               width: MediaQuery.of(context).size.width,
                               child: Row(
@@ -163,7 +160,8 @@ class PerfilScreen extends StatelessWidget {
                                     .showSnackBar(const SnackBar(
                                   content: Text('Contraseña actualizada'),
                                 ));
-                                Navigator.pushReplacementNamed(context, 'login');
+                                Navigator.pushReplacementNamed(
+                                    context, 'login');
                               } else {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(
@@ -184,26 +182,9 @@ class PerfilScreen extends StatelessWidget {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text(
-                'Cerrar sesión',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: const Text('Salir de la aplicación'),
-              trailing: const Icon(Icons.arrow_right),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, 'login');
-              },
-            ),
           ],
         ),
       ),
     );
   }
 }
-
