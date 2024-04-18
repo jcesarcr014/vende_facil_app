@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 
 class VentaDetallesScreen extends StatefulWidget {
-  const VentaDetallesScreen({Key? key}) : super(key: key);
+  const VentaDetallesScreen({super.key});
 
   @override
   State<VentaDetallesScreen> createState() => _VentaDetallesScreenState();
@@ -84,30 +84,33 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                         const CircularProgressIndicator(),
                       ]),
                 )
-          : Expanded(
-  child: SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    child: SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: DataTable(
-        columnSpacing: 20, // Espacio entre columnas
-        columns: const [
-          DataColumn(label: Text('Producto')),
-          DataColumn(label: Text('Cantidad')),
-          DataColumn(label: Text('Descuento')),
-          DataColumn(label: Text('Total')),
-        ],
-        rows: listaVentadetalles.map((detalle) => DataRow(cells: [
-          DataCell(Text(detalle.nombreProducto.toString())),
-          DataCell(Text(detalle.cantidad.toString())),
-          DataCell(Text(detalle.cantidadDescuento.toString())),
-          DataCell(Text(detalle.total.toString())),
-        ])).toList(),
-      ),
-    ),
-  ),
-),
-
+              : Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: DataTable(
+                        columnSpacing: 20, // Espacio entre columnas
+                        columns: const [
+                          DataColumn(label: Text('Producto')),
+                          DataColumn(label: Text('Cantidad')),
+                          DataColumn(label: Text('Descuento')),
+                          DataColumn(label: Text('Total')),
+                        ],
+                        rows: listaVentadetalles
+                            .map((detalle) => DataRow(cells: [
+                                  DataCell(
+                                      Text(detalle.nombreProducto.toString())),
+                                  DataCell(Text(detalle.cantidad.toString())),
+                                  DataCell(Text(
+                                      detalle.cantidadDescuento.toString())),
+                                  DataCell(Text(detalle.total.toString())),
+                                ]))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
         ],
       ),
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
@@ -20,13 +19,13 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   String _valueIdDescuento = '0';
   String _valueIdcliente = '0';
   double descuento = 0.0;
-  double restate=0.0;
+  double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
   String formattedEndDate = "";
   String formattedStartDate = "";
   DateTime now = DateTime.now();
-  late  DateTime _startDate;
+  late DateTime _startDate;
   late DateTime _endDate;
   late DateFormat dateFormatter;
   final ventaCabecera = VentasProvider();
@@ -50,9 +49,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     super.initState();
     _fetchData();
   }
-    void _fetchData() {
-    setState(() {
-    });
+
+  void _fetchData() {
+    setState(() {});
   }
 
   @override
@@ -206,7 +205,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                                totalConttroller.text =totalVentaTemporal.toStringAsFixed(2);
+                              totalConttroller.text =
+                                  totalVentaTemporal.toStringAsFixed(2);
                               _alertaApartados();
                             },
                             child: SizedBox(
@@ -509,10 +509,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       fechaApartado: formattedStartDate.toString(),
       fechaVencimiento: formattedEndDate.toString(),
       saldoPendiente: restate,
-      anticipo:efectivoConttroller.text.isNotEmpty
+      anticipo: efectivoConttroller.text.isNotEmpty
           ? double.parse(efectivoConttroller.text)
           : 0.00,
-
     );
     apartadosCabecera.guardaApartado(apartado).then((value) {
       if (value.status == 1) {
@@ -586,7 +585,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     });
   }
-
 
   _alertadescuento(Descuento descuentos) {
     showDialog(
@@ -748,7 +746,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-                Container(
+                SizedBox(
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -810,7 +808,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   // ignore: avoid_print
                   print(" el dato de la suma es $resultado");
                   if (resultado >= total) {
-                    print("el efectivo es mayor al total");
                     _compra();
                     Navigator.pop(context);
                   } else {
@@ -858,52 +855,54 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                          Padding(
-            padding: const EdgeInsetsDirectional.all(5.0),
-            child: Row(
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2015),
-                      lastDate: DateTime(2100),
-                      initialDateRange: DateTimeRange(
-                        start: formattedStartDate.isEmpty
-                            ? DateTime.now()
-                            : _startDate,
-                        end: formattedEndDate.isEmpty
-                            ? _startDate.add(const Duration(days: 30))
-                            : _endDate,
+                Padding(
+                  padding: const EdgeInsetsDirectional.all(5.0),
+                  child: Row(
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final picked = await showDateRangePicker(
+                            context: context,
+                            firstDate: DateTime(2015),
+                            lastDate: DateTime(2100),
+                            initialDateRange: DateTimeRange(
+                              start: formattedStartDate.isEmpty
+                                  ? DateTime.now()
+                                  : _startDate,
+                              end: formattedEndDate.isEmpty
+                                  ? _startDate.add(const Duration(days: 30))
+                                  : _endDate,
+                            ),
+                          );
+                          if (picked != null &&
+                              picked !=
+                                  DateTimeRange(
+                                      start: _startDate,
+                                      end: formattedEndDate.isEmpty
+                                          ? _startDate
+                                              .add(const Duration(days: 30))
+                                          : _endDate)) {
+                            setState(() {
+                              _startDate = picked.start;
+                              _endDate = picked.end;
+                              dateFormatter = DateFormat('yyyy-MM-dd');
+                              formattedStartDate =
+                                  dateFormatter.format(_startDate);
+                              formattedEndDate = dateFormatter.format(_endDate);
+                            });
+                          }
+                        },
+                        child: Text(
+                          '$formattedStartDate - $formattedEndDate',
+                          style: const TextStyle(fontSize: 15.0),
+                        ),
                       ),
-                    );
-                    if (picked != null &&
-                        picked !=
-                            DateTimeRange(
-                                start: _startDate,
-                                end: formattedEndDate.isEmpty
-                                    ? _startDate.add(const Duration(days: 30))
-                                    : _endDate)) {
-                      setState(() {
-                        _startDate = picked.start;
-                        _endDate = picked.end;
-                        dateFormatter = DateFormat('yyyy-MM-dd');
-                        formattedStartDate = dateFormatter.format(_startDate);
-                        formattedEndDate = dateFormatter.format(_endDate);
-                      });
-                    }
-                  },
-                  child: Text(
-                    '$formattedStartDate - $formattedEndDate',
-                    style: const TextStyle(fontSize: 15.0),
+                      const Icon(Icons.calendar_today, size: 15.0),
+                    ],
                   ),
                 ),
-                const Icon(Icons.calendar_today, size: 15.0),
-              ],
-            ),
-          ),
                 SizedBox(height: windowHeight * 0.05),
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
@@ -933,7 +932,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
@@ -963,7 +962,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-                Container(
+                SizedBox(
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -995,7 +994,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-                Container(
+                SizedBox(
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1027,7 +1026,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-                Container(
+                SizedBox(
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1062,17 +1061,16 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                try{
-                double efectivo = double.parse(efectivoConttroller.text);
-                double total = double.parse(totalConttroller.text);
-                double tarjeta = double.parse(tarjetaConttroller.text);
+                try {
+                  double efectivo = double.parse(efectivoConttroller.text);
+                  double total = double.parse(totalConttroller.text);
+                  double tarjeta = double.parse(tarjetaConttroller.text);
 
                   restate = efectivo + tarjeta;
-                  restate= total-restate;
+                  restate = total - restate;
                   _apartadoCabecera();
                   Navigator.pop(context);
-
-                }catch(e){
+                } catch (e) {
                   print("Error: $e");
                 }
               },
@@ -1102,9 +1100,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
-    } catch (e) {
-      print("Error: $e");
-    }
+    } catch (e) {}
   }
 
   apartadosomprobacion() {

@@ -29,7 +29,6 @@ class VentasProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['venta_id'];
-        print(respuesta.id);
         respuesta.folio = decodedData['folio'];
       } else {
         respuesta.status = 0;
@@ -182,7 +181,6 @@ class VentasProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion: $e';
-      print(respuesta.mensaje);
     }
     return respuesta;
   }

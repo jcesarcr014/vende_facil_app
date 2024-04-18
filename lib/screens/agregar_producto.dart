@@ -5,7 +5,6 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:image/image.dart' as img;
 
 class AgregaProductoScreen extends StatefulWidget {
   const AgregaProductoScreen({super.key});
