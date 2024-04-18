@@ -65,9 +65,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                initState() {
-                  _actualizaTotalTemporal();
-                }
 
                 Navigator.pushReplacementNamed(context, 'home');
               },
@@ -663,6 +660,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -693,6 +691,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -726,6 +725,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -747,6 +747,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -807,9 +808,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
                   double resultado = efectivo + tarjeta;
                   // ignore: avoid_print
-                  print(" el dato de la suma es $resultado");
                   if (resultado >= total) {
-                    print("el efectivo es mayor al total");
                     _compra();
                     Navigator.pop(context);
                   } else {
@@ -902,6 +901,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             ),
           ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -932,6 +932,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -962,6 +963,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -994,6 +996,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -1026,6 +1029,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
+                // ignore: sized_box_for_whitespace
                 Container(
                   width: windowWidth * 0.9,
                   child: Row(
@@ -1071,8 +1075,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   _apartadoCabecera();
                   Navigator.pop(context);
 
+                // ignore: empty_catches
                 }catch(e){
-                  print("Error: $e");
+              
                 }
               },
               child: const Text('Aceptar '),
@@ -1101,8 +1106,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
+    // ignore: empty_catches
     } catch (e) {
-      print("Error: $e");
     }
   }
 
@@ -1120,8 +1125,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
+    // ignore: empty_catches
     } catch (e) {
-      print("Error: $e");
     }
   }
 }

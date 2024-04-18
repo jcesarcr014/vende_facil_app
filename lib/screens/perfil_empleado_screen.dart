@@ -3,10 +3,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
 
 class PerfilEmpleadosScreen extends StatelessWidget {
-  final String empleadoId;
-  final  listaEmpleados; // Lista de empleados agregada
-
-  PerfilEmpleadosScreen({Key? key, required this.empleadoId, required this.listaEmpleados}) : super(key: key);
+  const PerfilEmpleadosScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +12,7 @@ class PerfilEmpleadosScreen extends StatelessWidget {
     final oldPassword = TextEditingController();
     final newPassword = TextEditingController();
     final usuario = UsuarioProvider();
+    final String empleadoId = ModalRoute.of(context)!.settings.arguments.toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -40,15 +38,15 @@ class PerfilEmpleadosScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Nombre : ${listaEmpleados[int.parse(empleadoId)].nombre}", // Accediendo al empleado usando el empleadoId
+                  Text("Nombre : ${listaEmpleados[int.parse(empleadoId)].nombre}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
-                  Text("email : ${listaEmpleados[int.parse(empleadoId)].email}", // Accediendo al empleado usando el empleadoId
+                  Text("email : ${listaEmpleados[int.parse(empleadoId)].email}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
-                  Text("Telefono : ${listaEmpleados[int.parse(empleadoId)].telefono}", // Accediendo al empleado usando el empleadoId
+                  Text("Telefono : ${listaEmpleados[int.parse(empleadoId)].telefono}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
@@ -81,9 +79,8 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                           children: [
                             SizedBox(height: windowHeight * 0.05),
                             Container(
-
-                              width: MediaQuery.of(context).size.width*1,color: Colors.yellow,
-
+                              width: MediaQuery.of(context).size.width * 1,
+                              color: Colors.yellow,
                               child: Row(
                                 children: [
                                   const Flexible(
@@ -163,7 +160,8 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                                     .showSnackBar(const SnackBar(
                                   content: Text('Contraseña actualizada'),
                                 ));
-                                Navigator.pushReplacementNamed(context, 'login');
+                                Navigator.pushReplacementNamed(
+                                    context, 'login');
                               } else {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(

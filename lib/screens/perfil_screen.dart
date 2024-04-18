@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
@@ -112,6 +114,7 @@ class PerfilScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: windowHeight * 0.05),
+                            // ignore: sized_box_for_whitespace
                             Container(
                               width: MediaQuery.of(context).size.width,
                               child: Row(

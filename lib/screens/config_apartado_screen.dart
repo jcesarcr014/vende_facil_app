@@ -51,7 +51,6 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
       } else {
         Navigator.pop(context);
         mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
-        print('Error: ${value.mensaje}');
       }
     });
     super.initState();
