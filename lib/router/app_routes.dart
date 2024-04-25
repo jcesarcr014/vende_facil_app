@@ -33,6 +33,7 @@ class AppRoutes {
     'empleados': (BuildContext context) => const ListaEmpleadosScreen(),
     'nvo-empleado': (BuildContext context) => const RegistroEmpleadoScreen(),
     'perfil-empleado': (BuildContext context) => const PerfilEmpleadosScreen(),
+    'venta': (BuildContext context) => const VentaScreen(),
   };
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return MaterialPageRoute(builder: (context) => const ErrorScreen());

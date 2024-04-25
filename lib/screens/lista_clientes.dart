@@ -113,8 +113,31 @@ class _ClientesScreenState extends State<ClientesScreen> {
         Column(
           children: [
             ListTile(
-              onTap: (() => Navigator.pushNamed(context, 'nvo-cliente',
-                  arguments: cliente)),
+
+              onTap: () {
+  if (cliente.nombre != 'Público en general') {
+    Navigator.pushNamed(context, 'nvo-cliente', arguments: cliente);
+  } else {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Alerta'),
+          content: const Text('No se puede modificar o eliminar".'),
+          actions: <Widget>[
+             ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+},
+
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

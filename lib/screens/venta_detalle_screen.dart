@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:vende_facil/models/cliente_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -185,9 +186,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              totalConttroller.text =
-                                  totalVentaTemporal.toStringAsFixed(2);
-                              _alertaVenta();
+                             Navigator.pushNamed(context, 'venta');
+                             setState(() {});
                             },
                             child: SizedBox(
                               height: windowHeight * 0.1,
@@ -372,22 +372,24 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   _clientes() {
     var listaClien = [
-      const DropdownMenuItem(
-        value: '0',
-        child: SizedBox(child: Text('Ninguno')),
+       DropdownMenuItem(
+        value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
+        child: SizedBox(child: Text(listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').nombre!)),
       )
     ];
     for (Cliente cliente in listaClientes) {
-      listaClien.add(DropdownMenuItem(
+      if (cliente.nombre != 'Público en general'){
+          listaClien.add(DropdownMenuItem(
           value: cliente.id.toString(), child: Text(cliente.nombre!)));
+      }
     }
     if (_valueIdcliente.isEmpty) {
-      _valueIdcliente = '0';
+      _valueIdcliente = listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
     }
     return DropdownButton(
       items: listaClien,
       isExpanded: true,
-      value: _valueIdcliente,
+      value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
       onChanged: (value) {
         _valueIdcliente = value!;
         if (value == "0") {
@@ -403,7 +405,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
  _compra() {
-  // Mostrar indicador de carga
   showDialog(
     context: context,
     barrierDismissible: false,
