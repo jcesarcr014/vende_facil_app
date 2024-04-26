@@ -186,7 +186,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                             Navigator.pushNamed(context, 'venta');
+                                VentaCabecera venta = VentaCabecera(
+                                idCliente: idcliente,
+                                subtotal: subTotalItem,
+                                idDescuento: idDescuento,
+                                descuento: descuento,
+                                total: totalVentaTemporal,
+                                importeEfectivo: efectivoConttroller.text.isNotEmpty
+                                    ? double.parse(efectivoConttroller.text.replaceAll(',', ''))
+                                    : 0.00,
+                                importeTarjeta: tarjetaConttroller.text.isNotEmpty
+                                    ? double.parse(tarjetaConttroller.text.replaceAll(',', ''))
+                                    : 0.00,
+                                );
+                             Navigator.pushNamed(context, 'venta',arguments: venta);
                              setState(() {});
                             },
                             child: SizedBox(

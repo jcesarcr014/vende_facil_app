@@ -13,7 +13,7 @@ class VentasProvider {
 
     try {
       final resp = await http.post(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
+         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'usuario_id': sesion.idUsuario.toString(),
         'cliente_id': venta.idCliente.toString(),
