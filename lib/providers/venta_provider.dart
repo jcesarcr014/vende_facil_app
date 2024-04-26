@@ -21,7 +21,7 @@ class VentasProvider {
         'descuento_id': venta.idDescuento.toString(),
         'descuento': venta.descuento!.toStringAsFixed(2),
         'total': venta.total!.toStringAsFixed(2),
-        'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
+        'pago_efectivo': venta.importeEfectivo!.toString(),
         'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
       });
 
