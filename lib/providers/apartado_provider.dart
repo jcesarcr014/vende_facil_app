@@ -9,7 +9,7 @@ class ApartadoProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> variablesApartado() async {
-    var url = Uri.parse('$baseUrl/variables/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/variables-conf/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
