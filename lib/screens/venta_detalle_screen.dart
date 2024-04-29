@@ -391,14 +391,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   _clientes() {
     var listaClien = [
       DropdownMenuItem(
-        value: listaClientes
-            .firstWhere((cliente) => cliente.nombre == 'Público en general')
-            .id
-            .toString(),
+        value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
         child: SizedBox(
-            child: Text(listaClientes
-                .firstWhere((cliente) => cliente.nombre == 'Público en general')
-                .nombre!)),
+            child: Text(listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').nombre!)),
       )
     ];
     for (Cliente cliente in listaClientes) {
@@ -409,9 +404,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     }
     if (_valueIdcliente.isEmpty) {
       _valueIdcliente = listaClientes
-          .firstWhere((cliente) => cliente.nombre == 'Público en general')
-          .id
-          .toString();
+          .firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
     }
     return DropdownButton(
       items: listaClien,
