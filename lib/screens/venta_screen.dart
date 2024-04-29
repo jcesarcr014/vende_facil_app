@@ -143,77 +143,7 @@ class _ventaScreenState extends State<VentaScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      venta.importeTarjeta =efectivo;
-                      venta.importeEfectivo = tarjeta;
-                      ventaCabecera.guardarVenta(venta).then((value) {
-                        if (value.status == 1) {
-                          Navigator.pop(context);
-                          for (ItemVenta item in ventaTemporal) {
-                            VentaDetalle ventaDetalle = VentaDetalle(
-                              idVenta: value.id,
-                              idProd: item.idArticulo,
-                              cantidad: item.cantidad,
-                              precio: item.precio,
-                              idDesc: venta.idDescuento,
-                              cantidadDescuento: venta.descuento,
-                              total: item.totalItem,
-                              subtotal: item.subTotalItem,
-                            );
-
-                            ventaCabecera
-                                .guardarVentaDetalle(ventaDetalle)
-                                .then((value) {});
-                          }
-
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) {
-                              return AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                content:
-                                    const Text('Venta realizada con exito'),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      TotalConttroller.clear();
-                                      EfectivoController.clear();
-                                      TarjetaController.clear();
-                                      CambioController.clear();
-                                      ventaTemporal.clear();
-                                      totalVentaTemporal = 0.00;
-                                      Navigator.pushReplacementNamed(
-                                          context, 'home');
-                                    },
-                                    child: const Text('Aceptar '),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        } else {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) {
-                              return AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                content: Text('${value.mensaje}'),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Aceptar '),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      });
+                      _checkVenta(venta);
                     },
                     child: Text('Aceptar'),
                   ),
@@ -232,6 +162,156 @@ class _ventaScreenState extends State<VentaScreen> {
     );
   }
 
+  void _checkVenta(VentaCabecera venta) {
+    if (ventaTemporal.isEmpty) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            content: const Text('No hay productos en la venta'),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Aceptar '),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      double efectivo =
+          double.parse(EfectivoController.text.replaceAll(',', ''));
+      double total = double.parse(TotalConttroller.text);
+      double tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
+      double resultado = efectivo + tarjeta;
+      if (tarjeta > total) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              content: const Text('El pago con tarjeta es mayor al total'),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Aceptar '),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        if (resultado >= total) {
+          _compra(venta);
+          Navigator.pop(context);
+        } else {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                content: const Text('El efectivo es menor al total'),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Aceptar '),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      }
+    }
+  }
+
+  _compra(VentaCabecera venta) {
+    venta.importeTarjeta = efectivo;
+    venta.importeEfectivo = tarjeta;
+    ventaCabecera.guardarVenta(venta).then((value) {
+      if (!mounted) return; // Comprobar si el widget está montado
+
+      if (value.status == 1) {
+        Navigator.pop(context);
+        for (ItemVenta item in ventaTemporal) {
+          VentaDetalle ventaDetalle = VentaDetalle(
+            idVenta: value.id,
+            idProd: item.idArticulo,
+            cantidad: item.cantidad,
+            precio: item.precio,
+            idDesc: venta.idDescuento,
+            cantidadDescuento: venta.descuento,
+            total: item.totalItem,
+            subtotal: item.subTotalItem,
+          );
+
+          ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
+            if (value.status == 1) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    content: const Text('Venta realizada con éxito'),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            efectivo = 0.0;
+                            tarjeta = 0.0;
+                            total = 0.0;
+                            TotalConttroller.clear();
+                            EfectivoController.clear();
+                            TarjetaController.clear();
+                            CambioController.clear();
+                            ventaTemporal.clear();
+                            totalVentaTemporal = 0.00;
+                          });
+                          Navigator.pushReplacementNamed(context, 'home');
+                        },
+                        child: const Text('Aceptar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    content: Text('${value.mensaje}'),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Aceptar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            ;
+          });
+        }
+      }
+    });
+  }
+
   tuFuncion() {
     try {
       if (EfectivoController.text.contains(',')) {
@@ -240,7 +320,7 @@ class _ventaScreenState extends State<VentaScreen> {
         efectivo = double.parse(EfectivoController.text);
       }
       if (TarjetaController.text.contains(',')) {
-         tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
+        tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
       } else {
         tarjeta = double.parse(TarjetaController.text);
       }

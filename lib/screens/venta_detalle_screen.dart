@@ -389,7 +389,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _clientes() {
-    print(_valueIdcliente);
     var listaClien = [
       DropdownMenuItem(
         value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
