@@ -24,6 +24,8 @@ class _ventaScreenState extends State<VentaScreen> {
   void initState() {
     super.initState();
     TotalConttroller.text = totalVentaTemporal.toStringAsFixed(2);
+    EfectivoController.text = "0.00";
+    TarjetaController.text = "0.00";
   }
 
   @override
@@ -141,10 +143,8 @@ class _ventaScreenState extends State<VentaScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      venta.importeTarjeta =
-                          double.parse(TarjetaController.text);
-                      venta.importeEfectivo =
-                          double.parse(EfectivoController.text);
+                      venta.importeTarjeta =efectivo;
+                      venta.importeEfectivo = tarjeta;
                       ventaCabecera.guardarVenta(venta).then((value) {
                         if (value.status == 1) {
                           Navigator.pop(context);
@@ -240,7 +240,7 @@ class _ventaScreenState extends State<VentaScreen> {
         efectivo = double.parse(EfectivoController.text);
       }
       if (TarjetaController.text.contains(',')) {
-        tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
+         tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
       } else {
         tarjeta = double.parse(TarjetaController.text);
       }

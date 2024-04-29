@@ -18,7 +18,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
   String _valueIdDescuento = '0';
-  String _valueIdcliente = '0';
+  String _valueIdcliente = listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
   double descuento = 0.0;
   double restate = 0.0;
   int idcliente = 0;
@@ -186,7 +186,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         ElevatedButton(
                             onPressed: () {
                               VentaCabecera venta = VentaCabecera(
-                                idCliente: idcliente,
+                                idCliente: int.parse(_valueIdcliente),
                                 subtotal: subTotalItem,
                                 idDescuento: idDescuento,
                                 descuento: descuento,
@@ -389,6 +389,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _clientes() {
+    print(_valueIdcliente);
     var listaClien = [
       DropdownMenuItem(
         value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
@@ -396,6 +397,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             child: Text(listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').nombre!)),
       )
     ];
+
     for (Cliente cliente in listaClientes) {
       if (cliente.nombre != 'Público en general') {
         listaClien.add(DropdownMenuItem(
@@ -416,14 +418,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       onChanged: (value) {
         _valueIdcliente = value!;
         print(_valueIdcliente);
-        // if (value == listaClientes.firstWhere((cliente) =>cliente.nombre == 'Público en general').id.toString()) {
-        //   setState(() {});
-        // } else {
-        //   idcliente = listaClientes
-        //       .firstWhere((cliente) => cliente.id.toString() == value)
-        //       .id!;
-        //       setState(() {});
-        // }
+         if (value == listaClientes.firstWhere((cliente) =>cliente.nombre == 'Público en general').id.toString()) {
+           setState(() {});
+         } else {
+         idcliente = listaClientes
+              .firstWhere((cliente) => cliente.id.toString() == value)
+              .id!;
+            setState(() {});
+         }
         setState(() {});
       },
     );

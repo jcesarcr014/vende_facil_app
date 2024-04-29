@@ -10,7 +10,7 @@ class VentasProvider {
 
   Future<Resultado> guardarVenta(VentaCabecera venta) async {
     var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
-    print(venta.idCliente);
+    print("cliente id ${venta.idCliente}");
     print(sesion.idUsuario);
     print(venta.subtotal);
     print(venta.idDescuento);
