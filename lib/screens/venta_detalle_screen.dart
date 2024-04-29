@@ -65,7 +65,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         actions: [
           IconButton(
               onPressed: () {
-
                 Navigator.pushReplacementNamed(context, 'home');
               },
               icon: const Icon(Icons.arrow_back)),
@@ -746,12 +745,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-<<<<<<< HEAD
-                SizedBox(
-=======
                 // ignore: sized_box_for_whitespace
                 Container(
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -906,12 +901,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-<<<<<<< HEAD
-                SizedBox(
-=======
                 // ignore: sized_box_for_whitespace
                 Container(
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
@@ -941,12 +932,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-<<<<<<< HEAD
-                SizedBox(
-=======
                 // ignore: sized_box_for_whitespace
                 Container(
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
@@ -976,12 +963,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-<<<<<<< HEAD
-                SizedBox(
-=======
                 // ignore: sized_box_for_whitespace
                 Container(
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1013,12 +996,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-<<<<<<< HEAD
-                SizedBox(
-=======
                 // ignore: sized_box_for_whitespace
                 Container(
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1050,12 +1029,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ),
                 ),
                 SizedBox(height: windowHeight * 0.05),
-<<<<<<< HEAD
-                SizedBox(
-=======
                 // ignore: sized_box_for_whitespace
                 Container(
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
                   width: windowWidth * 0.9,
                   child: Row(
                     children: [
@@ -1099,16 +1074,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   restate = total - restate;
                   _apartadoCabecera();
                   Navigator.pop(context);
-<<<<<<< HEAD
-                } catch (e) {
-                  print("Error: $e");
-=======
 
-                // ignore: empty_catches
-                }catch(e){
-              
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
-                }
+                  // ignore: empty_catches
+                } catch (e) {}
               },
               child: const Text('Aceptar '),
             ),
@@ -1136,13 +1104,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
-<<<<<<< HEAD
+      // ignore: empty_catches
     } catch (e) {}
-=======
-    // ignore: empty_catches
-    } catch (e) {
-    }
->>>>>>> 587cea4f345b8cb770900baa286eaace291474b7
   }
 
   apartadosomprobacion() {
@@ -1159,8 +1122,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
-    // ignore: empty_catches
-    } catch (e) {
-    }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 }
