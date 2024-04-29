@@ -208,7 +208,6 @@ class _ventaScreenState extends State<VentaScreen> {
       } else {
         if (resultado >= total) {
           _compra(venta);
-          Navigator.pop(context);
         } else {
           showDialog(
             context: context,
@@ -233,6 +232,21 @@ class _ventaScreenState extends State<VentaScreen> {
   }
 
   _compra(VentaCabecera venta) {
+     showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Procesado venta..."),
+            ],
+          ),
+        );
+      },
+    );
     venta.importeTarjeta = efectivo;
     venta.importeEfectivo = tarjeta;
     ventaCabecera.guardarVenta(venta).then((value) {
