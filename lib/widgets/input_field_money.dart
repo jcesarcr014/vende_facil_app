@@ -4,8 +4,14 @@ import 'package:intl/intl.dart';
 class InputFieldMoney extends StatefulWidget {
   final TextEditingController? controller;
   final String labelText;
+  final void Function(dynamic value)? onChanged; // Cambio aquí
 
-  const InputFieldMoney({super.key, this.controller, this.labelText = 'Monto'});
+  const InputFieldMoney(
+      {Key? key,
+      this.controller,
+      this.labelText = 'Monto',
+      this.onChanged}) // Cambio aquí
+      : super(key: key); // Cambio aquí
 
   @override
   State<InputFieldMoney> createState() => _InputFieldMoneyState();
@@ -32,13 +38,14 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         hintText: '0.00',
-        labelText: widget
-            .labelText, // Utiliza el valor proporcionado en el constructor
+        labelText: widget.labelText,
         prefixIcon: const Icon(Icons.attach_money),
       ),
       onChanged: (value) {
-
         setState(() {
+          if (widget.onChanged != null) {
+            widget.onChanged!(value); // Cambio aquí
+          }
           if (value.isEmpty) return;
           final numericValue = value.replaceAll(RegExp(r'[^\d.]'), '');
 

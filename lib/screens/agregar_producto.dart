@@ -112,6 +112,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               textLoading = '';
             });
             mostrarAlerta(context, '', value.mensaje!);
+
           }
         });
       } else {
@@ -178,6 +179,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                 textLoading = '';
               });
               mostrarAlerta(context, '', value.mensaje!);
+              print(value.mensaje!);
             }
           });
         } else {
@@ -303,9 +305,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       _valueInventario = (args.inventario == 0) ? false : true;
       _valueApartado = (args.apartado == 0) ? false : true;
       if (_valueInventario) {
-            controllerCantidad.text = (args.disponible != null)
-                ? args.disponible!.toStringAsFixed(2)
-                : '0.00';
+        controllerCantidad.text = (args.disponible != null)
+            ? args.disponible!.toStringAsFixed(2)
+            : '0.00';
       }
     }
     final title = (args.id == 0) ? 'Nuevo producto' : 'Editar producto';
@@ -551,17 +553,23 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         });
   }
 
-  fotoProducto(ImageSource source) async {
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
+Future<void> fotoProducto(ImageSource source) async {
+  final pickedFile = await picker.pickImage(
+    source: source,
+    maxWidth: 800, 
+    maxHeight: 600,
+    imageQuality: 80, 
+  );
+
+  if (pickedFile != null) {
+    setState(() {
       imagenProducto = File(pickedFile.path);
       _rutaProducto = pickedFile.path;
-
       _valueImagen = true;
       if (args.id != 0) {
         _cambioImagen = true;
       }
-      setState(() {});
-    }
+    });
   }
+}
 }

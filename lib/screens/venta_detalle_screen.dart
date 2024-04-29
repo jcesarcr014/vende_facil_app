@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:vende_facil/models/cliente_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -184,9 +185,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              totalConttroller.text =
-                                  totalVentaTemporal.toStringAsFixed(2);
-                              _alertaVenta();
+                             Navigator.pushNamed(context, 'venta');
+                             setState(() {});
                             },
                             child: SizedBox(
                               height: windowHeight * 0.1,
@@ -372,22 +372,24 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   _clientes() {
     var listaClien = [
-      const DropdownMenuItem(
-        value: '0',
-        child: SizedBox(child: Text('Ninguno')),
+       DropdownMenuItem(
+        value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
+        child: SizedBox(child: Text(listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').nombre!)),
       )
     ];
     for (Cliente cliente in listaClientes) {
-      listaClien.add(DropdownMenuItem(
+      if (cliente.nombre != 'Público en general'){
+          listaClien.add(DropdownMenuItem(
           value: cliente.id.toString(), child: Text(cliente.nombre!)));
+      }
     }
     if (_valueIdcliente.isEmpty) {
-      _valueIdcliente = '0';
+      _valueIdcliente = listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
     }
     return DropdownButton(
       items: listaClien,
       isExpanded: true,
-      value: _valueIdcliente,
+      value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
       onChanged: (value) {
         _valueIdcliente = value!;
         if (value == "0") {
@@ -402,92 +404,133 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     );
   }
 
-  _compra() {
-    VentaCabecera venta = VentaCabecera(
-      idCliente: idcliente,
-      subtotal: subTotalItem,
-      idDescuento: idDescuento,
-      descuento: descuento,
-      total: totalVentaTemporal,
-      importeEfectivo: efectivoConttroller.text.isNotEmpty
-          ? double.parse(efectivoConttroller.text)
-          : 0.00,
-      importeTarjeta: tarjetaConttroller.text.isNotEmpty
-          ? double.parse(tarjetaConttroller.text)
-          : 0.00,
-    );
-    ventaCabecera.guardarVenta(venta).then((value) {
-      if (value.status == 1) {
-        for (ItemVenta item in ventaTemporal) {
-          VentaDetalle ventaDetalle = VentaDetalle(
-            idVenta: value.id,
-            idProd: item.idArticulo,
-            cantidad: item.cantidad,
-            precio: item.precio,
-            idDesc: idDescuento,
-            cantidadDescuento: descuento,
-            total: item.totalItem,
-            subtotal: item.subTotalItem,
-          );
-          ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
-            if (value.status == 1) {
-            } else {}
-          });
-        }
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              content: const Text('Venta realizada con exito'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    totalConttroller.clear();
-                    efectivoConttroller.clear();
-                    tarjetaConttroller.clear();
-                    cambioConttroller.clear();
-                    ventaTemporal.clear();
-                    _actualizaTotalTemporal();
-                    _valueIdDescuento = '0';
-                    _valueIdcliente = '0';
-                    idcliente = 0;
-                    idDescuento = 0;
-                    descuento = 0.00;
-                    totalVentaTemporal = 0.00;
-                    Navigator.pushReplacementNamed(context, 'home');
-                  },
-                  child: const Text('Aceptar '),
-                ),
-              ],
-            );
-          },
+ _compra() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 20),
+            Text("Procesado venta..."),
+          ],
+        ),
+      );
+    },
+  );
+
+  VentaCabecera venta = VentaCabecera(
+    idCliente: idcliente,
+    subtotal: subTotalItem,
+    idDescuento: idDescuento,
+    descuento: descuento,
+    total: totalVentaTemporal,
+    importeEfectivo: efectivoConttroller.text.isNotEmpty
+        ? double.parse(efectivoConttroller.text.replaceAll(',', ''))
+        : 0.00,
+    importeTarjeta: tarjetaConttroller.text.isNotEmpty
+        ? double.parse(tarjetaConttroller.text.replaceAll(',', ''))
+        : 0.00,
+  );
+
+  ventaCabecera.guardarVenta(venta).then((value) {
+    Navigator.pop(context);
+
+    if (value.status == 1) {
+      for (ItemVenta item in ventaTemporal) {
+        VentaDetalle ventaDetalle = VentaDetalle(
+          idVenta: value.id,
+          idProd: item.idArticulo,
+          cantidad: item.cantidad,
+          precio: item.precio,
+          idDesc: idDescuento,
+          cantidadDescuento: descuento,
+          total: item.totalItem,
+          subtotal: item.subTotalItem,
         );
-      } else {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              content: Text('${value.mensaje}'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Aceptar '),
-                ),
-              ],
-            );
-          },
-        );
+
+        ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
+        });
       }
-    });
-  }
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            content: const Text('Venta realizada con exito'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  totalConttroller.clear();
+                  efectivoConttroller.clear();
+                  tarjetaConttroller.clear();
+                  cambioConttroller.clear();
+                  ventaTemporal.clear();
+                  _actualizaTotalTemporal();
+                  _valueIdDescuento = '0';
+                  _valueIdcliente = '0';
+                  idcliente = 0;
+                  idDescuento = 0;
+                  descuento = 0.00;
+                  totalVentaTemporal = 0.00;
+                  Navigator.pushReplacementNamed(context, 'home');
+                },
+                child: const Text('Aceptar '),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            content: Text('${value.mensaje}'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Aceptar '),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }).catchError((error) {
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Text('Ha ocurrido un error: $error'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  });
+}
+
 
   _apartadoCabecera() {
     ApartadoCabecera apartado = ApartadoCabecera(
@@ -703,18 +746,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       SizedBox(width: windowWidth * 0.05),
                       Flexible(
                         fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
+                        child: InputFieldMoney(
                           controller: efectivoConttroller,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
                           onChanged: (value) {
-                            // Llama a la función que deseas ejecutar cuando cambie el valor del campo de entrada de efectivo
                             tuFuncion();
                           },
                         ),
@@ -736,9 +770,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       ),
                       SizedBox(width: windowWidth * 0.05),
                       Flexible(
-                        child: InputField(
-                          textCapitalization: TextCapitalization.words,
+                        child: InputFieldMoney(
                           controller: tarjetaConttroller,
+
                         ),
                       ),
                     ],
@@ -800,9 +834,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     },
                   );
                 } else {
-                  double efectivo = double.parse(efectivoConttroller.text);
+                  double efectivo = double.parse(efectivoConttroller.text.replaceAll(',', ''));
                   double total = double.parse(totalConttroller.text);
-                  double tarjeta = double.parse(tarjetaConttroller.text);
+                  double tarjeta = double.parse(tarjetaConttroller.text.replaceAll(',', ''));
 
                   double resultado = efectivo + tarjeta;
                   // ignore: avoid_print

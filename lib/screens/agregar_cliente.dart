@@ -197,6 +197,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
               },
               icon: const Icon(Icons.menu)),
           if (args.id != 0)
+            
             IconButton(
                 onPressed: () {
                   _alertaEliminar();
