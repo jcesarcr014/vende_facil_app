@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
@@ -21,6 +23,7 @@ class _ventaScreenState extends State<VentaScreen> {
   double efectivo = 0.0;
   double tarjeta = 0.0;
   double total = 0.0;
+  @override
   void initState() {
     super.initState();
     TotalConttroller.text = totalVentaTemporal.toStringAsFixed(2);
@@ -145,13 +148,13 @@ class _ventaScreenState extends State<VentaScreen> {
                     onPressed: () {
                       _checkVenta(venta);
                     },
-                    child: Text('Aceptar'),
+                    child: const Text('Aceptar'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       // Lógica para el botón Cancelar
                     },
-                    child: Text('Cancelar'),
+                    child: const Text('Cancelar'),
                   ),
                 ],
               ),
@@ -319,7 +322,6 @@ class _ventaScreenState extends State<VentaScreen> {
                 },
               );
             }
-            ;
           });
         }
       }
@@ -352,6 +354,7 @@ class _ventaScreenState extends State<VentaScreen> {
 
       // ignore: empty_catches
     } catch (e) {
+      // ignore: avoid_print
       print('Error: $e');
     }
   }

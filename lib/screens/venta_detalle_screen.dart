@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:vende_facil/models/cliente_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -416,7 +415,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           .toString(),
       onChanged: (value) {
         _valueIdcliente = value!;
-        print(_valueIdcliente);
          if (value == listaClientes.firstWhere((cliente) =>cliente.nombre == 'Público en general').id.toString()) {
            setState(() {});
          } else {
@@ -712,6 +710,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     );
   }
 
+  // ignore: unused_element
   _alertaVenta() {
     showDialog(
       context: context,

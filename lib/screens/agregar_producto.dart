@@ -179,7 +179,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                 textLoading = '';
               });
               mostrarAlerta(context, '', value.mensaje!);
-              print(value.mensaje!);
             }
           });
         } else {
