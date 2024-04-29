@@ -20,13 +20,13 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   String _valueIdDescuento = '0';
   String _valueIdcliente = '0';
   double descuento = 0.0;
-  double restate=0.0;
+  double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
   String formattedEndDate = "";
   String formattedStartDate = "";
   DateTime now = DateTime.now();
-  late  DateTime _startDate;
+  late DateTime _startDate;
   late DateTime _endDate;
   late DateFormat dateFormatter;
   final ventaCabecera = VentasProvider();
@@ -50,9 +50,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     super.initState();
     _fetchData();
   }
-    void _fetchData() {
-    setState(() {
-    });
+
+  void _fetchData() {
+    setState(() {});
   }
 
   @override
@@ -66,7 +66,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         actions: [
           IconButton(
               onPressed: () {
-
                 Navigator.pushReplacementNamed(context, 'home');
               },
               icon: const Icon(Icons.arrow_back)),
@@ -186,21 +185,26 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                                VentaCabecera venta = VentaCabecera(
+                              VentaCabecera venta = VentaCabecera(
                                 idCliente: idcliente,
                                 subtotal: subTotalItem,
                                 idDescuento: idDescuento,
                                 descuento: descuento,
                                 total: totalVentaTemporal,
-                                importeEfectivo: efectivoConttroller.text.isNotEmpty
-                                    ? double.parse(efectivoConttroller.text.replaceAll(',', ''))
-                                    : 0.00,
-                                importeTarjeta: tarjetaConttroller.text.isNotEmpty
-                                    ? double.parse(tarjetaConttroller.text.replaceAll(',', ''))
-                                    : 0.00,
-                                );
-                             Navigator.pushNamed(context, 'venta',arguments: venta);
-                             setState(() {});
+                                importeEfectivo:
+                                    efectivoConttroller.text.isNotEmpty
+                                        ? double.parse(efectivoConttroller.text
+                                            .replaceAll(',', ''))
+                                        : 0.00,
+                                importeTarjeta:
+                                    tarjetaConttroller.text.isNotEmpty
+                                        ? double.parse(tarjetaConttroller.text
+                                            .replaceAll(',', ''))
+                                        : 0.00,
+                              );
+                              Navigator.pushNamed(context, 'venta',
+                                  arguments: venta);
+                              setState(() {});
                             },
                             child: SizedBox(
                               height: windowHeight * 0.1,
@@ -215,7 +219,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                                totalConttroller.text =totalVentaTemporal.toStringAsFixed(2);
+                              totalConttroller.text =
+                                  totalVentaTemporal.toStringAsFixed(2);
                               _alertaApartados();
                             },
                             child: SizedBox(
@@ -385,121 +390,156 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   _clientes() {
     var listaClien = [
-       DropdownMenuItem(
-        value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
-        child: SizedBox(child: Text(listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').nombre!)),
+      DropdownMenuItem(
+        value: listaClientes
+            .firstWhere((cliente) => cliente.nombre == 'Público en general')
+            .id
+            .toString(),
+        child: SizedBox(
+            child: Text(listaClientes
+                .firstWhere((cliente) => cliente.nombre == 'Público en general')
+                .nombre!)),
       )
     ];
     for (Cliente cliente in listaClientes) {
-      if (cliente.nombre != 'Público en general'){
-          listaClien.add(DropdownMenuItem(
-          value: cliente.id.toString(), child: Text(cliente.nombre!)));
+      if (cliente.nombre != 'Público en general') {
+        listaClien.add(DropdownMenuItem(
+            value: cliente.id.toString(), child: Text(cliente.nombre!)));
       }
     }
     if (_valueIdcliente.isEmpty) {
-      _valueIdcliente = listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
+      _valueIdcliente = listaClientes
+          .firstWhere((cliente) => cliente.nombre == 'Público en general')
+          .id
+          .toString();
     }
     return DropdownButton(
       items: listaClien,
       isExpanded: true,
-      value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
+      value: listaClientes
+          .firstWhere((cliente) => cliente.nombre == 'Público en general')
+          .id
+          .toString(),
       onChanged: (value) {
         _valueIdcliente = value!;
-        if (value == "0") {
-          setState(() {});
-        } else {
-          idcliente = listaClientes
-              .firstWhere((cliente) => cliente.id.toString() == value)
-              .id!;
-        }
+        print(_valueIdcliente);
+        // if (value == listaClientes.firstWhere((cliente) =>cliente.nombre == 'Público en general').id.toString()) {
+        //   setState(() {});
+        // } else {
+        //   idcliente = listaClientes
+        //       .firstWhere((cliente) => cliente.id.toString() == value)
+        //       .id!;
+        //       setState(() {});
+        // }
         setState(() {});
       },
     );
   }
 
- _compra() {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return const AlertDialog(
-        content: Row(
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(width: 20),
-            Text("Procesado venta..."),
-          ],
-        ),
-      );
-    },
-  );
-
-  VentaCabecera venta = VentaCabecera(
-    idCliente: idcliente,
-    subtotal: subTotalItem,
-    idDescuento: idDescuento,
-    descuento: descuento,
-    total: totalVentaTemporal,
-    importeEfectivo: efectivoConttroller.text.isNotEmpty
-        ? double.parse(efectivoConttroller.text.replaceAll(',', ''))
-        : 0.00,
-    importeTarjeta: tarjetaConttroller.text.isNotEmpty
-        ? double.parse(tarjetaConttroller.text.replaceAll(',', ''))
-        : 0.00,
-  );
-
-  ventaCabecera.guardarVenta(venta).then((value) {
-    Navigator.pop(context);
-
-    if (value.status == 1) {
-      for (ItemVenta item in ventaTemporal) {
-        VentaDetalle ventaDetalle = VentaDetalle(
-          idVenta: value.id,
-          idProd: item.idArticulo,
-          cantidad: item.cantidad,
-          precio: item.precio,
-          idDesc: idDescuento,
-          cantidadDescuento: descuento,
-          total: item.totalItem,
-          subtotal: item.subTotalItem,
-        );
-
-        ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
-        });
-      }
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: const Text('Venta realizada con exito'),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  totalConttroller.clear();
-                  efectivoConttroller.clear();
-                  tarjetaConttroller.clear();
-                  cambioConttroller.clear();
-                  ventaTemporal.clear();
-                  _actualizaTotalTemporal();
-                  _valueIdDescuento = '0';
-                  _valueIdcliente = '0';
-                  idcliente = 0;
-                  idDescuento = 0;
-                  descuento = 0.00;
-                  totalVentaTemporal = 0.00;
-                  Navigator.pushReplacementNamed(context, 'home');
-                },
-                child: const Text('Aceptar '),
-              ),
+  _compra() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Procesado venta..."),
             ],
+          ),
+        );
+      },
+    );
+
+    VentaCabecera venta = VentaCabecera(
+      idCliente: idcliente,
+      subtotal: subTotalItem,
+      idDescuento: idDescuento,
+      descuento: descuento,
+      total: totalVentaTemporal,
+      importeEfectivo: efectivoConttroller.text.isNotEmpty
+          ? double.parse(efectivoConttroller.text.replaceAll(',', ''))
+          : 0.00,
+      importeTarjeta: tarjetaConttroller.text.isNotEmpty
+          ? double.parse(tarjetaConttroller.text.replaceAll(',', ''))
+          : 0.00,
+    );
+
+    ventaCabecera.guardarVenta(venta).then((value) {
+      Navigator.pop(context);
+
+      if (value.status == 1) {
+        for (ItemVenta item in ventaTemporal) {
+          VentaDetalle ventaDetalle = VentaDetalle(
+            idVenta: value.id,
+            idProd: item.idArticulo,
+            cantidad: item.cantidad,
+            precio: item.precio,
+            idDesc: idDescuento,
+            cantidadDescuento: descuento,
+            total: item.totalItem,
+            subtotal: item.subTotalItem,
           );
-        },
-      );
-    } else {
+
+          ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {});
+        }
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              content: const Text('Venta realizada con exito'),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    totalConttroller.clear();
+                    efectivoConttroller.clear();
+                    tarjetaConttroller.clear();
+                    cambioConttroller.clear();
+                    ventaTemporal.clear();
+                    _actualizaTotalTemporal();
+                    _valueIdDescuento = '0';
+                    _valueIdcliente = '0';
+                    idcliente = 0;
+                    idDescuento = 0;
+                    descuento = 0.00;
+                    totalVentaTemporal = 0.00;
+                    Navigator.pushReplacementNamed(context, 'home');
+                  },
+                  child: const Text('Aceptar '),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              content: Text('${value.mensaje}'),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Aceptar '),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }).catchError((error) {
+      Navigator.pop(context);
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -507,43 +547,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           return AlertDialog(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: Text('${value.mensaje}'),
+            content: Text('Ha ocurrido un error: $error'),
             actions: [
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text('Aceptar '),
+                child: const Text('Aceptar'),
               ),
             ],
           );
         },
       );
-    }
-  }).catchError((error) {
-    Navigator.pop(context);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: Text('Ha ocurrido un error: $error'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Aceptar'),
-            ),
-          ],
-        );
-      },
-    );
-  });
-}
-
+    });
+  }
 
   _apartadoCabecera() {
     ApartadoCabecera apartado = ApartadoCabecera(
@@ -561,10 +578,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       fechaApartado: formattedStartDate.toString(),
       fechaVencimiento: formattedEndDate.toString(),
       saldoPendiente: restate,
-      anticipo:efectivoConttroller.text.isNotEmpty
+      anticipo: efectivoConttroller.text.isNotEmpty
           ? double.parse(efectivoConttroller.text)
           : 0.00,
-
     );
     apartadosCabecera.guardaApartado(apartado).then((value) {
       if (value.status == 1) {
@@ -638,7 +654,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     });
   }
-
 
   _alertadescuento(Descuento descuentos) {
     showDialog(
@@ -787,7 +802,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       Flexible(
                         child: InputFieldMoney(
                           controller: tarjetaConttroller,
-
                         ),
                       ),
                     ],
@@ -849,9 +863,11 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     },
                   );
                 } else {
-                  double efectivo = double.parse(efectivoConttroller.text.replaceAll(',', ''));
+                  double efectivo = double.parse(
+                      efectivoConttroller.text.replaceAll(',', ''));
                   double total = double.parse(totalConttroller.text);
-                  double tarjeta = double.parse(tarjetaConttroller.text.replaceAll(',', ''));
+                  double tarjeta =
+                      double.parse(tarjetaConttroller.text.replaceAll(',', ''));
 
                   double resultado = efectivo + tarjeta;
                   // ignore: avoid_print
@@ -903,50 +919,52 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                          Padding(
-            padding: const EdgeInsetsDirectional.all(5.0),
-            child: Row(
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2015),
-                      lastDate: DateTime(2100),
-                      initialDateRange: DateTimeRange(
-                        start: formattedStartDate.isEmpty
-                            ? DateTime.now()
-                            : _startDate,
-                        end: formattedEndDate.isEmpty
-                            ? _startDate.add(const Duration(days: 30))
-                            : _endDate,
+                Padding(
+                  padding: const EdgeInsetsDirectional.all(5.0),
+                  child: Row(
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final picked = await showDateRangePicker(
+                            context: context,
+                            firstDate: DateTime(2015),
+                            lastDate: DateTime(2100),
+                            initialDateRange: DateTimeRange(
+                              start: formattedStartDate.isEmpty
+                                  ? DateTime.now()
+                                  : _startDate,
+                              end: formattedEndDate.isEmpty
+                                  ? _startDate.add(const Duration(days: 30))
+                                  : _endDate,
+                            ),
+                          );
+                          if (picked != null &&
+                              picked !=
+                                  DateTimeRange(
+                                      start: _startDate,
+                                      end: formattedEndDate.isEmpty
+                                          ? _startDate
+                                              .add(const Duration(days: 30))
+                                          : _endDate)) {
+                            setState(() {
+                              _startDate = picked.start;
+                              _endDate = picked.end;
+                              dateFormatter = DateFormat('yyyy-MM-dd');
+                              formattedStartDate =
+                                  dateFormatter.format(_startDate);
+                              formattedEndDate = dateFormatter.format(_endDate);
+                            });
+                          }
+                        },
+                        child: Text(
+                          '$formattedStartDate - $formattedEndDate',
+                          style: const TextStyle(fontSize: 15.0),
+                        ),
                       ),
-                    );
-                    if (picked != null &&
-                        picked !=
-                            DateTimeRange(
-                                start: _startDate,
-                                end: formattedEndDate.isEmpty
-                                    ? _startDate.add(const Duration(days: 30))
-                                    : _endDate)) {
-                      setState(() {
-                        _startDate = picked.start;
-                        _endDate = picked.end;
-                        dateFormatter = DateFormat('yyyy-MM-dd');
-                        formattedStartDate = dateFormatter.format(_startDate);
-                        formattedEndDate = dateFormatter.format(_endDate);
-                      });
-                    }
-                  },
-                  child: Text(
-                    '$formattedStartDate - $formattedEndDate',
-                    style: const TextStyle(fontSize: 15.0),
+                      const Icon(Icons.calendar_today, size: 15.0),
+                    ],
                   ),
                 ),
-                const Icon(Icons.calendar_today, size: 15.0),
-              ],
-            ),
-          ),
                 SizedBox(height: windowHeight * 0.05),
                 // ignore: sized_box_for_whitespace
                 Container(
@@ -1112,20 +1130,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                try{
-                double efectivo = double.parse(efectivoConttroller.text);
-                double total = double.parse(totalConttroller.text);
-                double tarjeta = double.parse(tarjetaConttroller.text);
+                try {
+                  double efectivo = double.parse(efectivoConttroller.text);
+                  double total = double.parse(totalConttroller.text);
+                  double tarjeta = double.parse(tarjetaConttroller.text);
 
                   restate = efectivo + tarjeta;
-                  restate= total-restate;
+                  restate = total - restate;
                   _apartadoCabecera();
                   Navigator.pop(context);
 
-                // ignore: empty_catches
-                }catch(e){
-              
-                }
+                  // ignore: empty_catches
+                } catch (e) {}
               },
               child: const Text('Aceptar '),
             ),
@@ -1153,9 +1169,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
-    // ignore: empty_catches
-    } catch (e) {
-    }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   apartadosomprobacion() {
@@ -1172,8 +1187,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       setState(() {
         // Actualiza el estado
       });
-    // ignore: empty_catches
-    } catch (e) {
-    }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 }

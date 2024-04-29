@@ -10,10 +10,18 @@ class VentasProvider {
 
   Future<Resultado> guardarVenta(VentaCabecera venta) async {
     var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
+    print(venta.idCliente);
+    print(sesion.idUsuario);
+    print(venta.subtotal);
+    print(venta.idDescuento);
+    print(venta.descuento);
+    print(venta.total);
+    print(venta.importeEfectivo);
+    print(venta.importeTarjeta);
 
     try {
       final resp = await http.post(url, headers: {
-         'Authorization': 'Bearer ${sesion.token}',
+        'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'usuario_id': sesion.idUsuario.toString(),
         'cliente_id': venta.idCliente.toString(),
@@ -21,7 +29,7 @@ class VentasProvider {
         'descuento_id': venta.idDescuento.toString(),
         'descuento': venta.descuento!.toStringAsFixed(2),
         'total': venta.total!.toStringAsFixed(2),
-        'pago_efectivo': venta.importeEfectivo!.toString(),
+        'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
         'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
       });
 
