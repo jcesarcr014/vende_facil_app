@@ -218,9 +218,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              totalConttroller.text =
-                                  totalVentaTemporal.toStringAsFixed(2);
-                              _alertaApartados();
+                              Navigator.pushNamed(context, 'apartado');
                             },
                             child: SizedBox(
                               height: windowHeight * 0.07,

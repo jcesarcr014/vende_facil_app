@@ -167,7 +167,6 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                                 if (parsedValue <= 0) {
                                   return 'El porcentaje no puede ser 0 menor o igual';
                                 }
-                                print('parsedValue: $parsedValue');
                               } catch (e) {
                                 return 'Valor no válido';
                               }
