@@ -361,7 +361,7 @@ class ApartadoProvider {
     }
     return respuesta;
   }
-  Future<Resultado> modificarVariables(int valor) async {
+  Future<Resultado> modificarVariables(num valor) async {
     var url = Uri.parse('$baseUrl/variable/${sesion.idNegocio}');
     try {
      final resp = await http.put(url, headers: {
