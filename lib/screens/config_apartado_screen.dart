@@ -205,7 +205,7 @@ void _guardarPorcentaje() {
         isLoading = true;
       });
     }
-    apartadoProvider.modificarVariables(parsedPorcentaje)
+    apartadoProvider.modificarVariables(parsedPorcentaje,1)
         .then((value) {
         _guardarArticulos();
     });
@@ -217,7 +217,7 @@ void _guardarArticulos() {
   if (articulosText!.isNotEmpty) {
     final int parsedArticulos = int.tryParse(articulosText)!;
     apartadoProvider
-        .modificarVariables(parsedArticulos)
+        .modificarVariables(parsedArticulos,2)
         .then((value) {
       if (mounted) { // Verificar si el widget está montado
         setState(() {
