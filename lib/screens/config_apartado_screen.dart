@@ -179,7 +179,29 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          if (_formApartadoConf.currentState!.validate()) {}
+                          if (_formApartadoConf.currentState!.validate()) {
+                            setState(() {
+                              textLoading = 'Guardando valores.';
+                              isLoading = true;
+                            });
+                            apartadoProvider
+                                .modificarVariables(
+                                    int.parse(controllerPorcentaje.text))
+                                .then((value) {
+                              setState(() {
+                                isLoading = false;
+                                textLoading = '';
+                              });
+                              if (value.status == 1) {
+                                Navigator.pop(context);
+                                mostrarAlerta(context, 'Guardado',
+                                    'Valores guardados correctamente');
+                              } else {
+                                mostrarAlerta(context, 'Error',
+                                    'Error: ${value.mensaje}');
+                              }
+                            });
+                          }
                         },
                         child: const Text('Guardar'),
                       ),
