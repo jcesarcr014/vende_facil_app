@@ -361,4 +361,27 @@ class ApartadoProvider {
     }
     return respuesta;
   }
+  Future<Resultado> modificarVariables(num valor, num tipo ) async {
+    var url = Uri.parse('$baseUrl/variable/$tipo');
+    try {
+     final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'valor': valor.toString(),
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
 }

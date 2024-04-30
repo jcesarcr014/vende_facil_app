@@ -6,6 +6,7 @@ class InputFieldMoney extends StatefulWidget {
   final String labelText;
   final void Function(dynamic value)? onChanged; // Cambio aquí
 
+  // ignore: use_super_parameters
   const InputFieldMoney(
       {Key? key,
       this.controller,
