@@ -3,6 +3,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
 
 class PerfilEmpleadosScreen extends StatelessWidget {
+  // ignore: use_super_parameters
   const PerfilEmpleadosScreen({Key? key}) : super(key: key);
 
   @override
@@ -112,6 +113,7 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: windowHeight * 0.05),
+                            // ignore: sized_box_for_whitespace
                             Container(
                               width: MediaQuery.of(context).size.width,
                               child: Row(
