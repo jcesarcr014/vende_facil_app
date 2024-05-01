@@ -35,8 +35,7 @@ class _ventaScreenState extends State<VentaScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    final VentaCabecera venta =
-        ModalRoute.of(context)?.settings.arguments as VentaCabecera;
+    final VentaCabecera venta =ModalRoute.of(context)?.settings.arguments as VentaCabecera;
 
     return Scaffold(
       appBar: AppBar(

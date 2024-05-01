@@ -361,10 +361,11 @@ class ApartadoProvider {
     }
     return respuesta;
   }
-  Future<Resultado> modificarVariables(num valor, num tipo ) async {
+
+  Future<Resultado> modificarVariables(num valor, num tipo) async {
     var url = Uri.parse('$baseUrl/variable/$tipo');
     try {
-     final resp = await http.put(url, headers: {
+      final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'valor': valor.toString(),
@@ -383,5 +384,4 @@ class ApartadoProvider {
     }
     return respuesta;
   }
-
 }
