@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class PerfilScreen extends StatelessWidget {
   const PerfilScreen({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class PerfilScreen extends StatelessWidget {
     double windowHeight = MediaQuery.of(context).size.height;
     final oldPassword = TextEditingController();
     final newPassword = TextEditingController();
-    final usuario = UsuarioProvider();
+    final confirmarpassword = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -81,9 +82,7 @@ class PerfilScreen extends StatelessWidget {
                             SizedBox(height: windowHeight * 0.05),
                             // ignore: sized_box_for_whitespace
                             Container(
-
-                              width: MediaQuery.of(context).size.width*1,
-
+                              width: MediaQuery.of(context).size.width * 1,
                               child: Row(
                                 children: [
                                   const Flexible(
@@ -149,29 +148,46 @@ class PerfilScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: windowHeight * 0.05),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                children: [
+                                  const Flexible(
+                                    child: Text(
+                                      'Confirmar Contraseña',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                  SizedBox(width: windowWidth * 0.05),
+                                  Flexible(
+                                    fit: FlexFit.loose,
+                                    child: TextFormField(
+                                      textCapitalization:
+                                          TextCapitalization.words,
+                                      controller: confirmarpassword,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 15.0,
+                                                horizontal: 1.0),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       actions: [
                         ElevatedButton(
                           onPressed: () {
-                            usuario
-                                .editaPassword(oldPassword.text,
-                                    newPassword.text, sesion.idUsuario!)
-                                .then((value) {
-                              if (value.status == 1) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text('Contraseña actualizada'),
-                                ));
-                                Navigator.pushReplacementNamed(context, 'login');
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text(value.mensaje!),
-                                ));
-                              }
-                            });
+                            verificar(context, oldPassword, newPassword,
+                                confirmarpassword);
                           },
                           child: const Text('Aceptar '),
                         ),
@@ -206,5 +222,53 @@ class PerfilScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  void verificar(
+      BuildContext context,
+      TextEditingController oldPassword,
+      TextEditingController newPassword,
+      TextEditingController confirmarpassword) {
+    if (oldPassword.text.isEmpty || newPassword.text.isEmpty) {
+      mostrarAlerta(context, "error", "Llene todos los campos");
+    } else {
+      if (confirmarpassword.text == newPassword.text) {
+        cambiarContrasena(context, oldPassword, newPassword);
+      } else {
+        mostrarAlerta(context, "error", "Las contraseñas no coinciden");
+      }
+    }
+  }
+
+  void cambiarContrasena(BuildContext context,
+      TextEditingController oldPassword, TextEditingController newPassword) {
+    final usuario = UsuarioProvider();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Modificado Contraseña..."),
+            ],
+          ),
+        );
+      },
+    );
+    usuario
+        .editaPassword(oldPassword.text, newPassword.text, sesion.idUsuario!)
+        .then((value) {
+      Navigator.pop(context);
+      if (value.status == 1) {
+        mostrarAlerta(context, "ok", value.mensaje!);
+        Navigator.pushReplacementNamed(context, 'login');
+      } else {
+        mostrarAlerta(context, "error", value.mensaje!);
+        return;
+        
+      }
+    });
+  }
+}

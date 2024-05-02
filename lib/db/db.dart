@@ -11,4 +11,24 @@ class DB {
       },
     );
   }
+  static Future<void> deleteDatabase() async {
+    databaseFactory.deleteDatabase(await getDatabasesPath());
+  }
+
+  static Future<int> limpiaTablaproductos() async {
+    Database database = await _openDB();
+    int resultado = await database.rawDelete('DELETE FROM productos');
+    return resultado;
+  }
+  static Future<int> limpiaTablacategorias() async {
+    Database database = await _openDB();
+    int resultado = await database.rawDelete('DELETE FROM categorias');
+    return resultado;
+  }
+  static Future<int> limpiaTablaclientes() async {
+    Database database = await _openDB();
+    int resultado = await database.rawDelete('DELETE FROM clientes');
+    return resultado;
+  }
+  
 }
