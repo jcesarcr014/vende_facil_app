@@ -1,7 +1,7 @@
 class VariableConf {
-  final int id;
-  final String nombre;
-  final String valor;
+  int id;
+  String nombre;
+  String valor;
 
   VariableConf({required this.id, required this.nombre, required this.valor});
 }

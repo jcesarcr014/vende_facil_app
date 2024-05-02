@@ -19,7 +19,6 @@ class UsuarioProvider {
         'password': pass,
       });
       final decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', decodedData['token']);
