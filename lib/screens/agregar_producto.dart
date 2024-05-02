@@ -112,7 +112,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               textLoading = '';
             });
             mostrarAlerta(context, '', value.mensaje!);
-
           }
         });
       } else {
@@ -379,7 +378,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       height: windowHeight * 0.03,
                     ),
                     InputFieldMoney(
-                        controller: controllercosto, labelText: 'costo'),
+                        controller: controllercosto, labelText: 'Costo'),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -512,7 +511,10 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                               'Guardar',
                             ),
                           ],
-                        ))
+                        )),
+                    SizedBox(
+                      height: windowHeight * 0.08,
+                    ),
                   ],
                 ),
               ));
@@ -552,23 +554,23 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         });
   }
 
-Future<void> fotoProducto(ImageSource source) async {
-  final pickedFile = await picker.pickImage(
-    source: source,
-    maxWidth: 800, 
-    maxHeight: 600,
-    imageQuality: 80, 
-  );
+  Future<void> fotoProducto(ImageSource source) async {
+    final pickedFile = await picker.pickImage(
+      source: source,
+      maxWidth: 800,
+      maxHeight: 600,
+      imageQuality: 80,
+    );
 
-  if (pickedFile != null) {
-    setState(() {
-      imagenProducto = File(pickedFile.path);
-      _rutaProducto = pickedFile.path;
-      _valueImagen = true;
-      if (args.id != 0) {
-        _cambioImagen = true;
-      }
-    });
+    if (pickedFile != null) {
+      setState(() {
+        imagenProducto = File(pickedFile.path);
+        _rutaProducto = pickedFile.path;
+        _valueImagen = true;
+        if (args.id != 0) {
+          _cambioImagen = true;
+        }
+      });
+    }
   }
-}
 }

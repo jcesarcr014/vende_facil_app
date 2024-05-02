@@ -199,23 +199,6 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
                           ),
                         ],
                       )),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {},
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.save),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Guardar y agregar articulos',
-                          ),
-                        ],
-                      ))
                 ],
               ),
             ),

@@ -156,10 +156,10 @@ class _HistorialScreenState extends State<HistorialScreen> {
                           ventaProvider
                               .consultarventa(listaVentaCabecera[index].id!)
                               .then((value) {
-                                                      setState(() {
-                                                        textLoading = 'cargado detalle de venta';
-                                                        isLoading = false;
-                                                      });
+                            setState(() {
+                              textLoading = 'cargado detalle de venta';
+                              isLoading = false;
+                            });
                             if (value.id != 0) {
                               Navigator.pushNamed(context, 'ventasD',
                                   arguments: value);
