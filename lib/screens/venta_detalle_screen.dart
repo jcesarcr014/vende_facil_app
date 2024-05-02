@@ -218,9 +218,26 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              totalConttroller.text =
-                                  totalVentaTemporal.toStringAsFixed(2);
-                              _alertaApartados();
+                              ApartadoCabecera apartado = ApartadoCabecera(
+                                clienteId: int.parse(_valueIdcliente),
+                                subtotal: subTotalItem,
+                                descuentoId: idDescuento,
+                                descuento: descuento,
+                                total: totalVentaTemporal,
+                                pagoEfectivo: efectivoConttroller.text.isNotEmpty
+                                    ? double.parse(efectivoConttroller.text)
+                                    : 0.00,
+                                pagoTarjeta: tarjetaConttroller.text.isNotEmpty
+                                    ? double.parse(tarjetaConttroller.text)
+                                    : 0.00,
+                                fechaApartado: formattedStartDate.toString(),
+                                fechaVencimiento: formattedEndDate.toString(),
+                                saldoPendiente: restate,
+                                anticipo: efectivoConttroller.text.isNotEmpty
+                                    ? double.parse(efectivoConttroller.text)
+                                    : 0.00,
+                              );
+                              Navigator.pushNamed(context, 'apartado',arguments: apartado);
                             },
                             child: SizedBox(
                               height: windowHeight * 0.07,

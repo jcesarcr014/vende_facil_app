@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final categoriasProvider = CategoriaProvider();
   final descuentoProvider = DescuentoProvider();
   final clienteProvider = ClienteProvider();
+  final apartadoProvider = ApartadoProvider();
   final CantidadConttroller = TextEditingController();
   final TotalConttroller = TextEditingController();
   final EfectivoConttroller = TextEditingController();
@@ -34,7 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
       textLoading = 'Leyendo articulos';
       isLoading = true;
     });
-    clienteProvider.listarClientes().then((value) {
+    apartadoProvider.variablesApartado().then((value) {
+     clienteProvider.listarClientes().then((value) {
       descuentoProvider.listarDescuentos().then((value) {
         categoriasProvider.listarCategorias().then((respuesta) {
           articulosProvider.listarProductos().then((value) {
@@ -45,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         });
       });
+    });
     });
     super.initState();
   }
