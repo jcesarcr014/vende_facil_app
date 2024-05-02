@@ -81,12 +81,11 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                             SizedBox(height: windowHeight * 0.05),
                             Container(
                               width: MediaQuery.of(context).size.width * 1,
-                              color: Colors.yellow,
                               child: Row(
                                 children: [
                                   const Flexible(
                                     child: Text(
-                                      'Contraseña vieja',
+                                      'Contraseña Anterior',
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ),

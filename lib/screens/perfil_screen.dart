@@ -79,15 +79,16 @@ class PerfilScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: windowHeight * 0.05),
+                            // ignore: sized_box_for_whitespace
                             Container(
 
-                              width: MediaQuery.of(context).size.width*1,color: Colors.yellow,
+                              width: MediaQuery.of(context).size.width*1,
 
                               child: Row(
                                 children: [
                                   const Flexible(
                                     child: Text(
-                                      'Contraseña vieja',
+                                      'Contraseña Anterior',
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ),
