@@ -38,6 +38,34 @@ class ApartadoProvider {
     return respuesta;
   }
 
+  Future<Resultado> modificarVariables(int id, String valor) async {
+    var url = Uri.parse('$baseUrl/variable/$id');
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'valor': valor.toString(),
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        for (VariableConf variable in listaVariables) {
+          if (variable.id == id) {
+            variable.valor = valor;
+          }
+        }
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
   Future<Resultado> guardaApartado(ApartadoCabecera apartado) async {
     var url = Uri.parse('$baseUrl/apartado/${sesion.idNegocio}');
     try {
@@ -346,29 +374,6 @@ class ApartadoProvider {
         'cantidad_efectivo': abono.cantidadEfectivo?.toStringAsFixed(2),
         'cantidad_tarjeta': abono.cantidadTarjeta?.toStringAsFixed(2),
         'saldo_actual': "0",
-      });
-      final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-      } else {
-        respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
-      }
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion. $e';
-    }
-    return respuesta;
-  }
-
-  Future<Resultado> modificarVariables(num valor, num tipo) async {
-    var url = Uri.parse('$baseUrl/variable/$tipo');
-    try {
-      final resp = await http.put(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'valor': valor.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
