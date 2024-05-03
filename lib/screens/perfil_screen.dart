@@ -3,10 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
+import 'package:vende_facil/widgets/input_field.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
-class PerfilScreen extends StatelessWidget {
+class PerfilScreen extends StatefulWidget {
   const PerfilScreen({Key? key}) : super(key: key);
+  @override
+  State<PerfilScreen> createState() => _PerfilScreenState();
+}
+
+class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +21,7 @@ class PerfilScreen extends StatelessWidget {
     final oldPassword = TextEditingController();
     final newPassword = TextEditingController();
     final confirmarpassword = TextEditingController();
+    bool passOculto1 = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -161,20 +168,21 @@ class PerfilScreen extends StatelessWidget {
                                   SizedBox(width: windowWidth * 0.05),
                                   Flexible(
                                     fit: FlexFit.loose,
-                                    child: TextFormField(
+                                    child: InputField(
+                                      icon: Icons.password,
+                            obscureText: passOculto1,
+                            sufixIcon: IconButton(
+                              icon: (passOculto1)
+                                  ? const Icon(Icons.visibility_off)
+                                  : const Icon(Icons.visibility),
+                              onPressed: () {
+                                passOculto1 = !passOculto1;
+                                setState(() {});
+                              },
+                            ),
                                       textCapitalization:
                                           TextCapitalization.words,
                                       controller: confirmarpassword,
-                                      decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 15.0,
-                                                horizontal: 1.0),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ],
