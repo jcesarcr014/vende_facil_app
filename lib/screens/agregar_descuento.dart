@@ -46,7 +46,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'descuentos');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -127,7 +127,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
         isLoading = false;
       });
       if (value.status == 1) {
-        Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pushReplacementNamed(context, 'descuentos');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
@@ -141,10 +141,11 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Descuento;
       controllerNombre.text = args.nombre!;
-      if (args.valorPred == 1) {
+      if (args.valorPred == 0) {
         controllerValor.text = args.valor!.toStringAsFixed(2);
       }
       _tipoValor = (args.tipoValor == 1) ? true : false;
+      _tipoValorS = (args.valorPred == 1) ? true : false;
       title = 'Editar descuento';
     }
     windowWidth = MediaQuery.of(context).size.width;

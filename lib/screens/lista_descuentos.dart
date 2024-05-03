@@ -40,70 +40,76 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Descuentos'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu)),
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Descuentos'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+            IconButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'menu');
+                },
+                icon: const Icon(Icons.menu)),
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Espere...$textLoading'),
+                      SizedBox(
+                        height: windowHeight * 0.01,
+                      ),
+                      const CircularProgressIndicator(),
+                    ]),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
+                child: Column(
                   children: [
-                    Text('Espere...$textLoading'),
+                    SizedBox(
+                      height: windowHeight * 0.02,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'nvo-descuento');
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text('Nuevo Descuento'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.02,
+                    ),
+                    const Divider(),
                     SizedBox(
                       height: windowHeight * 0.01,
                     ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'nvo-descuento');
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text('Nuevo Descuento'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  const Divider(),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  Column(
-                    children: _descuentos(),
-                  )
-                ],
+                    Column(
+                      children: _descuentos(),
+                    )
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -128,9 +134,7 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Tipo'),
-                Text((descuento.valorPred == 1)
-                    ? 'Variable'
-                    : 'Fijo')
+                Text((descuento.valorPred == 1) ? 'Variable' : 'Fijo')
               ],
             ),
           )

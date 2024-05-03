@@ -164,7 +164,6 @@ class _ProductosScreenState extends State<ProductosScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      // Text('\$ ${producto.precio!.toStringAsFixed(2)}')
                     ],
                   ),
                   subtitle: Text(categoria.categoria!),
