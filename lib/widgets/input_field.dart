@@ -11,6 +11,7 @@ class InputField extends StatelessWidget {
   final TextCapitalization? textCapitalization;
   final bool? obscureText;
   final bool? readOnly;
+  final bool? enabled; // Añadimos la propiedad enabled
   final TextEditingController controller;
   final Map<String, String>? formValues;
   final String? Function(String?)? validator;
@@ -32,6 +33,7 @@ class InputField extends StatelessWidget {
     this.onChangeText,
     this.validator,
     this.errorText,
+    this.enabled, // Agregamos enabled al constructor
   });
 
   @override
@@ -42,6 +44,7 @@ class InputField extends StatelessWidget {
       validator: validator,
       initialValue: null,
       readOnly: readOnly ?? false,
+      enabled: enabled ?? true, // Usamos la propiedad enabled en el TextFormField
       textCapitalization: textCapitalization ?? TextCapitalization.none,
       keyboardType: keyboardType ?? TextInputType.text,
       obscureText: obscureText ?? false,
