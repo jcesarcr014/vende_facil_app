@@ -78,7 +78,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'clientes');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -137,7 +137,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
         isLoading = false;
       });
       if (value.status == 1) {
-        Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pushReplacementNamed(context, 'clientes');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
@@ -197,7 +197,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
               },
               icon: const Icon(Icons.menu)),
           if (args.id != 0)
-            
             IconButton(
                 onPressed: () {
                   _alertaEliminar();
@@ -285,9 +284,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                       readOnly: true,
                       labelText: 'Codigo:',
                       textCapitalization: TextCapitalization.words,
-                      sufixIcon: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.qr_code_scanner)),
                       controller: controllerCodigo),
                   SizedBox(
                     height: windowHeight * 0.03,
@@ -312,7 +308,10 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                             'Guardar',
                           ),
                         ],
-                      ))
+                      )),
+                  SizedBox(
+                    height: windowHeight * 0.08,
+                  ),
                 ],
               ),
             ),

@@ -121,89 +121,97 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
     final title = (args.id == 0) ? 'Nueva empresa' : 'Editar empresa';
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(title),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu)),
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        if (!didpop) {
+          Navigator.pushReplacementNamed(context, 'menu');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(title),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'menu');
+                },
+                icon: const Icon(Icons.menu)),
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Espere...$textLoading'),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const CircularProgressIndicator(),
+                    ]),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
+                child: Column(
                   children: [
-                    Text('Espere...$textLoading'),
-                    const SizedBox(
-                      height: 10,
+                    SizedBox(
+                      height: windowHeight * 0.05,
                     ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  InputField(
-                      labelText: 'Nombre empresa:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerNombre),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Dirección:',
-                      textCapitalization: TextCapitalization.sentences,
-                      controller: controllerDireccion),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Telefono:',
-                      keyboardType: TextInputType.phone,
-                      controller: controllerTelefono),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Razón Social:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerRS),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'R.F.C.:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerRFC),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  ElevatedButton(
-                      onPressed: () => _guardaNegocio(),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.save),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Guardar',
-                          ),
-                        ],
-                      ))
-                ],
+                    InputField(
+                        labelText: 'Nombre empresa:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerNombre),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Dirección:',
+                        textCapitalization: TextCapitalization.sentences,
+                        controller: controllerDireccion),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Telefono:',
+                        keyboardType: TextInputType.phone,
+                        controller: controllerTelefono),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Razón Social:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerRS),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'R.F.C.:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerRFC),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
+                    ElevatedButton(
+                        onPressed: () => _guardaNegocio(),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.save),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Guardar',
+                            ),
+                          ],
+                        ))
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

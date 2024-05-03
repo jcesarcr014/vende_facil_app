@@ -41,103 +41,108 @@ class _ClientesScreenState extends State<ClientesScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Clientes'),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-            IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'menu');
-                },
-                icon: const Icon(Icons.menu)),
-          ],
-        ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Clientes'),
+            automaticallyImplyLeading: false,
+            actions: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+              IconButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, 'menu');
+                  },
+                  icon: const Icon(Icons.menu)),
+            ],
+          ),
+          body: (isLoading)
+              ? Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Espere...$textLoading'),
+                        SizedBox(
+                          height: windowHeight * 0.01,
+                        ),
+                        const CircularProgressIndicator(),
+                      ]),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
+                  child: Column(
                     children: [
-                      Text('Espere...$textLoading'),
+                      SizedBox(
+                        height: windowHeight * 0.02,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: windowWidth * 0.05),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, 'nvo-cliente');
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Nuevo cliente'),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.02,
+                      ),
+                      const Divider(),
                       SizedBox(
                         height: windowHeight * 0.01,
                       ),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: windowHeight * 0.02,
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'nvo-cliente');
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text('Nuevo cliente'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.02,
-                    ),
-                    const Divider(),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    Column(children: _clientes())
-                  ],
-                ),
-              ));
+                      Column(children: _clientes())
+                    ],
+                  ),
+                )),
+    );
   }
 
   _clientes() {
     List<Widget> clientes = [];
     for (Cliente cliente in listaClientes) {
-  
       clientes.add(
         Column(
           children: [
             ListTile(
-
               onTap: () {
-  if (cliente.nombre != 'Público en general') {
-    Navigator.pushNamed(context, 'nvo-cliente', arguments: cliente);
-  } else {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Alerta'),
-          content: const Text('No se puede modificar o eliminar".'),
-          actions: <Widget>[
-             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+                if (cliente.nombre != 'Público en general') {
+                  Navigator.pushNamed(context, 'nvo-cliente',
+                      arguments: cliente);
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Alerta'),
+                        content:
+                            const Text('No se puede modificar o eliminar".'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-},
-
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

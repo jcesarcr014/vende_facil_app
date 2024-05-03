@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,7 +38,7 @@ class _MenuScreenState extends State<MenuScreen> {
         'Empresa',
         'Configuracion',
         'Suscripcion',
-        'Salir'
+        'Cerrar Sesión'
       ];
 
       menuRoutes = [
@@ -73,7 +74,7 @@ class _MenuScreenState extends State<MenuScreen> {
         'Empresa',
         'Configuracion',
         'Suscripcion',
-        'Salir'
+        'Cerrar Sesión'
       ];
 
       menuRoutes = ['home', 'negocio', 'config', 'suscripcion', 'login'];
@@ -87,46 +88,77 @@ class _MenuScreenState extends State<MenuScreen> {
       ];
     }
 
-    return Scaffold(
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: menuItems.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 1.0,
-        ),
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () async {
-              if (menuRoutes[index] == 'login') {
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                prefs.setString('token', '');
-              }
-              // ignore: use_build_context_synchronously
-              Navigator.pushReplacementNamed(context, menuRoutes[index]);
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  menuIcons[index],
-                  width: 64,
-                  height: 64,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  menuItems[index],
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: ((context) {
+              return AlertDialog(
+                title: const Text('Salir'),
+                content: const Text('¿Desea salir de la aplicación?'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'No',
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      SystemNavigator.pop();
+                    },
+                    child: const Text('Si'),
+                  ),
+                ],
+              );
+            }));
+      },
+      child: Scaffold(
+        body: GridView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemCount: menuItems.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.0,
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            return GestureDetector(
+              onTap: () async {
+                if (menuRoutes[index] == 'login') {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString('token', '');
+                }
+                // ignore: use_build_context_synchronously
+                Navigator.pushReplacementNamed(context, menuRoutes[index]);
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    menuIcons[index],
+                    width: 64,
+                    height: 64,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    menuItems[index],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

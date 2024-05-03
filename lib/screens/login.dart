@@ -75,117 +75,120 @@ class _LoginScreenState extends State<LoginScreen> {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: windowHeight * 0.15,
-                    ),
-                    SizedBox(
-                        width: windowWidth * 0.4,
-                        child:
-                            const Image(image: AssetImage('assets/logo.png'))),
-                    SizedBox(
-                      height: windowHeight * 0.1,
-                    ),
-                    Text('Espere...$textLoading',
-                        style: const TextStyle(fontSize: 20)),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    const CircularProgressIndicator(),
-                  ],
-                ),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
-                child: Form(
-                  key: _formKey,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: windowHeight * 0.15,
-                        ),
-                        SizedBox(
-                            width: windowWidth * 0.4,
-                            child: const Image(
-                                image: AssetImage('assets/logo.png'))),
-                        SizedBox(
-                          height: windowHeight * 0.1,
-                        ),
-                        InputField(
-                            icon: Icons.person,
-                            labelText: 'Usuario',
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'El usuario es obligatorio';
-                              }
-                              return null;
-                            },
-                            errorText: _userErrorText,
-                            controller: controllerUser),
-                        SizedBox(
-                          height: windowHeight * 0.03,
-                        ),
-                        InputField(
-                            icon: Icons.password,
-                            obscureText: passOculto1,
-                            sufixIcon: IconButton(
-                              icon: (passOculto1)
-                                  ? const Icon(Icons.visibility_off)
-                                  : const Icon(Icons.visibility),
-                              onPressed: () {
-                                passOculto1 = !passOculto1;
-                                setState(() {});
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+          body: (isLoading)
+              ? Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: windowHeight * 0.15,
+                      ),
+                      SizedBox(
+                          width: windowWidth * 0.4,
+                          child: const Image(
+                              image: AssetImage('assets/logo.png'))),
+                      SizedBox(
+                        height: windowHeight * 0.1,
+                      ),
+                      Text('Espere...$textLoading',
+                          style: const TextStyle(fontSize: 20)),
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
+                      const CircularProgressIndicator(),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
+                  child: Form(
+                    key: _formKey,
+                    child: Center(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: windowHeight * 0.15,
+                          ),
+                          SizedBox(
+                              width: windowWidth * 0.4,
+                              child: const Image(
+                                  image: AssetImage('assets/logo.png'))),
+                          SizedBox(
+                            height: windowHeight * 0.1,
+                          ),
+                          InputField(
+                              icon: Icons.person,
+                              labelText: 'Usuario',
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'El usuario es obligatorio';
+                                }
+                                return null;
                               },
-                            ),
-                            labelText: 'Contraseña',
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'El la contraseña es obligatoria';
-                              }
-                              return null;
-                            },
-                            errorText: _passwordErrorText,
-                            controller: controllerPass),
-                        SizedBox(
-                          height: windowHeight * 0.06,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              _inicioSesion();
-                            },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.login),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text('Iniciar Sesión'),
-                              ],
-                            )),
-                        SizedBox(
-                          height: windowHeight * 0.05,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('¿No tienes cuenta?'),
-                            TextButton(
+                              errorText: _userErrorText,
+                              controller: controllerUser),
+                          SizedBox(
+                            height: windowHeight * 0.03,
+                          ),
+                          InputField(
+                              icon: Icons.password,
+                              obscureText: passOculto1,
+                              sufixIcon: IconButton(
+                                icon: (passOculto1)
+                                    ? const Icon(Icons.visibility_off)
+                                    : const Icon(Icons.visibility),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, 'registro');
+                                  passOculto1 = !passOculto1;
+                                  setState(() {});
                                 },
-                                child: const Text('Registrarse'))
-                          ],
-                        )
-                      ],
+                              ),
+                              labelText: 'Contraseña',
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'El la contraseña es obligatoria';
+                                }
+                                return null;
+                              },
+                              errorText: _passwordErrorText,
+                              controller: controllerPass),
+                          SizedBox(
+                            height: windowHeight * 0.06,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                _inicioSesion();
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.login),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text('Iniciar Sesión'),
+                                ],
+                              )),
+                          SizedBox(
+                            height: windowHeight * 0.05,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('¿No tienes cuenta?'),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, 'registro');
+                                  },
+                                  child: const Text('Registrarse'))
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ));
+                )),
+    );
   }
 }
