@@ -40,67 +40,72 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Categorias'),
-        automaticallyImplyLeading: false,
-        actions: [
-          //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu)),
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Categorias'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'menu');
+                },
+                icon: const Icon(Icons.menu)),
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Espere...$textLoading'),
+                      SizedBox(
+                        height: windowHeight * 0.01,
+                      ),
+                      const CircularProgressIndicator(),
+                    ]),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.04),
+                child: Column(
                   children: [
-                    Text('Espere...$textLoading'),
+                    SizedBox(
+                      height: windowHeight * 0.02,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'nva-categoria');
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text('Nueva categoria'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.02,
+                    ),
+                    const Divider(),
                     SizedBox(
                       height: windowHeight * 0.01,
                     ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.04),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'nva-categoria');
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text('Nueva categoria'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  const Divider(),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  Column(children: _categorias())
-                ],
+                    Column(children: _categorias())
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 

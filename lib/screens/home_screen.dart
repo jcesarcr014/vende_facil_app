@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+
   @override
   void initState() {
     _actualizaTotalTemporal();
@@ -36,18 +37,18 @@ class _HomeScreenState extends State<HomeScreen> {
       isLoading = true;
     });
     apartadoProvider.variablesApartado().then((value) {
-     clienteProvider.listarClientes().then((value) {
-      descuentoProvider.listarDescuentos().then((value) {
-        categoriasProvider.listarCategorias().then((respuesta) {
-          articulosProvider.listarProductos().then((value) {
-            setState(() {
-              textLoading = '';
-              isLoading = false;
+      clienteProvider.listarClientes().then((value) {
+        descuentoProvider.listarDescuentos().then((value) {
+          categoriasProvider.listarCategorias().then((respuesta) {
+            articulosProvider.listarProductos().then((value) {
+              setState(() {
+                textLoading = '';
+                isLoading = false;
+              });
             });
           });
         });
       });
-    });
     });
     super.initState();
   }
@@ -56,42 +57,48 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vende Fácil'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, 'menu');
-            },
-            icon: const Icon(Icons.menu),
-          ),
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Espere...$textLoading'),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  const CircularProgressIndicator(),
-                ],
-              ),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
-              child: Column(
-                children: [
-                  ..._listaWidgets(),
-                  const Divider(),
-                  ..._productos(),
-                ],
-              ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Vende Fácil'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu');
+              },
+              icon: const Icon(Icons.menu),
             ),
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Espere...$textLoading'),
+                    SizedBox(
+                      height: windowHeight * 0.01,
+                    ),
+                    const CircularProgressIndicator(),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
+                child: Column(
+                  children: [
+                    ..._listaWidgets(),
+                    const Divider(),
+                    ..._productos(),
+                  ],
+                ),
+              ),
+      ),
     );
   }
 
