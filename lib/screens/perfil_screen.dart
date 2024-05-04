@@ -7,12 +7,15 @@ import 'package:vende_facil/widgets/input_field.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class PerfilScreen extends StatefulWidget {
-  const PerfilScreen({Key? key}) : super(key: key);
+  const PerfilScreen({super.key});
   @override
   State<PerfilScreen> createState() => _PerfilScreenState();
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
+    final confirmarpassword = TextEditingController();
+    bool passOculto1 = true;
+    String? _passwordErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +23,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
     double windowHeight = MediaQuery.of(context).size.height;
     final oldPassword = TextEditingController();
     final newPassword = TextEditingController();
-    final confirmarpassword = TextEditingController();
-    bool passOculto1 = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -166,25 +167,31 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                     ),
                                   ),
                                   SizedBox(width: windowWidth * 0.05),
-                                  Flexible(
-                                    fit: FlexFit.loose,
-                                    child: InputField(
-                                      icon: Icons.password,
-                            obscureText: passOculto1,
-                            sufixIcon: IconButton(
-                              icon: (passOculto1)
-                                  ? const Icon(Icons.visibility_off)
-                                  : const Icon(Icons.visibility),
-                              onPressed: () {
-                                passOculto1 = !passOculto1;
-                                setState(() {});
-                              },
-                            ),
-                                      textCapitalization:
-                                          TextCapitalization.words,
-                                      controller: confirmarpassword,
-                                    ),
+                              Flexible(
+                                child: InputField(
+                                  obscureText: passOculto1,
+                                  sufixIcon: IconButton(
+                                    icon: (passOculto1)
+                                        ? const Icon(Icons.visibility_off)
+                                        : const Icon(Icons.visibility) ,
+                                    onPressed: () {
+                                      passOculto1 = !passOculto1;
+                                      setState(() {
+                                        print(passOculto1);
+                                      });
+                                    },
                                   ),
+                                  labelText: 'Contraseña',
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'La contraseña es obligatoria';
+                                    }
+                                    return null;
+                                  },
+                                  errorText: _passwordErrorText,
+                                  controller: confirmarpassword,
+                                ),
+                              ),
                                 ],
                               ),
                             ),
