@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
@@ -10,8 +11,8 @@ class PerfilEmpleadosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double windowWidth = MediaQuery.of(context).size.width;
     double windowHeight = MediaQuery.of(context).size.height;
-    final oldPassword = TextEditingController();
     final newPassword = TextEditingController();
+    final  ConfirmarPassword = TextEditingController();
     final usuario = UsuarioProvider();
     final String empleadoId = ModalRoute.of(context)!.settings.arguments.toString();
 
@@ -27,10 +28,13 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 20),
                 child: const CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(
-                      'https://thumbs.dreamstime.com/b/l%C3%ADnea-icono-del-negro-avatar-perfil-de-usuario-121102131.jpg'),
+                  child: Icon(
+                    CupertinoIcons.person_solid, 
+                    size: 70, 
+                    color: Colors.black, 
+                  ),
                 ),
-              ),
+),
             ),
             const SizedBox(height: 15),
             Container(
@@ -81,41 +85,6 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                             SizedBox(height: windowHeight * 0.05),
                             Container(
                               width: MediaQuery.of(context).size.width * 1,
-                              color: Colors.yellow,
-                              child: Row(
-                                children: [
-                                  const Flexible(
-                                    child: Text(
-                                      'Contraseña vieja',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(width: windowWidth * 0.05),
-                                  Flexible(
-                                    fit: FlexFit.loose,
-                                    child: TextFormField(
-                                      textCapitalization:
-                                          TextCapitalization.words,
-                                      controller: oldPassword,
-                                      decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 15.0,
-                                                horizontal: 1.0),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: windowHeight * 0.05),
-                            // ignore: sized_box_for_whitespace
-                            Container(
-                              width: MediaQuery.of(context).size.width,
                               child: Row(
                                 children: [
                                   const Flexible(
@@ -147,6 +116,40 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: windowHeight * 0.05),
+                            // ignore: sized_box_for_whitespace
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                children: [
+                                  const Flexible(
+                                    child: Text(
+                                      'Confirmar Contraseña nueva',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                  SizedBox(width: windowWidth * 0.05),
+                                  Flexible(
+                                    fit: FlexFit.loose,
+                                    child: TextFormField(
+                                      textCapitalization:
+                                          TextCapitalization.words,
+                                      controller: ConfirmarPassword,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 15.0,
+                                                horizontal: 1.0),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: windowHeight * 0.05),
                           ],
                         ),
                       ),
@@ -154,7 +157,7 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             usuario
-                                .editaPassword(oldPassword.text,
+                                .editaPassword(ConfirmarPassword.text,
                                     newPassword.text, sesion.idUsuario!)
                                 .then((value) {
                               if (value.status == 1) {
