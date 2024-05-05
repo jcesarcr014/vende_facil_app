@@ -17,7 +17,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
   String _valueIdDescuento = '0';
-  String _valueIdcliente = listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
+  String _valueIdcliente = listaClientes
+      .firstWhere((cliente) => cliente.nombre == 'Público en general')
+      .id
+      .toString();
   double descuento = 0.0;
   double restate = 0.0;
   int idcliente = 0;
@@ -61,14 +64,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de venta'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'home');
-              },
-              icon: const Icon(Icons.arrow_back)),
-        ],
+        automaticallyImplyLeading: true,
       ),
       body: (isLoading)
           ? Center(
@@ -210,7 +206,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                               width: windowWidth * 0.6,
                               child: Center(
                                 child: Text(
-                                    'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+                                  'Cobrar   \$${totalVentaTemporal.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             )),
                         const SizedBox(
@@ -224,9 +225,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                                 descuentoId: idDescuento,
                                 descuento: descuento,
                                 total: totalVentaTemporal,
-                                pagoEfectivo: efectivoConttroller.text.isNotEmpty
-                                    ? double.parse(efectivoConttroller.text)
-                                    : 0.00,
+                                pagoEfectivo:
+                                    efectivoConttroller.text.isNotEmpty
+                                        ? double.parse(efectivoConttroller.text)
+                                        : 0.00,
                                 pagoTarjeta: tarjetaConttroller.text.isNotEmpty
                                     ? double.parse(tarjetaConttroller.text)
                                     : 0.00,
@@ -237,13 +239,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                                     ? double.parse(efectivoConttroller.text)
                                     : 0.00,
                               );
-                              Navigator.pushNamed(context, 'apartado',arguments: apartado);
+                              Navigator.pushNamed(context, 'apartado',
+                                  arguments: apartado);
                             },
                             child: SizedBox(
                               height: windowHeight * 0.07,
                               width: windowWidth * 0.6,
                               child: const Center(
-                                child: Text('Apartar'),
+                                child: Text(
+                                  'Apartar',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             )),
                       ],
@@ -407,9 +416,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   _clientes() {
     var listaClien = [
       DropdownMenuItem(
-        value: listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString(),
+        value: listaClientes
+            .firstWhere((cliente) => cliente.nombre == 'Público en general')
+            .id
+            .toString(),
         child: SizedBox(
-            child: Text(listaClientes.firstWhere((cliente) => cliente.nombre == 'Público en general').nombre!)),
+            child: Text(listaClientes
+                .firstWhere((cliente) => cliente.nombre == 'Público en general')
+                .nombre!)),
       )
     ];
 
@@ -421,7 +435,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     }
     if (_valueIdcliente.isEmpty) {
       _valueIdcliente = listaClientes
-          .firstWhere((cliente) => cliente.nombre == 'Público en general').id.toString();
+          .firstWhere((cliente) => cliente.nombre == 'Público en general')
+          .id
+          .toString();
     }
     return DropdownButton(
       items: listaClien,
@@ -432,14 +448,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           .toString(),
       onChanged: (value) {
         _valueIdcliente = value!;
-         if (value == listaClientes.firstWhere((cliente) =>cliente.nombre == 'Público en general').id.toString()) {
-           setState(() {});
-         } else {
-         idcliente = listaClientes
+        if (value ==
+            listaClientes
+                .firstWhere((cliente) => cliente.nombre == 'Público en general')
+                .id
+                .toString()) {
+          setState(() {});
+        } else {
+          idcliente = listaClientes
               .firstWhere((cliente) => cliente.id.toString() == value)
               .id!;
-            setState(() {});
-         }
+          setState(() {});
+        }
         setState(() {});
       },
     );

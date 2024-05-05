@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: const Text(
-              'ATENCIÓN',
+              '¡Alerta!',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.red),
             ),
@@ -150,8 +150,13 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, 'detalle-venta');
-              setState(() {});
+              if (ventaTemporal.isNotEmpty) {
+                Navigator.pushNamed(context, 'detalle-venta');
+                setState(() {});
+              } else {
+                mostrarAlerta(
+                    context, '¡Atención!', 'No hay productos en la venta.');
+              }
             },
             child: SizedBox(
               height: windowHeight * 0.1,
@@ -202,7 +207,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ElevatedButton(
               onPressed: () {
-                _alertaElimnar();
+                if (ventaTemporal.isNotEmpty) {
+                  _alertaElimnar();
+                } else {
+                  mostrarAlerta(
+                      context, '¡Atención!', 'No hay productos en la venta.');
+                }
               },
               child: SizedBox(
                   width: windowWidth * 0.10,

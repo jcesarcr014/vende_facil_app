@@ -235,6 +235,37 @@ class UsuarioProvider {
     return respuesta;
   }
 
+  Future<Resultado> obtenerUsuarios() async {
+    var url = Uri.parse('$baseUrl/usuarios/${sesion.idNegocio}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        listaUsuarios.clear();
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          Usuario usuarioTemp = Usuario();
+          usuarioTemp.id = decodedData['data'][x]['id'];
+          usuarioTemp.nombre = decodedData['data'][x]['name'];
+          usuarioTemp.email = decodedData['data'][x]['email'];
+          usuarioTemp.telefono = decodedData['data'][x]['phone'];
+          usuarioTemp.tipoUsuario = decodedData['data'][x]['tipo'];
+          listaUsuarios.add(usuarioTemp);
+        }
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
   Future<Resultado> obtenerEmpleados() async {
     var url = Uri.parse('$baseUrl/empleados/${sesion.idUsuario}');
     try {

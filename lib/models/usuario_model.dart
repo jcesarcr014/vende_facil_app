@@ -16,3 +16,4 @@ class Usuario {
 }
 
 List<Usuario> listaEmpleados = [];
+List<Usuario> listaUsuarios = [];
