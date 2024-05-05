@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, camel_case_types
 
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
@@ -11,156 +11,191 @@ class VentaScreen extends StatefulWidget {
   State<VentaScreen> createState() => _ventaScreenState();
 }
 
-// ignore: camel_case_types
 class _ventaScreenState extends State<VentaScreen> {
   final TotalConttroller = TextEditingController();
   final EfectivoController = TextEditingController();
   final CambioController = TextEditingController();
   final TarjetaController = TextEditingController();
   final ventaCabecera = VentasProvider();
+  bool isLoading = false;
+  String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   double efectivo = 0.0;
   double tarjeta = 0.0;
+  double cambio = 0.0;
+  double totalEfectivo = 0.0;
   double total = 0.0;
+
   @override
   void initState() {
     super.initState();
     TotalConttroller.text = totalVentaTemporal.toStringAsFixed(2);
     EfectivoController.text = "0.00";
     TarjetaController.text = "0.00";
+    CambioController.text = "0.00";
   }
 
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    final VentaCabecera venta =ModalRoute.of(context)?.settings.arguments as VentaCabecera;
+    final VentaCabecera venta =
+        ModalRoute.of(context)?.settings.arguments as VentaCabecera;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Venta'),
+        title: const Text('Detalle de cobro'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: (isLoading)
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Flexible(child: Text("Total:")),
+                  Text('Espere...$textLoading'),
                   SizedBox(
-                    width: windowWidth * 0.01,
+                    height: windowHeight * 0.01,
                   ),
-                  Flexible(
-                      child: TextField(
-                    controller: TotalConttroller,
-                    enabled: false,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Total',
-                      border: OutlineInputBorder(),
+                  const CircularProgressIndicator(),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: windowHeight * 0.03,
+                  ),
+                  const Text(
+                      'Ingrese la forma de pago y asegurese de que el cambio sea correcto.',
+                      maxLines: 3,
+                      textAlign: TextAlign.justify,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      )),
+                  SizedBox(
+                    height: windowHeight * 0.03,
+                  ),
+
+                  // ignore: avoid_unnecessary_containers
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Flexible(child: Text("Total:")),
+                        SizedBox(
+                          width: windowWidth * 0.01,
+                        ),
+                        Flexible(
+                            child: TextField(
+                          controller: TotalConttroller,
+                          enabled: false,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Total',
+                            border: OutlineInputBorder(),
+                          ),
+                        ))
+                      ],
                     ),
-                  ))
-                ],
-              ),
-            ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Efectivo:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
                   ),
-                  Flexible(
-                      child: InputFieldMoney(
-                    controller: EfectivoController,
-                    onChanged: (value) {
-                      tuFuncion();
-                    },
-                  ))
-                ],
-              ),
-            ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Tarjeta:")),
                   SizedBox(
-                    width: windowWidth * 0.01,
+                    height: windowHeight * 0.05,
                   ),
-                  Flexible(
-                      child: InputFieldMoney(
-                    controller: TarjetaController,
-                    onChanged: (value) {
-                      tuFuncion();
-                    },
-                  ))
-                ],
-              ),
-            ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Cambio:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                      child: TextField(
-                    controller: CambioController,
-                    enabled: false,
-                    decoration: const InputDecoration(
-                      labelText: 'Cambio',
-                      border: OutlineInputBorder(),
+                  // ignore: avoid_unnecessary_containers
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Flexible(child: Text("Efectivo:")),
+                        SizedBox(
+                          width: windowWidth * 0.01,
+                        ),
+                        Flexible(
+                            child: InputFieldMoney(
+                          controller: EfectivoController,
+                          onChanged: (value) {
+                            tuFuncion();
+                          },
+                        ))
+                      ],
                     ),
-                  ))
+                  ),
+                  SizedBox(
+                    height: windowHeight * 0.05,
+                  ),
+                  // ignore: avoid_unnecessary_containers
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Flexible(child: Text("Tarjeta:")),
+                        SizedBox(
+                          width: windowWidth * 0.01,
+                        ),
+                        Flexible(
+                            child: InputFieldMoney(
+                          controller: TarjetaController,
+                          onChanged: (value) {
+                            tuFuncion();
+                          },
+                        ))
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: windowHeight * 0.05,
+                  ),
+                  // ignore: avoid_unnecessary_containers
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Flexible(child: Text("Cambio:")),
+                        SizedBox(
+                          width: windowWidth * 0.01,
+                        ),
+                        Flexible(
+                            child: TextField(
+                          controller: CambioController,
+                          enabled: false,
+                          decoration: const InputDecoration(
+                            labelText: 'Cambio',
+                            border: OutlineInputBorder(),
+                          ),
+                        ))
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: windowHeight * 0.05,
+                  ),
+                  // ignore: avoid_unnecessary_containers
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            _checkVenta(venta);
+                          },
+                          child: const Text('Aceptar'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancelar'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _checkVenta(venta);
-                    },
-                    child: const Text('Aceptar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Lógica para el botón Cancelar
-                    },
-                    child: const Text('Cancelar'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -184,11 +219,12 @@ class _ventaScreenState extends State<VentaScreen> {
         },
       );
     } else {
-      double efectivo =
-          double.parse(EfectivoController.text.replaceAll(',', ''));
-      double total = double.parse(TotalConttroller.text);
-      double tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
-      double resultado = efectivo + tarjeta;
+      efectivo = double.parse(EfectivoController.text.replaceAll(',', ''));
+      total = double.parse(TotalConttroller.text);
+      tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
+      cambio = double.parse(CambioController.text);
+      totalEfectivo = efectivo - cambio;
+      double resultado = totalEfectivo + tarjeta;
       if (tarjeta > total) {
         showDialog(
           context: context,
@@ -208,7 +244,7 @@ class _ventaScreenState extends State<VentaScreen> {
           },
         );
       } else {
-        if (resultado >= total) {
+        if (resultado == total) {
           _compra(venta);
         } else {
           showDialog(
@@ -234,7 +270,7 @@ class _ventaScreenState extends State<VentaScreen> {
   }
 
   _compra(VentaCabecera venta) {
-     showDialog(
+    showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -249,8 +285,8 @@ class _ventaScreenState extends State<VentaScreen> {
         );
       },
     );
-    venta.importeTarjeta = efectivo;
-    venta.importeEfectivo = tarjeta;
+    venta.importeTarjeta = tarjeta;
+    venta.importeEfectivo = totalEfectivo;
     ventaCabecera.guardarVenta(venta).then((value) {
       if (!mounted) return; // Comprobar si el widget está montado
 
