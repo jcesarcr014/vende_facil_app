@@ -193,7 +193,7 @@ class VentasProvider {
   Future<Resultado> consultarVentasFecha(String inicio, String finalF) async {
     listaVentaCabecera.clear();
     var url =
-        Uri.parse('$baseUrl/ventas-fecha/${sesion.idNegocio}/$inicio/$finalF');
+        Uri.parse('$baseUrl/reporte-fecha-general/$inicio/$finalF/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -203,37 +203,66 @@ class VentasProvider {
         for (int x = 0; x < decodedData['data'].length; x++) {
           VentaCabecera ventasCabezera = VentaCabecera();
           ventasCabezera.id = decodedData['data'][x]['id'];
-          ventasCabezera.negocioId = decodedData['data'][x]['negocio_id'];
           ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
-          ventasCabezera.idCliente = decodedData['data'][x]['cliente_id'];
-          ventasCabezera.folio = decodedData['data'][x]['folio'];
-          ventasCabezera.subtotal =
-              double.parse(decodedData['data'][x]['subtotal']);
-          ventasCabezera.idDescuento = decodedData['data'][x]['descuento_id'];
-          ventasCabezera.descuento =
-              double.parse(decodedData['data'][x]['descuento']);
+          ventasCabezera.name = decodedData['data'][x]['name'];
+          ventasCabezera.tipo_movimiento = decodedData['data'][x]['tipo_movimiento'];
+          ventasCabezera.importeEfectivo =double.parse(decodedData['data'][x]['monto_efectivo']);
+          ventasCabezera.importeTarjeta =double.parse(decodedData['data'][x]['monto_tarjeta']);
           ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
-          ventasCabezera.importeEfectivo =
-              double.parse(decodedData['data'][x]['pago_efectivo']);
-          ventasCabezera.importeTarjeta =
-              double.parse(decodedData['data'][x]['pago_tarjeta']);
-          ventasCabezera.cancelado =
-              int.parse(decodedData['data'][x]['cancelado']);
-          ventasCabezera.fecha_venta = decodedData['data'][x]['fecha_venta'];
-          ventasCabezera.fecha_cancelacion =
-              decodedData['data'][x]['fecha_cancelacion'];
+          ventasCabezera.fecha_venta = decodedData['data'][x]['fecha'];
           listaVentaCabecera.add(ventasCabezera);
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
+        print('respuesta: ${respuesta.mensaje}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
+        print('respuesta: ${respuesta.mensaje}');
       }
     } catch (e) {
       respuesta.status = 0;
 
       respuesta.mensaje = 'Error en la peticion: $e';
+      print('respuesta: ${respuesta.mensaje}');
+    }
+    return respuesta;
+  }
+  Future<Resultado> consultarVentasFechaUsuario(String inicio, String finalF,String usuario ) async {
+    listaVentaCabecera.clear();
+    var url =
+        Uri.parse('$baseUrl/reporte-fecha-usuario/$inicio/$finalF/${sesion.idNegocio}/$usuario');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          VentaCabecera ventasCabezera = VentaCabecera();
+          ventasCabezera.id = decodedData['data'][x]['id'];
+          ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
+          ventasCabezera.name = decodedData['data'][x]['name'];
+          ventasCabezera.tipo_movimiento = decodedData['data'][x]['tipo_movimiento'];
+          ventasCabezera.importeEfectivo =double.parse(decodedData['data'][x]['monto_efectivo']);
+          ventasCabezera.importeTarjeta =double.parse(decodedData['data'][x]['monto_tarjeta']);
+          ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
+          ventasCabezera.fecha_venta = decodedData['data'][x]['fecha'];
+          listaVentaCabecera.add(ventasCabezera);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        print('respuesta: ${respuesta.mensaje}');
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+        print('respuesta: ${respuesta.mensaje}');
+      }
+    } catch (e) {
+      respuesta.status = 0;
+
+      respuesta.mensaje = 'Error en la peticion: $e';
+      print('respuesta: ${respuesta.mensaje}');
     }
     return respuesta;
   }

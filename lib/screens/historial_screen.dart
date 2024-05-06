@@ -20,11 +20,24 @@ class _HistorialScreenState extends State<HistorialScreen> {
   String formattedEndDate = "";
   String formattedStartDate = "";
   DateTime now = DateTime.now();
+  String _valueIdEmpleado = '0';
 
   late DateTime _startDate;
   late DateTime _endDate;
   double totalVentas = 0.0;
   late DateFormat dateFormatter;
+  final _dateController = TextEditingController();
+
+  void initState() {
+    _startDate = DateTime(now.year, now.month, now.day);
+    _endDate = _startDate.add(const Duration(days: 30));
+    dateFormatter = DateFormat('yyyy-MM-dd');
+    formattedStartDate = dateFormatter.format(_startDate);
+    formattedEndDate = dateFormatter.format(_endDate);
+    _dateController.text = '$formattedStartDate - $formattedEndDate';
+    super.initState();
+    _consultarVentas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +75,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                       const CircularProgressIndicator(),
                     ]),
               )
-            : SingleChildScrollView(
+            : Padding(
                 padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.04),
                 child: Column(
                   children: [
@@ -80,10 +93,213 @@ class _HistorialScreenState extends State<HistorialScreen> {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Flexible(
+                            child: TextFormField(
+                              controller: _dateController,
+                              onTap: () async {
+                                final picked = await showDateRangePicker(
+                                  context: context,
+                                  firstDate: DateTime(2015),
+                                  lastDate: DateTime(2100),
+                                  initialDateRange: DateTimeRange(
+                                    start: formattedStartDate.isEmpty
+                                        ? DateTime.now()
+                                        : _startDate,
+                                    end: formattedEndDate.isEmpty
+                                        ? _startDate
+                                            .add(const Duration(days: 30))
+                                        : _endDate,
+                                  ),
+                                );
+                                if (picked != null &&
+                                    picked !=
+                                        DateTimeRange(
+                                            start: _startDate,
+                                            end: formattedEndDate.isEmpty
+                                                ? _startDate.add(
+                                                    const Duration(days: 30))
+                                                : _endDate)) {
+                                  setState(() {
+                                    _startDate = picked.start;
+                                    _endDate = picked.end;
+                                    dateFormatter = DateFormat('yyyy-MM-dd');
+                                    formattedStartDate =
+                                        dateFormatter.format(_startDate);
+                                    formattedEndDate =
+                                        dateFormatter.format(_endDate);
+                                    _dateController.text =
+                                        '$formattedStartDate - $formattedEndDate';
+                                  });
+                                  _consultarVentas();
+                                }
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Seleccionar fecha',
+                                suffixIcon: IconButton(
+                                  onPressed: () async {
+                                    final picked = await showDateRangePicker(
+                                      context: context,
+                                      firstDate: DateTime(2015),
+                                      lastDate: DateTime(2100),
+                                      initialDateRange: DateTimeRange(
+                                        start: formattedStartDate.isEmpty
+                                            ? DateTime.now()
+                                            : _startDate,
+                                        end: formattedEndDate.isEmpty
+                                            ? _startDate
+                                                .add(const Duration(days: 30))
+                                            : _endDate,
+                                      ),
+                                    );
+                                    if (picked != null &&
+                                        picked !=
+                                            DateTimeRange(
+                                                start: _startDate,
+                                                end: formattedEndDate.isEmpty
+                                                    ? _startDate.add(
+                                                        const Duration(
+                                                            days: 30))
+                                                    : _endDate)) {
+                                      setState(() {
+                                        _startDate = picked.start;
+                                        _endDate = picked.end;
+                                        dateFormatter =
+                                            DateFormat('yyyy-MM-dd');
+                                        formattedStartDate =
+                                            dateFormatter.format(_startDate);
+                                        formattedEndDate =
+                                            dateFormatter.format(_endDate);
+                                        _dateController.text =
+                                            '$formattedStartDate - $formattedEndDate';
+                                      });
+                                      _consultarVentas();
+                                    }
+                                  },
+                                  icon: Icon(Icons.calendar_today),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
+                    _empleado(),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: _listaVentas(),
+                      ),
+                    ),
                   ],
                 ),
               ),
+        persistentFooterButtons: [
+          BottomAppBar(
+            child: SizedBox(
+              height: 50,
+              child: Center(
+                child: Text(
+                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  _consultarVentas() async {
+    setState(() {
+      isLoading = true;
+    });
+    if (_valueIdEmpleado == '0') {
+      print('empleado seleccionado: $_valueIdEmpleado');
+      final result = await ventaProvider.consultarVentasFecha(
+        formattedStartDate,
+        formattedEndDate,
+      );
+    } else {
+      print('empleado seleccionado: $_valueIdEmpleado');
+      final result = await ventaProvider.consultarVentasFechaUsuario(
+        formattedStartDate,
+        formattedEndDate,
+        _valueIdEmpleado,
+      );
+      setState(() {});
+    }
+    setState(() {
+      isLoading = false;
+      for (VentaCabecera venta in listaVentaCabecera) {
+        totalVentas += venta.total!;
+      }
+    });
+  }
+
+  _empleado() {
+    var listades = [
+      const DropdownMenuItem(
+        value: '0',
+        child: SizedBox(child: Text('Todos')),
+      )
+    ];
+    for (Usuario empleado in listaEmpleados) {
+      listades.add(DropdownMenuItem(
+          value: empleado.id.toString(), child: Text(empleado.nombre!)));
+    }
+    if (_valueIdEmpleado.isEmpty) {
+      _valueIdEmpleado = '0';
+    }
+    return DropdownButton(
+      items: listades,
+      isExpanded: true,
+      value: _valueIdEmpleado,
+      onChanged: (value) {
+        _valueIdEmpleado = value!;
+        if (value == "0") {
+            setState(() {});
+            _consultarVentas();
+        } else {
+          Usuario empleadoSeleccionado = listaEmpleados
+              .firstWhere((empleado) => empleado.id.toString() == value);
+          if (empleadoSeleccionado.id == 0) {
+            _valueIdEmpleado = '0';
+            setState(() {});
+            _consultarVentas();
+          } else {
+            _valueIdEmpleado = empleadoSeleccionado.id.toString();
+            setState(() {});
+            _consultarVentas();
+          }
+        }
+      },
+    );
+  }
+
+  _listaVentas() {
+    if (listaVentaCabecera.isEmpty) {
+      return Center(
+        child: Text(
+            'No hay ventas realizadas en el rango de fechas seleccionado.'),
+      );
+    } else {
+      return Column(
+        children: listaVentaCabecera.map((venta) {
+          return ListTile(
+            title: Text(venta.name!),
+            subtitle: Text(venta.tipo_movimiento!),
+            trailing: Text('\$${venta.total}'),
+          );
+        }).toList(),
+      );
+    }
   }
 }

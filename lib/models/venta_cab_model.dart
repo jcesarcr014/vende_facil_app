@@ -15,6 +15,8 @@ class VentaCabecera {
   String? fecha_venta;
   String? fecha_cancelacion;
   String? nombreCliente;
+  String? name;
+  String? tipo_movimiento;
   VentaCabecera({
     this.id,
     this.negocioId,
@@ -31,6 +33,9 @@ class VentaCabecera {
     this.fecha_venta,
     this.fecha_cancelacion,
     this.nombreCliente,
+    this.name,
+    this.tipo_movimiento,
+    
   });
 }
 
