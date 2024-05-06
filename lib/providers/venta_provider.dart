@@ -43,6 +43,11 @@ class VentasProvider {
   }
 
   Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
+    if (venta.idDesc != 0) {
+        var descue=listaDescuentos.firstWhere((descuento) => descuento.id == venta.idDesc).valor;
+        venta.cantidadDescuento=(venta.total!*descue!/100);
+        venta.total=venta.total!-venta.cantidadDescuento!;
+    }
     var url = Uri.parse('$baseUrl/ventas-detalle/${venta.idVenta}');
     try {
       final resp = await http.post(url, headers: {
