@@ -5,6 +5,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,24 +33,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     _actualizaTotalTemporal();
-    setState(() {
-      textLoading = 'Leyendo articulos';
-      isLoading = true;
-    });
-    apartadoProvider.variablesApartado().then((value) {
-      clienteProvider.listarClientes().then((value) {
-        descuentoProvider.listarDescuentos().then((value) {
-          categoriasProvider.listarCategorias().then((respuesta) {
-            articulosProvider.listarProductos().then((value) {
-              setState(() {
-                textLoading = '';
-                isLoading = false;
-              });
-            });
-          });
+    if (globals.actualizaArticulos) {
+      setState(() {
+        textLoading = 'Actualizando lista de articulos';
+        isLoading = true;
+      });
+      articulosProvider.listarProductos().then((value) {
+        setState(() {
+          globals.actualizaArticulos = false;
+          textLoading = '';
+          isLoading = false;
         });
       });
-    });
+    }
+
     super.initState();
   }
 
