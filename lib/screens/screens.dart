@@ -29,3 +29,4 @@ export 'package:vende_facil/screens/lista_empleados.dart';
 export 'package:vende_facil/screens/perfil_empleado_screen.dart';
 export 'package:vende_facil/screens/venta_screen.dart';
 export 'package:vende_facil/screens/apartado_screen.dart';
+export 'package:vende_facil/screens/splash_screen.dart';

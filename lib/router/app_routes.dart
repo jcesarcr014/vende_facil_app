@@ -3,9 +3,10 @@ import 'package:vende_facil/screens/abono_detalle.dart';
 import 'package:vende_facil/screens/screens.dart';
 
 class AppRoutes {
-  static const initialRoute = 'login';
+  static const initialRoute = 'splash';
 
   static Map<String, Widget Function(BuildContext)> routes = {
+    'splash': (BuildContext context) => const SplashScreen(),
     'home': (BuildContext context) => const HomeScreen(),
     'login': (BuildContext context) => const LoginScreen(),
     'registro': (BuildContext context) => const RegistroScreen(),

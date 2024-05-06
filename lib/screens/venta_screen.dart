@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:vende_facil/widgets/input_field_money.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class VentaScreen extends StatefulWidget {
   const VentaScreen({super.key});
@@ -269,98 +270,51 @@ class _ventaScreenState extends State<VentaScreen> {
     }
   }
 
-  _compra(VentaCabecera venta) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
-              Text("Procesado venta..."),
-            ],
-          ),
-        );
-      },
-    );
+  _compra(VentaCabecera venta) async {
+    int idCabecera = 0;
+    setState(() {
+      isLoading = true;
+      textLoading = 'Guardando venta';
+    });
     venta.importeTarjeta = tarjeta;
     venta.importeEfectivo = totalEfectivo;
-    ventaCabecera.guardarVenta(venta).then((value) {
-      if (!mounted) return; // Comprobar si el widget está montado
-
-      if (value.status == 1) {
-        Navigator.pop(context);
-        for (ItemVenta item in ventaTemporal) {
-          VentaDetalle ventaDetalle = VentaDetalle(
-            idVenta: value.id,
-            idProd: item.idArticulo,
-            cantidad: item.cantidad,
-            precio: item.precio,
-            idDesc: venta.idDescuento,
-            cantidadDescuento: venta.descuento,
-            total: item.totalItem,
-            subtotal: item.subTotalItem,
-          );
-
-          ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {
-            if (value.status == 1) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    content: const Text('Venta realizada con éxito'),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            efectivo = 0.0;
-                            tarjeta = 0.0;
-                            total = 0.0;
-                            TotalConttroller.clear();
-                            EfectivoController.clear();
-                            TarjetaController.clear();
-                            CambioController.clear();
-                            ventaTemporal.clear();
-                            totalVentaTemporal = 0.00;
-                          });
-                          Navigator.pushReplacementNamed(context, 'home');
-                        },
-                        child: const Text('Aceptar'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    content: Text('${value.mensaje}'),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Aceptar'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-          });
-        }
+    await ventaCabecera.guardarVenta(venta).then((respCab) {
+      if (respCab.status == 1) {
+        idCabecera = respCab.id!;
       }
     });
+    for (ItemVenta item in ventaTemporal) {
+      VentaDetalle ventaDetalle = VentaDetalle(
+        idVenta: idCabecera,
+        idProd: item.idArticulo,
+        cantidad: item.cantidad,
+        precio: item.precio,
+        idDesc: venta.idDescuento,
+        cantidadDescuento: venta.descuento,
+        total: item.totalItem,
+        subtotal: item.subTotalItem,
+      );
+
+      await ventaCabecera.guardarVentaDetalle(ventaDetalle).then((respDet) {
+        if (respDet.status != 1) {
+          setState(() {
+            isLoading = false;
+            textLoading = '';
+          });
+          mostrarAlerta(context, 'ERROR', respDet.mensaje!);
+        }
+      });
+    }
+
+    setState(() {
+      textLoading = '';
+      isLoading = false;
+    });
+    ventaTemporal.clear();
+    setState(() {});
+    totalVentaTemporal = 0.0;
+    Navigator.pushReplacementNamed(context, 'home');
+    mostrarAlerta(context, '', 'Venta realizada');
   }
 
   tuFuncion() {

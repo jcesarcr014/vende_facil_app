@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +13,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final usuariosProvider = UsuarioProvider();
+  final categoriasProvider = CategoriaProvider();
+  final articulosProvider = ArticuloProvider();
+  final clientesProvider = ClienteProvider();
+  final descuentosProvider = DescuentoProvider();
+  final apartadoProvider = ApartadoProvider();
   final controllerUser = TextEditingController();
   final controllerPass = TextEditingController();
   double windowWidth = 0.0;
@@ -21,47 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String textLoading = '';
   String? _userErrorText;
   String? _passwordErrorText;
-
-  _inicioSesion() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        textLoading = 'Iniciando sesión.';
-        isLoading = true;
-      });
-      usuariosProvider
-          .login(controllerUser.text, controllerPass.text)
-          .then((value) {
-        setState(() {
-          isLoading = false;
-        });
-        if (value.status == 1) {
-          Navigator.pushReplacementNamed(context, 'home');
-        } else {
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    } else {
-      mostrarAlerta(context, 'ERROR', 'Complete todos los campos');
-    }
-  }
-
-  @override
-  void initState() {
-    setState(() {
-      textLoading = 'Leyendo datos de sesión.';
-      isLoading = true;
-    });
-    usuariosProvider.userInfo().then((value) {
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
-      if (value.status == 1) {
-        Navigator.pushReplacementNamed(context, 'home');
-      }
-    });
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -190,5 +155,94 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 )),
     );
+  }
+
+  _inicioSesion() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        textLoading = 'Iniciando sesión.';
+        isLoading = true;
+      });
+      usuariosProvider
+          .login(controllerUser.text, controllerPass.text)
+          .then((value) async {
+        if (value.status == 1) {
+          setState(() {
+            textLoading = 'Leyendo información de empleados';
+          });
+          await usuariosProvider.obtenerUsuarios().then((value) {
+            if (value.status == 1) {
+              globals.actualizaUsuarios = false;
+            } else {
+              globals.actualizaUsuarios = true;
+            }
+          });
+          await usuariosProvider.obtenerEmpleados().then((value) {
+            if (value.status == 1) {
+              globals.actualizaEmpleados = false;
+            } else {
+              globals.actualizaEmpleados = true;
+            }
+          });
+          setState(() {
+            textLoading = 'Leyendo categorias';
+          });
+          await categoriasProvider.listarCategorias().then((value) {
+            if (value.status == 1) {
+              globals.actualizaCategorias = false;
+            } else {
+              globals.actualizaCategorias = true;
+            }
+          });
+          setState(() {
+            textLoading = 'Leyendo productos';
+          });
+          await articulosProvider.listarProductos().then((value) {
+            if (value.status == 1) {
+              globals.actualizaArticulos = false;
+            } else {
+              globals.actualizaArticulos = true;
+            }
+          });
+          setState(() {
+            textLoading = 'Leyendo información adicional';
+          });
+          await clientesProvider.listarClientes().then((value) {
+            if (value.status == 1) {
+              globals.actualizaClientes = false;
+            } else {
+              globals.actualizaClientes = true;
+            }
+          });
+          await descuentosProvider.listarDescuentos().then((value) {
+            if (value.status == 1) {
+              globals.actualizaDescuentos = false;
+            } else {
+              globals.actualizaDescuentos = true;
+            }
+          });
+          await apartadoProvider.variablesApartado().then((value) {
+            if (value.status == 1) {
+              globals.actualizaVariables = false;
+            } else {
+              globals.actualizaVariables = true;
+            }
+          });
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+          Navigator.pushReplacementNamed(context, 'home');
+        } else {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
+    } else {
+      mostrarAlerta(context, 'ERROR', 'Complete todos los campos');
+    }
   }
 }
