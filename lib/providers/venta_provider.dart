@@ -214,17 +214,15 @@ class VentasProvider {
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        print('respuesta: ${respuesta.mensaje}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
-        print('respuesta: ${respuesta.mensaje}');
+      
       }
     } catch (e) {
       respuesta.status = 0;
 
       respuesta.mensaje = 'Error en la peticion: $e';
-      print('respuesta: ${respuesta.mensaje}');
     }
     return respuesta;
   }
@@ -252,17 +250,14 @@ class VentasProvider {
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        print('respuesta: ${respuesta.mensaje}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
-        print('respuesta: ${respuesta.mensaje}');
       }
     } catch (e) {
       respuesta.status = 0;
 
       respuesta.mensaje = 'Error en la peticion: $e';
-      print('respuesta: ${respuesta.mensaje}');
     }
     return respuesta;
   }

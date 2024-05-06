@@ -232,6 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
             textLoading = '';
             isLoading = false;
           });
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'home');
         } else {
           setState(() {

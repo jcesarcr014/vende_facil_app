@@ -101,6 +101,7 @@ class _SplashScreenState extends State<SplashScreen> {
           textLoading = '';
           isLoading = false;
         });
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacementNamed(context, 'home');
       }
     });

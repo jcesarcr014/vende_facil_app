@@ -156,6 +156,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                               ),
                             ),
                             SizedBox(height: windowHeight * 0.05),
+                            // ignore: sized_box_for_whitespace
                             Container(
                               width: MediaQuery.of(context).size.width,
                               child: Row(
@@ -177,7 +178,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                     onPressed: () {
                                       passOculto1 = !passOculto1;
                                       setState(() {
-                                        print(passOculto1);
                                       });
                                     },
                                   ),
