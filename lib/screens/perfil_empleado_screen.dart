@@ -12,6 +12,7 @@ class PerfilEmpleadosScreen extends StatelessWidget {
     double windowWidth = MediaQuery.of(context).size.width;
     double windowHeight = MediaQuery.of(context).size.height;
     final newPassword = TextEditingController();
+    // ignore: non_constant_identifier_names
     final  ConfirmarPassword = TextEditingController();
     final usuario = UsuarioProvider();
     final String empleadoId = ModalRoute.of(context)!.settings.arguments.toString();
@@ -83,6 +84,7 @@ class PerfilEmpleadosScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: windowHeight * 0.05),
+                            // ignore: sized_box_for_whitespace
                             Container(
                               width: MediaQuery.of(context).size.width * 1,
                               child: Row(

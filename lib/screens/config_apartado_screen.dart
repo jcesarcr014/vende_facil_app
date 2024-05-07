@@ -4,6 +4,7 @@ import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 
 class AjustesApartadoScreen extends StatefulWidget {
+  // ignore: use_super_parameters
   const AjustesApartadoScreen({Key? key}) : super(key: key);
 
   @override

@@ -17,10 +17,15 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
   double tarjeta = 0.0;
   double total = 0.0;
   int cantidad = 0;
+  // ignore: non_constant_identifier_names
   final ApartadoConttoller = TextEditingController();
+  // ignore: non_constant_identifier_names
   final TotalConttroller = TextEditingController();
+  // ignore: non_constant_identifier_names
   final EfectivoController = TextEditingController();
+  // ignore: non_constant_identifier_names
   final CambioController = TextEditingController();
+  // ignore: non_constant_identifier_names
   final TarjetaController = TextEditingController();
   final _dateController = TextEditingController();
   final apartadosCabecera = ApartadoProvider();
@@ -30,6 +35,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
   late DateTime _startDate;
   late DateTime _endDate;
   late DateFormat dateFormatter;
+  @override
   void initState() {
     TotalConttroller.text = totalVentaTemporal.toStringAsFixed(2);
     ApartadoConttoller.text =
@@ -146,7 +152,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                               });
                             }
                           },
-                          icon: Icon(Icons.calendar_today),
+                          icon: const Icon(Icons.calendar_today),
                         ),
                       ),
                     ),
@@ -209,6 +215,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
             SizedBox(
               height: windowHeight * 0.05,
             ),
+            // ignore: avoid_unnecessary_containers
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -231,6 +238,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
             SizedBox(
               height: windowHeight * 0.05,
             ),
+            // ignore: avoid_unnecessary_containers
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -253,6 +261,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
             SizedBox(
               height: windowHeight * 0.05,
             ),
+            // ignore: avoid_unnecessary_containers
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -278,6 +287,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
             SizedBox(
               height: windowHeight * 0.05,
             ),
+            // ignore: avoid_unnecessary_containers
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
