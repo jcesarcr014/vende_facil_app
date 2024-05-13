@@ -29,6 +29,7 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
       setState(() {
         textLoading = '';
         isLoading = false;
+        globals.actualizaCategorias = false;
       });
       if (value.status != 1) {
         Navigator.pop(context);

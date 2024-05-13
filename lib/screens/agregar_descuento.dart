@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregaDescuentoScreen extends StatefulWidget {
   const AgregaDescuentoScreen({super.key});
@@ -44,6 +45,8 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
           setState(() {
             isLoading = false;
             textLoading = '';
+            globals.actualizaDescuentos = true;
+
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'descuentos');
@@ -58,6 +61,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
           setState(() {
             isLoading = false;
             textLoading = '';
+            globals.actualizaDescuentos = true;
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'descuentos');
@@ -129,6 +133,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'descuentos');
         mostrarAlerta(context, '', value.mensaje!);
+        globals.actualizaDescuentos = true;
       } else {
         mostrarAlerta(context, '', value.mensaje!);
       }

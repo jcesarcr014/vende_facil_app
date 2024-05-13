@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregaClienteScreen extends StatefulWidget {
   const AgregaClienteScreen({super.key});
@@ -65,7 +66,9 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'clientes');
+            globals.actualizaClientes = true;
             mostrarAlerta(context, '', value.mensaje!);
+
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -80,6 +83,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'clientes');
             mostrarAlerta(context, '', value.mensaje!);
+            globals.actualizaClientes = true;
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -138,6 +142,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       });
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'clientes');
+        globals.actualizaClientes = true;
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
