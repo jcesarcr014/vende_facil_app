@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ClientesScreen extends StatefulWidget {
   const ClientesScreen({super.key});
@@ -19,12 +20,14 @@ class _ClientesScreenState extends State<ClientesScreen> {
 
   @override
   void initState() {
-    setState(() {
+    if (globals.actualizaClientes) {
+      setState(() {
       textLoading = 'Leyendo clientes';
       isLoading = true;
     });
     clientesProvider.listarClientes().then((value) {
       setState(() {
+        globals.actualizaClientes = false;
         textLoading = '';
         isLoading = false;
       });
@@ -33,7 +36,8 @@ class _ClientesScreenState extends State<ClientesScreen> {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       }
     });
-
+    }
+    
     super.initState();
   }
 

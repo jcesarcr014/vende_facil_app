@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class RegistroEmpleadoScreen extends StatefulWidget {
   const RegistroEmpleadoScreen({super.key});
@@ -51,6 +52,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
               setState(() {
                 isLoading = false;
                 textLoading = '';
+                globals.actualizaEmpleados = true;
               });
               Navigator.pushReplacementNamed(context, 'config');
 

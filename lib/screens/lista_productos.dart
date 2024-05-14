@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ProductosScreen extends StatefulWidget {
   const ProductosScreen({super.key});
@@ -20,18 +21,20 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   @override
   void initState() {
-    setState(() {
-      textLoading = 'Leyendo articulos';
-      isLoading = true;
-    });
-    categoriasProvider.listarCategorias().then((respuesta) {
-      articulosProvider.listarProductos().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-        });
-      });
-    });
+    if (globals.actualizaArticulos || globals.actualizaCategorias) {
+            setState(() {
+            textLoading = 'Leyendo articulos';
+            isLoading = true;
+          });
+          categoriasProvider.listarCategorias().then((respuesta) {
+            articulosProvider.listarProductos().then((value) {
+              setState(() {
+                textLoading = '';
+                isLoading = false;
+              });
+            });
+          });
+    }
 
     super.initState();
   }

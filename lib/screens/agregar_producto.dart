@@ -5,6 +5,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregaProductoScreen extends StatefulWidget {
   const AgregaProductoScreen({super.key});
@@ -150,6 +151,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     setState(() {
                       isLoading = false;
                       textLoading = '';
+                      globals.actualizaArticulos = true;
                     });
                     mostrarAlerta(context, '', value.mensaje!);
                   }
@@ -191,6 +193,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             textLoading = '';
           });
           if (value.status == 1) {
+            globals.actualizaArticulos = true;
             Navigator.pushReplacementNamed(context, 'productos');
             mostrarAlerta(context, '', value.mensaje!);
           } else {
@@ -248,6 +251,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         isLoading = false;
       });
       if (value.status == 1) {
+        globals.actualizaArticulos = true;
         Navigator.pushReplacementNamed(context, 'productos');
         mostrarAlerta(context, '', value.mensaje!);
       } else {

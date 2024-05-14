@@ -3,6 +3,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/models/usuario_model.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ListaEmpleadosScreen extends StatefulWidget {
   const ListaEmpleadosScreen({super.key});
@@ -20,7 +21,8 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
 
   @override
   void initState() {
-    setState(() {
+    if (globals.actualizaEmpleados) {
+      setState(() {
       textLoading = 'Leyendo empleados';
       isLoading = true;
     });
@@ -34,6 +36,7 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       }
     });
+    }
     super.initState();
   }
 
@@ -95,51 +98,51 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
               ));
   }
 
- _empleados() {
-  List<Widget> empleados = [];
-  for (int i = 0; i < listaEmpleados.length; i++) {
-    Usuario empleado = listaEmpleados[i];
-    empleados.add(
-      ListTile(
-        leading: const Icon(Icons.account_circle_rounded),
-        title: Text(
-          empleado.nombre!,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
+  _empleados() {
+    List<Widget> empleados = [];
+    for (int i = 0; i < listaEmpleados.length; i++) {
+      Usuario empleado = listaEmpleados[i];
+      empleados.add(
+        ListTile(
+          leading: const Icon(Icons.account_circle_rounded),
+          title: Text(
+            empleado.nombre!,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+          subtitle: Text(empleado.email!),
+          trailing: const Icon(Icons.arrow_right),
+          onTap: () {
+            Navigator.pushNamed(context, 'perfil-empleado', arguments: i);
+          },
         ),
-        subtitle: Text(empleado.email!),
-        trailing: const Icon(Icons.arrow_right),
-        onTap: () {
-           Navigator.pushNamed(context, 'perfil-empleado', arguments: i);
-        },
-      ),
-    );
-  }
-  if (empleados.isEmpty) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
+      );
+    }
+    if (empleados.isEmpty) {
+      final TextTheme textTheme = Theme.of(context).textTheme;
 
-    empleados.add(Column(
-      children: [
-        const Opacity(
-          opacity: 0.2,
-          child: Icon(
-            Icons.no_accounts,
-            size: 130,
+      empleados.add(Column(
+        children: [
+          const Opacity(
+            opacity: 0.2,
+            child: Icon(
+              Icons.no_accounts,
+              size: 130,
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Text(
-          'No hay empleados guardados.',
-          style: textTheme.titleMedium,
-        )
-      ],
-    ));
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'No hay empleados guardados.',
+            style: textTheme.titleMedium,
+          )
+        ],
+      ));
+    }
+    return empleados;
   }
-  return empleados;
-}
 }
