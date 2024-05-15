@@ -28,6 +28,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
   late DateFormat dateFormatter;
   final _dateController = TextEditingController();
 
+  @override
   void initState() {
     _startDate = DateTime(now.year, now.month, now.day);
     _endDate = _startDate.add(const Duration(days: 30));
@@ -93,6 +94,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
+                    // ignore: avoid_unnecessary_containers
                     Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -179,7 +181,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                       _consultarVentas();
                                     }
                                   },
-                                  icon: Icon(Icons.calendar_today),
+                                  icon: const Icon(Icons.calendar_today),
                                 ),
                               ),
                             ),
@@ -222,13 +224,13 @@ class _HistorialScreenState extends State<HistorialScreen> {
       isLoading = true;
     });
     if (_valueIdEmpleado == '0') {
-      print('empleado seleccionado: $_valueIdEmpleado');
+      // ignore: unused_local_variable
       final result = await ventaProvider.consultarVentasFecha(
         formattedStartDate,
         formattedEndDate,
       );
     } else {
-      print('empleado seleccionado: $_valueIdEmpleado');
+      // ignore: unused_local_variable
       final result = await ventaProvider.consultarVentasFechaUsuario(
         formattedStartDate,
         formattedEndDate,
@@ -286,7 +288,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   _listaVentas() {
     if (listaVentaCabecera.isEmpty) {
-      return Center(
+      return const Center(
         child: Text(
             'No hay ventas realizadas en el rango de fechas seleccionado.'),
       );

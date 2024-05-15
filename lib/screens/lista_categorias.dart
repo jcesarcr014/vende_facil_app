@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class CategoriasScreens extends StatefulWidget {
   const CategoriasScreens({super.key});
@@ -19,7 +20,8 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
 
   @override
   void initState() {
-    setState(() {
+    if(globals.actualizaCategorias){
+        setState(() {
       textLoading = 'Leyendo categorias';
       isLoading = true;
     });
@@ -27,12 +29,14 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
       setState(() {
         textLoading = '';
         isLoading = false;
+        globals.actualizaCategorias = false;
       });
       if (value.status != 1) {
         Navigator.pop(context);
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       }
     });
+    }
     super.initState();
   }
 

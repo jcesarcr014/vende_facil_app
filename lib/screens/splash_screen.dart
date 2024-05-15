@@ -103,6 +103,7 @@ class _SplashScreenState extends State<SplashScreen> {
           textLoading = '';
           isLoading = false;
         });
+
         if (sesion.idNegocio == 0) {
           Navigator.pushReplacementNamed(context, 'menu');
           mostrarAlerta(context, 'Bienvenido',
@@ -110,6 +111,7 @@ class _SplashScreenState extends State<SplashScreen> {
         } else {
           Navigator.pushReplacementNamed(context, 'home');
         }
+
       }
     });
     super.initState();

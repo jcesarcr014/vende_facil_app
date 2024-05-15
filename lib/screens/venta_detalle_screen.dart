@@ -937,6 +937,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     );
   }
 
+  // ignore: unused_element
   _alertaApartados() {
     showDialog(
       context: context,

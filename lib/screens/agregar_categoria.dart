@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregaCategoriaScreen extends StatefulWidget {
   const AgregaCategoriaScreen({super.key});
@@ -40,6 +41,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'categorias');
             mostrarAlerta(context, '', value.mensaje!);
+            globals.actualizaCategorias = true;
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -54,6 +56,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'categorias');
             mostrarAlerta(context, '', value.mensaje!);
+            globals.actualizaCategorias = true;
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -114,6 +117,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'categorias');
         mostrarAlerta(context, '', value.mensaje!);
+        globals.actualizaCategorias = true;
       } else {
         mostrarAlerta(context, '', value.mensaje!);
       }

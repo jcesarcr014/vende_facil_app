@@ -233,6 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
             textLoading = '';
             isLoading = false;
           });
+
           if (sesion.idNegocio == 0) {
             Navigator.pushReplacementNamed(context, 'menu');
             mostrarAlerta(context, 'Bienvenido',
@@ -240,6 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             Navigator.pushReplacementNamed(context, 'home');
           }
+
         } else {
           setState(() {
             textLoading = '';

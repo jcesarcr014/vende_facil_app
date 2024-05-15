@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class DescuentosScreen extends StatefulWidget {
   const DescuentosScreen({super.key});
@@ -19,7 +20,8 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
 
   @override
   void initState() {
-    setState(() {
+    if (globals.actualizaDescuentos){
+          setState(() {
       textLoading = 'Leyendo descuentos';
       isLoading = true;
     });
@@ -33,6 +35,7 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       }
     });
+    }
     super.initState();
   }
 
