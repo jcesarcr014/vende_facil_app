@@ -11,7 +11,7 @@ class TarjetaScreen extends StatefulWidget {
 }
 
 class _TarjetaScreenState extends State<TarjetaScreen> {
-  final tarjetaProvider = TarjetaProvider();
+  final suscripcionProvider = SuscripcionProvider();
   int idTarjeta = 0;
   bool isLoading = false;
   String textLoading = '';
@@ -45,7 +45,7 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
       isLoading = true;
       textLoading = 'Eliminando tarjeta...';
     });
-    tarjetaProvider.eliminarTarjeta(idTarjeta).then((value) {
+    suscripcionProvider.eliminarTarjeta(idTarjeta).then((value) {
       setState(() {
         isLoading = false;
         textLoading = '';
@@ -65,7 +65,7 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
       isLoading = true;
       textLoading = 'Cargando tarjetas...';
     });
-    tarjetaProvider.listarTarjetas().then((value) {
+    suscripcionProvider.listarTarjetas().then((value) {
       setState(() {
         isLoading = false;
         textLoading = '';
@@ -84,16 +84,7 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mis tarjetas'),
-        automaticallyImplyLeading: false,
-        actions: [
-          //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-          //IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu)),
-        ],
+        automaticallyImplyLeading: true,
       ),
       body: (isLoading)
           ? Center(
@@ -149,11 +140,11 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
 
   _tarjetas() {
     List<Widget> lista = [];
-    if (lista.isNotEmpty) {
+    if (listaTarjetas.isNotEmpty) {
       for (var tarjeta in listaTarjetas) {
         lista.add(
           ListTile(
-            title: Text(tarjeta.numero!),
+            title: Text('XXXX-XXXX-XXXX-${tarjeta.numero}'),
             trailing: IconButton(
               onPressed: () {
                 setState(() {

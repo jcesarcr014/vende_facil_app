@@ -12,7 +12,7 @@ class AgregaTarjetaScreen extends StatefulWidget {
 }
 
 class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
-  final tarjetaProvider = TarjetaProvider();
+  final suscripcionProvider = SuscripcionProvider();
   final controllerTitular = TextEditingController();
   final controllerNumTarjeta = TextEditingController();
   final controllerVencM = TextEditingController();
@@ -42,7 +42,7 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
         fechaA: controllerVencA.text,
         ccv: controllerCCV.text,
       );
-      tarjetaProvider.nuevaTarjeta(tarjeta).then((value) {
+      suscripcionProvider.nvaTarjetaOP(tarjeta).then((value) {
         setState(() {
           textLoading = '';
           isLoading = false;
