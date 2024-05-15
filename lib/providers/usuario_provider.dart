@@ -28,6 +28,11 @@ class UsuarioProvider {
         sesion.idUsuario = decodedData['usuario']['id'];
         sesion.idNegocio = decodedData['empresa_id'];
         sesion.tipoUsuario = decodedData['tipo_usuario'];
+        sesion.nombreUsuario = decodedData['usuario']['name'];
+        suscripcionActual.id = decodedData['suscripcion']['id'];
+        suscripcionActual.idUsuario =
+            decodedData['suscripcion']['id_usuario_app'];
+        suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = '${decodedData['msg']}: ${decodedData['errors']}';
@@ -65,6 +70,9 @@ class UsuarioProvider {
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
+        sesion.nombreUsuario = decodedData['usuario']['name'];
+        suscripcionActual.id = decodedData['suscripcion']['id'];
+        suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -96,6 +104,12 @@ class UsuarioProvider {
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
+        sesion.nombreUsuario = decodedData['usuario']['name'];
+        if (sesion.tipoUsuario == 'P') {
+          suscripcionActual.id = decodedData['suscripcion']['id'];
+          suscripcionActual.id = decodedData['suscripcion']['id'];
+          suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+        }
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

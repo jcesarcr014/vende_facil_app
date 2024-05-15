@@ -30,22 +30,6 @@ class ConfigScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.credit_card),
-                  title: const Text(
-                    'Mis tarjetas',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: const Text('Tarjetas bancarias guardadas'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    Navigator.pushNamed(context, 'tarjetas');
-                  },
-                ),
-                ListTile(
                   leading: const Icon(Icons.account_circle_rounded),
                   title: const Text(
                     'Mi cuenta',

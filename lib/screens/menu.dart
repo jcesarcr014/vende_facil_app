@@ -37,7 +37,7 @@ class _MenuScreenState extends State<MenuScreen> {
         'Clientes',
         'Empresa',
         'Configuracion',
-        'Suscripcion',
+        'Mi suscripción',
         'Cerrar Sesión'
       ];
 
@@ -70,17 +70,15 @@ class _MenuScreenState extends State<MenuScreen> {
       ];
     } else {
       menuItems = [
-        'Inicio',
         'Empresa',
         'Configuracion',
-        'Suscripcion',
+        'Mi suscripción',
         'Cerrar Sesión'
       ];
 
-      menuRoutes = ['home', 'negocio', 'config', 'suscripcion', 'login'];
+      menuRoutes = ['negocio', 'config', 'suscripcion', 'login'];
 
       menuIcons = [
-        'assets/i_inicio.png',
         'assets/i_empresa.png',
         'assets/i_ajustes.png',
         'assets/i_suscripcion.png',

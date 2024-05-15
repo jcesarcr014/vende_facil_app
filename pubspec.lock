@@ -400,6 +400,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  openpay_bbva:
+    dependency: "direct main"
+    description:
+      name: openpay_bbva
+      sha256: "645185d74a92a67173bd6f94d4976d45eded5e816e71449c5363c86888a627f3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   path:
     dependency: transitive
     description:

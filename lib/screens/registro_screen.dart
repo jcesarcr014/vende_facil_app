@@ -50,9 +50,9 @@ class _RegistroScreenState extends State<RegistroScreen> {
             isLoading = false;
           });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'menu');
             mostrarAlerta(context, 'Bienvenido',
-                'Sus datos se han registrado correctamente. Vaya a configuración para dar de alta su negocio.');
+                '¡Bienvenido a Vendo Facil!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
           } else {
             mostrarAlerta(context, 'ERROR', value.mensaje!);
           }
