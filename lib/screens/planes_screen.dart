@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/widgets/widgets.dart'; // Asegúrate de tener el import correcto
 
 class PlanesScreen extends StatefulWidget {
   const PlanesScreen({super.key});
@@ -14,11 +14,10 @@ class _PlanesScreenState extends State<PlanesScreen> {
   final suscripcionProvider = SuscripcionProvider();
   bool isLoading = false;
   String textLoading = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
 
   @override
   void initState() {
+    super.initState();
     setState(() {
       textLoading = 'Leyendo planes';
       isLoading = true;
@@ -34,13 +33,10 @@ class _PlanesScreenState extends State<PlanesScreen> {
             context, 'ERROR', 'Error al leer los planes. ${value.mensaje}');
       }
     });
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Planes de suscripción'),
@@ -60,12 +56,18 @@ class _PlanesScreenState extends State<PlanesScreen> {
               itemCount: listaPlanes.length,
               itemBuilder: (context, index) {
                 PlanSuscripcion plan = listaPlanes[index];
-                return ListTile(
-                  title: Text(plan.nombrePlan ?? ''),
-                  subtitle: Text('${plan.monto} ${plan.divisa}'),
-                  trailing: plan.activo == true ? Icon(Icons.check) : null,
+                return PlanCard(
+                  plan: plan,
                   onTap: () {
-                    // Navegar a la pantalla de detalle del plan
+                    // if (!plan.activo!) {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) =>
+                    //           ConfirmarSuscripcionScreen(plan: plan),
+                    //     ),
+                    //   );
+                    // }
                   },
                 );
               },
