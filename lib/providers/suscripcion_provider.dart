@@ -116,6 +116,7 @@ class SuscripcionProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
+
       if (decodedData['status'] == 1) {
         listaPlanes.clear();
         listaDetalles.clear();
@@ -139,7 +140,7 @@ class SuscripcionProvider {
         for (int x = 0; x < decodedData['detalles'].length; x++) {
           DetallePlan detalleTemp = DetallePlan();
           detalleTemp.id = decodedData['detalles'][x]['id'];
-          detalleTemp.idPlan = decodedData['detalles'][x]['id_plan'];
+          detalleTemp.idPlan = decodedData['detalles'][x]['plan_id'];
           detalleTemp.descripcion = decodedData['detalles'][x]['descripcion'];
           listaDetalles.add(detalleTemp);
         }

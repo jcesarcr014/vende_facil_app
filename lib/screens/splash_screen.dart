@@ -111,7 +111,6 @@ class _SplashScreenState extends State<SplashScreen> {
         } else {
           Navigator.pushReplacementNamed(context, 'home');
         }
-
       }
     });
     super.initState();

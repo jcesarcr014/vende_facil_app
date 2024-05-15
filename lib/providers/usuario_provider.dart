@@ -54,12 +54,13 @@ class UsuarioProvider {
       respuesta.mensaje = 'No hay token';
       return respuesta;
     }
-
+    print('======== token: $token =========');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer $token',
       });
       final decodedData = jsonDecode(resp.body);
+      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -71,8 +72,10 @@ class UsuarioProvider {
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
-        suscripcionActual.id = decodedData['suscripcion']['id'];
-        suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+        if (sesion.tipoUsuario == 'P') {
+          suscripcionActual.id = decodedData['suscripcion']['id'];
+          suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+        }
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -81,6 +84,8 @@ class UsuarioProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
     }
+    print(respuesta.status);
+    print(respuesta.mensaje);
     return respuesta;
   }
 
@@ -106,7 +111,6 @@ class UsuarioProvider {
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
         if (sesion.tipoUsuario == 'P') {
-          suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
         }
