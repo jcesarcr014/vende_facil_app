@@ -54,12 +54,14 @@ class UsuarioProvider {
       respuesta.mensaje = 'No hay token';
       return respuesta;
     }
+    // ignore: avoid_print
     print('======== token: $token =========');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer $token',
       });
       final decodedData = jsonDecode(resp.body);
+      // ignore: avoid_print
       print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
@@ -84,7 +86,9 @@ class UsuarioProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
     }
+    // ignore: avoid_print
     print(respuesta.status);
+    // ignore: avoid_print
     print(respuesta.mensaje);
     return respuesta;
   }

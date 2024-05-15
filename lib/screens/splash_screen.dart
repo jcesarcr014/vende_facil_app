@@ -105,10 +105,13 @@ class _SplashScreenState extends State<SplashScreen> {
         });
 
         if (sesion.idNegocio == 0) {
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'menu');
+          // ignore: use_build_context_synchronously
           mostrarAlerta(context, 'Bienvenido',
               '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
         } else {
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'home');
         }
       }

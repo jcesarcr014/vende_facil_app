@@ -316,7 +316,6 @@ class _ventaScreenState extends State<VentaScreen> {
     // ignore: use_build_context_synchronously
     Navigator.pushReplacementNamed(context, 'home');
     // ignore: use_build_context_synchronously
-    mostrarAlerta(context, '', 'Venta realizada');
   }
 
   tuFuncion() {

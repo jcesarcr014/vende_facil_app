@@ -5,6 +5,7 @@ class PlanCard extends StatelessWidget {
   final PlanSuscripcion plan;
   final VoidCallback onTap;
 
+  // ignore: use_super_parameters
   const PlanCard({Key? key, required this.plan, required this.onTap})
       : super(key: key);
 
@@ -13,6 +14,7 @@ class PlanCard extends StatelessWidget {
     List<DetallePlan> planDetalles =
         listaDetalles.where((detalle) => detalle.idPlan == plan.id).toList();
 
+    // ignore: avoid_print
     print('Detalles del plan: ${planDetalles.length}');
     return GestureDetector(
       onTap: onTap,
@@ -36,6 +38,7 @@ class PlanCard extends StatelessWidget {
               const SizedBox(height: 8),
               ...planDetalles
                   .map((detalle) => Text('- ${detalle.descripcion}'))
+                  // ignore: unnecessary_to_list_in_spreads
                   .toList(),
               const SizedBox(height: 8),
               plan.activo == true

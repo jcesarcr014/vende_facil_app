@@ -25,49 +25,81 @@ class _MenuScreenState extends State<MenuScreen> {
     List<String> menuItems = [];
     List<String> menuRoutes = [];
     List<String> menuIcons = [];
-
     if (sesion.idNegocio != 0) {
-      menuItems = [
-        'Inicio',
-        'Abonos',
-        'Historial',
-        'Productos',
-        'Categorias',
-        'Descuentos',
-        'Clientes',
-        'Empresa',
-        'Configuracion',
-        'Mi suscripción',
-        'Cerrar Sesión'
-      ];
+      if (sesion.tipoUsuario == "E") {
+        menuItems = [
+          'Inicio',
+          'Abonos',
+          'Historial',
+          'Productos',
+          'Categorias',
+          'Clientes',
+          'Configuracion',
+          'Cerrar Sesión'
+        ];
+        menuRoutes = [
+          'home',
+          'nvo-abono',
+          'historial',
+          'productos',
+          'categorias',
+          'clientes',
+          'config',
+          'login'
+        ];
+        menuIcons = [
+          'assets/i_inicio.png',
+          'assets/i_abonos.png',
+          'assets/i_historial.png',
+          'assets/i_productos.png',
+          'assets/i_categorias.png',
+          'assets/i_clientes.png',
+          'assets/i_ajustes.png',
+          'assets/i_salir.png',
+        ];
+      } else {
+        menuItems = [
+          'Inicio',
+          'Abonos',
+          'Historial',
+          'Productos',
+          'Categorias',
+          'Descuentos',
+          'Clientes',
+          'Empresa',
+          'Configuracion',
+          'Mi suscripción',
+          'Cerrar Sesión'
+        ];
 
-      menuRoutes = [
-        'home',
-        'nvo-abono',
-        'historial',
-        'productos',
-        'categorias',
-        'descuentos',
-        'clientes',
-        'negocio',
-        'config',
-        'suscripcion',
-        'login'
-      ];
+        menuRoutes = [
+          'home',
+          'nvo-abono',
+          'historial',
+          'productos',
+          'categorias',
+          'descuentos',
+          'clientes',
+          'negocio',
+          'config',
+          'suscripcion',
+          'login'
+        ];
 
-      menuIcons = [
-        'assets/i_inicio.png',
-        'assets/i_abonos.png',
-        'assets/i_historial.png',
-        'assets/i_productos.png',
-        'assets/i_categorias.png',
-        'assets/i_descuentos.png',
-        'assets/i_clientes.png',
-        'assets/i_empresa.png',
-        'assets/i_ajustes.png',
-        'assets/i_suscripcion.png',
-        'assets/i_salir.png',
-      ];
+        menuIcons = [
+          'assets/i_inicio.png',
+          'assets/i_abonos.png',
+          'assets/i_historial.png',
+          'assets/i_productos.png',
+          'assets/i_categorias.png',
+          'assets/i_descuentos.png',
+          'assets/i_clientes.png',
+          'assets/i_empresa.png',
+          'assets/i_ajustes.png',
+          'assets/i_suscripcion.png',
+          'assets/i_salir.png',
+        ];
+      }
     } else {
       menuItems = [
         'Empresa',

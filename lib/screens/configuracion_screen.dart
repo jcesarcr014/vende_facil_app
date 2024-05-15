@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 
 class ConfigScreen extends StatelessWidget {
   const ConfigScreen({super.key});
@@ -45,7 +46,8 @@ class ConfigScreen extends StatelessWidget {
                     Navigator.pushNamed(context, 'perfil');
                   },
                 ),
-                ListTile(
+                (sesion.tipoUsuario=="P")
+                ?ListTile(
                   leading: const Icon(Icons.person_add),
                   title: const Text(
                     'Empleados',
@@ -60,7 +62,8 @@ class ConfigScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, 'empleados');
                   },
-                ),
+                ):Container(),
+                (sesion.tipoUsuario=="P")?
                 ListTile(
                   leading: const Icon(CupertinoIcons.tag),
                   title: const Text(
@@ -77,7 +80,8 @@ class ConfigScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, 'config-apartado');
                   },
-                ),
+                ):Container(),
+                (sesion.tipoUsuario=="P")?
                 ListTile(
                   leading: const Icon(CupertinoIcons.ticket),
                   title: const Text(
@@ -92,6 +96,7 @@ class ConfigScreen extends StatelessWidget {
                   trailing: const Icon(Icons.arrow_right),
                   onTap: () {},
                 )
+                :Container(),
               ],
             )),
       ),

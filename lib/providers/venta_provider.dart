@@ -9,6 +9,17 @@ class VentasProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> guardarVenta(VentaCabecera venta) async {
+    print('Guardando venta...');
+    print('Id negocio: ${sesion.idNegocio}');
+    print('Id usuario: ${sesion.idUsuario}');
+    print('Id cliente: ${venta.idCliente}');
+    print('Subtotal: ${venta.subtotal}');
+    print('descuento_id: ${venta.idDescuento}');
+    print('Descuento: ${venta.descuento}');
+    print('Total: ${venta.total}');
+    print('Pago efectivo: ${venta.importeEfectivo}');
+    print('Pago tarjeta: ${venta.importeTarjeta}');
+    print('Id descuento: ${venta.idDescuento}');
     var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
     try {
       final resp = await http.post(url, headers: {
@@ -30,13 +41,16 @@ class VentasProvider {
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['venta_id'];
         respuesta.folio = decodedData['folio'];
+        print('Venta guardada con exito. ${decodedData['msg']}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
+        print('Error en la peticion. ${decodedData['msg']}');
       }
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
+      print('Error en la peticion. $e');
     }
 
     return respuesta;
@@ -44,9 +58,11 @@ class VentasProvider {
 
   Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
     if (venta.idDesc != 0) {
-        var descue=listaDescuentos.firstWhere((descuento) => descuento.id == venta.idDesc).valor;
-        venta.cantidadDescuento=(venta.total!*descue!/100);
-        venta.total=venta.total!-venta.cantidadDescuento!;
+      var descue = listaDescuentos
+          .firstWhere((descuento) => descuento.id == venta.idDesc)
+          .valor;
+      venta.cantidadDescuento = (venta.total! * descue! / 100);
+      venta.total = venta.total! - venta.cantidadDescuento!;
     }
     var url = Uri.parse('$baseUrl/ventas-detalle/${venta.idVenta}');
     try {
@@ -191,9 +207,10 @@ class VentasProvider {
   }
 
   Future<Resultado> consultarVentasFecha(String inicio, String finalF) async {
+    print(sesion.idNegocio);
     listaVentaCabecera.clear();
-    var url =
-        Uri.parse('$baseUrl/reporte-fecha-general/$inicio/$finalF/${sesion.idNegocio}');
+    var url = Uri.parse(
+        '$baseUrl/reporte-fecha-general/$inicio/$finalF/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -205,9 +222,12 @@ class VentasProvider {
           ventasCabezera.id = decodedData['data'][x]['id'];
           ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
           ventasCabezera.name = decodedData['data'][x]['name'];
-          ventasCabezera.tipo_movimiento = decodedData['data'][x]['tipo_movimiento'];
-          ventasCabezera.importeEfectivo =double.parse(decodedData['data'][x]['monto_efectivo']);
-          ventasCabezera.importeTarjeta =double.parse(decodedData['data'][x]['monto_tarjeta']);
+          ventasCabezera.tipo_movimiento =
+              decodedData['data'][x]['tipo_movimiento'];
+          ventasCabezera.importeEfectivo =
+              double.parse(decodedData['data'][x]['monto_efectivo']);
+          ventasCabezera.importeTarjeta =
+              double.parse(decodedData['data'][x]['monto_tarjeta']);
           ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
           ventasCabezera.fecha_venta = decodedData['data'][x]['fecha'];
           listaVentaCabecera.add(ventasCabezera);
@@ -217,7 +237,6 @@ class VentasProvider {
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
-      
       }
     } catch (e) {
       respuesta.status = 0;
@@ -226,10 +245,12 @@ class VentasProvider {
     }
     return respuesta;
   }
-  Future<Resultado> consultarVentasFechaUsuario(String inicio, String finalF,String usuario ) async {
+
+  Future<Resultado> consultarVentasFechaUsuario(
+      String inicio, String finalF, String usuario) async {
     listaVentaCabecera.clear();
-    var url =
-        Uri.parse('$baseUrl/reporte-fecha-usuario/$inicio/$finalF/${sesion.idNegocio}/$usuario');
+    var url = Uri.parse(
+        '$baseUrl/reporte-fecha-usuario/$inicio/$finalF/${sesion.idNegocio}/$usuario');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -241,9 +262,12 @@ class VentasProvider {
           ventasCabezera.id = decodedData['data'][x]['id'];
           ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
           ventasCabezera.name = decodedData['data'][x]['name'];
-          ventasCabezera.tipo_movimiento = decodedData['data'][x]['tipo_movimiento'];
-          ventasCabezera.importeEfectivo =double.parse(decodedData['data'][x]['monto_efectivo']);
-          ventasCabezera.importeTarjeta =double.parse(decodedData['data'][x]['monto_tarjeta']);
+          ventasCabezera.tipo_movimiento =
+              decodedData['data'][x]['tipo_movimiento'];
+          ventasCabezera.importeEfectivo =
+              double.parse(decodedData['data'][x]['monto_efectivo']);
+          ventasCabezera.importeTarjeta =
+              double.parse(decodedData['data'][x]['monto_tarjeta']);
           ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
           ventasCabezera.fecha_venta = decodedData['data'][x]['fecha'];
           listaVentaCabecera.add(ventasCabezera);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +31,11 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   @override
   void initState() {
+    if (sesion.tipoUsuario == "p") {
+      _valueIdEmpleado = '0';
+    } else {
+      _valueIdEmpleado = sesion.idUsuario.toString();
+    }
     _startDate = DateTime(now.year, now.month, now.day);
     _endDate = _startDate.add(const Duration(days: 30));
     dateFormatter = DateFormat('yyyy-MM-dd');
@@ -247,43 +253,81 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   _empleado() {
-    var listades = [
-      const DropdownMenuItem(
-        value: '0',
-        child: SizedBox(child: Text('Todos')),
-      )
-    ];
-    for (Usuario empleado in listaEmpleados) {
-      listades.add(DropdownMenuItem(
-          value: empleado.id.toString(), child: Text(empleado.nombre!)));
-    }
-    if (_valueIdEmpleado.isEmpty) {
-      _valueIdEmpleado = '0';
-    }
-    return DropdownButton(
-      items: listades,
-      isExpanded: true,
-      value: _valueIdEmpleado,
-      onChanged: (value) {
-        _valueIdEmpleado = value!;
-        if (value == "0") {
-            setState(() {});
-            _consultarVentas();
-        } else {
-          Usuario empleadoSeleccionado = listaEmpleados
-              .firstWhere((empleado) => empleado.id.toString() == value);
-          if (empleadoSeleccionado.id == 0) {
-            _valueIdEmpleado = '0';
+    if (sesion.tipoUsuario == "p") {
+      var listades = [
+        const DropdownMenuItem(
+          value: '0',
+          child: SizedBox(child: Text('Todos')),
+        )
+      ];
+      for (Usuario empleado in listaEmpleados) {
+        listades.add(DropdownMenuItem(
+            value: empleado.id.toString(), child: Text(empleado.nombre!)));
+      }
+      if (_valueIdEmpleado.isEmpty) {
+        _valueIdEmpleado = '0';
+      }
+      return DropdownButton(
+        items: listades,
+        isExpanded: true,
+        value: _valueIdEmpleado,
+        onChanged: (value) {
+          _valueIdEmpleado = value!;
+          if (value == "0") {
             setState(() {});
             _consultarVentas();
           } else {
-            _valueIdEmpleado = empleadoSeleccionado.id.toString();
+            Usuario empleadoSeleccionado = listaEmpleados
+                .firstWhere((empleado) => empleado.id.toString() == value);
+            if (empleadoSeleccionado.id == 0) {
+              _valueIdEmpleado = '0';
+              setState(() {});
+              _consultarVentas();
+            } else {
+              _valueIdEmpleado = empleadoSeleccionado.id.toString();
+              setState(() {});
+              _consultarVentas();
+            }
+          }
+        },
+      );
+    } else {
+      var listades = [
+        DropdownMenuItem(
+          value: sesion.idUsuario.toString(),
+          child: SizedBox(child: Text(sesion.nombreUsuario!)),
+        )
+      ];
+      return DropdownButton(
+        items: listades,
+        isExpanded: true,
+        value: sesion.idUsuario.toString(),
+        onChanged: (value) {
+          _valueIdEmpleado = value.toString();
+          if (value == sesion.idUsuario.toString()) {
+            print("entro");
+            _valueIdEmpleado = sesion.idUsuario.toString();
+            print(_valueIdEmpleado);
             setState(() {});
             _consultarVentas();
+          } else {
+            Usuario empleadoSeleccionado = listaEmpleados
+                .firstWhere((empleado) => empleado.id.toString() == value);
+            if (empleadoSeleccionado.id == 0) {
+              print("entro 2");
+              _valueIdEmpleado = '0';
+              setState(() {});
+              _consultarVentas();
+            } else {
+              print("entro 3");
+              _valueIdEmpleado = empleadoSeleccionado.id.toString();
+              setState(() {});
+              _consultarVentas();
+            }
           }
-        }
-      },
-    );
+        },
+      );
+    }
   }
 
   _listaVentas() {
