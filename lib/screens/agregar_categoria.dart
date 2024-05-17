@@ -138,74 +138,107 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
     }
     final title = (args.id == 0) ? 'Nueva categoría' : 'Editar categoría';
     windowWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        title: Text(title),
-        actions: [
-          if (args.id != 0)
-            IconButton(
-                onPressed: () {
-                  _alertaElimnar();
-                },
-                icon: const Icon(Icons.delete))
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              margin: const EdgeInsets.only(top: 20),
-              child: Column(
-                children: [
-                  InputField(
-                      textCapitalization: TextCapitalization.words,
-                      labelText: 'Ingrese categoría',
-                      controller: controllerCategoria),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Row(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        globals.actualizaCategorias = true;
+        if (!didpop) Navigator.pushReplacementNamed(context, 'categorias');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(title),
+          actions: [
+            if (args.id != 0)
+              IconButton(
+                  onPressed: () {
+                    _alertaElimnar();
+                  },
+                  icon: const Icon(Icons.delete))
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Seleccione color:'),
+                      Text('Espere...$textLoading'),
                       const SizedBox(
-                        width: 10,
+                        height: 10,
                       ),
-                      _colores(windowWidth * 0.3),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        _guardaCategoria();
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.save),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Guardar',
-                          ),
-                        ],
-                      )),
-                ],
+                      const CircularProgressIndicator(),
+                    ]),
+              )
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                margin: const EdgeInsets.only(top: 20),
+                child: Column(
+                  children: [
+                    InputField(
+                        textCapitalization: TextCapitalization.words,
+                        labelText: 'Ingrese categoría',
+                        controller: controllerCategoria),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: [
+                        const Text('Seleccione color:'),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        _colores(windowWidth * 0.3),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              _guardaCategoria();
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.save),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Guardar',
+                                ),
+                              ],
+                            )),
+                        SizedBox(
+                          width: windowWidth * 0.05,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              globals.actualizaCategorias = true;
+                              Navigator.pushReplacementNamed(
+                                  context, 'categorias');
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.cancel_outlined),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Cancelar',
+                                ),
+                              ],
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 

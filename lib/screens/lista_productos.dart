@@ -21,21 +21,21 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaArticulos || globals.actualizaCategorias) {
-            setState(() {
-            textLoading = 'Leyendo articulos';
-            isLoading = true;
-          });
-          categoriasProvider.listarCategorias().then((respuesta) {
-            articulosProvider.listarProductos().then((value) {
-              setState(() {
-                textLoading = '';
-                isLoading = false;
-              });
-            });
-          });
+    if (globals.actualizaArticulos) {
+      setState(() {
+        textLoading = 'Leyendo articulos';
+        isLoading = true;
+      });
+      articulosProvider.listarProductos().then((respProd) {
+        if (respProd.status == 1) {
+          globals.actualizaArticulos = false;
+        }
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+      });
     }
-
     super.initState();
   }
 

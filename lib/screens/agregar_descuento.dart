@@ -46,7 +46,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
             isLoading = false;
             textLoading = '';
             globals.actualizaDescuentos = true;
-
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'descuentos');
@@ -155,104 +154,137 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
     }
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-        appBar: AppBar(
-          actions: [
-            if (args.id != 0)
-              IconButton(
-                  onPressed: () {
-                    _alertaEliminar();
-                  },
-                  icon: const Icon(Icons.delete))
-          ],
-          title: Text(title),
-        ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        globals.actualizaDescuentos = true;
+        if (!didpop) Navigator.pushReplacementNamed(context, 'descuentos');
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            actions: [
+              if (args.id != 0)
+                IconButton(
+                    onPressed: () {
+                      _alertaEliminar();
+                    },
+                    icon: const Icon(Icons.delete))
+            ],
+            title: Text(title),
+          ),
+          body: (isLoading)
+              ? Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Espere...$textLoading'),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const CircularProgressIndicator(),
+                      ]),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
+                  child: Column(
                     children: [
-                      Text('Espere...$textLoading'),
-                      const SizedBox(
-                        height: 10,
+                      SizedBox(
+                        height: windowHeight * 0.05,
                       ),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    InputField(
-                        labelText: 'Nombre descuento:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerNombre),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    SwitchListTile.adaptive(
-                        title: Row(
-                          children: [
-                            const Text('Tipo descuento: '),
-                            Text((_tipoValor) ? '%' : '\$')
-                          ],
-                        ),
-                        value: _tipoValor,
-                        onChanged: (value) {
-                          _tipoValor = value;
-                          setState(() {});
-                        }),
-                    SwitchListTile.adaptive(
-                        title: Row(
-                          children: [
-                            const Text('Tipo de descuento: '),
-                            Text((_tipoValorS) ? 'Variable' : 'Fijo')
-                          ],
-                        ),
-                        value: _tipoValorS,
-                        onChanged: (value) {
-                          _tipoValorS = value;
-                          setState(() {});
-                        }),
-                    if (!_tipoValorS)
                       InputField(
-                          labelText: 'Descuento:',
-                          keyboardType: TextInputType.number,
-                          textCapitalization: TextCapitalization.none,
-                          controller: controllerValor),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    const Text(
-                      'Si el valor queda en blanco, se considera descuento variable.',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    ElevatedButton(
-                        //vilmar12@gmail.com
-                        onPressed: () => _guardaDescuento(),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.save),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Guardar',
-                            ),
-                          ],
-                        ))
-                  ],
-                )));
+                          labelText: 'Nombre descuento:',
+                          textCapitalization: TextCapitalization.words,
+                          controller: controllerNombre),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      SwitchListTile.adaptive(
+                          title: Row(
+                            children: [
+                              const Text('Tipo descuento: '),
+                              Text((_tipoValor) ? '%' : '\$')
+                            ],
+                          ),
+                          value: _tipoValor,
+                          onChanged: (value) {
+                            _tipoValor = value;
+                            setState(() {});
+                          }),
+                      SwitchListTile.adaptive(
+                          title: Row(
+                            children: [
+                              const Text('Tipo de descuento: '),
+                              Text((_tipoValorS) ? 'Variable' : 'Fijo')
+                            ],
+                          ),
+                          value: _tipoValorS,
+                          onChanged: (value) {
+                            _tipoValorS = value;
+                            setState(() {});
+                          }),
+                      if (!_tipoValorS)
+                        InputField(
+                            labelText: 'Descuento:',
+                            keyboardType: TextInputType.number,
+                            textCapitalization: TextCapitalization.none,
+                            controller: controllerValor),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      const Text(
+                        'Si el valor queda en blanco, se considera descuento variable.',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () => _guardaDescuento(),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.save),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Guardar',
+                                  ),
+                                ],
+                              )),
+                          SizedBox(
+                            width: windowWidth * 0.05,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                globals.actualizaArticulos = true;
+                                Navigator.pushReplacementNamed(
+                                    context, 'descuentos');
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.cancel_outlined),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Cancelar',
+                                  ),
+                                ],
+                              )),
+                        ],
+                      )
+                    ],
+                  ))),
+    );
   }
 }
