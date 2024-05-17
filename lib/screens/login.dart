@@ -29,6 +29,102 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _userErrorText;
   String? _passwordErrorText;
 
+  _inicioSesion() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        textLoading = 'Iniciando sesión.';
+        isLoading = true;
+      });
+      usuariosProvider
+          .login(controllerUser.text, controllerPass.text)
+          .then((value) async {
+        if (value.status == 1) {
+          setState(() {
+            textLoading = 'Leyendo información de empleados';
+          });
+          await usuariosProvider.obtenerUsuarios().then((value) {
+            if (value.status == 1) {
+              globals.actualizaUsuarios = false;
+            } else {
+              globals.actualizaUsuarios = true;
+            }
+          });
+          await usuariosProvider.obtenerEmpleados().then((value) {
+            if (value.status == 1) {
+              globals.actualizaEmpleados = false;
+            } else {
+              globals.actualizaEmpleados = true;
+            }
+          });
+          setState(() {
+            textLoading = 'Leyendo categorias';
+          });
+          await categoriasProvider.listarCategorias().then((value) {
+            if (value.status == 1) {
+              globals.actualizaCategorias = false;
+            } else {
+              globals.actualizaCategorias = true;
+            }
+          });
+          setState(() {
+            textLoading = 'Leyendo productos';
+          });
+          await articulosProvider.listarProductos().then((value) {
+            if (value.status == 1) {
+              globals.actualizaArticulos = false;
+            } else {
+              globals.actualizaArticulos = true;
+            }
+          });
+          setState(() {
+            textLoading = 'Leyendo información adicional';
+          });
+          await clientesProvider.listarClientes().then((value) {
+            if (value.status == 1) {
+              globals.actualizaClientes = false;
+            } else {
+              globals.actualizaClientes = true;
+            }
+          });
+          await descuentosProvider.listarDescuentos().then((value) {
+            if (value.status == 1) {
+              globals.actualizaDescuentos = false;
+            } else {
+              globals.actualizaDescuentos = true;
+            }
+          });
+          await apartadoProvider.variablesApartado().then((value) {
+            if (value.status == 1) {
+              globals.actualizaVariables = false;
+            } else {
+              globals.actualizaVariables = true;
+            }
+          });
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+
+          if (sesion.idNegocio == 0) {
+            Navigator.pushReplacementNamed(context, 'menu');
+            mostrarAlerta(context, 'Bienvenido',
+                '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
+          } else {
+            Navigator.pushReplacementNamed(context, 'home');
+          }
+        } else {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
+    } else {
+      mostrarAlerta(context, 'ERROR', 'Complete todos los campos');
+    }
+  }
+
   @override
   void dispose() {
     controllerUser.dispose();
@@ -156,102 +252,5 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 )),
     );
-  }
-
-  _inicioSesion() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        textLoading = 'Iniciando sesión.';
-        isLoading = true;
-      });
-      usuariosProvider
-          .login(controllerUser.text, controllerPass.text)
-          .then((value) async {
-        if (value.status == 1) {
-          setState(() {
-            textLoading = 'Leyendo información de empleados';
-          });
-          await usuariosProvider.obtenerUsuarios().then((value) {
-            if (value.status == 1) {
-              globals.actualizaUsuarios = false;
-            } else {
-              globals.actualizaUsuarios = true;
-            }
-          });
-          await usuariosProvider.obtenerEmpleados().then((value) {
-            if (value.status == 1) {
-              globals.actualizaEmpleados = false;
-            } else {
-              globals.actualizaEmpleados = true;
-            }
-          });
-          setState(() {
-            textLoading = 'Leyendo categorias';
-          });
-          await categoriasProvider.listarCategorias().then((value) {
-            if (value.status == 1) {
-              globals.actualizaCategorias = false;
-            } else {
-              globals.actualizaCategorias = true;
-            }
-          });
-          setState(() {
-            textLoading = 'Leyendo productos';
-          });
-          await articulosProvider.listarProductos().then((value) {
-            if (value.status == 1) {
-              globals.actualizaArticulos = false;
-            } else {
-              globals.actualizaArticulos = true;
-            }
-          });
-          setState(() {
-            textLoading = 'Leyendo información adicional';
-          });
-          await clientesProvider.listarClientes().then((value) {
-            if (value.status == 1) {
-              globals.actualizaClientes = false;
-            } else {
-              globals.actualizaClientes = true;
-            }
-          });
-          await descuentosProvider.listarDescuentos().then((value) {
-            if (value.status == 1) {
-              globals.actualizaDescuentos = false;
-            } else {
-              globals.actualizaDescuentos = true;
-            }
-          });
-          await apartadoProvider.variablesApartado().then((value) {
-            if (value.status == 1) {
-              globals.actualizaVariables = false;
-            } else {
-              globals.actualizaVariables = true;
-            }
-          });
-          setState(() {
-            textLoading = '';
-            isLoading = false;
-          });
-
-          if (sesion.idNegocio == 0) {
-            Navigator.pushReplacementNamed(context, 'menu');
-            mostrarAlerta(context, 'Bienvenido',
-                '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
-          } else {
-            Navigator.pushReplacementNamed(context, 'home');
-          }
-
-        } else {
-          setState(() {
-            textLoading = '';
-            isLoading = false;
-          });
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    } else {
-      mostrarAlerta(context, 'ERROR', 'Complete todos los campos');
-    }
   }
 }
