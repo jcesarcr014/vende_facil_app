@@ -23,19 +23,19 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
   void initState() {
     if (globals.actualizaEmpleados) {
       setState(() {
-      textLoading = 'Leyendo empleados';
-      isLoading = true;
-    });
-    usuarioProvider.obtenerEmpleados().then((value) {
-      setState(() {
-        textLoading = '';
-        isLoading = false;
+        textLoading = 'Leyendo empleados';
+        isLoading = true;
       });
-      if (value.status != 1) {
-        Navigator.pop(context);
-        mostrarAlerta(context, 'ERROR', value.mensaje!);
-      }
-    });
+      usuarioProvider.obtenerEmpleados().then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+        if (value.status != 1) {
+          Navigator.pop(context);
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
     }
     super.initState();
   }
@@ -116,7 +116,8 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
           subtitle: Text(empleado.email!),
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
-            Navigator.pushNamed(context, 'perfil-empleado', arguments: i);
+            empleadoSeleccionado = empleado;
+            Navigator.pushNamed(context, 'perfil-empleado');
           },
         ),
       );

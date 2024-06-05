@@ -11,45 +11,39 @@ class ApartadoDetalleScreen extends StatefulWidget {
 }
 
 class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
+  bool isLoading = false;
+  String textLoading = '';
+  String totalCompra = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   double efectivo = 0.0;
   double tarjeta = 0.0;
   double total = 0.0;
   int cantidad = 0;
-  // ignore: non_constant_identifier_names
-  final ApartadoConttoller = TextEditingController();
-  // ignore: non_constant_identifier_names
-  final TotalConttroller = TextEditingController();
-  // ignore: non_constant_identifier_names
-  final EfectivoController = TextEditingController();
-  // ignore: non_constant_identifier_names
-  final CambioController = TextEditingController();
-  // ignore: non_constant_identifier_names
-  final TarjetaController = TextEditingController();
-  final _dateController = TextEditingController();
+
+  final efectivoController = TextEditingController();
+  final tarjetaController = TextEditingController();
+  final fechaController = TextEditingController();
   final apartadosCabecera = ApartadoProvider();
   String formattedEndDate = "";
-  String formattedStartDate = "";
   DateTime now = DateTime.now();
-  late DateTime _startDate;
-  late DateTime _endDate;
+  late DateTime _fechaVencimiento;
   late DateFormat dateFormatter;
+  String anticipoMinimo = '';
+
   @override
   void initState() {
-    TotalConttroller.text = totalVentaTemporal.toStringAsFixed(2);
-    ApartadoConttoller.text =
-        ((totalVentaTemporal * (num.parse(listaVariables[0].valor) as int)) /
+    totalCompra = totalVentaTemporal.toStringAsFixed(2);
+    anticipoMinimo =
+        ((totalVentaTemporal * (num.parse(listaVariables[0].valor) as double)) /
                 100)
             .toStringAsFixed(2);
-    EfectivoController.text = "0.00";
-    TarjetaController.text = "0.00";
-    _startDate = DateTime(now.year, now.month, now.day);
-    _endDate = _startDate.add(const Duration(days: 30));
+    efectivoController.text = "0.00";
+    tarjetaController.text = "0.00";
+    _fechaVencimiento = DateTime(now.year, now.month, now.day);
     dateFormatter = DateFormat('yyyy-MM-dd');
-    formattedStartDate = dateFormatter.format(_startDate);
-    formattedEndDate = dateFormatter.format(_endDate);
-    _dateController.text = '$formattedStartDate - $formattedEndDate';
+    formattedEndDate = dateFormatter.format(_fechaVencimiento);
+    fechaController.text = formattedEndDate;
     super.initState();
   }
 
@@ -64,283 +58,130 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
       appBar: AppBar(
         title: const Text('Apartado'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(14.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Fecha:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: _dateController,
-                      onTap: () async {
-                        final picked = await showDateRangePicker(
-                          context: context,
-                          firstDate: DateTime(2015),
-                          lastDate: DateTime(2100),
-                          initialDateRange: DateTimeRange(
-                            start: formattedStartDate.isEmpty
-                                ? DateTime.now()
-                                : _startDate,
-                            end: formattedEndDate.isEmpty
-                                ? _startDate.add(const Duration(days: 30))
-                                : _endDate,
-                          ),
-                        );
-                        if (picked != null &&
-                            picked !=
-                                DateTimeRange(
-                                    start: _startDate,
-                                    end: formattedEndDate.isEmpty
-                                        ? _startDate
-                                            .add(const Duration(days: 30))
-                                        : _endDate)) {
-                          setState(() {
-                            _startDate = picked.start;
-                            _endDate = picked.end;
-                            dateFormatter = DateFormat('yyyy-MM-dd');
-                            formattedStartDate =
-                                dateFormatter.format(_startDate);
-                            formattedEndDate = dateFormatter.format(_endDate);
-                            _dateController.text =
-                                '$formattedStartDate - $formattedEndDate';
-                          });
-                        }
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Seleccionar fecha',
-                        suffixIcon: IconButton(
-                          onPressed: () async {
-                            final picked = await showDateRangePicker(
-                              context: context,
-                              firstDate: DateTime(2015),
-                              lastDate: DateTime(2100),
-                              initialDateRange: DateTimeRange(
-                                start: formattedStartDate.isEmpty
-                                    ? DateTime.now()
-                                    : _startDate,
-                                end: formattedEndDate.isEmpty
-                                    ? _startDate.add(const Duration(days: 30))
-                                    : _endDate,
-                              ),
-                            );
-                            if (picked != null &&
-                                picked !=
-                                    DateTimeRange(
-                                        start: _startDate,
-                                        end: formattedEndDate.isEmpty
-                                            ? _startDate
-                                                .add(const Duration(days: 30))
-                                            : _endDate)) {
-                              setState(() {
-                                _startDate = picked.start;
-                                _endDate = picked.end;
-                                dateFormatter = DateFormat('yyyy-MM-dd');
-                                formattedStartDate =
-                                    dateFormatter.format(_startDate);
-                                formattedEndDate =
-                                    dateFormatter.format(_endDate);
-                                _dateController.text =
-                                    '$formattedStartDate - $formattedEndDate';
-                              });
-                            }
-                          },
-                          icon: const Icon(Icons.calendar_today),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+            Row(
+              children: [
+                const Text('Total de la compra: ',
+                    maxLines: 2,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+                Text('\$ $totalCompra',
+                    style: const TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25))
+              ],
+            ),
+            SizedBox(
+              height: windowHeight * 0.03,
+            ),
+            Row(
+              children: [
+                const Text('Anticipo minimo: ',
+                    maxLines: 2,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                Text('\$ $anticipoMinimo',
+                    style: const TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20))
+              ],
+            ),
+            SizedBox(
+              height: windowHeight * 0.03,
+            ),
+            const Text('Fecha de vencimiento:',
+                maxLines: 2,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            TextFormField(
+              controller: fechaController,
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  firstDate: DateTime(2015),
+                  lastDate: DateTime(2100),
+                );
+                if (picked != null) {
+                  setState(() {
+                    dateFormatter = DateFormat('yyyy-MM-dd');
+                    formattedEndDate = dateFormatter.format(picked);
+                    fechaController.text = formattedEndDate;
+                  });
+                }
+              },
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  onPressed: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(2015),
+                      lastDate: DateTime(2100),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        dateFormatter = DateFormat('yyyy-MM-dd');
+                        formattedEndDate = dateFormatter.format(picked);
+                        fechaController.text = formattedEndDate;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.calendar_today),
+                ),
               ),
             ),
             SizedBox(
               height: windowHeight * 0.05,
             ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Apartado:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: ApartadoConttoller,
-                      enabled: false,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Apartado',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            const Text('Anticipo en efectivo:',
+                maxLines: 2,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            SizedBox(
+              height: windowHeight * 0.01,
+            ),
+            InputFieldMoney(
+              controller: efectivoController,
+              labelText: 'Efectivo',
             ),
             SizedBox(
               height: windowHeight * 0.05,
             ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Total:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: TotalConttroller,
-                      enabled: false,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Total',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            const Text("Anticipo en tarjeta:",
+                maxLines: 2,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+            SizedBox(
+              height: windowHeight * 0.01,
+            ),
+            InputFieldMoney(
+              controller: tarjetaController,
+              labelText: 'Tarjeta',
             ),
             SizedBox(
               height: windowHeight * 0.05,
             ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Efectivo:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                    child: InputFieldMoney(
-                      controller: EfectivoController,
-                      onChanged: (value) {
-                        tuFuncion();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Tarjeta:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                    child: InputFieldMoney(
-                      controller: TarjetaController,
-                      onChanged: (value) {
-                        tuFuncion();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Flexible(child: Text("Cambio:")),
-                  SizedBox(
-                    width: windowWidth * 0.01,
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: CambioController,
-                      enabled: false,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Cambio',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: windowHeight * 0.05,
-            ),
-            // ignore: avoid_unnecessary_containers
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _checkVenta(apartado);
-                    },
-                    child: const Text('Aceptar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Cancelar'),
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _checkVenta(apartado);
+                  },
+                  child: const Text('Aceptar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Cancelar'),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
-  }
-
-  tuFuncion() {
-    try {
-      if (EfectivoController.text.contains(',')) {
-        efectivo = double.parse(EfectivoController.text.replaceAll(',', ''));
-      } else {
-        efectivo = double.parse(EfectivoController.text);
-      }
-      if (TarjetaController.text.contains(',')) {
-        tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
-      } else {
-        tarjeta = double.parse(TarjetaController.text);
-      }
-      total = double.parse(TotalConttroller.text);
-
-      var suma = efectivo + tarjeta;
-      var catidad = (total * num.parse(listaVariables[0].valor)) / 100;
-      var cambio = suma - catidad;
-      if (cambio < 0) {
-        CambioController.text = "0.00";
-        setState(() {});
-      } else {
-        CambioController.text = cambio.toStringAsFixed(2);
-        setState(() {});
-      }
-
-      // ignore: empty_catches
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error: $e');
-    }
   }
 
   void _checkVenta(ApartadoCabecera apartado) {
@@ -364,10 +205,10 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
       );
     } else {
       double efectivo =
-          double.parse(EfectivoController.text.replaceAll(',', ''));
-      double total = double.parse(TotalConttroller.text);
+          double.parse(efectivoController.text.replaceAll(',', ''));
+      double total = double.parse(totalCompra);
       num acticipo = total * (num.parse(listaVariables[0].valor) as int) / 100;
-      double tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
+      double tarjeta = double.parse(tarjetaController.text.replaceAll(',', ''));
       double resultado = efectivo + tarjeta;
       if (tarjeta > acticipo) {
         showDialog(
@@ -389,26 +230,27 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
         );
       } else {
         for (ItemVenta item in ventaTemporal) {
-          cantidad=(cantidad+item.cantidad) as int;
+          cantidad = (cantidad + item.cantidad) as int;
         }
         if (double.parse(listaVariables[1].valor) < cantidad) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  content: const Text('La cantidad de artículos excede a la cantidad registrada por el usuario.'),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Aceptar '),
-                    ),
-                  ],
-                );
-              },
-            );
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                content: const Text(
+                    'La cantidad de artículos excede a la cantidad registrada por el usuario.'),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Aceptar '),
+                  ),
+                ],
+              );
+            },
+          );
         } else {
           if (resultado >= acticipo) {
             _apartado(apartado);
@@ -452,10 +294,10 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
         );
       },
     );
-    apartado.anticipo = double.parse(EfectivoController.text) +
-        double.parse(TarjetaController.text);
-    apartado.pagoEfectivo = double.parse(EfectivoController.text);
-    apartado.pagoTarjeta = double.parse(TarjetaController.text);
+    apartado.anticipo = double.parse(efectivoController.text) +
+        double.parse(tarjetaController.text);
+    apartado.pagoEfectivo = double.parse(efectivoController.text);
+    apartado.pagoTarjeta = double.parse(tarjetaController.text);
     apartado.saldoPendiente = (apartado.total! - apartado.anticipo!);
     apartadosCabecera.guardaApartado(apartado).then((value) {
       if (!mounted) return; // Comprobar si el widget está montado
@@ -491,10 +333,8 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                             efectivo = 0.0;
                             tarjeta = 0.0;
                             total = 0.0;
-                            TotalConttroller.clear();
-                            EfectivoController.clear();
-                            TarjetaController.clear();
-                            CambioController.clear();
+                            efectivoController.clear();
+                            tarjetaController.clear();
                             ventaTemporal.clear();
                             totalVentaTemporal = 0.00;
                           });

@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/abono_detalle.dart';
 export 'package:vende_facil/screens/tarjetas_screen.dart';
 export 'package:vende_facil/screens/suscripcion_screen.dart';
 export 'package:vende_facil/screens/menu.dart';

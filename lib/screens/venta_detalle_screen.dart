@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -28,9 +27,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   String formattedEndDate = "";
   String formattedStartDate = "";
   DateTime now = DateTime.now();
-  late DateTime _startDate;
-  late DateTime _endDate;
-  late DateFormat dateFormatter;
+
   final ventaCabecera = VentasProvider();
   final apartadosCabecera = ApartadoProvider();
 
@@ -44,11 +41,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   void initState() {
     _actualizaTotalTemporal();
     listaDescuentos;
-    _startDate = DateTime(now.year, now.month, now.day);
-    _endDate = _startDate.add(const Duration(days: 30));
-    dateFormatter = DateFormat('yyyy-MM-dd');
-    formattedStartDate = dateFormatter.format(_startDate);
-    formattedEndDate = dateFormatter.format(_endDate);
     super.initState();
     _fetchData();
   }
@@ -219,28 +211,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              ApartadoCabecera apartado = ApartadoCabecera(
-                                clienteId: int.parse(_valueIdcliente),
-                                subtotal: subTotalItem,
-                                descuentoId: idDescuento,
-                                descuento: descuento,
-                                total: totalVentaTemporal,
-                                pagoEfectivo:
-                                    efectivoConttroller.text.isNotEmpty
-                                        ? double.parse(efectivoConttroller.text)
-                                        : 0.00,
-                                pagoTarjeta: tarjetaConttroller.text.isNotEmpty
-                                    ? double.parse(tarjetaConttroller.text)
-                                    : 0.00,
-                                fechaApartado: formattedStartDate.toString(),
-                                fechaVencimiento: formattedEndDate.toString(),
-                                saldoPendiente: restate,
-                                anticipo: efectivoConttroller.text.isNotEmpty
-                                    ? double.parse(efectivoConttroller.text)
-                                    : 0.00,
-                              );
-                              Navigator.pushNamed(context, 'apartado',
-                                  arguments: apartado);
+                              _validaApartado();
                             },
                             child: SizedBox(
                               height: windowHeight * 0.07,
@@ -302,6 +273,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                                         item.precio * item.cantidad;
                                     item.totalItem =
                                         item.subTotalItem - item.descuento;
+                                    if (item.cantidad == 0) {
+                                      _removerItemTemporal(item);
+                                    }
                                     _actualizaTotalTemporal();
                                   }
                                 : null,
@@ -337,6 +311,41 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     }
     return productos;
+  }
+
+  _validaApartado() {
+    apartadoValido = true;
+    for (ItemVenta articuloTemporal in ventaTemporal) {
+      if (articuloTemporal.apartado == false) {
+        apartadoValido = false;
+      }
+    }
+
+    if (apartadoValido) {
+      ApartadoCabecera apartado = ApartadoCabecera(
+        clienteId: int.parse(_valueIdcliente),
+        subtotal: subTotalItem,
+        descuentoId: idDescuento,
+        descuento: descuento,
+        total: totalVentaTemporal,
+        pagoEfectivo: efectivoConttroller.text.isNotEmpty
+            ? double.parse(efectivoConttroller.text)
+            : 0.00,
+        pagoTarjeta: tarjetaConttroller.text.isNotEmpty
+            ? double.parse(tarjetaConttroller.text)
+            : 0.00,
+        fechaApartado: formattedStartDate.toString(),
+        fechaVencimiento: formattedEndDate.toString(),
+        saldoPendiente: restate,
+        anticipo: efectivoConttroller.text.isNotEmpty
+            ? double.parse(efectivoConttroller.text)
+            : 0.00,
+      );
+      Navigator.pushNamed(context, 'apartado', arguments: apartado);
+    } else {
+      mostrarAlerta(
+          context, 'ERROR', 'Todos los articulos deben ser apartables.');
+    }
   }
 
   _removerItemTemporal(ItemVenta item) {
@@ -414,18 +423,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _clientes() {
-    var listaClien = [
-      DropdownMenuItem(
-        value: listaClientes
-            .firstWhere((cliente) => cliente.nombre == 'Público en general')
-            .id
-            .toString(),
-        child: SizedBox(
-            child: Text(listaClientes
-                .firstWhere((cliente) => cliente.nombre == 'Público en general')
-                .nombre!)),
-      )
-    ];
+    List<DropdownMenuItem> listaClien = [];
+    for (Cliente cliente in listaClientes) {
+      if (cliente.nombre == 'Público en general') {
+        listaClien.add(DropdownMenuItem(
+            value: cliente.id.toString(),
+            child: const Text('Público en general')));
+      }
+    }
 
     for (Cliente cliente in listaClientes) {
       if (cliente.nombre != 'Público en general') {
@@ -442,246 +447,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return DropdownButton(
       items: listaClien,
       isExpanded: true,
-      value: listaClientes
-          .firstWhere((cliente) => cliente.nombre == 'Público en general')
-          .id
-          .toString(),
+      value: _valueIdcliente,
       onChanged: (value) {
         _valueIdcliente = value!;
-        if (value ==
-            listaClientes
-                .firstWhere((cliente) => cliente.nombre == 'Público en general')
-                .id
-                .toString()) {
-          setState(() {});
-        } else {
-          idcliente = listaClientes
-              .firstWhere((cliente) => cliente.id.toString() == value)
-              .id!;
-          setState(() {});
-        }
         setState(() {});
       },
     );
-  }
-
-  _compra() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
-              Text("Procesado venta..."),
-            ],
-          ),
-        );
-      },
-    );
-
-    VentaCabecera venta = VentaCabecera(
-      idCliente: idcliente,
-      subtotal: subTotalItem,
-      idDescuento: idDescuento,
-      descuento: descuento,
-      total: totalVentaTemporal,
-      importeEfectivo: efectivoConttroller.text.isNotEmpty
-          ? double.parse(efectivoConttroller.text.replaceAll(',', ''))
-          : 0.00,
-      importeTarjeta: tarjetaConttroller.text.isNotEmpty
-          ? double.parse(tarjetaConttroller.text.replaceAll(',', ''))
-          : 0.00,
-    );
-
-    ventaCabecera.guardarVenta(venta).then((value) {
-      Navigator.pop(context);
-
-      if (value.status == 1) {
-        for (ItemVenta item in ventaTemporal) {
-          VentaDetalle ventaDetalle = VentaDetalle(
-            idVenta: value.id,
-            idProd: item.idArticulo,
-            cantidad: item.cantidad,
-            precio: item.precio,
-            idDesc: idDescuento,
-            cantidadDescuento: descuento,
-            total: item.totalItem,
-            subtotal: item.subTotalItem,
-          );
-
-          ventaCabecera.guardarVentaDetalle(ventaDetalle).then((value) {});
-        }
-
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              content: const Text('Venta realizada con exito'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    totalConttroller.clear();
-                    efectivoConttroller.clear();
-                    tarjetaConttroller.clear();
-                    cambioConttroller.clear();
-                    ventaTemporal.clear();
-                    _actualizaTotalTemporal();
-                    _valueIdDescuento = '0';
-                    _valueIdcliente = '0';
-                    idcliente = 0;
-                    idDescuento = 0;
-                    descuento = 0.00;
-                    totalVentaTemporal = 0.00;
-                    Navigator.pushReplacementNamed(context, 'home');
-                  },
-                  child: const Text('Aceptar '),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              content: Text('${value.mensaje}'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Aceptar '),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }).catchError((error) {
-      Navigator.pop(context);
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: Text('Ha ocurrido un error: $error'),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Aceptar'),
-              ),
-            ],
-          );
-        },
-      );
-    });
-  }
-
-  _apartadoCabecera() {
-    ApartadoCabecera apartado = ApartadoCabecera(
-      clienteId: idcliente,
-      subtotal: subTotalItem,
-      descuentoId: idDescuento,
-      descuento: descuento,
-      total: totalVentaTemporal,
-      pagoEfectivo: efectivoConttroller.text.isNotEmpty
-          ? double.parse(efectivoConttroller.text)
-          : 0.00,
-      pagoTarjeta: tarjetaConttroller.text.isNotEmpty
-          ? double.parse(tarjetaConttroller.text)
-          : 0.00,
-      fechaApartado: formattedStartDate.toString(),
-      fechaVencimiento: formattedEndDate.toString(),
-      saldoPendiente: restate,
-      anticipo: efectivoConttroller.text.isNotEmpty
-          ? double.parse(efectivoConttroller.text)
-          : 0.00,
-    );
-    apartadosCabecera.guardaApartado(apartado).then((value) {
-      if (value.status == 1) {
-        for (ItemVenta item in ventaTemporal) {
-          ApartadoDetalle ventaDetalle = ApartadoDetalle(
-            apartadoId: value.id,
-            productoId: item.idArticulo,
-            cantidad: item.cantidad,
-            precio: item.precio,
-            descuentoId: idDescuento,
-            descuento: descuento,
-            total: item.totalItem,
-            subtotal: item.subTotalItem,
-          );
-          apartadosCabecera.guardaApartadoDetalle(ventaDetalle).then((value) {
-            if (value.status == 1) {
-            } else {}
-          });
-        }
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              content: const Text('Venta realizada con exito'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    totalConttroller.clear();
-                    efectivoConttroller.clear();
-                    tarjetaConttroller.clear();
-                    cambioConttroller.clear();
-                    ventaTemporal.clear();
-                    _actualizaTotalTemporal();
-                    _valueIdDescuento = '0';
-                    _valueIdcliente = '0';
-                    idcliente = 0;
-                    idDescuento = 0;
-                    descuento = 0.00;
-                    totalVentaTemporal = 0.00;
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Aceptar '),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              content: Text('${value.mensaje}'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Aceptar '),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    });
   }
 
   _alertadescuento(Descuento descuentos) {
@@ -747,478 +518,39 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     );
   }
 
-  // ignore: unused_element
-  _alertaVenta() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Total :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: totalConttroller,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: windowWidth * 0.9,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Efectivo :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: InputFieldMoney(
-                          controller: efectivoConttroller,
-                          onChanged: (value) {
-                            tuFuncion();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: windowWidth * 0.9,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Tarjeta :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        child: InputFieldMoney(
-                          controller: tarjetaConttroller,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: windowWidth * 0.9,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Cambio :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: cambioConttroller,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (ventaTemporal.isEmpty) {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) {
-                      return AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        content: const Text('No hay productos en la venta'),
-                        actions: [
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Aceptar '),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  double efectivo = double.parse(
-                      efectivoConttroller.text.replaceAll(',', ''));
-                  double total = double.parse(totalConttroller.text);
-                  double tarjeta =
-                      double.parse(tarjetaConttroller.text.replaceAll(',', ''));
+  // tuFuncion() {
+  //   try {
+  //     double total = double.parse(totalConttroller.text);
+  //     double efectivo = double.parse(efectivoConttroller.text);
+  //     var cambio = efectivo - total;
+  //     if (cambio < 0) {
+  //       cambioConttroller.text = "0.00";
+  //     } else {
+  //       cambioConttroller.text = cambio.toStringAsFixed(2);
+  //     }
 
-                  double resultado = efectivo + tarjeta;
-                  // ignore: avoid_print
-                  if (resultado >= total) {
-                    _compra();
-                    Navigator.pop(context);
-                  } else {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return AlertDialog(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                          content: const Text('El efectivo es menor al total'),
-                          actions: [
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Aceptar '),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                }
-              },
-              child: const Text('Aceptar '),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //     setState(() {
+  //       // Actualiza el estado
+  //     });
+  //     // ignore: empty_catches
+  //   } catch (e) {}
+  // }
 
-  // ignore: unused_element
-  _alertaApartados() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsetsDirectional.all(5.0),
-                  child: Row(
-                    children: [
-                      TextButton(
-                        onPressed: () async {
-                          final picked = await showDateRangePicker(
-                            context: context,
-                            firstDate: DateTime(2015),
-                            lastDate: DateTime(2100),
-                            initialDateRange: DateTimeRange(
-                              start: formattedStartDate.isEmpty
-                                  ? DateTime.now()
-                                  : _startDate,
-                              end: formattedEndDate.isEmpty
-                                  ? _startDate.add(const Duration(days: 30))
-                                  : _endDate,
-                            ),
-                          );
-                          if (picked != null &&
-                              picked !=
-                                  DateTimeRange(
-                                      start: _startDate,
-                                      end: formattedEndDate.isEmpty
-                                          ? _startDate
-                                              .add(const Duration(days: 30))
-                                          : _endDate)) {
-                            setState(() {
-                              _startDate = picked.start;
-                              _endDate = picked.end;
-                              dateFormatter = DateFormat('yyyy-MM-dd');
-                              formattedStartDate =
-                                  dateFormatter.format(_startDate);
-                              formattedEndDate = dateFormatter.format(_endDate);
-                            });
-                          }
-                        },
-                        child: Text(
-                          '$formattedStartDate - $formattedEndDate',
-                          style: const TextStyle(fontSize: 15.0),
-                        ),
-                      ),
-                      const Icon(Icons.calendar_today, size: 15.0),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Apartado :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: totalConttroller,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Total :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: totalConttroller,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: windowWidth * 0.9,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Efectivo :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: efectivoConttroller,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            tuFuncion();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: windowWidth * 0.9,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Tarjeta :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: tarjetaConttroller,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            tuFuncion();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: windowHeight * 0.05),
-                // ignore: sized_box_for_whitespace
-                Container(
-                  width: windowWidth * 0.9,
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text(
-                          'Cambio :',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.05),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: cambioConttroller,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 15.0, horizontal: 1.0),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                try {
-                  double efectivo = double.parse(efectivoConttroller.text);
-                  double total = double.parse(totalConttroller.text);
-                  double tarjeta = double.parse(tarjetaConttroller.text);
+  // apartadosomprobacion() {
+  //   try {
+  //     double total = double.parse(totalConttroller.text);
+  //     double efectivo = double.parse(efectivoConttroller.text);
+  //     var cambio = efectivo - total;
+  //     if (cambio < 0) {
+  //       cambioConttroller.text = "0.00";
+  //     } else {
+  //       cambioConttroller.text = cambio.toStringAsFixed(2);
+  //     }
 
-                  restate = efectivo + tarjeta;
-                  restate = total - restate;
-                  _apartadoCabecera();
-                  Navigator.pop(context);
-
-                  // ignore: empty_catches
-                } catch (e) {}
-              },
-              child: const Text('Aceptar '),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  tuFuncion() {
-    try {
-      double total = double.parse(totalConttroller.text);
-      double efectivo = double.parse(efectivoConttroller.text);
-      var cambio = efectivo - total;
-      if (cambio < 0) {
-        cambioConttroller.text = "0.00";
-      } else {
-        cambioConttroller.text = cambio.toStringAsFixed(2);
-      }
-
-      setState(() {
-        // Actualiza el estado
-      });
-      // ignore: empty_catches
-    } catch (e) {}
-  }
-
-  apartadosomprobacion() {
-    try {
-      double total = double.parse(totalConttroller.text);
-      double efectivo = double.parse(efectivoConttroller.text);
-      var cambio = efectivo - total;
-      if (cambio < 0) {
-        cambioConttroller.text = "0.00";
-      } else {
-        cambioConttroller.text = cambio.toStringAsFixed(2);
-      }
-
-      setState(() {
-        // Actualiza el estado
-      });
-      // ignore: empty_catches
-    } catch (e) {}
-  }
+  //     setState(() {
+  //       // Actualiza el estado
+  //     });
+  //     // ignore: empty_catches
+  //   } catch (e) {}
+  // }
 }

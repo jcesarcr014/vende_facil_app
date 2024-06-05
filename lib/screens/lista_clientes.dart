@@ -22,22 +22,22 @@ class _ClientesScreenState extends State<ClientesScreen> {
   void initState() {
     if (globals.actualizaClientes) {
       setState(() {
-      textLoading = 'Leyendo clientes';
-      isLoading = true;
-    });
-    clientesProvider.listarClientes().then((value) {
-      setState(() {
-        globals.actualizaClientes = false;
-        textLoading = '';
-        isLoading = false;
+        textLoading = 'Leyendo clientes';
+        isLoading = true;
       });
-      if (value.status != 1) {
-        Navigator.pop(context);
-        mostrarAlerta(context, 'ERROR', value.mensaje!);
-      }
-    });
+      clientesProvider.listarClientes().then((value) {
+        setState(() {
+          globals.actualizaClientes = false;
+          textLoading = '';
+          isLoading = false;
+        });
+        if (value.status != 1) {
+          Navigator.pop(context);
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
     }
-    
+
     super.initState();
   }
 

@@ -403,7 +403,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       InputField(
                           labelText: 'Código de barras:',
                           textCapitalization: TextCapitalization.none,
-                          sufixIcon: IconButton(
+                          suffixIcon: IconButton(
                             icon: const Icon(Icons.qr_code_scanner),
                             onPressed: () async {
                               var res = await Navigator.push(

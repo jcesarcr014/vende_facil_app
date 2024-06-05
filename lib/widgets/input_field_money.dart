@@ -1,82 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class InputFieldMoney extends StatefulWidget {
-  final TextEditingController? controller;
-  final String labelText;
-  final void Function(dynamic value)? onChanged; // Cambio aquí
+  final String? hintText;
+  final String? labelText;
+  final String? helperText;
+  final IconData? icon;
+  final Widget? suffixIcon;
+  final TextCapitalization textCapitalization;
+  final bool readOnly;
+  final bool enabled;
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
+  final String? errorText;
 
-  // ignore: use_super_parameters
-  const InputFieldMoney(
-      {Key? key,
-      this.controller,
-      this.labelText = 'Monto',
-      this.onChanged}) // Cambio aquí
-      : super(key: key); // Cambio aquí
+  const InputFieldMoney({
+    Key? key,
+    this.hintText,
+    this.labelText,
+    this.helperText,
+    this.icon,
+    this.suffixIcon,
+    this.textCapitalization = TextCapitalization.none,
+    this.readOnly = false,
+    this.enabled = true,
+    required this.controller,
+    this.validator,
+    this.errorText,
+  }) : super(key: key);
 
   @override
-  State<InputFieldMoney> createState() => _InputFieldMoneyState();
+  _InputFieldMoneyState createState() => _InputFieldMoneyState();
 }
 
 class _InputFieldMoneyState extends State<InputFieldMoney> {
-  late TextEditingController _controller;
-  late NumberFormat _currencyFormat;
+  String? errorText;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? TextEditingController(text: '0.00');
-    _currencyFormat = NumberFormat.currency(decimalDigits: 2, symbol: '');
+    widget.controller.addListener(_formatMoney);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_formatMoney);
+    super.dispose();
+  }
+
+  void _formatMoney() {
+    final text = widget.controller.text;
+    if (text.isNotEmpty) {
+      // Reemplazamos cualquier carácter no numérico y punto decimal
+      final value =
+          double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+      final formattedText =
+          NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(value);
+      // Prevenimos un loop de actualización del texto
+      // if (formattedText != text) {
+      //   widget.controller.value = widget.controller.value.copyWith(
+      //     text: formattedText,
+      //     selection: TextSelection.collapsed(offset: formattedText.length),
+      //   );
+      // }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _controller,
+      controller: widget.controller,
+      autofocus: false,
+      readOnly: widget.readOnly,
+      enabled: widget.enabled,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+      ],
       decoration: InputDecoration(
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
-        hintText: '0.00',
+        hintText: widget.hintText,
         labelText: widget.labelText,
-        prefixIcon: const Icon(Icons.attach_money),
+        errorText: errorText,
+        helperText: widget.helperText,
+        suffixIcon: widget.suffixIcon,
+        icon: widget.icon == null
+            ? const Icon(Icons.attach_money)
+            : Icon(widget.icon),
       ),
-      onChanged: (value) {
-        setState(() {
-          if (widget.onChanged != null) {
-            widget.onChanged!(value); // Cambio aquí
-          }
-          if (value.isEmpty) return;
-          final numericValue = value.replaceAll(RegExp(r'[^\d.]'), '');
-
-          try {
-            final double parsedValue = double.parse(numericValue);
-            _controller.value = TextEditingValue(
-              text: _currencyFormat.format(parsedValue),
-              selection: TextSelection.collapsed(
-                  offset: _controller.value.selection.baseOffset),
-            );
-          } catch (e) {
-            // Handle parsing errors if necessary
-          }
-        });
-      },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Este campo es obligatorio';
-        }
-        final numericValue = value.replaceAll(RegExp(r'[^\d.]'), '');
-        try {
-          final double parsedValue = double.parse(numericValue);
-          if (parsedValue < 0) {
-            return 'No se permiten valores negativos';
-          }
-        } catch (e) {
-          return 'Valor no válido';
-        }
-        return null;
-      },
     );
+  }
+
+  void validate() {
+    setState(() {
+      errorText = widget.validator?.call(widget.controller.text);
+    });
   }
 }

@@ -128,7 +128,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.none,
                         obscureText: passOculto1,
-                        sufixIcon: IconButton(
+                        suffixIcon: IconButton(
                           icon: (passOculto1)
                               ? const Icon(Icons.visibility_off)
                               : const Icon(Icons.visibility),
@@ -146,7 +146,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.none,
                         obscureText: passOculto2,
-                        sufixIcon: IconButton(
+                        suffixIcon: IconButton(
                           icon: (passOculto2)
                               ? const Icon(Icons.visibility_off)
                               : const Icon(Icons.visibility),

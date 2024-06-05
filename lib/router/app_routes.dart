@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/screens/abono_detalle.dart';
 import 'package:vende_facil/screens/screens.dart';
 
 class AppRoutes {

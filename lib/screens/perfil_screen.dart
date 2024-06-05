@@ -13,9 +13,9 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
-    final confirmarpassword = TextEditingController();
-    bool passOculto1 = true;
-    String? _passwordErrorText;
+  final confirmarpassword = TextEditingController();
+  bool passOculto1 = true;
+  String? _passwordErrorText;
 
   @override
   Widget build(BuildContext context) {
@@ -168,30 +168,29 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                     ),
                                   ),
                                   SizedBox(width: windowWidth * 0.05),
-                              Flexible(
-                                child: InputField(
-                                  obscureText: passOculto1,
-                                  sufixIcon: IconButton(
-                                    icon: (passOculto1)
-                                        ? const Icon(Icons.visibility_off)
-                                        : const Icon(Icons.visibility) ,
-                                    onPressed: () {
-                                      passOculto1 = !passOculto1;
-                                      setState(() {
-                                      });
-                                    },
+                                  Flexible(
+                                    child: InputField(
+                                      obscureText: passOculto1,
+                                      suffixIcon: IconButton(
+                                        icon: (passOculto1)
+                                            ? const Icon(Icons.visibility_off)
+                                            : const Icon(Icons.visibility),
+                                        onPressed: () {
+                                          passOculto1 = !passOculto1;
+                                          setState(() {});
+                                        },
+                                      ),
+                                      labelText: 'Contraseña',
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'La contraseña es obligatoria';
+                                        }
+                                        return null;
+                                      },
+                                      errorText: _passwordErrorText,
+                                      controller: confirmarpassword,
+                                    ),
                                   ),
-                                  labelText: 'Contraseña',
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'La contraseña es obligatoria';
-                                    }
-                                    return null;
-                                  },
-                                  errorText: _passwordErrorText,
-                                  controller: confirmarpassword,
-                                ),
-                              ),
                                 ],
                               ),
                             ),
@@ -282,7 +281,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
       } else {
         mostrarAlerta(context, "error", value.mensaje!);
         return;
-        
       }
     });
   }
