@@ -14,21 +14,23 @@ class InputFieldMoney extends StatefulWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final String? errorText;
+  final double? fontSize;
 
-  const InputFieldMoney({
-    Key? key,
-    this.hintText,
-    this.labelText,
-    this.helperText,
-    this.icon,
-    this.suffixIcon,
-    this.textCapitalization = TextCapitalization.none,
-    this.readOnly = false,
-    this.enabled = true,
-    required this.controller,
-    this.validator,
-    this.errorText,
-  }) : super(key: key);
+  const InputFieldMoney(
+      {Key? key,
+      this.hintText,
+      this.labelText,
+      this.helperText,
+      this.icon,
+      this.suffixIcon,
+      this.textCapitalization = TextCapitalization.none,
+      this.readOnly = false,
+      this.enabled = true,
+      required this.controller,
+      this.validator,
+      this.errorText,
+      this.fontSize})
+      : super(key: key);
 
   @override
   _InputFieldMoneyState createState() => _InputFieldMoneyState();
@@ -55,15 +57,6 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
       // Reemplazamos cualquier carácter no numérico y punto decimal
       final value =
           double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
-      final formattedText =
-          NumberFormat.currency(locale: 'es_MX', symbol: '\$').format(value);
-      // Prevenimos un loop de actualización del texto
-      // if (formattedText != text) {
-      //   widget.controller.value = widget.controller.value.copyWith(
-      //     text: formattedText,
-      //     selection: TextSelection.collapsed(offset: formattedText.length),
-      //   );
-      // }
     }
   }
 
@@ -78,6 +71,7 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
       ],
+      style: TextStyle(fontSize: widget.fontSize),
       decoration: InputDecoration(
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),

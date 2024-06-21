@@ -24,19 +24,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
-  String formattedEndDate = "";
-  String formattedStartDate = "";
-  DateTime now = DateTime.now();
-
-  final ventaCabecera = VentasProvider();
-  final apartadosCabecera = ApartadoProvider();
 
   final cantidadConttroller = TextEditingController();
-  final totalConttroller = TextEditingController();
-  final efectivoConttroller = TextEditingController(text: "0.00");
-  final tarjetaConttroller = TextEditingController(text: "0.00");
-  final cambioConttroller = TextEditingController();
-
   @override
   void initState() {
     _actualizaTotalTemporal();
@@ -178,16 +167,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                                 idDescuento: idDescuento,
                                 descuento: descuento,
                                 total: totalVentaTemporal,
-                                importeEfectivo:
-                                    efectivoConttroller.text.isNotEmpty
-                                        ? double.parse(efectivoConttroller.text
-                                            .replaceAll(',', ''))
-                                        : 0.00,
-                                importeTarjeta:
-                                    tarjetaConttroller.text.isNotEmpty
-                                        ? double.parse(tarjetaConttroller.text
-                                            .replaceAll(',', ''))
-                                        : 0.00,
                               );
                               Navigator.pushNamed(context, 'venta',
                                   arguments: venta);
@@ -315,12 +294,21 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
   _validaApartado() {
     apartadoValido = true;
+    double numArticulos = 0;
     for (ItemVenta articuloTemporal in ventaTemporal) {
       if (articuloTemporal.apartado == false) {
         apartadoValido = false;
+        return;
+      } else {
+        numArticulos = numArticulos + articuloTemporal.cantidad;
       }
     }
-
+    if (double.parse(listaVariables[1].valor) < numArticulos) {
+      apartadoValido = false;
+      mostrarAlerta(context, 'ERROR',
+          'Superas la cantidad de artículos que se pueden apartar. Para modificar este valor, ve a Configuración -> Ajustes apartado.');
+      return;
+    }
     if (apartadoValido) {
       ApartadoCabecera apartado = ApartadoCabecera(
         clienteId: int.parse(_valueIdcliente),
@@ -328,18 +316,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         descuentoId: idDescuento,
         descuento: descuento,
         total: totalVentaTemporal,
-        pagoEfectivo: efectivoConttroller.text.isNotEmpty
-            ? double.parse(efectivoConttroller.text)
-            : 0.00,
-        pagoTarjeta: tarjetaConttroller.text.isNotEmpty
-            ? double.parse(tarjetaConttroller.text)
-            : 0.00,
-        fechaApartado: formattedStartDate.toString(),
-        fechaVencimiento: formattedEndDate.toString(),
-        saldoPendiente: restate,
-        anticipo: efectivoConttroller.text.isNotEmpty
-            ? double.parse(efectivoConttroller.text)
-            : 0.00,
       );
       Navigator.pushNamed(context, 'apartado', arguments: apartado);
     } else {
@@ -476,7 +452,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               ),
               Flexible(
                 child: InputField(
-                  textCapitalization: TextCapitalization.words,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   controller: cantidadConttroller,
                 ),
               ),

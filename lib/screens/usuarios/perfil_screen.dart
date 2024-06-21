@@ -52,7 +52,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
-                  Text("email : ${sesion.email}",
+                  Text("Correo : ${sesion.email}",
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),

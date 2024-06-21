@@ -307,9 +307,9 @@ class _ventaScreenState extends State<VentaScreen> {
     ventaTemporal.clear();
     setState(() {});
     totalVentaTemporal = 0.0;
-    // ignore: use_build_context_synchronously
+
     Navigator.pushReplacementNamed(context, 'home');
-    // ignore: use_build_context_synchronously
+
     mostrarAlerta(context, '', 'Venta realizada');
   }
 }
