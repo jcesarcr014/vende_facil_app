@@ -80,7 +80,7 @@ class _MenuScreenState extends State<MenuScreen> {
           'categorias',
           'descuentos',
           'clientes',
-          'negocio',
+          'menu-negocio',
           'config',
           'suscripcion',
           'login'

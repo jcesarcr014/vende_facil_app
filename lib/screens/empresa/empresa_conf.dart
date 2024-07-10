@@ -8,8 +8,17 @@ class MenuEmpresaScreen extends StatelessWidget {
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         title: const Text('Configuración negocio'),
+        automaticallyImplyLeading: false,
+          actions: [
+            //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+            //IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
+            IconButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, 'menu');
+                },
+                icon: const Icon(Icons.menu)),
+          ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
@@ -44,7 +53,7 @@ class MenuEmpresaScreen extends StatelessWidget {
               subtitle: const Text('Agrega o edita sucursales'),
               trailing: const Icon(Icons.arrow_right),
               onTap: () {
-                Navigator.pushNamed(context, 'empleados');
+                Navigator.pushNamed(context, 'lista-sucursales');
               },
             ),
             ListTile(
@@ -60,7 +69,7 @@ class MenuEmpresaScreen extends StatelessWidget {
               subtitle: const Text('Agrega o asigna empleados'),
               trailing: const Icon(Icons.arrow_right),
               onTap: () {
-                Navigator.pushNamed(context, 'negocio');
+                Navigator.pushNamed(context, 'empleados');
               },
             )
           ],
