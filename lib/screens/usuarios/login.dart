@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'Contraseña',
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'El la contraseña es obligatoria';
+                                  return 'La contraseña es obligatoria';
                                 }
                                 return null;
                               },

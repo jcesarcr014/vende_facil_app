@@ -29,6 +29,8 @@ class UsuarioProvider {
         sesion.idNegocio = decodedData['empresa_id'];
         sesion.tipoUsuario = decodedData['tipo_usuario'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
+        sesion.email = decodedData['usuario']['email'];
+        sesion.telefono = decodedData['usuario']['phone'];
         suscripcionActual.id = decodedData['suscripcion']['id'];
         suscripcionActual.idUsuario =
             decodedData['suscripcion']['id_usuario_app'];
@@ -49,6 +51,7 @@ class UsuarioProvider {
     var url = Uri.parse('$baseUrl/usuario-info');
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
+
     if (token == null || token.isEmpty) {
       respuesta.status = 0;
       respuesta.mensaje = 'No hay token';
@@ -108,7 +111,6 @@ class UsuarioProvider {
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
-        sesion.nombreUsuario = decodedData['usuario']['name'];
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
@@ -175,9 +177,9 @@ class UsuarioProvider {
     return respuesta;
   }
 
-  Future<Resultado> editaPassword(
-      String oldPass, String newPass, int idUser) async {
-    var url = Uri.parse('$baseUrl/usuario-cambiar-contrasena/$idUser');
+  Future<Resultado> editaPassword(String oldPass, String newPass) async {
+    var url =
+        Uri.parse('$baseUrl/usuario-cambiar-contrasena/${sesion.idUsuario}');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

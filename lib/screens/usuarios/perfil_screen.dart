@@ -2,9 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
-import 'package:vende_facil/providers/usuario_provider.dart';
-import 'package:vende_facil/widgets/input_field.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -13,16 +11,13 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
-  final confirmarpassword = TextEditingController();
-  bool passOculto1 = true;
-  String? _passwordErrorText;
+  double windowWidth = 0.0;
+  double windowHeight = 0.0;
 
   @override
   Widget build(BuildContext context) {
-    double windowWidth = MediaQuery.of(context).size.width;
-    double windowHeight = MediaQuery.of(context).size.height;
-    final oldPassword = TextEditingController();
-    final newPassword = TextEditingController();
+    windowWidth = MediaQuery.of(context).size.width;
+    windowHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -76,143 +71,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               subtitle: const Text('Cambia tu contraseña de acceso'),
               trailing: const Icon(Icons.arrow_right),
               onTap: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return AlertDialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: windowHeight * 0.05),
-                            // ignore: sized_box_for_whitespace
-                            Container(
-                              width: MediaQuery.of(context).size.width * 1,
-                              child: Row(
-                                children: [
-                                  const Flexible(
-                                    child: Text(
-                                      'Contraseña Anterior',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(width: windowWidth * 0.05),
-                                  Flexible(
-                                    fit: FlexFit.loose,
-                                    child: TextFormField(
-                                      textCapitalization:
-                                          TextCapitalization.words,
-                                      controller: oldPassword,
-                                      decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 15.0,
-                                                horizontal: 1.0),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: windowHeight * 0.05),
-                            // ignore: sized_box_for_whitespace
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              child: Row(
-                                children: [
-                                  const Flexible(
-                                    child: Text(
-                                      'Contraseña nueva',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(width: windowWidth * 0.05),
-                                  Flexible(
-                                    fit: FlexFit.loose,
-                                    child: TextFormField(
-                                      textCapitalization:
-                                          TextCapitalization.words,
-                                      controller: newPassword,
-                                      decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 15.0,
-                                                horizontal: 1.0),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: windowHeight * 0.05),
-                            // ignore: sized_box_for_whitespace
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              child: Row(
-                                children: [
-                                  const Flexible(
-                                    child: Text(
-                                      'Confirmar Contraseña',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(width: windowWidth * 0.05),
-                                  Flexible(
-                                    child: InputField(
-                                      obscureText: passOculto1,
-                                      suffixIcon: IconButton(
-                                        icon: (passOculto1)
-                                            ? const Icon(Icons.visibility_off)
-                                            : const Icon(Icons.visibility),
-                                        onPressed: () {
-                                          passOculto1 = !passOculto1;
-                                          setState(() {});
-                                        },
-                                      ),
-                                      labelText: 'Contraseña',
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'La contraseña es obligatoria';
-                                        }
-                                        return null;
-                                      },
-                                      errorText: _passwordErrorText,
-                                      controller: confirmarpassword,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        ElevatedButton(
-                          onPressed: () {
-                            verificar(context, oldPassword, newPassword,
-                                confirmarpassword);
-                          },
-                          child: const Text('Aceptar '),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancelar'),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                Navigator.pushNamed(context, 'nvo-pass');
               },
             ),
             ListTile(
@@ -225,9 +84,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              subtitle: const Text('Salir de la aplicación'),
+              subtitle: const Text('Salir de la sesión actual'),
               trailing: const Icon(Icons.arrow_right),
-              onTap: () {
+              onTap: () async {
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                prefs.setString('token', '');
                 Navigator.pushReplacementNamed(context, 'login');
               },
             ),
@@ -235,53 +97,5 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
       ),
     );
-  }
-
-  void verificar(
-      BuildContext context,
-      TextEditingController oldPassword,
-      TextEditingController newPassword,
-      TextEditingController confirmarpassword) {
-    if (oldPassword.text.isEmpty || newPassword.text.isEmpty) {
-      mostrarAlerta(context, "error", "Llene todos los campos");
-    } else {
-      if (confirmarpassword.text == newPassword.text) {
-        cambiarContrasena(context, oldPassword, newPassword);
-      } else {
-        mostrarAlerta(context, "error", "Las contraseñas no coinciden");
-      }
-    }
-  }
-
-  void cambiarContrasena(BuildContext context,
-      TextEditingController oldPassword, TextEditingController newPassword) {
-    final usuario = UsuarioProvider();
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
-              Text("Modificado Contraseña..."),
-            ],
-          ),
-        );
-      },
-    );
-    usuario
-        .editaPassword(oldPassword.text, newPassword.text, sesion.idUsuario!)
-        .then((value) {
-      Navigator.pop(context);
-      if (value.status == 1) {
-        mostrarAlerta(context, "ok", value.mensaje!);
-        Navigator.pushReplacementNamed(context, 'login');
-      } else {
-        mostrarAlerta(context, "error", value.mensaje!);
-        return;
-      }
-    });
   }
 }
