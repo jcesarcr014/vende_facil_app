@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -82,9 +81,9 @@ class ApartadoProvider {
         'pago_efectivo': apartado.pagoEfectivo!.toStringAsFixed(2),
         'pago_tarjeta': apartado.pagoTarjeta!.toStringAsFixed(2),
         'saldo_pendiente': apartado.saldoPendiente!.toStringAsFixed(2),
-        'fecha_apartado': apartado.fechaApartado.toString(),
-        'fecha_vencimiento': apartado.fechaVencimiento.toString(),
-        'fecha_pago_total': apartado.fechaApartado.toString(),
+        'fecha_apartado': apartado.fechaApartado,
+        'fecha_vencimiento': apartado.fechaVencimiento,
+        'fecha_pago_total': apartado.fechaVencimiento,
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

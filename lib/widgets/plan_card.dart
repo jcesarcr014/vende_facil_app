@@ -14,8 +14,7 @@ class PlanCard extends StatelessWidget {
     List<DetallePlan> planDetalles =
         listaDetalles.where((detalle) => detalle.idPlan == plan.id).toList();
 
-    // ignore: avoid_print
-    print('Detalles del plan: ${planDetalles.length}');
+
     return GestureDetector(
       onTap: onTap,
       child: Card(

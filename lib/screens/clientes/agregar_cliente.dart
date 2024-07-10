@@ -68,7 +68,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
             Navigator.pushReplacementNamed(context, 'clientes');
             globals.actualizaClientes = true;
             mostrarAlerta(context, '', value.mensaje!);
-
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -192,134 +191,165 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
     final title = (args.id == 0) ? 'Nuevo cliente' : 'Editar cliente';
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu)),
-          if (args.id != 0)
-            IconButton(
-                onPressed: () {
-                  _alertaEliminar();
-                },
-                icon: const Icon(Icons.delete))
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          globals.actualizaClientes = true;
+          Navigator.pushReplacementNamed(context, 'clientes');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          automaticallyImplyLeading: false,
+          actions: [
+            if (args.id != 0)
+              IconButton(
+                  onPressed: () {
+                    _alertaEliminar();
+                  },
+                  icon: const Icon(Icons.delete))
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Espere...$textLoading'),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const CircularProgressIndicator(),
+                    ]),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
+                child: Column(
                   children: [
-                    Text('Espere...$textLoading'),
-                    const SizedBox(
-                      height: 10,
+                    SizedBox(
+                      height: windowHeight * 0.05,
                     ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  InputField(
-                      labelText: 'Nombre:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerNombre),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'e-mail:',
-                      keyboardType: TextInputType.emailAddress,
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerCorreo),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Telefono:',
-                      keyboardType: TextInputType.number,
-                      controller: controllerTelefono),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Dirección:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerDireccion),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Ciudad:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerCiudad),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Estado:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerEstado),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'C.P.:',
-                      keyboardType: TextInputType.number,
-                      controller: controllerCP),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Pais:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerPais),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      readOnly: true,
-                      labelText: 'Codigo:',
-                      textCapitalization: TextCapitalization.words,
-                      controller: controllerCodigo),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  InputField(
-                      labelText: 'Nota:',
-                      textCapitalization: TextCapitalization.sentences,
-                      controller: controllerNota),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  ElevatedButton(
-                      onPressed: () => _guardaCliente(),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.save),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Guardar',
-                          ),
-                        ],
-                      )),
-                  SizedBox(
-                    height: windowHeight * 0.08,
-                  ),
-                ],
+                    InputField(
+                        labelText: 'Nombre:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerNombre),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'e-mail:',
+                        keyboardType: TextInputType.emailAddress,
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerCorreo),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Telefono:',
+                        keyboardType: TextInputType.number,
+                        controller: controllerTelefono),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Dirección:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerDireccion),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Ciudad:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerCiudad),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Estado:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerEstado),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'C.P.:',
+                        keyboardType: TextInputType.number,
+                        controller: controllerCP),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Pais:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerPais),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        readOnly: true,
+                        labelText: 'Codigo:',
+                        textCapitalization: TextCapitalization.words,
+                        controller: controllerCodigo),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    InputField(
+                        labelText: 'Nota:',
+                        textCapitalization: TextCapitalization.sentences,
+                        controller: controllerNota),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () => _guardaCliente(),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.save),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Guardar',
+                                ),
+                              ],
+                            )),
+                        SizedBox(
+                          width: windowWidth * 0.05,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              globals.actualizaArticulos = true;
+                              Navigator.pushReplacementNamed(
+                                  context, 'clientes');
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.cancel_outlined),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Cancelar',
+                                ),
+                              ],
+                            )),
+                      ],
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.08,
+                    ),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

@@ -118,9 +118,6 @@ class _ventaScreenState extends State<VentaScreen> {
                         Flexible(
                             child: InputFieldMoney(
                           controller: EfectivoController,
-                          onChanged: (value) {
-                            tuFuncion();
-                          },
                         ))
                       ],
                     ),
@@ -140,9 +137,6 @@ class _ventaScreenState extends State<VentaScreen> {
                         Flexible(
                             child: InputFieldMoney(
                           controller: TarjetaController,
-                          onChanged: (value) {
-                            tuFuncion();
-                          },
                         ))
                       ],
                     ),
@@ -313,39 +307,9 @@ class _ventaScreenState extends State<VentaScreen> {
     ventaTemporal.clear();
     setState(() {});
     totalVentaTemporal = 0.0;
-    // ignore: use_build_context_synchronously
+
     Navigator.pushReplacementNamed(context, 'home');
-    // ignore: use_build_context_synchronously
-  }
 
-  tuFuncion() {
-    try {
-      if (EfectivoController.text.contains(',')) {
-        efectivo = double.parse(EfectivoController.text.replaceAll(',', ''));
-      } else {
-        efectivo = double.parse(EfectivoController.text);
-      }
-      if (TarjetaController.text.contains(',')) {
-        tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
-      } else {
-        tarjeta = double.parse(TarjetaController.text);
-      }
-      total = double.parse(TotalConttroller.text);
-
-      var suma = efectivo + tarjeta;
-      var cambio = suma - total;
-      if (cambio < 0) {
-        CambioController.text = "0.00";
-        setState(() {});
-      } else {
-        CambioController.text = cambio.toStringAsFixed(2);
-        setState(() {});
-      }
-
-      // ignore: empty_catches
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error: $e');
-    }
+    mostrarAlerta(context, '', 'Venta realizada');
   }
 }

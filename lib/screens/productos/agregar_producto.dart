@@ -136,6 +136,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         if (_valueImagen) {
           articulosProvider.nuevoProducto(producto).then((value) {
             if (value.status == 1) {
+              globals.actualizaArticulos = true;
               if (producto.inventario == 1) {
                 Existencia inventario = Existencia();
                 inventario.idArticulo = value.id;
@@ -151,7 +152,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     setState(() {
                       isLoading = false;
                       textLoading = '';
-                      globals.actualizaArticulos = true;
                     });
                     mostrarAlerta(context, '', value.mensaje!);
                   }
@@ -315,213 +315,248 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     final title = (args.id == 0) ? 'Nuevo producto' : 'Editar producto';
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          automaticallyImplyLeading: true,
-          actions: [
-            if (args.id != 0)
-              IconButton(
-                  onPressed: () {
-                    _alertaElimnar();
-                  },
-                  icon: const Icon(Icons.delete))
-          ],
-        ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Espere...$textLoading'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    InputField(
-                        labelText: 'Producto:',
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: controllerProducto),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Descripción:',
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: controllerDescripcion),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    _categorias(),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    SwitchListTile.adaptive(
-                        title: const Text('Vendido por: '),
-                        subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
-                        value: _valuePieza,
-                        onChanged: (value) {
-                          _valuePieza = value;
-                          setState(() {});
-                        }),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputFieldMoney(
-                        controller: controllerPrecio, labelText: 'Precio'),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputFieldMoney(
-                        controller: controllercosto, labelText: 'Costo'),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        readOnly: true,
-                        labelText: 'Clave:',
-                        textCapitalization: TextCapitalization.none,
-                        controller: controllerClave),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Código de barras:',
-                        textCapitalization: TextCapitalization.none,
-                        sufixIcon: IconButton(
-                          icon: const Icon(Icons.qr_code_scanner),
-                          onPressed: () async {
-                            var res = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SimpleBarcodeScannerPage(),
-                                ));
-                            setState(() {
-                              if (res is String) {
-                                controllerCodigoB.text = res;
-                              }
-                            });
-                          },
-                        ),
-                        controller: controllerCodigoB),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    SwitchListTile.adaptive(
-                        title: const Text('Inventario'),
-                        value: _valueInventario,
-                        onChanged: (value) {
-                          _valueInventario = value;
-                          setState(() {});
-                        }),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    if (_valueInventario)
-                      InputField(
-                        labelText: 'Cantidad:',
-                        keyboardType: TextInputType.number,
-                        controller: controllerCantidad,
-                        enabled: args.disponible == null  ? true : false,
-                      ),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    SwitchListTile.adaptive(
-                        title: const Text('Se puede apartar'),
-                        value: _valueApartado,
-                        onChanged: (value) {
-                          _valueApartado = value;
-                          setState(() {});
-                        }),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    Row(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        globals.actualizaArticulos = true;
+        if (!didpop) Navigator.pushReplacementNamed(context, 'productos');
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(title),
+            automaticallyImplyLeading: false,
+            actions: [
+              if (args.id != 0)
+                IconButton(
+                    onPressed: () {
+                      _alertaElimnar();
+                    },
+                    icon: const Icon(Icons.delete))
+            ],
+          ),
+          body: (isLoading)
+              ? Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        (args.imagen == '' ||
-                                args.imagen == null ||
-                                _cambioImagen)
-                            ? Container(
-                                decoration: BoxDecoration(border: Border.all()),
-                                width: windowWidth * 0.5,
-                                height: windowHeight * 0.2,
-                                child: (_rutaProducto.isNotEmpty)
-                                    ? SizedBox(
-                                        height: windowHeight * 0.15,
-                                        child: Image.file(
-                                          File(_rutaProducto),
-                                          fit: BoxFit.contain,
+                        Text('Espere...$textLoading'),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const CircularProgressIndicator(),
+                      ]),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
+                      InputField(
+                          labelText: 'Producto:',
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: controllerProducto),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputField(
+                          labelText: 'Descripción:',
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: controllerDescripcion),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      _categorias(),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      SwitchListTile.adaptive(
+                          title: const Text('Vendido por: '),
+                          subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
+                          value: _valuePieza,
+                          onChanged: (value) {
+                            _valuePieza = value;
+                            setState(() {});
+                          }),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputFieldMoney(
+                          controller: controllerPrecio, labelText: 'Precio'),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputFieldMoney(
+                          controller: controllercosto, labelText: 'Costo'),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputField(
+                          readOnly: true,
+                          labelText: 'Clave:',
+                          textCapitalization: TextCapitalization.none,
+                          controller: controllerClave),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputField(
+                          labelText: 'Código de barras:',
+                          textCapitalization: TextCapitalization.none,
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.qr_code_scanner),
+                            onPressed: () async {
+                              var res = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SimpleBarcodeScannerPage(),
+                                  ));
+                              setState(() {
+                                if (res is String) {
+                                  controllerCodigoB.text = res;
+                                }
+                              });
+                            },
+                          ),
+                          controller: controllerCodigoB),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      SwitchListTile.adaptive(
+                          title: const Text('Inventario'),
+                          value: _valueInventario,
+                          onChanged: (value) {
+                            _valueInventario = value;
+                            setState(() {});
+                          }),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      if (_valueInventario)
+                        InputField(
+                          labelText: 'Cantidad:',
+                          keyboardType: TextInputType.number,
+                          controller: controllerCantidad,
+                          enabled: args.disponible == null ? true : false,
+                        ),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      SwitchListTile.adaptive(
+                          title: const Text('Se puede apartar'),
+                          value: _valueApartado,
+                          onChanged: (value) {
+                            _valueApartado = value;
+                            setState(() {});
+                          }),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      Row(
+                        children: [
+                          (args.imagen == '' ||
+                                  args.imagen == null ||
+                                  _cambioImagen)
+                              ? Container(
+                                  decoration:
+                                      BoxDecoration(border: Border.all()),
+                                  width: windowWidth * 0.5,
+                                  height: windowHeight * 0.2,
+                                  child: (_rutaProducto.isNotEmpty)
+                                      ? SizedBox(
+                                          height: windowHeight * 0.15,
+                                          child: Image.file(
+                                            File(_rutaProducto),
+                                            fit: BoxFit.contain,
+                                          ),
+                                        )
+                                      : SizedBox(
+                                          height: windowHeight * 0.15,
                                         ),
-                                      )
-                                    : SizedBox(
-                                        height: windowHeight * 0.15,
-                                      ),
-                              )
-                            : Container(
-                                decoration: BoxDecoration(border: Border.all()),
-                                width: windowWidth * 0.5,
-                                height: windowHeight * 0.2,
-                                child: FadeInImage(
-                                  image: NetworkImage(args.imagen!),
-                                  placeholder:
-                                      const AssetImage('assets/loading.gif'),
+                                )
+                              : Container(
+                                  decoration:
+                                      BoxDecoration(border: Border.all()),
+                                  width: windowWidth * 0.5,
+                                  height: windowHeight * 0.2,
+                                  child: FadeInImage(
+                                    image: NetworkImage(args.imagen!),
+                                    placeholder:
+                                        const AssetImage('assets/loading.gif'),
+                                  ),
                                 ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextButton.icon(
+                                onPressed: (() {
+                                  fotoProducto(ImageSource.camera);
+                                }),
+                                icon: const Icon(Icons.camera_alt_outlined),
+                                label: const Text('Tomar foto'),
                               ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextButton.icon(
-                              onPressed: (() {
-                                fotoProducto(ImageSource.camera);
-                              }),
-                              icon: const Icon(Icons.camera_alt_outlined),
-                              label: const Text('Tomar foto'),
-                            ),
-                            TextButton.icon(
-                              onPressed: (() {
-                                fotoProducto(ImageSource.gallery);
-                              }),
-                              icon: const Icon(Icons.photo),
-                              label: const Text('Galería'),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    ElevatedButton(
-                        onPressed: () => _guardaProducto(),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.save),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Guardar',
-                            ),
-                          ],
-                        )),
-                    SizedBox(
-                      height: windowHeight * 0.08,
-                    ),
-                  ],
-                ),
-              ));
+                              TextButton.icon(
+                                onPressed: (() {
+                                  fotoProducto(ImageSource.gallery);
+                                }),
+                                icon: const Icon(Icons.photo),
+                                label: const Text('Galería'),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () => _guardaProducto(),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.save),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Guardar',
+                                  ),
+                                ],
+                              )),
+                          SizedBox(
+                            width: windowWidth * 0.05,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                globals.actualizaArticulos = true;
+                                Navigator.pushReplacementNamed(
+                                    context, 'productos');
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.cancel_outlined),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Cancelar',
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.08,
+                      ),
+                    ],
+                  ),
+                )),
+    );
   }
 
   Widget _categorias() {
