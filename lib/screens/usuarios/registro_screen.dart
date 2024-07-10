@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
-class RegistroEmpleadoScreen extends StatefulWidget {
-  const RegistroEmpleadoScreen({super.key});
+class RegistroScreen extends StatefulWidget {
+  const RegistroScreen({super.key});
 
   @override
-  State<RegistroEmpleadoScreen> createState() => _RegistroEmpleadoScreenState();
+  State<RegistroScreen> createState() => _RegistroScreenState();
 }
 
-class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
+class _RegistroScreenState extends State<RegistroScreen> {
   final usuariosProvider = UsuarioProvider();
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
@@ -25,7 +24,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
   bool passOculto1 = true;
   bool passOculto2 = true;
 
-  _registrarEmpleado() {
+  _registraUsuario() async {
     if (controllerNombre.text.isEmpty ||
         controllerEmail.text.isEmpty ||
         controllerTelefono.text.isEmpty ||
@@ -45,24 +44,16 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
         newUser.email = controllerEmail.text;
         newUser.telefono = controllerTelefono.text;
         usuariosProvider
-            .nuevoEmpleado(newUser, controllerPassword1.text)
+            .nuevoUsuario(newUser, controllerPassword1.text)
             .then((value) {
+          setState(() {
+            isLoading = false;
+          });
           if (value.status == 1) {
-            usuariosProvider.obtenerEmpleados().then((value) {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-                globals.actualizaEmpleados = true;
-              });
-              Navigator.pushReplacementNamed(context, 'config');
-
-              mostrarAlerta(context, '', 'Empleado registrado correctamente.');
-            });
+            Navigator.pushReplacementNamed(context, 'menu');
+            mostrarAlerta(context, 'Bienvenido',
+                '¡Bienvenido a Vendo Facil!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
           } else {
-            setState(() {
-              isLoading = false;
-              textLoading = '';
-            });
             mostrarAlerta(context, 'ERROR', value.mensaje!);
           }
         });
@@ -84,9 +75,10 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevo empleado'),
+        title: const Text('Nuevo usuario'),
       ),
       body: (isLoading)
           ? const Center(
@@ -128,7 +120,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.none,
                         obscureText: passOculto1,
-                        sufixIcon: IconButton(
+                        suffixIcon: IconButton(
                           icon: (passOculto1)
                               ? const Icon(Icons.visibility_off)
                               : const Icon(Icons.visibility),
@@ -146,7 +138,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.none,
                         obscureText: passOculto2,
-                        sufixIcon: IconButton(
+                        suffixIcon: IconButton(
                           icon: (passOculto2)
                               ? const Icon(Icons.visibility_off)
                               : const Icon(Icons.visibility),
@@ -163,7 +155,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          _registrarEmpleado();
+                          _registraUsuario();
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,

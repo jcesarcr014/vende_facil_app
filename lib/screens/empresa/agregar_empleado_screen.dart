@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
-class RegistroScreen extends StatefulWidget {
-  const RegistroScreen({super.key});
+class RegistroEmpleadoScreen extends StatefulWidget {
+  const RegistroEmpleadoScreen({super.key});
 
   @override
-  State<RegistroScreen> createState() => _RegistroScreenState();
+  State<RegistroEmpleadoScreen> createState() => _RegistroEmpleadoScreenState();
 }
 
-class _RegistroScreenState extends State<RegistroScreen> {
+class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
   final usuariosProvider = UsuarioProvider();
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
@@ -24,7 +25,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
   bool passOculto1 = true;
   bool passOculto2 = true;
 
-  _registraUsuario() async {
+  _registrarEmpleado() {
     if (controllerNombre.text.isEmpty ||
         controllerEmail.text.isEmpty ||
         controllerTelefono.text.isEmpty ||
@@ -44,16 +45,24 @@ class _RegistroScreenState extends State<RegistroScreen> {
         newUser.email = controllerEmail.text;
         newUser.telefono = controllerTelefono.text;
         usuariosProvider
-            .nuevoUsuario(newUser, controllerPassword1.text)
+            .nuevoEmpleado(newUser, controllerPassword1.text)
             .then((value) {
-          setState(() {
-            isLoading = false;
-          });
           if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'menu');
-            mostrarAlerta(context, 'Bienvenido',
-                '¡Bienvenido a Vendo Facil!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
+            usuariosProvider.obtenerEmpleados().then((value) {
+              setState(() {
+                isLoading = false;
+                textLoading = '';
+                globals.actualizaEmpleados = true;
+              });
+              Navigator.pushReplacementNamed(context, 'config');
+
+              mostrarAlerta(context, '', 'Empleado registrado correctamente.');
+            });
           } else {
+            setState(() {
+              isLoading = false;
+              textLoading = '';
+            });
             mostrarAlerta(context, 'ERROR', value.mensaje!);
           }
         });
@@ -75,10 +84,9 @@ class _RegistroScreenState extends State<RegistroScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevo usuario'),
+        title: const Text('Nuevo empleado'),
       ),
       body: (isLoading)
           ? const Center(
@@ -120,7 +128,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.none,
                         obscureText: passOculto1,
-                        sufixIcon: IconButton(
+                        suffixIcon: IconButton(
                           icon: (passOculto1)
                               ? const Icon(Icons.visibility_off)
                               : const Icon(Icons.visibility),
@@ -138,7 +146,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.none,
                         obscureText: passOculto2,
-                        sufixIcon: IconButton(
+                        suffixIcon: IconButton(
                           icon: (passOculto2)
                               ? const Icon(Icons.visibility_off)
                               : const Icon(Icons.visibility),
@@ -155,7 +163,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          _registraUsuario();
+                          _registrarEmpleado();
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -5,36 +5,36 @@ class InputField extends StatelessWidget {
   final String? labelText;
   final String? helperText;
   final IconData? icon;
-  final Widget? sufixIcon;
+  final Widget? suffixIcon; // corregido el nombre sufixIcon a suffixIcon
   final TextInputType? keyboardType;
-  final Function(String)? onChangeText;
-  final TextCapitalization? textCapitalization;
-  final bool? obscureText;
-  final bool? readOnly;
-  final bool? enabled; // Añadimos la propiedad enabled
+  final Function(String)? onChanged;
+  final TextCapitalization textCapitalization;
+  final bool obscureText;
+  final bool readOnly;
+  final bool enabled;
   final TextEditingController controller;
   final Map<String, String>? formValues;
   final String? Function(String?)? validator;
   final String? errorText;
 
   const InputField({
-    super.key,
+    Key? key,
     this.hintText,
     this.labelText,
     this.helperText,
     this.icon,
-    this.sufixIcon,
+    this.suffixIcon,
     this.keyboardType,
-    this.textCapitalization,
-    this.obscureText,
-    this.formValues,
-    this.readOnly,
+    this.textCapitalization = TextCapitalization.none,
+    this.obscureText = false,
+    this.readOnly = false,
+    this.enabled = true,
     required this.controller,
-    this.onChangeText,
+    this.onChanged,
     this.validator,
     this.errorText,
-    this.enabled, // Agregamos enabled al constructor
-  });
+    this.formValues,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,20 +42,21 @@ class InputField extends StatelessWidget {
       controller: controller,
       autofocus: false,
       validator: validator,
-      initialValue: null,
-      readOnly: readOnly ?? false,
-      enabled: enabled ?? true, // Usamos la propiedad enabled en el TextFormField
-      textCapitalization: textCapitalization ?? TextCapitalization.none,
+      readOnly: readOnly,
+      enabled: enabled,
+      textCapitalization: textCapitalization,
       keyboardType: keyboardType ?? TextInputType.text,
-      obscureText: obscureText ?? false,
+      obscureText: obscureText,
+      onChanged: onChanged,
       decoration: InputDecoration(
         border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
         hintText: hintText,
         labelText: labelText,
         errorText: errorText,
         helperText: helperText,
-        suffixIcon: sufixIcon,
+        suffixIcon: suffixIcon,
         icon: icon == null ? null : Icon(icon),
       ),
     );

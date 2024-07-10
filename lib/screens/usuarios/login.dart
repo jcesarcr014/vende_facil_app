@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           InputField(
                               icon: Icons.password,
                               obscureText: passOculto1,
-                              sufixIcon: IconButton(
+                              suffixIcon: IconButton(
                                 icon: (passOculto1)
                                     ? const Icon(Icons.visibility_off)
                                     : const Icon(Icons.visibility),
@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'Contraseña',
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'El la contraseña es obligatoria';
+                                  return 'La contraseña es obligatoria';
                                 }
                                 return null;
                               },

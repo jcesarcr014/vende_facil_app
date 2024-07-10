@@ -29,6 +29,8 @@ class UsuarioProvider {
         sesion.idNegocio = decodedData['empresa_id'];
         sesion.tipoUsuario = decodedData['tipo_usuario'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
+        sesion.email = decodedData['usuario']['email'];
+        sesion.telefono = decodedData['usuario']['phone'];
         suscripcionActual.id = decodedData['suscripcion']['id'];
         suscripcionActual.idUsuario =
             decodedData['suscripcion']['id_usuario_app'];
@@ -49,6 +51,7 @@ class UsuarioProvider {
     var url = Uri.parse('$baseUrl/usuario-info');
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
+
     if (token == null || token.isEmpty) {
       respuesta.status = 0;
       respuesta.mensaje = 'No hay token';
@@ -108,7 +111,6 @@ class UsuarioProvider {
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
-        sesion.nombreUsuario = decodedData['usuario']['name'];
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
@@ -175,9 +177,9 @@ class UsuarioProvider {
     return respuesta;
   }
 
-  Future<Resultado> editaPassword(
-      String oldPass, String newPass, int idUser) async {
-    var url = Uri.parse('$baseUrl/usuario-cambiar-contrasena/$idUser');
+  Future<Resultado> editaPassword(String oldPass, String newPass) async {
+    var url =
+        Uri.parse('$baseUrl/usuario-cambiar-contrasena/${sesion.idUsuario}');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -270,6 +272,7 @@ class UsuarioProvider {
           usuarioTemp.email = decodedData['data'][x]['email'];
           usuarioTemp.telefono = decodedData['data'][x]['phone'];
           usuarioTemp.tipoUsuario = decodedData['data'][x]['tipo'];
+          usuarioTemp.estatus = decodedData['data'][x]['estatus'];
           listaUsuarios.add(usuarioTemp);
         }
       } else {
@@ -301,8 +304,78 @@ class UsuarioProvider {
           empleadoTemp.email = decodedData['data'][x]['email'];
           empleadoTemp.telefono = decodedData['data'][x]['phone'];
           empleadoTemp.tipoUsuario = decodedData['data'][x]['tipo'];
+          empleadoTemp.estatus = decodedData['data'][x]['estatus'];
           listaEmpleados.add(empleadoTemp);
         }
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> estatusEmpleado(int id, String estatus) async {
+    var url = Uri.parse('$baseUrl/empleado-estatus/${sesion.idUsuario}');
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'id_usuario_empleado': id.toString(),
+        'estatus': estatus,
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> cambiaPasswordEmpleado(int idEmpleado, String pass) async {
+    var url = Uri.parse('$baseUrl/empleado-contrasena/${sesion.idUsuario}');
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'id_usuario_empleado': idEmpleado.toString(),
+        'new_pass': pass,
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> eliminaEmpleado(int id) async {
+    var url = Uri.parse('$baseUrl/empleado-eliminar/$id');
+    try {
+      final resp = await http.delete(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

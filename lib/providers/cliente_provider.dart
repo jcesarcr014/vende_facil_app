@@ -53,7 +53,7 @@ class ClienteProvider {
           Cliente clienteTemp = Cliente();
           clienteTemp.id = decodedData['data'][x]['id'];
           clienteTemp.nombre = decodedData['data'][x]['nombre'];
-          clienteTemp.correo = decodedData['data'][x]['email'];
+          clienteTemp.correo = decodedData['data'][x]['correoñ'];
           clienteTemp.telefono = decodedData['data'][x]['telefono'];
           clienteTemp.direccion = decodedData['data'][x]['direccion'];
           clienteTemp.ciudad = decodedData['data'][x]['ciudad'];

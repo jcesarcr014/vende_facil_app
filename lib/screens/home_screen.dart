@@ -373,14 +373,14 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (!existe) {
         ventaTemporal.add(ItemVenta(
-          idArticulo: producto.id!,
-          cantidad: 1,
-          precio: producto.precio!,
-          idDescuento: 0,
-          descuento: 0,
-          subTotalItem: producto.precio!,
-          totalItem: producto.precio!,
-        ));
+            idArticulo: producto.id!,
+            cantidad: 1,
+            precio: producto.precio!,
+            idDescuento: 0,
+            descuento: 0,
+            subTotalItem: producto.precio!,
+            totalItem: producto.precio!,
+            apartado: (producto.apartado == 1) ? true : false));
       }
       _actualizaTotalTemporal();
     } else {
@@ -395,14 +395,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         if (!existe) {
           ventaTemporal.add(ItemVenta(
-            idArticulo: producto.id!,
-            cantidad: cantidad,
-            precio: producto.precio!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: producto.precio!,
-            totalItem: producto.precio! * cantidad,
-          ));
+              idArticulo: producto.id!,
+              cantidad: cantidad,
+              precio: producto.precio!,
+              idDescuento: 0,
+              descuento: 0,
+              subTotalItem: producto.precio!,
+              totalItem: producto.precio! * cantidad,
+              apartado: (producto.apartado == 1) ? true : false));
         }
         _actualizaTotalTemporal();
       } else {}
