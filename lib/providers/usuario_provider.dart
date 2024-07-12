@@ -63,7 +63,6 @@ class UsuarioProvider {
         'Authorization': 'Bearer $token',
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

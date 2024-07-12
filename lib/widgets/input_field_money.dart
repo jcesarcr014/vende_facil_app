@@ -1,5 +1,6 @@
+// ignore_for_file: unused_local_variable, library_private_types_in_public_api, use_super_parameters
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 
 class InputFieldMoney extends StatefulWidget {

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
@@ -305,21 +307,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
         onChanged: (value) {
           _valueIdEmpleado = value.toString();
           if (value == sesion.idUsuario.toString()) {
-            print("entro");
             _valueIdEmpleado = sesion.idUsuario.toString();
-            print(_valueIdEmpleado);
             setState(() {});
             _consultarVentas();
           } else {
             Usuario empleadoSeleccionado = listaEmpleados
                 .firstWhere((empleado) => empleado.id.toString() == value);
             if (empleadoSeleccionado.id == 0) {
-              print("entro 2");
               _valueIdEmpleado = '0';
               setState(() {});
               _consultarVentas();
             } else {
-              print("entro 3");
               _valueIdEmpleado = empleadoSeleccionado.id.toString();
               setState(() {});
               _consultarVentas();

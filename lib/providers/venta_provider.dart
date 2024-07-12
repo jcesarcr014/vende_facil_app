@@ -9,17 +9,6 @@ class VentasProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> guardarVenta(VentaCabecera venta) async {
-    print('Guardando venta...');
-    print('Id negocio: ${sesion.idNegocio}');
-    print('Id usuario: ${sesion.idUsuario}');
-    print('Id cliente: ${venta.idCliente}');
-    print('Subtotal: ${venta.subtotal}');
-    print('descuento_id: ${venta.idDescuento}');
-    print('Descuento: ${venta.descuento}');
-    print('Total: ${venta.total}');
-    print('Pago efectivo: ${venta.importeEfectivo}');
-    print('Pago tarjeta: ${venta.importeTarjeta}');
-    print('Id descuento: ${venta.idDescuento}');
     var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
     try {
       final resp = await http.post(url, headers: {
@@ -41,16 +30,13 @@ class VentasProvider {
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['venta_id'];
         respuesta.folio = decodedData['folio'];
-        print('Venta guardada con exito. ${decodedData['msg']}');
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
-        print('Error en la peticion. ${decodedData['msg']}');
       }
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
-      print('Error en la peticion. $e');
     }
 
     return respuesta;
@@ -207,7 +193,6 @@ class VentasProvider {
   }
 
   Future<Resultado> consultarVentasFecha(String inicio, String finalF) async {
-    print(sesion.idNegocio);
     listaVentaCabecera.clear();
     var url = Uri.parse(
         '$baseUrl/reporte-fecha-general/$inicio/$finalF/${sesion.idNegocio}');

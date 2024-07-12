@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -117,7 +119,35 @@ class NegocioProvider {
 
     return respuesta;
   }
+  Future<Resultado>addSucursal(Sucursale sucur)async{
+    var url = Uri.parse('$baseUrl/sucursal/${sesion.idUsuario}');
+    try {
+      final resp = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'negocio_id': sesion.idNegocio!.toString(),
+        'nombre_sucursal': sucur.nombreSucursal,
+        'direccion': sucur.direccion,
+        'telefono': sucur.telefono,
+      });
+      final decodedData = jsonDecode(resp.body);
 
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        sesion.idNegocio = decodedData['empresa_id'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    
+
+   return respuesta;
+  }
   Future<Resultado> getlistaSucursales() async {
     listaSucursales.clear();
     var url = Uri.parse('$baseUrl/sucursal/${sesion.idNegocio}');
@@ -148,4 +178,5 @@ class NegocioProvider {
     }
     return respuesta;
   }
+
 }

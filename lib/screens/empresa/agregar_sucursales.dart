@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/globals.dart';
+import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class RegistroSucursalesScreen extends StatefulWidget {
@@ -7,11 +9,13 @@ class RegistroSucursalesScreen extends StatefulWidget {
 
   @override
   State<RegistroSucursalesScreen> createState() =>
-      _RegistroEmpleadoScreenState();
+      _RegistroSucursalesScreenState();
 }
 
-class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
+class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
+  final negocio = NegocioProvider();
   final text = TextEditingController();
+  final funcion = TextEditingController();
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
   final controllerTelefono = TextEditingController();
@@ -24,12 +28,14 @@ class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
   void initState() {
     if (estatus) {
       text.text = "Nueva Sucursal";
+      funcion.text = "Registrarse";
       setState(() {});
     } else {
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
       controllerEmail.text = sucursalSeleccionado.direccion!;
       controllerTelefono.text = sucursalSeleccionado.telefono!;
       text.text = "Editar Sucursal";
+      funcion.text = "Editar";
       setState(() {});
     }
     super.initState();
@@ -48,9 +54,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(text.text)
-      ),
+      appBar: AppBar(title: Text(text.text)),
       body: (isLoading)
           ? const Center(
               child: CircularProgressIndicator(),
@@ -89,15 +93,39 @@ class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
                       height: windowHeight * 0.10,
                     ),
                     ElevatedButton(
-                        onPressed: () {},
-                        child: const Row(
+                        onPressed: () {
+                          if (estatus) {
+                            Sucursale nueva = Sucursale();
+                            nueva.negocioId = sesion.idNegocio;
+                            nueva.nombreSucursal = controllerNombre.text;
+                            nueva.direccion = controllerEmail.text;
+                            nueva.telefono = controllerTelefono.text;
+                            negocio.addSucursal(nueva).then((value) {
+                              setState(() {
+                                textLoading = '';
+                                isLoading = false;
+                                actualizaSucursales = true;
+                              });
+                            if (value.status == 1) {
+                                setState(() {
+                                  Navigator.pushReplacementNamed(context, 'home');
+                                });
+
+                               mostrarAlerta(context, '', value.mensaje!);
+                           } else {
+                              mostrarAlerta(context, 'ERROR', value.mensaje!);
+                             }
+                            });
+                          } else {}
+                        },
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.save),
-                            SizedBox(
+                            const Icon(Icons.save),
+                            const SizedBox(
                               width: 10,
                             ),
-                            Text('Registrarse'),
+                            Text(funcion.text),
                           ],
                         ))
                   ],
