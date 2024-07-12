@@ -52,7 +52,6 @@ class ArticuloProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
@@ -81,7 +80,6 @@ class ArticuloProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
     }
-    print(respuesta.mensaje);
     return respuesta;
   }
 

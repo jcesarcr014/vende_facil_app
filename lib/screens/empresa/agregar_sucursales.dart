@@ -1,73 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class RegistroSucursalesScreen extends StatefulWidget {
   const RegistroSucursalesScreen({super.key});
 
   @override
-  State<RegistroSucursalesScreen> createState() => _RegistroEmpleadoScreenState();
+  State<RegistroSucursalesScreen> createState() =>
+      _RegistroEmpleadoScreenState();
 }
 
 class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
-  final usuariosProvider = UsuarioProvider();
+  final text = TextEditingController();
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
   final controllerTelefono = TextEditingController();
-  final controllerPassword1 = TextEditingController();
-  final controllerPassword2 = TextEditingController();
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+  bool estatus = (sucursalSeleccionado.nombreSucursal == null) ? true : false;
   bool isLoading = false;
   String textLoading = '';
-  bool passOculto1 = true;
-  bool passOculto2 = true;
-
-  _registrarEmpleado() {
-    if (controllerNombre.text.isEmpty ||
-        controllerEmail.text.isEmpty ||
-        controllerTelefono.text.isEmpty ||
-        controllerPassword1.text.isEmpty ||
-        controllerPassword2.text.isEmpty) {
-      mostrarAlerta(context, 'ERROR', 'Todos los campos son requeridos');
+  @override
+  void initState() {
+    if (estatus) {
+      text.text = "Nueva Sucursal";
+      setState(() {});
     } else {
-      if (controllerPassword1.text != controllerPassword2.text) {
-        mostrarAlerta(context, 'ERROR', 'Las contraseñas no coinciden');
-      } else {
-        setState(() {
-          textLoading = 'Guardando información';
-          isLoading = true;
-        });
-        Usuario newUser = Usuario();
-        newUser.nombre = controllerNombre.text;
-        newUser.email = controllerEmail.text;
-        newUser.telefono = controllerTelefono.text;
-        usuariosProvider
-            .nuevoEmpleado(newUser, controllerPassword1.text)
-            .then((value) {
-          if (value.status == 1) {
-            usuariosProvider.obtenerEmpleados().then((value) {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-                globals.actualizaEmpleados = true;
-              });
-              Navigator.pushReplacementNamed(context, 'config');
-
-              mostrarAlerta(context, '', 'Empleado registrado correctamente.');
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-              textLoading = '';
-            });
-            mostrarAlerta(context, 'ERROR', value.mensaje!);
-          }
-        });
-      }
+      controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
+      controllerEmail.text = sucursalSeleccionado.direccion!;
+      controllerTelefono.text = sucursalSeleccionado.telefono!;
+      text.text = "Editar Sucursal";
+      setState(() {});
     }
+    super.initState();
   }
 
   @override
@@ -75,8 +40,6 @@ class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
     controllerNombre.dispose();
     controllerEmail.dispose();
     controllerTelefono.dispose();
-    controllerPassword1.dispose();
-    controllerPassword2.dispose();
     super.dispose();
   }
 
@@ -86,7 +49,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevo empleado'),
+        title: Text(text.text)
       ),
       body: (isLoading)
           ? const Center(
@@ -126,9 +89,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroSucursalesScreen> {
                       height: windowHeight * 0.10,
                     ),
                     ElevatedButton(
-                        onPressed: () {
-                          _registrarEmpleado();
-                        },
+                        onPressed: () {},
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

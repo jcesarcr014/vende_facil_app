@@ -18,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final clientesProvider = ClienteProvider();
   final descuentosProvider = DescuentoProvider();
   final apartadoProvider = ApartadoProvider();
+  final negocios = NegocioProvider();
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   String textLoading = '';
@@ -46,6 +47,13 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaUsuarios = false;
           } else {
             globals.actualizaUsuarios = true;
+          }
+        });
+        negocios.getlistaSucursales().then((value) {
+           if (value.status == 1) {
+            globals.actualizaSucursales = false;
+          } else {
+            globals.actualizaSucursales = true;
           }
         });
         await usuariosProvider.obtenerEmpleados().then((value) {

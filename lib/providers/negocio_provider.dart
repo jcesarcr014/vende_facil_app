@@ -117,4 +117,35 @@ class NegocioProvider {
 
     return respuesta;
   }
+
+  Future<Resultado> getlistaSucursales() async {
+    listaSucursales.clear();
+    var url = Uri.parse('$baseUrl/sucursal/${sesion.idNegocio}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+        for (int i = 0; i < decodedData['data'].length; i++) {
+          Sucursale Surcusal = Sucursale();
+          Surcusal.id = decodedData['data'][i]['id'];
+          Surcusal.negocioId = decodedData['data'][i]['negocio_id'];
+          Surcusal.nombreSucursal = decodedData['data'][i]['nombre_sucursal'];
+          Surcusal.direccion = decodedData['data'][i]['direccion'];
+          Surcusal.telefono = decodedData['data'][i]['telefono'];
+          listaSucursales.add(Surcusal);
+        }
+      }else{
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
 }

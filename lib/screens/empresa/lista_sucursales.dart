@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/models/usuario_model.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -13,7 +12,7 @@ class ListaSucursalesScreen extends StatefulWidget {
 }
 
 class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
-  final usuarioProvider = UsuarioProvider();
+  final negocios = NegocioProvider();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -21,12 +20,12 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaEmpleados) {
+    if (globals.actualizaSucursales) {
       setState(() {
         textLoading = 'Leyendo empleados';
         isLoading = true;
       });
-      usuarioProvider.obtenerEmpleados().then((value) {
+      negocios.getlistaSucursales().then((value) {
         setState(() {
           textLoading = '';
           isLoading = false;
@@ -72,6 +71,7 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
                         EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
                     child: ElevatedButton(
                       onPressed: () {
+                        sucursalSeleccionado.limpiar();
                         Navigator.pushNamed(context, 'registro-sucursale');
                       },
                       child: const Row(
@@ -100,24 +100,30 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
 
   _empleados() {
     List<Widget> empleados = [];
-    for (int i = 0; i < listaEmpleados.length; i++) {
-      Usuario empleado = listaEmpleados[i];
+    for (int i = 0; i < listaSucursales.length; i++) {
+      Sucursale sucursale = listaSucursales[i];
       empleados.add(
         ListTile(
-          leading: const Icon(Icons.account_circle_rounded),
+          leading: const Icon(Icons.home),
           title: Text(
-            empleado.nombre!,
+            sucursale.nombreSucursal!,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text(empleado.email!),
+          subtitle: Text(sucursale.direccion!),
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
-            empleadoSeleccionado = empleado;
-            Navigator.pushNamed(context, 'perfil-empleado');
+            sucursalSeleccionado.asignarValores(
+              id:sucursale.id!,
+              negocioId:sucursale.negocioId,
+              nombreSucursal:sucursale.nombreSucursal,
+              direccion:sucursale.direccion,
+              telefono:sucursale.telefono,
+            );
+            Navigator.pushNamed(context, 'registro-sucursale');
           },
         ),
       );
