@@ -54,7 +54,33 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(title: Text(text.text)),
+      appBar: AppBar(
+        title: Text(text.text),
+        actions: [
+          if (!estatus)
+            IconButton(
+                onPressed: () {
+                  negocio.deleteSUcursal(sucursalSeleccionado).then((value) {
+                              setState(() {
+                                textLoading = '';
+                                isLoading = false;
+                                actualizaSucursales = true;
+                              });
+                              if (value.status == 1) {
+                                setState(() {
+                                  Navigator.pushReplacementNamed(
+                                      context, 'lista-sucursales');
+                                });
+
+                                mostrarAlerta(context, '', value.mensaje!);
+                              } else {
+                                mostrarAlerta(context, 'ERROR', value.mensaje!);
+                              }
+                  });
+                },
+                icon: const Icon(Icons.delete))
+        ],
+      ),
       body: (isLoading)
           ? const Center(
               child: CircularProgressIndicator(),
@@ -106,17 +132,42 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                                 isLoading = false;
                                 actualizaSucursales = true;
                               });
-                            if (value.status == 1) {
+                              if (value.status == 1) {
                                 setState(() {
-                                  Navigator.pushReplacementNamed(context, 'home');
+                                  Navigator.pushReplacementNamed(
+                                      context, 'lista-sucursales');
                                 });
 
-                               mostrarAlerta(context, '', value.mensaje!);
-                           } else {
-                              mostrarAlerta(context, 'ERROR', value.mensaje!);
-                             }
+                                mostrarAlerta(context, '', value.mensaje!);
+                              } else {
+                                mostrarAlerta(context, 'ERROR', value.mensaje!);
+                              }
                             });
-                          } else {}
+                          } else {
+                            Sucursale nueva = Sucursale();
+                            nueva.id = sucursalSeleccionado.id;
+                            nueva.negocioId = sucursalSeleccionado.negocioId;
+                            nueva.nombreSucursal = controllerNombre.text;
+                            nueva.direccion = controllerEmail.text;
+                            nueva.telefono = controllerTelefono.text;
+                            negocio.editarSUcursal(nueva).then((value) {
+                              setState(() {
+                                textLoading = '';
+                                isLoading = false;
+                                actualizaSucursales = true;
+                              });
+                              if (value.status == 1) {
+                                setState(() {
+                                  Navigator.pushReplacementNamed(
+                                      context, 'lista-sucursales');
+                                });
+
+                                mostrarAlerta(context, '', value.mensaje!);
+                              } else {
+                                mostrarAlerta(context, 'ERROR', value.mensaje!);
+                              }
+                            });
+                          }
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
