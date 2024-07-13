@@ -36,7 +36,7 @@ class _TicketScreenState extends State<TicketScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Perfil'),
+        title: const Text('Ticket'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -44,18 +44,6 @@ class _TicketScreenState extends State<TicketScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              if (_image != null || _webImage != null)
-                Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: kIsWeb
-                          ? NetworkImage(_webImage!)
-                          : FileImage(_image!) as ImageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
               const SizedBox(height: 20),
               TextField(
                 controller: _nameController,
