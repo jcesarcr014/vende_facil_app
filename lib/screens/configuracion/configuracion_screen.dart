@@ -94,7 +94,9 @@ class ConfigScreen extends StatelessWidget {
                   ),
                   subtitle: const Text('Configura tu ticket de compra'),
                   trailing: const Icon(Icons.arrow_right),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, 'ticket');
+                  },
                 )
                 :Container(),
               ],

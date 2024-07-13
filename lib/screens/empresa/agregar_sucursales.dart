@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/globals.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class RegistroSucursalesScreen extends StatefulWidget {
   const RegistroSucursalesScreen({super.key});
@@ -64,7 +64,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                               setState(() {
                                 textLoading = '';
                                 isLoading = false;
-                                actualizaSucursales = true;
+                                globals.actualizaSucursales = true;
                               });
                               if (value.status == 1) {
                                 setState(() {
@@ -130,15 +130,15 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                               setState(() {
                                 textLoading = '';
                                 isLoading = false;
-                                actualizaSucursales = true;
+                                globals.actualizaSucursales = true;
                               });
                               if (value.status == 1) {
                                 setState(() {
-                                  Navigator.pushReplacementNamed(
+                                  Navigator.pop(
                                       context, 'lista-sucursales');
+                                      
+                                  mostrarAlerta(context, '', value.mensaje!);
                                 });
-
-                                mostrarAlerta(context, '', value.mensaje!);
                               } else {
                                 mostrarAlerta(context, 'ERROR', value.mensaje!);
                               }
@@ -154,11 +154,11 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                               setState(() {
                                 textLoading = '';
                                 isLoading = false;
-                                actualizaSucursales = true;
                               });
                               if (value.status == 1) {
                                 setState(() {
-                                  Navigator.pushReplacementNamed(
+                                   globals.actualizaSucursales = false;
+                                  Navigator.pop(
                                       context, 'lista-sucursales');
                                 });
 

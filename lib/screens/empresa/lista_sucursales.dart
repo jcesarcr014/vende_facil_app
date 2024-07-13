@@ -22,7 +22,7 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
   void initState() {
     if (globals.actualizaSucursales) {
       setState(() {
-        textLoading = 'Leyendo empleados';
+        textLoading = 'Leyendo Surcursales';
         isLoading = true;
       });
       negocios.getlistaSucursales().then((value) {
@@ -117,11 +117,11 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
             sucursalSeleccionado.asignarValores(
-              id:sucursale.id!,
-              negocioId:sucursale.negocioId,
-              nombreSucursal:sucursale.nombreSucursal,
-              direccion:sucursale.direccion,
-              telefono:sucursale.telefono,
+              id: sucursale.id!,
+              negocioId: sucursale.negocioId,
+              nombreSucursal: sucursale.nombreSucursal,
+              direccion: sucursale.direccion,
+              telefono: sucursale.telefono,
             );
             Navigator.pushNamed(context, 'registro-sucursale');
           },

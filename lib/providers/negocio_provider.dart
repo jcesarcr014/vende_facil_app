@@ -121,8 +121,8 @@ class NegocioProvider {
   }
 
   Future<Resultado> deleteSUcursal(Sucursale sucur) async {
-     var url = Uri.parse('$baseUrl/sucursal/${sucur.id}');
-         try {
+    var url = Uri.parse('$baseUrl/sucursal/${sucur.id}');
+    try {
       final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
@@ -138,8 +138,9 @@ class NegocioProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
     }
-      return respuesta;
+    return respuesta;
   }
+
   Future<Resultado> editarSUcursal(Sucursale sucur) async {
     var url = Uri.parse('$baseUrl/sucursal/${sucur.id}');
     try {
