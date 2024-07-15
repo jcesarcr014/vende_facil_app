@@ -24,6 +24,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   bool estatus = (sucursalSeleccionado.nombreSucursal == null) ? true : false;
   bool isLoading = false;
   String textLoading = '';
+  String _valueIdEmpleado = '0';
+  
   @override
   void initState() {
     if (estatus) {
@@ -116,7 +118,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                         labelText: 'Telefono',
                         controller: controllerTelefono),
                     SizedBox(
-                      height: windowHeight * 0.10,
+                      height: windowWidth * 0.1,
                     ),
                     ElevatedButton(
                         onPressed: () {
@@ -134,11 +136,10 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                               });
                               if (value.status == 1) {
                                 setState(() {
-                                  Navigator.pop(
+                                  Navigator.pushReplacementNamed(
                                       context, 'lista-sucursales');
-                                      
-                                  mostrarAlerta(context, '', value.mensaje!);
                                 });
+                                 mostrarAlerta(context, '', value.mensaje!);
                               } else {
                                 mostrarAlerta(context, 'ERROR', value.mensaje!);
                               }
@@ -154,14 +155,13 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                               setState(() {
                                 textLoading = '';
                                 isLoading = false;
+                                globals.actualizaSucursales = true;
                               });
                               if (value.status == 1) {
                                 setState(() {
-                                   globals.actualizaSucursales = false;
-                                  Navigator.pop(
+                                  Navigator.pushReplacementNamed(
                                       context, 'lista-sucursales');
                                 });
-
                                 mostrarAlerta(context, '', value.mensaje!);
                               } else {
                                 mostrarAlerta(context, 'ERROR', value.mensaje!);
@@ -178,11 +178,66 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             ),
                             Text(funcion.text),
                           ],
-                        ))
+                        )),
+                        const Divider(),
+                        Row(children: [
+                          SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Selecione el Empleado',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
+                    Expanded(
+                      child: _empleado(),
+                    ),
+                        ],)
+                        
                   ],
                 ),
               ),
             ),
     );
   }
+  _empleado() {
+      var listades = [
+        const DropdownMenuItem(
+          value: '0',
+          child: SizedBox(child: Text('Todos')),
+        )
+      ];
+      for (Usuario empleado in listaEmpleados) {
+        listades.add(DropdownMenuItem(
+            value: empleado.id.toString(), child: Text(empleado.nombre!)));
+      }
+      if (_valueIdEmpleado.isEmpty) {
+        _valueIdEmpleado = '0';
+      }
+      return DropdownButton(
+        items: listades,
+        isExpanded: true,
+        value: _valueIdEmpleado,
+        onChanged: (value) {
+          _valueIdEmpleado = value!;
+          if (value == "0") {
+
+          } else {
+            Usuario empleadoSeleccionado = listaEmpleados
+                .firstWhere((empleado) => empleado.id.toString() == value);
+            if (empleadoSeleccionado.id == 0) {
+              _valueIdEmpleado = '0';
+              setState(() {});
+            } else {
+              _valueIdEmpleado = empleadoSeleccionado.id.toString();
+              setState(() {});
+            }
+          }
+        },
+      );
+    
+  }
+
+
 }

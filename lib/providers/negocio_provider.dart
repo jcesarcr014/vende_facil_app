@@ -157,7 +157,6 @@ class NegocioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        sesion.idNegocio = decodedData['empresa_id'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -185,7 +184,6 @@ class NegocioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        sesion.idNegocio = decodedData['empresa_id'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
