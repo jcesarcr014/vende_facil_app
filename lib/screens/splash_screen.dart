@@ -49,11 +49,18 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaUsuarios = true;
           }
         });
-        negocios.getlistaSucursales().then((value) {
-           if (value.status == 1) {
+        await negocios.getlistaSucursales().then((value) {
+          if (value.status == 1) {
             globals.actualizaSucursales = false;
           } else {
             globals.actualizaSucursales = true;
+          }
+        });
+        await negocios.getlistaempleadosEnsucursales().then((value) {
+          if (value.status == 1) {
+            globals.actualizarEmpleadoSucursales = false;
+          } else {
+            globals.actualizarEmpleadoSucursales = true;
           }
         });
         await usuariosProvider.obtenerEmpleados().then((value) {
@@ -93,6 +100,7 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaClientes = true;
           }
         });
+
         await descuentosProvider.listarDescuentos().then((value) {
           if (value.status == 1) {
             globals.actualizaDescuentos = false;

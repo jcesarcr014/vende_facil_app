@@ -255,7 +255,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   _empleado() {
-    print(sesion.tipoUsuario);
     if (sesion.tipoUsuario == "p") {
       var listades = [
         const DropdownMenuItem(

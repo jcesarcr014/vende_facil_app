@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -25,7 +27,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   bool isLoading = false;
   String textLoading = '';
   String _valueIdEmpleado = '0';
-  
+  List<SucursalEmpleado> resultadosFiltrados = [];
+
   @override
   void initState() {
     if (estatus) {
@@ -33,6 +36,10 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       funcion.text = "Registrarse";
       setState(() {});
     } else {
+      resultadosFiltrados.clear();
+      resultadosFiltrados = listasucursalEmpleado
+          .where((element) => element.usuarioId == sucursalSeleccionado.id)
+          .toList();
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
       controllerEmail.text = sucursalSeleccionado.direccion!;
       controllerTelefono.text = sucursalSeleccionado.telefono!;
@@ -63,21 +70,21 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
             IconButton(
                 onPressed: () {
                   negocio.deleteSUcursal(sucursalSeleccionado).then((value) {
-                              setState(() {
-                                textLoading = '';
-                                isLoading = false;
-                                globals.actualizaSucursales = true;
-                              });
-                              if (value.status == 1) {
-                                setState(() {
-                                  Navigator.pushReplacementNamed(
-                                      context, 'lista-sucursales');
-                                });
+                    setState(() {
+                      textLoading = '';
+                      isLoading = false;
+                      globals.actualizaSucursales = true;
+                    });
+                    if (value.status == 1) {
+                      setState(() {
+                        Navigator.pushReplacementNamed(
+                            context, 'lista-sucursales');
+                      });
 
-                                mostrarAlerta(context, '', value.mensaje!);
-                              } else {
-                                mostrarAlerta(context, 'ERROR', value.mensaje!);
-                              }
+                      mostrarAlerta(context, '', value.mensaje!);
+                    } else {
+                      mostrarAlerta(context, 'ERROR', value.mensaje!);
+                    }
                   });
                 },
                 icon: const Icon(Icons.delete))
@@ -88,9 +95,11 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
               child: CircularProgressIndicator(),
             )
           : SingleChildScrollView(
+              scrollDirection: Axis.vertical,
               padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
               child: Center(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
                       height: windowHeight * 0.10,
@@ -98,7 +107,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                     InputField(
                         textCapitalization: TextCapitalization.words,
                         icon: Icons.holiday_village,
-                        labelText: 'Nombre de la surcursal',
+                        labelText: 'Nombre de la sucursal',
                         controller: controllerNombre),
                     SizedBox(
                       height: windowHeight * 0.03,
@@ -107,7 +116,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                         textCapitalization: TextCapitalization.none,
                         keyboardType: TextInputType.emailAddress,
                         icon: Icons.gps_fixed_outlined,
-                        labelText: 'Dirrecion',
+                        labelText: 'Dirección',
                         controller: controllerEmail),
                     SizedBox(
                       height: windowHeight * 0.03,
@@ -115,7 +124,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                     InputField(
                         keyboardType: TextInputType.phone,
                         icon: Icons.smartphone,
-                        labelText: 'Telefono',
+                        labelText: 'Teléfono',
                         controller: controllerTelefono),
                     SizedBox(
                       height: windowWidth * 0.1,
@@ -139,7 +148,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                                   Navigator.pushReplacementNamed(
                                       context, 'lista-sucursales');
                                 });
-                                 mostrarAlerta(context, '', value.mensaje!);
+                                mostrarAlerta(context, '', value.mensaje!);
                               } else {
                                 mostrarAlerta(context, 'ERROR', value.mensaje!);
                               }
@@ -179,65 +188,222 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             Text(funcion.text),
                           ],
                         )),
-                        const Divider(),
-                        Row(children: [
-                          SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        'Selecione el Empleado',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    const Divider(),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: windowWidth * 0.2,
+                          child: const Text(
+                            'Seleccione el Empleado',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: windowWidth * 0.1),
+                        Expanded(
+                          child: _empleado(),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final screenWidth =
+                                MediaQuery.of(context).size.width;
+                            final columnSpacing = screenWidth * 0.30;
+                            return DataTable(
+                              columnSpacing: columnSpacing,
+                              columns: const [
+                                DataColumn(label: Text('Nombre')),
+                                DataColumn(label: Text('Acciones')),
+                              ],
+                              rows: resultadosFiltrados.map((user) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(
+                                      Text("${user.name}"),
+                                    ),
+                                    DataCell(
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Eliminar Usuario'),
+                                                    content: const Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                            "quieres eliminar este usuario")
+                                                      ],
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: const Text(
+                                                            'Cancelar'),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        child: const Text(
+                                                            'Confirmar'),
+                                                        onPressed: () async {
+                                                          showDialog(
+                                                            context: context,
+                                                            barrierDismissible:
+                                                                false,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return const Center(
+                                                                child:
+                                                                    CircularProgressIndicator(),
+                                                              );
+                                                            },
+                                                          );
+                                                         await negocio
+                                                              .deleteEmpleadoSUcursal(
+                                                                  user.usuarioId,
+                                                                  user.sucursalId)
+                                                              .then(
+                                                                (value) {
+                                                                  setState(() {
+                                textLoading = '';
+                                isLoading = false;
+                                globals.actualizarEmpleadoSucursales = true;
+                              });
+                              if (value.status == 1) {
+                                setState(() {
+                                  Navigator.pushReplacementNamed(
+                                      context, 'lista-sucursales');
+                                });
+                                mostrarAlerta(context, '', value.mensaje!);
+                                setState(() {});
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          setState(() {});
+                                                          Navigator.of(context)
+                                                              .pop();
+                              } else {
+                                mostrarAlerta(context, 'ERROR', value.mensaje!);
+                                setState(() {});
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          setState(() {});
+                                                          Navigator.of(context)
+                                                              .pop();
+                              }
+                                                                },
+                                                              );
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                    SizedBox(width: windowWidth * 0.1),
-                    Expanded(
-                      child: _empleado(),
-                    ),
-                        ],)
-                        
+                    ElevatedButton(
+                        onPressed: () {
+                          if (_valueIdEmpleado == "0") {
+                            mostrarAlerta(context, "Alerta",
+                                "porfavor selecione un empleado");
+                          } else {
+                            SucursalEmpleado sucursal = SucursalEmpleado();
+                            sucursal.empleadoId = int.parse(_valueIdEmpleado);
+                            sucursal.sucursalId = sucursalSeleccionado.id;
+                            sucursal.negocioId = sesion.idNegocio;
+                            sucursal.propietarioId = sesion.idUsuario;
+                            negocio.addSucursalEmpleado(sucursal).then((value) {
+                              setState(() {
+                                textLoading = '';
+                                isLoading = false;
+                                globals.actualizarEmpleadoSucursales = true;
+                              });
+                              if (value.status == 1) {
+                                setState(() {
+                                  Navigator.pushReplacementNamed(
+                                      context, 'lista-sucursales');
+                                });
+                                mostrarAlerta(context, '', value.mensaje!);
+                              } else {
+                                mostrarAlerta(context, 'ERROR', value.mensaje!);
+                              }
+                            });
+                          }
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text("Agregar"),
+                          ],
+                        )),
                   ],
                 ),
               ),
             ),
     );
   }
+
   _empleado() {
-      var listades = [
-        const DropdownMenuItem(
-          value: '0',
-          child: SizedBox(child: Text('Todos')),
-        )
-      ];
-      for (Usuario empleado in listaEmpleados) {
-        listades.add(DropdownMenuItem(
-            value: empleado.id.toString(), child: Text(empleado.nombre!)));
-      }
-      if (_valueIdEmpleado.isEmpty) {
-        _valueIdEmpleado = '0';
-      }
-      return DropdownButton(
-        items: listades,
-        isExpanded: true,
-        value: _valueIdEmpleado,
-        onChanged: (value) {
-          _valueIdEmpleado = value!;
-          if (value == "0") {
-
+    var listades = [
+      const DropdownMenuItem(
+        value: '0',
+        child: SizedBox(child: Text('Todos')),
+      )
+    ];
+    for (Usuario empleado in listaEmpleados) {
+      listades.add(DropdownMenuItem(
+          value: empleado.id.toString(), child: Text(empleado.nombre!)));
+    }
+    if (_valueIdEmpleado.isEmpty) {
+      _valueIdEmpleado = '0';
+    }
+    return DropdownButton(
+      items: listades,
+      isExpanded: true,
+      value: _valueIdEmpleado,
+      onChanged: (value) {
+        _valueIdEmpleado = value!;
+        if (value == "0") {
+        } else {
+          Usuario empleadoSeleccionado = listaEmpleados
+              .firstWhere((empleado) => empleado.id.toString() == value);
+          if (empleadoSeleccionado.id == 0) {
+            _valueIdEmpleado = '0';
+            setState(() {});
           } else {
-            Usuario empleadoSeleccionado = listaEmpleados
-                .firstWhere((empleado) => empleado.id.toString() == value);
-            if (empleadoSeleccionado.id == 0) {
-              _valueIdEmpleado = '0';
-              setState(() {});
-            } else {
-              _valueIdEmpleado = empleadoSeleccionado.id.toString();
-              setState(() {});
-            }
+            _valueIdEmpleado = empleadoSeleccionado.id.toString();
+            setState(() {});
           }
-        },
-      );
-    
+        }
+      },
+    );
   }
-
-
 }

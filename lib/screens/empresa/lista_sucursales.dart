@@ -35,7 +35,25 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
           mostrarAlerta(context, 'ERROR', value.mensaje!);
         }
       });
+    }else{
+      if (globals.actualizarEmpleadoSucursales) {
+      setState(() {
+        textLoading = 'Leyendo Surcursales';
+        isLoading = true;
+      });
+      negocios.getlistaempleadosEnsucursales().then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+        if (value.status != 1) {
+          Navigator.pop(context);
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
     }
+    }
+
     super.initState();
   }
 
