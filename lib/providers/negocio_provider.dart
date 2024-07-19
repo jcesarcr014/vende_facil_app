@@ -142,7 +142,8 @@ class NegocioProvider {
   }
 
   Future<Resultado> deleteEmpleadoSUcursal(idE, idS) async {
-    var url = Uri.parse('$baseUrl/sucursales-empleados/${idE}/${idS}');
+    var url = Uri.parse('$baseUrl/sucursales-empleados/${idS}/${idE}');
+    print(url);
     try {
       final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

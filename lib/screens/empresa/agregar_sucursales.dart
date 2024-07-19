@@ -272,40 +272,46 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                                                               );
                                                             },
                                                           );
-                                                         await negocio
+                                                          await negocio
                                                               .deleteEmpleadoSUcursal(
                                                                   user.usuarioId,
                                                                   user.sucursalId)
                                                               .then(
-                                                                (value) {
-                                                                  setState(() {
-                                textLoading = '';
-                                isLoading = false;
-                                globals.actualizarEmpleadoSucursales = true;
-                              });
-                              if (value.status == 1) {
-                                setState(() {
-                                  Navigator.pushReplacementNamed(
-                                      context, 'lista-sucursales');
-                                });
-                                mostrarAlerta(context, '', value.mensaje!);
-                                setState(() {});
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          setState(() {});
-                                                          Navigator.of(context)
-                                                              .pop();
-                              } else {
-                                mostrarAlerta(context, 'ERROR', value.mensaje!);
-                                setState(() {});
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          setState(() {});
-                                                          Navigator.of(context)
-                                                              .pop();
-                              }
-                                                                },
-                                                              );
+                                                            (value) {
+                                                              setState(() {
+                                                                textLoading =
+                                                                    '';
+                                                                isLoading =
+                                                                    false;
+                                                                globals.actualizarEmpleadoSucursales =
+                                                                    true;
+                                                              });
+                                                              if (value
+                                                                      .status ==
+                                                                  1) {
+                                                                setState(() {
+                                                                  Navigator.pushReplacementNamed(
+                                                                      context,
+                                                                      'lista-sucursales');
+                                                                });
+                                                                mostrarAlerta(
+                                                                    context,
+                                                                    '',
+                                                                    value
+                                                                        .mensaje!);
+                                                              } else {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                Navigator.pop(
+                                                                    context);
+                                                                mostrarAlerta(
+                                                                    context,
+                                                                    'ERROR',
+                                                                    value
+                                                                        .mensaje!);
+                                                              }
+                                                            },
+                                                          );
                                                         },
                                                       ),
                                                     ],
