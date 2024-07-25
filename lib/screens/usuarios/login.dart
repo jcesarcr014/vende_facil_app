@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -110,6 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
             mostrarAlerta(context, 'Bienvenido',
                 '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
           } else {
+            // ignore: duplicate_ignore
+            // ignore: use_build_context_synchronously
             Navigator.pushReplacementNamed(context, 'home');
           }
         } else {

@@ -44,9 +44,11 @@ class VentasProvider {
 
   Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
     if (venta.idDesc != 0) {
-        var descue=listaDescuentos.firstWhere((descuento) => descuento.id == venta.idDesc).valor;
-        venta.cantidadDescuento=(venta.total!*descue!/100);
-        venta.total=venta.total!-venta.cantidadDescuento!;
+      var descue = listaDescuentos
+          .firstWhere((descuento) => descuento.id == venta.idDesc)
+          .valor;
+      venta.cantidadDescuento = (venta.total! * descue! / 100);
+      venta.total = venta.total! - venta.cantidadDescuento!;
     }
     var url = Uri.parse('$baseUrl/ventas-detalle/${venta.idVenta}');
     try {
@@ -192,8 +194,8 @@ class VentasProvider {
 
   Future<Resultado> consultarVentasFecha(String inicio, String finalF) async {
     listaVentaCabecera.clear();
-    var url =
-        Uri.parse('$baseUrl/reporte-fecha-general/$inicio/$finalF/${sesion.idNegocio}');
+    var url = Uri.parse(
+        '$baseUrl/reporte-fecha-general/$inicio/$finalF/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -205,9 +207,12 @@ class VentasProvider {
           ventasCabezera.id = decodedData['data'][x]['id'];
           ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
           ventasCabezera.name = decodedData['data'][x]['name'];
-          ventasCabezera.tipo_movimiento = decodedData['data'][x]['tipo_movimiento'];
-          ventasCabezera.importeEfectivo =double.parse(decodedData['data'][x]['monto_efectivo']);
-          ventasCabezera.importeTarjeta =double.parse(decodedData['data'][x]['monto_tarjeta']);
+          ventasCabezera.tipo_movimiento =
+              decodedData['data'][x]['tipo_movimiento'];
+          ventasCabezera.importeEfectivo =
+              double.parse(decodedData['data'][x]['monto_efectivo']);
+          ventasCabezera.importeTarjeta =
+              double.parse(decodedData['data'][x]['monto_tarjeta']);
           ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
           ventasCabezera.fecha_venta = decodedData['data'][x]['fecha'];
           listaVentaCabecera.add(ventasCabezera);
@@ -217,7 +222,6 @@ class VentasProvider {
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
-      
       }
     } catch (e) {
       respuesta.status = 0;
@@ -226,10 +230,12 @@ class VentasProvider {
     }
     return respuesta;
   }
-  Future<Resultado> consultarVentasFechaUsuario(String inicio, String finalF,String usuario ) async {
+
+  Future<Resultado> consultarVentasFechaUsuario(
+      String inicio, String finalF, String usuario) async {
     listaVentaCabecera.clear();
-    var url =
-        Uri.parse('$baseUrl/reporte-fecha-usuario/$inicio/$finalF/${sesion.idNegocio}/$usuario');
+    var url = Uri.parse(
+        '$baseUrl/reporte-fecha-usuario/$inicio/$finalF/${sesion.idNegocio}/$usuario');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -241,9 +247,12 @@ class VentasProvider {
           ventasCabezera.id = decodedData['data'][x]['id'];
           ventasCabezera.usuarioId = decodedData['data'][x]['usuario_id'];
           ventasCabezera.name = decodedData['data'][x]['name'];
-          ventasCabezera.tipo_movimiento = decodedData['data'][x]['tipo_movimiento'];
-          ventasCabezera.importeEfectivo =double.parse(decodedData['data'][x]['monto_efectivo']);
-          ventasCabezera.importeTarjeta =double.parse(decodedData['data'][x]['monto_tarjeta']);
+          ventasCabezera.tipo_movimiento =
+              decodedData['data'][x]['tipo_movimiento'];
+          ventasCabezera.importeEfectivo =
+              double.parse(decodedData['data'][x]['monto_efectivo']);
+          ventasCabezera.importeTarjeta =
+              double.parse(decodedData['data'][x]['monto_tarjeta']);
           ventasCabezera.total = double.parse(decodedData['data'][x]['total']);
           ventasCabezera.fecha_venta = decodedData['data'][x]['fecha'];
           listaVentaCabecera.add(ventasCabezera);

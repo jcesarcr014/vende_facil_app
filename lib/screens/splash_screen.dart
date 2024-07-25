@@ -18,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final clientesProvider = ClienteProvider();
   final descuentosProvider = DescuentoProvider();
   final apartadoProvider = ApartadoProvider();
+  final negocios = NegocioProvider();
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   String textLoading = '';
@@ -46,6 +47,20 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaUsuarios = false;
           } else {
             globals.actualizaUsuarios = true;
+          }
+        });
+        await negocios.getlistaSucursales().then((value) {
+          if (value.status == 1) {
+            globals.actualizaSucursales = false;
+          } else {
+            globals.actualizaSucursales = true;
+          }
+        });
+        await negocios.getlistaempleadosEnsucursales().then((value) {
+          if (value.status == 1) {
+            globals.actualizarEmpleadoSucursales = false;
+          } else {
+            globals.actualizarEmpleadoSucursales = true;
           }
         });
         await usuariosProvider.obtenerEmpleados().then((value) {
@@ -85,6 +100,7 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaClientes = true;
           }
         });
+
         await descuentosProvider.listarDescuentos().then((value) {
           if (value.status == 1) {
             globals.actualizaDescuentos = false;
@@ -105,10 +121,13 @@ class _SplashScreenState extends State<SplashScreen> {
         });
 
         if (sesion.idNegocio == 0) {
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'menu');
+          // ignore: use_build_context_synchronously
           mostrarAlerta(context, 'Bienvenido',
               '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
         } else {
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'home');
         }
       }

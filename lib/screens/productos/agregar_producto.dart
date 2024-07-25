@@ -510,46 +510,68 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       SizedBox(
                         height: windowHeight * 0.05,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () => _guardaProducto(),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.save),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Guardar',
-                                  ),
-                                ],
-                              )),
-                          SizedBox(
-                            width: windowWidth * 0.05,
-                          ),
-                          ElevatedButton(
-                              onPressed: () {
-                                globals.actualizaArticulos = true;
-                                Navigator.pushReplacementNamed(
-                                    context, 'productos');
-                              },
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.cancel_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Cancelar',
-                                  ),
-                                ],
-                              )),
-                        ],
+                      Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed: () => _guardaProducto(),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.save),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Guardar',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            if(args.id!=0)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, 'InventoryPage');
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.save),
+                      SizedBox(
+                        width: 5,
                       ),
+                      Text(
+                        'Sucursal Inventario',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height:50,
+                ),
+            ElevatedButton(
+              onPressed: () {
+                globals.actualizaArticulos = true;
+                Navigator.pushReplacementNamed(context, 'productos');
+              },
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.cancel_outlined),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Cancelar',
+                  ),
+                ],
+              ),
+            ),
+          ],
+         ),
                       SizedBox(
                         height: windowHeight * 0.08,
                       ),

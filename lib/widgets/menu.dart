@@ -113,7 +113,9 @@ class Menu extends StatelessWidget {
 
   _configuraciones(BuildContext context) {
     List<Widget> opcConfig = [];
-    opcConfig.add(ListTile(
+
+    opcConfig.add(
+      ListTile(
       leading: const Icon(Icons.chevron_right),
       title: const Text(
         'Empresa',
@@ -121,8 +123,8 @@ class Menu extends StatelessWidget {
       ),
       onTap: () {
         Navigator.pushNamed(context, 'negocio');
-      },
-    ));
+      },)
+    );
     opcConfig.add(ListTile(
       leading: const Icon(Icons.chevron_right),
       title: const Text(

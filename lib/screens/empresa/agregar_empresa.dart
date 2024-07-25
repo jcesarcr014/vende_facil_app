@@ -125,20 +125,13 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
       canPop: false,
       onPopInvoked: (didpop) {
         if (!didpop) {
-          Navigator.pushReplacementNamed(context, 'menu');
+          Navigator.pushReplacementNamed(context, 'menu-negocio');
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
           title: Text(title),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'menu');
-                },
-                icon: const Icon(Icons.menu)),
-          ],
+          automaticallyImplyLeading: true,
         ),
         body: (isLoading)
             ? Center(
