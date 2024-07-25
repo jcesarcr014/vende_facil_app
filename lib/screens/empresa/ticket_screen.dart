@@ -46,16 +46,7 @@ class _TicketScreenState extends State<TicketScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const SizedBox(height: 20),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+                            ElevatedButton(
                 onPressed: _pickImage,
                 child: const Text('Seleccionar Imagen'),
               ),
@@ -82,6 +73,25 @@ class _TicketScreenState extends State<TicketScreen> {
                           fit: BoxFit.cover,
                         ),
                 ),
+              const SizedBox(height: 20),
+              const Text(
+                  'INTRODUZCA UN  TITULO:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+               ElevatedButton(
+                onPressed:() {
+                  
+                },
+                child: const Text('Guardar'),
+              ),
             ],
           ),
         ),

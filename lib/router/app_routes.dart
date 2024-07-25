@@ -43,7 +43,8 @@ class AppRoutes {
     'nvo-pass': (BuildContext context) => const CambioPassScreen(),
     'lista-sucursales':(BuildContext context) => const ListaSucursalesScreen(),
     'registro-sucursale':(BuildContext context) => const  RegistroSucursalesScreen(),
-    'ticket':(BuildContext context) => const TicketScreen()
+    'ticket':(BuildContext context) => const TicketScreen(),
+    'InventoryPage':(BuildContext context)=>const InventoryPage()
   };
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return MaterialPageRoute(builder: (context) => const ErrorScreen());

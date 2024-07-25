@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/sucursales.model.dart';
 
 class InventoryPage extends StatelessWidget {
   const InventoryPage({super.key});
@@ -16,7 +17,7 @@ class InventoryPage extends StatelessWidget {
           children: [
             const TextField(
               decoration: InputDecoration(
-                labelText: '{Nombre Producto}',
+                labelText: 'Nombre Producto',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -30,18 +31,24 @@ class InventoryPage extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Select con sucursales',
-                border: OutlineInputBorder(),
-              ),
-              items: ['Sucursal 1', 'Sucursal 2', 'Sucursal 3']
-                  .map((sucursal) => DropdownMenuItem(
-                        value: sucursal,
-                        child: Text(sucursal),
-                      ))
-                  .toList(),
-              onChanged: (value) {},
+            decoration: const InputDecoration(
+              labelText: 'Select con sucursales',
+              border: OutlineInputBorder(),
             ),
+            items: listaSucursales
+                .map((sucursal) => DropdownMenuItem(
+                      value: sucursal.nombreSucursal,
+                      child: Text(sucursal.nombreSucursal ?? ''),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              // Find the selected Sucursale based on the nombreSucursal
+              sucursalSeleccionado = listaSucursales.firstWhere(
+                (sucursal) => sucursal.nombreSucursal == value,
+                orElse: () => Sucursale(),
+              );
+            },
+          ),
             const SizedBox(height: 16),
             const TextField(
               decoration: InputDecoration(
@@ -53,7 +60,7 @@ class InventoryPage extends StatelessWidget {
             const Divider(),
             const TextField(
               decoration: InputDecoration(
-                labelText: 'input cantidad a mover',
+                labelText: 'cantidad a mover',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -61,20 +68,40 @@ class InventoryPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, 'InventoryPage');
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.save),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        'Agregar',
+                      ),
+                    ],
                   ),
-                  child: const Text('Agregar'),
                 ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'productos');
+              },
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.cancel_outlined),
+                  SizedBox(
+                    width: 5,
                   ),
-                  child: const Text('Quitar'),
-                ),
+                  Text(
+                    'Cancelar',
+                  ),
+                ],
+              ),
+            ),
               ],
             ),
           ],

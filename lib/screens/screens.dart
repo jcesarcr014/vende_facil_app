@@ -34,3 +34,4 @@ export 'package:vende_facil/screens/ventas/venta_screen.dart';
 export 'package:vende_facil/screens/apartados/apartado_screen.dart';
 export 'package:vende_facil/screens/splash_screen.dart';
 export 'package:vende_facil/screens/suscripcion/planes_screen.dart';
+export 'package:vende_facil/screens/empresa/inventario_sucursal.dart';
