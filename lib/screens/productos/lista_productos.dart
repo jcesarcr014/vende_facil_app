@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
@@ -60,6 +61,12 @@ class _ProductosScreenState extends State<ProductosScreen> {
                   Navigator.pushReplacementNamed(context, 'menu');
                 },
                 icon: const Icon(Icons.menu)),
+            IconButton(
+                onPressed: () {
+                   showSearch(context: context, delegate: Searchproductos());
+                },
+                icon: const Icon(Icons.search)),
+            
           ],
         ),
         body: (isLoading)

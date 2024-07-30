@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/categoria_model.dart';
+import 'package:vende_facil/models/colores_cat_model.dart';
+import 'package:vende_facil/models/producto_model.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
-class Search extends SearchDelegate {
+class Searchproductos extends SearchDelegate {
   final articulosProvider = ArticuloProvider();
   double windowWidth = 0.0;
   double windowHeight = 0.0;
@@ -19,7 +22,7 @@ class Search extends SearchDelegate {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      onPressed: () => Navigator.pushReplacementNamed(context, 'home'),
+      onPressed: () => close(context, null),
       icon: const Icon(Icons.arrow_back),
     );
   }
@@ -59,7 +62,17 @@ class Search extends SearchDelegate {
           onTap: (() {
             if (resultados[index].unidad == "0") {
             } else {
-              _agregaProductoVenta(resultados[index], 1);
+                            articulosProvider
+                        .consultaProducto(resultados[index].id!)
+                        .then((value) {
+                      if (value.id != 0) {
+                        Navigator.pushNamed(context, 'nvo-producto',
+                            arguments: value);
+                      } else {
+                        mostrarAlerta(context, 'ERROR',
+                            'Error en la consulta: ${value.producto}');
+                      }
+                    });
             }
           }),
           title: Row(
@@ -89,62 +102,5 @@ class Search extends SearchDelegate {
     return const ListTile(
       title: Text('historial'),
     );
-  }
-
-  _agregaProductoVenta(Producto producto, cantidad) {
-    bool existe = false;
-    if (producto.unidad == "1") {
-      for (ItemVenta item in ventaTemporal) {
-        if (item.idArticulo == producto.id) {
-          existe = true;
-          item.cantidad++;
-          item.subTotalItem = item.precio * item.cantidad;
-          item.totalItem = item.subTotalItem - item.descuento;
-        }
-      }
-      if (!existe) {
-        ventaTemporal.add(ItemVenta(
-            idArticulo: producto.id!,
-            cantidad: 1,
-            precio: producto.precio!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: producto.precio!,
-            totalItem: producto.precio!,
-            apartado: (producto.apartado == 1) ? true : false));
-      }
-      _actualizaTotalTemporal();
-    } else {
-      if (producto.unidad == "0") {
-        for (ItemVenta item in ventaTemporal) {
-          if (item.idArticulo == producto.id) {
-            existe = true;
-            item.cantidad++;
-            item.subTotalItem = item.precio * cantidad;
-            item.totalItem = item.subTotalItem - item.descuento;
-          }
-        }
-        if (!existe) {
-          ventaTemporal.add(ItemVenta(
-              idArticulo: producto.id!,
-              cantidad: cantidad,
-              precio: producto.precio!,
-              idDescuento: 0,
-              descuento: 0,
-              subTotalItem: producto.precio!,
-              totalItem: producto.precio! * cantidad,
-              apartado: (producto.apartado == 1) ? true : false));
-        }
-        _actualizaTotalTemporal();
-      } else {}
-      _actualizaTotalTemporal();
-    }
-  }
-
-  _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
-    for (ItemVenta item in ventaTemporal) {
-      totalVentaTemporal += item.totalItem;
-    }
   }
 }
