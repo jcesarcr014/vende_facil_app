@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class Search extends SearchDelegate {
   final articulosProvider = ArticuloProvider();
@@ -59,7 +60,7 @@ class Search extends SearchDelegate {
           onTap: (() {
             if (resultados[index].unidad == "0") {
             } else {
-              _agregaProductoVenta(resultados[index], 1);
+              _agregaProductoVenta(resultados[index], 1,context);
             }
           }),
           title: Row(
@@ -91,7 +92,7 @@ class Search extends SearchDelegate {
     );
   }
 
-  _agregaProductoVenta(Producto producto, cantidad) {
+  _agregaProductoVenta(Producto producto, cantidad,BuildContext context) {
     bool existe = false;
     if (producto.unidad == "1") {
       for (ItemVenta item in ventaTemporal) {
@@ -113,7 +114,9 @@ class Search extends SearchDelegate {
             totalItem: producto.precio!,
             apartado: (producto.apartado == 1) ? true : false));
       }
-      _actualizaTotalTemporal();
+        _actualizaTotalTemporal();
+              Navigator.pushReplacementNamed(context, 'home');
+                 mostrarAlerta(context, '', 'Producto añadido');
     } else {
       if (producto.unidad == "0") {
         for (ItemVenta item in ventaTemporal) {
@@ -136,6 +139,8 @@ class Search extends SearchDelegate {
               apartado: (producto.apartado == 1) ? true : false));
         }
         _actualizaTotalTemporal();
+         mostrarAlerta(context, '', 'Producto añadido');
+              Navigator.pushReplacementNamed(context, 'home');
       } else {}
       _actualizaTotalTemporal();
     }
