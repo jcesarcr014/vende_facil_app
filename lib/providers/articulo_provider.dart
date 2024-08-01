@@ -149,7 +149,6 @@ class ArticuloProvider {
         'aplica_inventario': producto.inventario.toString(),
         'aplica_apartado': producto.apartado.toString(),
       });
-      print(resp.body);
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;

@@ -8,7 +8,6 @@ class InventarioProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
   Future<Resultado> guardar(Existencia inventario) async {
-    print(inventario.cantidad);
     var url = Uri.parse('$baseUrl/inventario/${inventario.idArticulo}');
 
     try {
@@ -96,8 +95,6 @@ class InventarioProvider {
   }
 
   Future<Resultado> editar(Existencia existencia) async {
-    print(existencia.apartado);
-     print(existencia.cantidad);
     var url = Uri.parse('$baseUrl/inventario/${existencia.idArticulo}');
     try {
       final resp = await http.put(

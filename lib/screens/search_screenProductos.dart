@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/categoria_model.dart';
 import 'package:vende_facil/models/colores_cat_model.dart';
