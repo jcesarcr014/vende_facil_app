@@ -54,7 +54,7 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
                 textLoading = '';
                 globals.actualizaEmpleados = true;
               });
-              Navigator.pushReplacementNamed(context, 'config');
+              Navigator.pushReplacementNamed(context, 'menu-negocio');
 
               mostrarAlerta(context, '', 'Empleado registrado correctamente.');
             });
