@@ -46,59 +46,43 @@ class ConfigScreen extends StatelessWidget {
                     Navigator.pushNamed(context, 'perfil');
                   },
                 ),
-                (sesion.tipoUsuario=="P")
-                ?ListTile(
-                  leading: const Icon(Icons.person_add),
-                  title: const Text(
-                    'Empleados',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: const Text('Lista de empleados'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    Navigator.pushNamed(context, 'empleados');
-                  },
-                ):Container(),
-                (sesion.tipoUsuario=="P")?
-                ListTile(
-                  leading: const Icon(CupertinoIcons.tag),
-                  title: const Text(
-                    'Ajustes de apartado',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle:
-                      const Text('Edita importe minimo requerido para apartar'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    Navigator.pushNamed(context, 'config-apartado');
-                  },
-                ):Container(),
-                (sesion.tipoUsuario=="P")?
-                ListTile(
-                  leading: const Icon(CupertinoIcons.ticket),
-                  title: const Text(
-                    'Ticket',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: const Text('Configura tu ticket de compra'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    Navigator.pushNamed(context, 'ticket');
-                  },
-                )
-                :Container(),
+                (sesion.tipoUsuario == "P")
+                    ? ListTile(
+                        leading: const Icon(CupertinoIcons.tag),
+                        title: const Text(
+                          'Ajustes de apartado',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: const Text(
+                            'Edita importe minimo requerido para apartar'),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () {
+                          Navigator.pushNamed(context, 'config-apartado');
+                        },
+                      )
+                    : Container(),
+                (sesion.tipoUsuario == "P")
+                    ? ListTile(
+                        leading: const Icon(CupertinoIcons.ticket),
+                        title: const Text(
+                          'Ticket',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: const Text('Configura tu ticket de compra'),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () {
+                          Navigator.pushNamed(context, 'ticket');
+                        },
+                      )
+                    : Container(),
               ],
             )),
       ),

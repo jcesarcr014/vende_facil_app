@@ -33,7 +33,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   void initState() {
     if (estatus) {
       text.text = "Nueva Sucursal";
-      funcion.text = "Registrarse";
+      funcion.text = "Guardar";
       setState(() {});
     } else {
       resultadosFiltrados.clear();
@@ -194,7 +194,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                         SizedBox(
                           width: windowWidth * 0.2,
                           child: const Text(
-                            'Seleccione el Empleado',
+                            'Seleccione Empleado',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -243,7 +243,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                                                           MainAxisSize.min,
                                                       children: [
                                                         Text(
-                                                            "quieres eliminar este usuario")
+                                                            "Quieres eliminar este usuario")
                                                       ],
                                                     ),
                                                     actions: <Widget>[
@@ -335,7 +335,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                         onPressed: () {
                           if (_valueIdEmpleado == "0") {
                             mostrarAlerta(context, "Alerta",
-                                "porfavor selecione un empleado");
+                                "Debe seleccionar un empleado");
                           } else {
                             SucursalEmpleado sucursal = SucursalEmpleado();
                             sucursal.empleadoId = int.parse(_valueIdEmpleado);
