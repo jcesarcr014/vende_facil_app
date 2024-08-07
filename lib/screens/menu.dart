@@ -108,7 +108,7 @@ class _MenuScreenState extends State<MenuScreen> {
         'Cerrar Sesión'
       ];
 
-      menuRoutes = ['negocio', 'config', 'suscripcion', 'login'];
+      menuRoutes = ['menu-negocio', 'config', 'suscripcion', 'login'];
 
       menuIcons = [
         'assets/i_empresa.png',
