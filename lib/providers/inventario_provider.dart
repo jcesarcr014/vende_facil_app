@@ -9,6 +9,7 @@ class InventarioProvider {
   Resultado respuesta = Resultado();
   Future<Resultado> guardar(Existencia inventario) async {
     var url = Uri.parse('$baseUrl/inventario/${inventario.idArticulo}');
+
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -25,7 +26,6 @@ class InventarioProvider {
         respuesta.mensaje = decodedData['msg'];
       }
     } catch (e) {
-
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
     }
@@ -95,17 +95,18 @@ class InventarioProvider {
   }
 
   Future<Resultado> editar(Existencia existencia) async {
-    var url = Uri.parse('$baseUrl/inventories/${existencia.id}');
+    var url = Uri.parse('$baseUrl/inventario/${existencia.idArticulo}');
     try {
-      final resp = await http.put(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'empresa_id': sesion.idNegocio,
-        'articulo_id': existencia.idArticulo,
-        'cantidad': existencia.cantidad,
-        'apartado': existencia.apartado,
-        'disponibles': existencia.disponible,
-      });
+      final resp = await http.put(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${sesion.token}',
+        },
+        body: {
+          'cantidad': existencia.cantidad.toString(),
+          'apartado': existencia.apartado.toString(),
+        },
+      );
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;

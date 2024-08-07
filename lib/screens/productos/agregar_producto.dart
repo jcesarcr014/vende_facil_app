@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks, avoid_print
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -185,21 +187,55 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         } else {
           producto.imagen = args.imagen;
         }
-        producto.id = args.id;
-        articulosProvider.editaProducto(producto).then((value) {
-          setState(() {
-            _valueIdCategoria = '0';
-            isLoading = false;
-            textLoading = '';
+        if (controllerCantidad != args.disponible) {
+          Existencia inventario = Existencia();
+          inventario.idArticulo = args.id;
+          var valor = double.parse(controllerCantidad.text);
+          inventario.cantidad = valor;
+          inventario.apartado = 0;
+          inventario.disponible = valor;
+          inventarioProvider.editar(inventario).then((value) {
+            if (value.status == 1) {
+              Navigator.pushReplacementNamed(context, 'productos');
+              mostrarAlerta(context, '', value.mensaje!);
+            } else {
+              setState(() {
+                isLoading = false;
+                textLoading = '';
+              });
+              mostrarAlerta(context, '', value.mensaje!);
+            }
           });
-          if (value.status == 1) {
-            globals.actualizaArticulos = true;
-            Navigator.pushReplacementNamed(context, 'productos');
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
+        }
+        var apartado = (_valueApartado) ? 1 : 0;
+        var inventario = (_valueApartado) ? 1 : 0;
+
+        if (producto.producto == controllerProducto ||
+            producto.descripcion == controllerDescripcion ||
+            producto.imagen == args.imagen ||
+            producto.precio == controllerPrecio ||
+            producto.codigoBarras == controllerCodigoB ||
+            producto.clave == controllerClave ||
+            producto.inventario == inventario ||
+            producto.apartado == apartado) {
+          print("no pasa nada");
+        } else {
+          producto.id = args.id;
+          articulosProvider.editaProducto(producto).then((value) {
+            setState(() {
+              _valueIdCategoria = '0';
+              isLoading = false;
+              textLoading = '';
+            });
+            if (value.status == 1) {
+              globals.actualizaArticulos = true;
+              Navigator.pushReplacementNamed(context, 'productos');
+              mostrarAlerta(context, '', value.mensaje!);
+            } else {
+              mostrarAlerta(context, '', value.mensaje!);
+            }
+          });
+        }
       }
     }
   }
@@ -311,6 +347,11 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             ? args.disponible!.toStringAsFixed(2)
             : '0.00';
       }
+    } else {
+      _valueApartado = false;
+      setState(() {
+        
+      });
     }
     final title = (args.id == 0) ? 'Nuevo producto' : 'Editar producto';
     windowWidth = MediaQuery.of(context).size.width;
@@ -438,7 +479,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                           labelText: 'Cantidad:',
                           keyboardType: TextInputType.number,
                           controller: controllerCantidad,
-                          enabled: args.disponible == null ? true : false,
+                          enabled: args.disponible == null
+                              ? false
+                              : true && sesion.tipoUsuario == "P",
                         ),
                       SizedBox(
                         height: windowHeight * 0.03,
@@ -511,67 +554,69 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                         height: windowHeight * 0.05,
                       ),
                       Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-              onPressed: () => _guardaProducto(),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.save),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'Guardar',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            if(args.id!=0)
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, 'InventoryPage');
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.save),
-                      SizedBox(
-                        width: 5,
+                        alignment: WrapAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => _guardaProducto(),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.save),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Guardar',
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          if (args.id != 0)
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushReplacementNamed(
+                                    context, 'InventoryPage');
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.save),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Sucursal Inventario',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              globals.actualizaArticulos = true;
+                              Navigator.pushReplacementNamed(
+                                  context, 'productos');
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.cancel_outlined),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Cancelar',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Sucursal Inventario',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height:50,
-                ),
-            ElevatedButton(
-              onPressed: () {
-                globals.actualizaArticulos = true;
-                Navigator.pushReplacementNamed(context, 'productos');
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.cancel_outlined),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'Cancelar',
-                  ),
-                ],
-              ),
-            ),
-          ],
-         ),
                       SizedBox(
                         height: windowHeight * 0.08,
                       ),
