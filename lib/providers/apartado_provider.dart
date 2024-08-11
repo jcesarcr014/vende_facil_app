@@ -84,6 +84,7 @@ class ApartadoProvider {
         'fecha_apartado': apartado.fechaApartado,
         'fecha_vencimiento': apartado.fechaVencimiento,
         'fecha_pago_total': apartado.fechaVencimiento,
+        'id_sucursal':apartado.idsucursal,
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -117,6 +118,7 @@ class ApartadoProvider {
         'descuento': apartado.descuento.toString(),
         'total': apartado.total.toString(),
         'descuento_id': apartado.descuentoId.toString(),
+        'id_apartado':apartado.idsucursal.toString(),
       });
 
       final decodedData = jsonDecode(resp.body);

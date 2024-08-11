@@ -9,6 +9,7 @@ class ApartadoDetalle {
   double? total;
   int? descuentoId;
   String? producto;
+  int? idsucursal;
 
   ApartadoDetalle(
       {this.id,
@@ -20,7 +21,8 @@ class ApartadoDetalle {
       this.descuento,
       this.total,
       this.descuentoId,
-      this.producto
+      this.producto,
+      this.idsucursal,
       });
 }
 

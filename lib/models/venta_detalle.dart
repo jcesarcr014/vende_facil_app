@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class VentaDetalle {
   int? id;
   int? idVenta;
@@ -9,6 +11,7 @@ class VentaDetalle {
   double? total;
   double? subtotal;
   String? nombreProducto;
+  int? id_sucursal;
   VentaDetalle({
     this.id,
     this.idVenta,
@@ -20,6 +23,8 @@ class VentaDetalle {
     this.total,
     this.subtotal,
     this.nombreProducto,
+    this.id_sucursal,
   });
 }
+
 List<VentaDetalle> listaVentadetalles = [];
