@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:vende_facil/mappers/sucursal_mapper.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -112,6 +113,13 @@ class UsuarioProvider {
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+
+          listaSucursales.clear();
+          List<dynamic> sucursalesJson = decodedData['sucursal_id'];
+          List<Sucursale> sucursales = sucursalesJson.map((json) => SucursalMapper.dataToSucursalModel(json)).toList();
+          listaSucursales.addAll(sucursales);
+        } else {
+          sesion.idSucursal = decodedData["sucursal_id"];
         }
       } else {
         respuesta.status = 0;

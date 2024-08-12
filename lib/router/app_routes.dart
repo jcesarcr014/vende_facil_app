@@ -9,6 +9,7 @@ class AppRoutes {
 
   static Map<String, Widget Function(BuildContext)> routes = {
     'splash': (BuildContext context) => const SplashScreen(),
+    'select-branch-office': (BuildContext context) => const SucursalesScreen(),
     'home': (BuildContext context) => const HomeScreen(),
     'login': (BuildContext context) => const LoginScreen(),
     'registro': (BuildContext context) => const RegistroScreen(),
