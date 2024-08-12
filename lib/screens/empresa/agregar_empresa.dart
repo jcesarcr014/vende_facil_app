@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregarEmpresa extends StatefulWidget {
   const AgregarEmpresa({super.key});
@@ -50,7 +51,8 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
           });
           if (value.status == 1) {
             setState(() {
-              Navigator.pushReplacementNamed(context, 'home');
+              globals.actualizaSucursales = true;
+              Navigator.pushReplacementNamed(context, 'menu');
             });
 
             mostrarAlerta(context, '', value.mensaje!);
@@ -77,7 +79,7 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
       }
     } else {
       mostrarAlerta(
-          context, 'ERROR', 'Los campos Nombre y Dirección son obligatorios');
+          context, 'ERROR', 'Los campos Nombre y Dirección son obligatorios.');
     }
   }
 
