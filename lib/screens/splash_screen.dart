@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       } else {
         setState(() {
-          textLoading = 'Leyendo información de empleados';
+          textLoading = 'Leyendo información de usuarios';
         });
         await usuariosProvider.obtenerUsuarios().then((value) {
           if (value.status == 1) {
@@ -49,12 +49,18 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaUsuarios = true;
           }
         });
+        setState(() {
+          textLoading = 'Leyendo información de sucursales';
+        });
         await negocios.getlistaSucursales().then((value) {
           if (value.status == 1) {
             globals.actualizaSucursales = false;
           } else {
             globals.actualizaSucursales = true;
           }
+        });
+        setState(() {
+          textLoading = 'Leyendo información de empleados';
         });
         await negocios.getlistaempleadosEnsucursales().then((value) {
           if (value.status == 1) {

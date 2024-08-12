@@ -26,7 +26,7 @@ class NegocioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        sesion.idNegocio = decodedData['empresa_id'];
+        sesion.idNegocio = decodedData['negocio']['id'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

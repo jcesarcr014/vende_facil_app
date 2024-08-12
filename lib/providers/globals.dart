@@ -1,6 +1,5 @@
 library vende_facil.globals;
 
-// String baseUrl = "https://vf-api-v2.up.railway.app/api";  //google play test
 String baseUrl = "http://84.247.163.28/api"; //test interno
 
 bool actualizaCategorias = false;

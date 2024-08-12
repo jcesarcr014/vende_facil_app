@@ -52,7 +52,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'menu');
             mostrarAlerta(context, 'Bienvenido',
-                '¡Bienvenido a Vendo Facil!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
+                '¡Bienvenido a Vendo Facil!. Registre los datos de su negocio en la opción Empresa, para que pueda acceder a todas las opciones de la aplicación.');
           } else {
             mostrarAlerta(context, 'ERROR', value.mensaje!);
           }
