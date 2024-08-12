@@ -22,6 +22,7 @@ class VentasProvider {
         'total': venta.total!.toStringAsFixed(2),
         'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
         'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
+        'id_sucursal':venta.id_sucursal.toString(),
       });
 
       final decodedData = jsonDecode(resp.body);
@@ -62,6 +63,7 @@ class VentasProvider {
         'descuento': venta.cantidadDescuento.toString(),
         'total': venta.total.toString(),
         'descuento_id': venta.idDesc.toString(),
+        'id_sucursal':venta.id_sucursal.toString(),
       });
 
       final decodedData = jsonDecode(resp.body);

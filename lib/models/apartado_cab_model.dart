@@ -20,6 +20,7 @@ class ApartadoCabecera {
   int? entregado;
   String? fechaCancelacion;
   int? idnegocio;
+  int? idsucursal;
 
   ApartadoCabecera({
     this.id,
@@ -43,6 +44,7 @@ class ApartadoCabecera {
     this.entregado,
     this.fechaCancelacion,
     this.idnegocio,
+    this.idsucursal,
   });
 }
 
