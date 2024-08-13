@@ -223,7 +223,8 @@ class UsuarioProvider {
 
   //Empleados
   Future<Resultado> nuevoEmpleado(Usuario user, String pass) async {
-    var url =Uri.parse('$baseUrl/empleado-registro/${sesion.idUsuario.toString()}');
+    var url =
+        Uri.parse('$baseUrl/empleado-registro/${sesion.idUsuario.toString()}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
