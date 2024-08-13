@@ -1,3 +1,4 @@
+export 'package:vende_facil/models/ticket_model.dart';
 export 'package:vende_facil/models/apartado_cab_model.dart';
 export 'package:vende_facil/models/apartado_detalle_model.dart';
 export 'package:vende_facil/models/tarjeta_moldel.dart';
