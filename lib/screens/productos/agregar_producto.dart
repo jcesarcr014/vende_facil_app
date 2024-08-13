@@ -496,60 +496,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
-                      Row(
-                        children: [
-                          (args.imagen == '' ||
-                                  args.imagen == null ||
-                                  _cambioImagen)
-                              ? Container(
-                                  decoration:
-                                      BoxDecoration(border: Border.all()),
-                                  width: windowWidth * 0.5,
-                                  height: windowHeight * 0.2,
-                                  child: (_rutaProducto.isNotEmpty)
-                                      ? SizedBox(
-                                          height: windowHeight * 0.15,
-                                          child: Image.file(
-                                            File(_rutaProducto),
-                                            fit: BoxFit.contain,
-                                          ),
-                                        )
-                                      : SizedBox(
-                                          height: windowHeight * 0.15,
-                                        ),
-                                )
-                              : Container(
-                                  decoration:
-                                      BoxDecoration(border: Border.all()),
-                                  width: windowWidth * 0.5,
-                                  height: windowHeight * 0.2,
-                                  child: FadeInImage(
-                                    image: NetworkImage(args.imagen!),
-                                    placeholder:
-                                        const AssetImage('assets/loading.gif'),
-                                  ),
-                                ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextButton.icon(
-                                onPressed: (() {
-                                  fotoProducto(ImageSource.camera);
-                                }),
-                                icon: const Icon(Icons.camera_alt_outlined),
-                                label: const Text('Tomar foto'),
-                              ),
-                              TextButton.icon(
-                                onPressed: (() {
-                                  fotoProducto(ImageSource.gallery);
-                                }),
-                                icon: const Icon(Icons.photo),
-                                label: const Text('Galería'),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
                       SizedBox(
                         height: windowHeight * 0.05,
                       ),

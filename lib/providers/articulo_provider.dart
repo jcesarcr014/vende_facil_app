@@ -65,7 +65,7 @@ class ArticuloProvider {
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
           productoTemp.inventario =
               int.parse(decodedData['data'][x]['aplica_inventario']);
-          productoTemp.imagen = decodedData['data'][x]['imagen'];
+          productoTemp.imagen = "";
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
           listaProductos.add(productoTemp);
