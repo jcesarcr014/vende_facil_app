@@ -464,25 +464,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
-                      SwitchListTile.adaptive(
-                          title: const Text('Inventario'),
-                          value: _valueInventario,
-                          onChanged: (value) {
-                            _valueInventario = value;
-                            setState(() {});
-                          }),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      if (_valueInventario)
-                        InputField(
-                          labelText: 'Cantidad:',
-                          keyboardType: TextInputType.number,
-                          controller: controllerCantidad,
-                          enabled: args.disponible == null
-                              ? false
-                              : true && sesion.tipoUsuario == "P",
-                        ),
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
