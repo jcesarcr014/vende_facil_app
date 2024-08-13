@@ -1,8 +1,6 @@
 // ignore_for_file: unrelated_type_equality_checks, avoid_print
 
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -38,13 +36,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   bool _valuePieza = true;
   bool _valueInventario = true;
   bool _valueApartado = true;
-  bool _valueImagen = false;
   bool _puedeGurdar = false;
-  bool _cambioImagen = false;
-
-  final picker = ImagePicker();
-  late File imagenProducto;
-  String _rutaProducto = '';
   Producto producto = Producto();
   Producto args = Producto(
     id: 0,
@@ -105,22 +97,22 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             : 'Actualizando articulo';
         isLoading = true;
       });
-      if (_rutaProducto != '') {
-        await imagenProvider.subirImagen(imagenProducto).then((value) {
-          if (value.status == 1) {
-            producto.imagen = value.url;
-          } else {
-            setState(() {
-              isLoading = false;
-              textLoading = '';
-            });
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
-      } else {
-        _valueImagen = true;
-        producto.imagen = '';
-      }
+      // if (_rutaProducto != '') {
+      //   await imagenProvider.subirImagen(imagenProducto).then((value) {
+      //     if (value.status == 1) {
+      //       producto.imagen = value.url;
+      //     } else {
+      //       setState(() {
+      //         isLoading = false;
+      //         textLoading = '';
+      //       });
+      //       mostrarAlerta(context, '', value.mensaje!);
+      //     }
+      //   });
+      // } else {
+      //   _valueImagen = true;
+      //   producto.imagen = '';
+      // }
       producto.producto = controllerProducto.text;
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
@@ -131,62 +123,40 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
           ? controllerClave.text
           : controllerCodigoB.text;
-      producto.inventario = (_valueInventario) ? 1 : 0;
+      producto.inventario = 1;
       producto.apartado = (_valueApartado) ? 1 : 0;
 
       if (args.id == 0) {
-        if (_valueImagen) {
-          articulosProvider.nuevoProducto(producto).then((value) {
-            if (value.status == 1) {
-              globals.actualizaArticulos = true;
-              if (producto.inventario == 1) {
-                Existencia inventario = Existencia();
-                inventario.idArticulo = value.id;
-                var valor = double.parse(controllerCantidad.text);
-                inventario.cantidad = valor;
-                inventario.apartado = valor;
-                inventario.disponible = valor;
-                inventarioProvider.guardar(inventario).then((value) {
-                  if (value.status == 1) {
-                    Navigator.pushReplacementNamed(context, 'productos');
-                    mostrarAlerta(context, '', value.mensaje!);
-                  } else {
-                    setState(() {
-                      isLoading = false;
-                      textLoading = '';
-                    });
-                    mostrarAlerta(context, '', value.mensaje!);
-                  }
-                });
-              } else {
+        articulosProvider.nuevoProducto(producto).then((value) {
+          if (value.status == 1) {
+            globals.actualizaArticulos = true;
+            Existencia inventario = Existencia();
+            inventario.idArticulo = value.id;
+            var valor = double.parse(controllerCantidad.text);
+            inventario.cantidad = valor;
+            inventario.apartado = valor;
+            inventario.disponible = valor;
+            inventarioProvider.guardar(inventario).then((value) {
+              if (value.status == 1) {
                 Navigator.pushReplacementNamed(context, 'productos');
                 mostrarAlerta(context, '', value.mensaje!);
+              } else {
+                setState(() {
+                  isLoading = false;
+                  textLoading = '';
+                });
+                mostrarAlerta(context, '', value.mensaje!);
               }
-            } else {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-              });
-              mostrarAlerta(context, '', value.mensaje!);
-            }
-          });
-        }
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+              textLoading = '';
+            });
+            mostrarAlerta(context, '', value.mensaje!);
+          }
+        });
       } else {
-        if (_cambioImagen) {
-          await imagenProvider.subirImagen(imagenProducto).then((value) {
-            if (value.status == 1) {
-              producto.imagen = value.url;
-            } else {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-              });
-              mostrarAlerta(context, '', value.mensaje!);
-            }
-          });
-        } else {
-          producto.imagen = args.imagen;
-        }
         if (controllerCantidad != args.disponible) {
           Existencia inventario = Existencia();
           inventario.idArticulo = args.id;
@@ -208,17 +178,15 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           });
         }
         var apartado = (_valueApartado) ? 1 : 0;
-        var inventario = (_valueApartado) ? 1 : 0;
+        var inventario = 1;
 
         if (producto.producto == controllerProducto ||
             producto.descripcion == controllerDescripcion ||
-            producto.imagen == args.imagen ||
             producto.precio == controllerPrecio ||
             producto.codigoBarras == controllerCodigoB ||
             producto.clave == controllerClave ||
             producto.inventario == inventario ||
             producto.apartado == apartado) {
-          print("no pasa nada");
         } else {
           producto.id = args.id;
           articulosProvider.editaProducto(producto).then((value) {
@@ -349,9 +317,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       }
     } else {
       _valueApartado = false;
-      setState(() {
-        
-      });
+      setState(() {});
     }
     final title = (args.id == 0) ? 'Nuevo producto' : 'Editar producto';
     windowWidth = MediaQuery.of(context).size.width;
@@ -463,6 +429,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                           controller: controllerCodigoB),
                       SizedBox(
                         height: windowHeight * 0.03,
+                      ),
+                      InputField(
+                        labelText: 'Cantidad:',
+                        keyboardType: TextInputType.number,
+                        controller: controllerCantidad,
+                        enabled: args.disponible == null
+                            ? false
+                            : true && sesion.tipoUsuario == "P",
                       ),
                       SizedBox(
                         height: windowHeight * 0.03,
@@ -585,25 +559,5 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           _valueIdCategoria = value!;
           setState(() {});
         });
-  }
-
-  Future<void> fotoProducto(ImageSource source) async {
-    final pickedFile = await picker.pickImage(
-      source: source,
-      maxWidth: 800,
-      maxHeight: 600,
-      imageQuality: 80,
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        imagenProducto = File(pickedFile.path);
-        _rutaProducto = pickedFile.path;
-        _valueImagen = true;
-        if (args.id != 0) {
-          _cambioImagen = true;
-        }
-      });
-    }
   }
 }

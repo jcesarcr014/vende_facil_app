@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:vende_facil/mappers/sucursal_mapper.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -77,6 +78,14 @@ class UsuarioProvider {
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+          listaSucursales.clear();
+          List<dynamic> sucursalesJson = decodedData['sucursales'];
+          List<Sucursale> sucursales = sucursalesJson
+              .map((json) => SucursalMapper.dataToSucursalModel(json))
+              .toList();
+          listaSucursales.addAll(sucursales);
+        } else {
+          sesion.idSucursal = decodedData["sucursales"];
         }
       } else {
         respuesta.status = 0;
@@ -112,6 +121,14 @@ class UsuarioProvider {
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+          listaSucursales.clear();
+          List<dynamic> sucursalesJson = decodedData['sucursales'];
+          List<Sucursale> sucursales = sucursalesJson
+              .map((json) => SucursalMapper.dataToSucursalModel(json))
+              .toList();
+          listaSucursales.addAll(sucursales);
+        } else {
+          sesion.idSucursal = decodedData["sucursales"];
         }
       } else {
         respuesta.status = 0;
@@ -223,7 +240,8 @@ class UsuarioProvider {
 
   //Empleados
   Future<Resultado> nuevoEmpleado(Usuario user, String pass) async {
-    var url =Uri.parse('$baseUrl/empleado-registro/${sesion.idUsuario.toString()}');
+    var url =
+        Uri.parse('$baseUrl/empleado-registro/${sesion.idUsuario.toString()}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
