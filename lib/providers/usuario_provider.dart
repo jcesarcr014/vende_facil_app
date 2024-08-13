@@ -84,7 +84,9 @@ class UsuarioProvider {
               .map((json) => SucursalMapper.dataToSucursalModel(json))
               .toList();
           listaSucursales.addAll(sucursales);
+          globals.actualizaSucursales = false;
         } else {
+          globals.actualizaSucursales = false;
           sesion.idSucursal = decodedData["sucursales"];
         }
       } else {
