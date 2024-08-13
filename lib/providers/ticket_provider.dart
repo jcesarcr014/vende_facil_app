@@ -73,4 +73,29 @@ class TicketProvider {
     return respuesta;
   }
 
+  Future<TicketModel> getData(String negocioId) async {
+    final url = Uri.parse('$baseUrl/datos-ticket/$negocioId');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+
+      final responseJson = jsonDecode(response.body);
+      final data = responseJson["datos"];
+
+      if (responseJson["status"] != 1) {
+        throw 'Verifica tus datos.';
+      }
+      return TicketModel(
+        id: data["id"],
+        negocioId: data["negocio_id"],
+        message: data["mensaje"],
+        logo: data["logo"],
+      );
+    } catch (e) {
+      throw 'Inténtalo más tarde';
+    }
+  }
+
 }
