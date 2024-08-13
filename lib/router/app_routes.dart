@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/screens/empresa/agregar_sucursales.dart';
 import 'package:vende_facil/screens/empresa/lista_sucursales.dart';
-
 import 'package:vende_facil/screens/screens.dart';
 
 class AppRoutes {

@@ -35,23 +35,23 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
           mostrarAlerta(context, 'ERROR', value.mensaje!);
         }
       });
-    }else{
+    } else {
       if (globals.actualizarEmpleadoSucursales) {
-      setState(() {
-        textLoading = 'Leyendo Surcursales';
-        isLoading = true;
-      });
-      negocios.getlistaempleadosEnsucursales().then((value) {
         setState(() {
-          textLoading = '';
-          isLoading = false;
+          textLoading = 'Leyendo Surcursales';
+          isLoading = true;
         });
-        if (value.status != 1) {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    }
+        negocios.getlistaempleadosEnsucursales().then((value) {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+          if (value.status != 1) {
+            Navigator.pop(context);
+            mostrarAlerta(context, 'ERROR', value.mensaje!);
+          }
+        });
+      }
     }
 
     super.initState();
@@ -134,6 +134,11 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
           subtitle: Text(sucursale.direccion!),
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
+            print(sucursale.id);
+            print(sucursale.negocioId);
+            print(sucursale.nombreSucursal);
+            print(sucursale.direccion);
+            print(sucursale.telefono);
             sucursalSeleccionado.asignarValores(
               id: sucursale.id!,
               negocioId: sucursale.negocioId,

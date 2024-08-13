@@ -37,12 +37,13 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       setState(() {});
     } else {
       resultadosFiltrados.clear();
+
       resultadosFiltrados = listasucursalEmpleado
           .where((element) => element.usuarioId == sucursalSeleccionado.id)
           .toList();
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
-      controllerEmail.text = sucursalSeleccionado.direccion!;
-      controllerTelefono.text = sucursalSeleccionado.telefono!;
+      controllerEmail.text = sucursalSeleccionado.direccion ?? "";
+      controllerTelefono.text = sucursalSeleccionado.telefono ?? "";
       text.text = "Editar Sucursal";
       funcion.text = "Editar";
       setState(() {});
