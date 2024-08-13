@@ -50,16 +50,6 @@ class _SplashScreenState extends State<SplashScreen> {
           }
         });
         setState(() {
-          textLoading = 'Leyendo información de sucursales';
-        });
-        await negocios.getlistaSucursales().then((value) {
-          if (value.status == 1) {
-            globals.actualizaSucursales = false;
-          } else {
-            globals.actualizaSucursales = true;
-          }
-        });
-        setState(() {
           textLoading = 'Leyendo información de empleados';
         });
         await negocios.getlistaempleadosEnsucursales().then((value) {
@@ -134,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen> {
               '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
         } else {
           // ignore: use_build_context_synchronously
-          Navigator.pushReplacementNamed(context, 'home');
+          Navigator.pushReplacementNamed(context, 'menu');
         }
       }
     });
