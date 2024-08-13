@@ -78,6 +78,14 @@ class UsuarioProvider {
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+          listaSucursales.clear();
+          List<dynamic> sucursalesJson = decodedData['sucursales'];
+          List<Sucursale> sucursales = sucursalesJson
+              .map((json) => SucursalMapper.dataToSucursalModel(json))
+              .toList();
+          listaSucursales.addAll(sucursales);
+        } else {
+          sesion.idSucursal = decodedData["sucursales"];
         }
       } else {
         respuesta.status = 0;
@@ -113,13 +121,14 @@ class UsuarioProvider {
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-
           listaSucursales.clear();
-          List<dynamic> sucursalesJson = decodedData['sucursal_id'];
-          List<Sucursale> sucursales = sucursalesJson.map((json) => SucursalMapper.dataToSucursalModel(json)).toList();
+          List<dynamic> sucursalesJson = decodedData['sucursales'];
+          List<Sucursale> sucursales = sucursalesJson
+              .map((json) => SucursalMapper.dataToSucursalModel(json))
+              .toList();
           listaSucursales.addAll(sucursales);
         } else {
-          sesion.idSucursal = decodedData["sucursal_id"];
+          sesion.idSucursal = decodedData["sucursales"];
         }
       } else {
         respuesta.status = 0;
