@@ -50,17 +50,11 @@ class Search extends SearchDelegate {
             orElse: () => ColorCategoria(
                 id: categoria.idColor, nombreColor: "", color: Colors.grey));
         return ListTile(
-          leading: (producto.imagen == null)
-              ? Icon(Icons.category, color: color.color)
-              : FadeInImage(
-                  placeholder: const AssetImage('assets/loading.gif'),
-                  image: NetworkImage(producto.imagen!),
-                  width: windowWidth * 0.1,
-                ),
+          leading: Icon(Icons.category, color: color.color),
           onTap: (() {
             if (resultados[index].unidad == "0") {
             } else {
-              _agregaProductoVenta(resultados[index], 1,context);
+              _agregaProductoVenta(resultados[index], 1, context);
             }
           }),
           title: Row(
@@ -92,7 +86,7 @@ class Search extends SearchDelegate {
     );
   }
 
-  _agregaProductoVenta(Producto producto, cantidad,BuildContext context) {
+  _agregaProductoVenta(Producto producto, cantidad, BuildContext context) {
     bool existe = false;
     if (producto.unidad == "1") {
       for (ItemVenta item in ventaTemporal) {
@@ -114,9 +108,9 @@ class Search extends SearchDelegate {
             totalItem: producto.precio!,
             apartado: (producto.apartado == 1) ? true : false));
       }
-        _actualizaTotalTemporal();
-              Navigator.pushReplacementNamed(context, 'home');
-                 mostrarAlerta(context, '', 'Producto añadido');
+      _actualizaTotalTemporal();
+      Navigator.pushReplacementNamed(context, 'home');
+      mostrarAlerta(context, '', 'Producto añadido');
     } else {
       if (producto.unidad == "0") {
         for (ItemVenta item in ventaTemporal) {
@@ -139,8 +133,8 @@ class Search extends SearchDelegate {
               apartado: (producto.apartado == 1) ? true : false));
         }
         _actualizaTotalTemporal();
-         mostrarAlerta(context, '', 'Producto añadido');
-              Navigator.pushReplacementNamed(context, 'home');
+        mostrarAlerta(context, '', 'Producto añadido');
+        Navigator.pushReplacementNamed(context, 'home');
       } else {}
       _actualizaTotalTemporal();
     }

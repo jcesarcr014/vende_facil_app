@@ -46,7 +46,7 @@ class ConfigScreen extends StatelessWidget {
                     Navigator.pushNamed(context, 'perfil');
                   },
                 ),
-                (sesion.tipoUsuario == "P")
+                (sesion.tipoUsuario == "P" && sesion.idNegocio != 0)
                     ? ListTile(
                         leading: const Icon(CupertinoIcons.tag),
                         title: const Text(
@@ -65,7 +65,7 @@ class ConfigScreen extends StatelessWidget {
                         },
                       )
                     : Container(),
-                (sesion.tipoUsuario == "P")
+                (sesion.tipoUsuario == "P" && sesion.idNegocio != 0)
                     ? ListTile(
                         leading: const Icon(CupertinoIcons.ticket),
                         title: const Text(

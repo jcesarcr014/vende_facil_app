@@ -63,10 +63,9 @@ class _ProductosScreenState extends State<ProductosScreen> {
                 icon: const Icon(Icons.menu)),
             IconButton(
                 onPressed: () {
-                   showSearch(context: context, delegate: Searchproductos());
+                  showSearch(context: context, delegate: Searchproductos());
                 },
                 icon: const Icon(Icons.search)),
-            
           ],
         ),
         body: (isLoading)
@@ -131,19 +130,10 @@ class _ProductosScreenState extends State<ProductosScreen> {
             for (ColorCategoria color in listaColores) {
               if (color.id == categoria.idColor) {
                 listaProd.add(ListTile(
-                  leading: (producto.imagen == null)
-                      ? Icon(
-                          Icons.category,
-                          color: color.color,
-                        )
-                      : FadeInImage(
-                          placeholder: const AssetImage('assets/loading.gif'),
-                          image: NetworkImage(producto.imagen!),
-                          width: windowWidth * 0.1,
-                          imageErrorBuilder: (context, error, stackTrace) {
-                            return Image.asset('assets/no-image.jpg');
-                          },
-                        ),
+                  leading: Icon(
+                    Icons.category,
+                    color: color.color,
+                  ),
                   onTap: (() {
                     setState(() {
                       textLoading = 'Leyendo producto';

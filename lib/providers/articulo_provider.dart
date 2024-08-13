@@ -17,7 +17,6 @@ class ArticuloProvider {
         'categoria_id': producto.idCategoria.toString(),
         'nombre': producto.producto,
         'descripcion': producto.descripcion,
-        'imagen': producto.imagen,
         'unidad': producto.unidad.toString(),
         'precio': producto.precio!.toStringAsFixed(2),
         'costo': producto.costo!.toStringAsFixed(2),
@@ -65,7 +64,6 @@ class ArticuloProvider {
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
           productoTemp.inventario =
               int.parse(decodedData['data'][x]['aplica_inventario']);
-          productoTemp.imagen = decodedData['data'][x]['imagen'];
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
           listaProductos.add(productoTemp);
@@ -105,7 +103,6 @@ class ArticuloProvider {
         productoTemp.codigoBarras = decodedData['producto']['codigo_barras'];
         productoTemp.inventario =
             int.parse(decodedData['producto']['aplica_inventario']);
-        productoTemp.imagen = decodedData['producto']['imagen'];
         productoTemp.apartado =
             int.parse(decodedData['producto']['aplica_apartado']);
         if (productoTemp.inventario == 1) {
@@ -140,7 +137,6 @@ class ArticuloProvider {
         'categoria_id': producto.idCategoria.toString(),
         'nombre': producto.producto,
         'descripcion': producto.descripcion,
-        'imagen': producto.imagen,
         'unidad': producto.unidad.toString(),
         'precio': producto.precio.toString(),
         'costo': producto.costo.toString(),
