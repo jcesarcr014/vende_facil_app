@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
@@ -164,7 +166,12 @@ class _MenuScreenState extends State<MenuScreen> {
                       await SharedPreferences.getInstance();
                   prefs.setString('token', '');
                 }
-                // ignore: use_build_context_synchronously
+
+                if( menuRoutes[index] == 'home' && sesion.tipoUsuario == "P" ) {
+                  Navigator.pushNamed(context, 'select-branch-office');
+                  return;
+                }
+
                 Navigator.pushReplacementNamed(context, menuRoutes[index]);
               },
               child: Column(
