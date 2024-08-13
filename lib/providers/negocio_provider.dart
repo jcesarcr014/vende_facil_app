@@ -278,6 +278,7 @@ class NegocioProvider {
 
   Future<Resultado> getlistaempleadosEnsucursales() async {
     listasucursalEmpleado.clear();
+    print(sesion.idNegocio);
     var url = Uri.parse('$baseUrl/sucursales-empleados/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
@@ -287,6 +288,7 @@ class NegocioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
+        print(decodedData['data']);
         for (int i = 0; i < decodedData['data'].length; i++) {
           SucursalEmpleado Surcusalempleado = SucursalEmpleado();
           Surcusalempleado.id = decodedData['data'][i]['id'];
