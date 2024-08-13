@@ -1,11 +1,9 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/categoria_model.dart';
-import 'package:vende_facil/models/colores_cat_model.dart';
-import 'package:vende_facil/models/producto_model.dart';
+import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class Searchproductos extends SearchDelegate {
   final articulosProvider = ArticuloProvider();
@@ -54,27 +52,21 @@ class Searchproductos extends SearchDelegate {
             orElse: () => ColorCategoria(
                 id: categoria.idColor, nombreColor: "", color: Colors.grey));
         return ListTile(
-          leading: (producto.imagen == null)
-              ? Icon(Icons.category, color: color.color)
-              : FadeInImage(
-                  placeholder: const AssetImage('assets/loading.gif'),
-                  image: NetworkImage(producto.imagen!),
-                  width: windowWidth * 0.1,
-                ),
+          leading: Icon(Icons.category, color: color.color),
           onTap: (() {
             if (resultados[index].unidad == "0") {
             } else {
-                            articulosProvider
-                        .consultaProducto(resultados[index].id!)
-                        .then((value) {
-                      if (value.id != 0) {
-                        Navigator.pushNamed(context, 'nvo-producto',
-                            arguments: value);
-                      } else {
-                        mostrarAlerta(context, 'ERROR',
-                            'Error en la consulta: ${value.producto}');
-                      }
-                    });
+              articulosProvider
+                  .consultaProducto(resultados[index].id!)
+                  .then((value) {
+                if (value.id != 0) {
+                  Navigator.pushNamed(context, 'nvo-producto',
+                      arguments: value);
+                } else {
+                  mostrarAlerta(context, 'ERROR',
+                      'Error en la consulta: ${value.producto}');
+                }
+              });
             }
           }),
           title: Row(

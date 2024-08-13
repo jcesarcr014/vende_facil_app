@@ -9,7 +9,6 @@ class Producto {
   String? clave;
   String? codigoBarras;
   int? inventario;
-  String? imagen;
   int? apartado;
   int? idInventario;
   int? idNegocio;
@@ -29,7 +28,6 @@ class Producto {
     this.clave,
     this.codigoBarras,
     this.inventario,
-    this.imagen,
     this.apartado,
     this.idInventario,
     this.idNegocio,

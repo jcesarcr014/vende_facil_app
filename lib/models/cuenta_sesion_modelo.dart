@@ -2,6 +2,7 @@ class CuentaSesion {
   int? idUsuario;
   String? tipoUsuario;
   int? idNegocio;
+  int? idSucursal;
   String? token;
   String? nombreUsuario;
   String? email;
@@ -11,6 +12,7 @@ class CuentaSesion {
       {this.idUsuario,
       this.tipoUsuario,
       this.idNegocio,
+      this.idSucursal,
       this.token,
       this.nombreUsuario,
       this.email,
