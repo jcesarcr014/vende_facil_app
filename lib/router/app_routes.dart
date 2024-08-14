@@ -5,6 +5,7 @@ class AppRoutes {
   static const initialRoute = 'splash';
 
   static Map<String, Widget Function(BuildContext)> routes = {
+    'products-menu': (BuildContext context) => const ProductsScreen(),
     'splash': (BuildContext context) => const SplashScreen(),
     'select-branch-office': (BuildContext context) => const SucursalesScreen(),
     'home': (BuildContext context) => const HomeScreen(),

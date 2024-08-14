@@ -87,32 +87,6 @@ class _ProductosScreenState extends State<ProductosScreen> {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: windowWidth * 0.07),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'nvo-producto');
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text('Nuevo producto'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.02,
-                    ),
-                    const Divider(),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
                     Column(children: _productos())
                   ],
                 ),
