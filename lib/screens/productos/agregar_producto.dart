@@ -316,7 +316,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       child: Scaffold(
           appBar: AppBar(
             title: Text(title),
-            automaticallyImplyLeading: false,
             actions: [
               if (args.id != 0)
                 IconButton(
