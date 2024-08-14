@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/productos/products_screen.dart'; // Sub menu de Productos
 export 'package:vende_facil/screens/configuracion/ticket_screen.dart';
 export 'package:vende_facil/screens/empresa/empresa_conf.dart';
 export 'package:vende_facil/screens/usuarios/cambio_pass.dart';
