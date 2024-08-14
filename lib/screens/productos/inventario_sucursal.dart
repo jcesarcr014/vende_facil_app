@@ -1,25 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/sucursales_model.dart';
+import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/screens/search_screenProductos.dart';
 
-class InventoryPage extends StatelessWidget {
+class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
+
+  @override
+  State<InventoryPage> createState() => _InventoryPageState();
+}
+
+class _InventoryPageState extends State<InventoryPage> {
+  String? _selectedProduct;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('INVENTARIOS'),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
+              icon: const Icon(Icons.menu)),
+          IconButton(
+              onPressed: () =>
+                  showSearch(context: context, delegate: Searchproductos()),
+              icon: const Icon(Icons.search)),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const TextField(
-              decoration: InputDecoration(
+            DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
                 labelText: 'Nombre Producto',
                 border: OutlineInputBorder(),
               ),
+              value: _selectedProduct,
+              isExpanded: true,
+              items: listaProductos.map((producto) {
+                return DropdownMenuItem<String>(
+                  value: producto.producto,
+                  child: Text(producto.producto!),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedProduct = newValue;
+                });
+              },
             ),
             const SizedBox(height: 16),
             const TextField(
