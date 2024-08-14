@@ -1,10 +1,10 @@
-class Sucursale{
+class Sucursal {
   int? id;
   int? negocioId;
   String? nombreSucursal;
   String? direccion;
   String? telefono;
-  Sucursale({
+  Sucursal({
     this.id,
     this.negocioId,
     this.nombreSucursal,
@@ -18,6 +18,7 @@ class Sucursale{
     direccion = null;
     telefono = null;
   }
+
   void asignarValores({
     int? id,
     int? negocioId,
@@ -31,9 +32,7 @@ class Sucursale{
     this.direccion = direccion;
     this.telefono = telefono;
   }
-
-
-
 }
-List<Sucursale> listaSucursales = [];
-Sucursale sucursalSeleccionado = Sucursale();
+
+List<Sucursal> listaSucursales = [];
+Sucursal sucursalSeleccionado = Sucursal();

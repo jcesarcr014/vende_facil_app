@@ -37,3 +37,5 @@ export 'package:vende_facil/screens/splash_screen.dart';
 export 'package:vende_facil/screens/suscripcion/planes_screen.dart';
 export 'package:vende_facil/screens/empresa/inventario_sucursal.dart';
 export 'package:vende_facil/screens/select_branch_office.dart';
+export 'package:vende_facil/screens/empresa/agregar_sucursales.dart';
+export 'package:vende_facil/screens/empresa/lista_sucursales.dart';

@@ -120,7 +120,7 @@ class NegocioProvider {
     return respuesta;
   }
 
-  Future<Resultado> deleteSUcursal(Sucursale sucur) async {
+  Future<Resultado> deleteSUcursal(Sucursal sucur) async {
     var url = Uri.parse('$baseUrl/sucursal/${sucur.id}');
     try {
       final resp = await http.delete(url, headers: {
@@ -162,7 +162,7 @@ class NegocioProvider {
     return respuesta;
   }
 
-  Future<Resultado> editarSUcursal(Sucursale sucur) async {
+  Future<Resultado> editarSUcursal(Sucursal sucur) async {
     var url = Uri.parse('$baseUrl/sucursal/${sucur.id}');
     try {
       final resp = await http.put(url, headers: {
@@ -217,7 +217,7 @@ class NegocioProvider {
     return respuesta;
   }
 
-  Future<Resultado> addSucursal(Sucursale sucur) async {
+  Future<Resultado> addSucursal(Sucursal sucur) async {
     var url = Uri.parse('$baseUrl/sucursal/${sesion.idUsuario}');
     try {
       final resp = await http.post(url, headers: {
@@ -257,7 +257,7 @@ class NegocioProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         for (int i = 0; i < decodedData['data'].length; i++) {
-          Sucursale Surcusal = Sucursale();
+          Sucursal Surcusal = Sucursal();
           Surcusal.id = decodedData['data'][i]['id'];
           Surcusal.negocioId = decodedData['data'][i]['negocio_id'];
           Surcusal.nombreSucursal = decodedData['data'][i]['nombre_sucursal'];
@@ -278,7 +278,7 @@ class NegocioProvider {
 
   Future<Resultado> getlistaempleadosEnsucursales() async {
     listasucursalEmpleado.clear();
-    print(sesion.idNegocio);
+
     var url = Uri.parse('$baseUrl/sucursales-empleados/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
@@ -288,7 +288,7 @@ class NegocioProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        print(decodedData['data']);
+
         for (int i = 0; i < decodedData['data'].length; i++) {
           SucursalEmpleado Surcusalempleado = SucursalEmpleado();
           Surcusalempleado.id = decodedData['data'][i]['id'];

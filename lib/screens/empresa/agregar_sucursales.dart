@@ -59,6 +59,53 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     super.dispose();
   }
 
+  _guardarSucursal() {
+    if (estatus) {
+      Sucursal nueva = Sucursal();
+      nueva.negocioId = sesion.idNegocio;
+      nueva.nombreSucursal = controllerNombre.text;
+      nueva.direccion = controllerEmail.text;
+      nueva.telefono = controllerTelefono.text;
+      negocio.addSucursal(nueva).then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+          globals.actualizaSucursales = true;
+        });
+        if (value.status == 1) {
+          setState(() {
+            Navigator.pushReplacementNamed(context, 'lista-sucursales');
+          });
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
+    } else {
+      Sucursal nueva = Sucursal();
+      nueva.id = sucursalSeleccionado.id;
+      nueva.negocioId = sucursalSeleccionado.negocioId;
+      nueva.nombreSucursal = controllerNombre.text;
+      nueva.direccion = controllerEmail.text;
+      nueva.telefono = controllerTelefono.text;
+      negocio.editarSUcursal(nueva).then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+          globals.actualizaSucursales = true;
+        });
+        if (value.status == 1) {
+          setState(() {
+            Navigator.pushReplacementNamed(context, 'lista-sucursales');
+          });
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
@@ -92,8 +139,16 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
         ],
       ),
       body: (isLoading)
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Espere...$textLoading'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const CircularProgressIndicator(),
+                  ]),
             )
           : SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -103,7 +158,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      height: windowHeight * 0.10,
+                      height: windowHeight * 0.05,
                     ),
                     InputField(
                         textCapitalization: TextCapitalization.words,
@@ -128,56 +183,11 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                         labelText: 'Teléfono',
                         controller: controllerTelefono),
                     SizedBox(
-                      height: windowWidth * 0.1,
+                      height: windowHeight * 0.05,
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          if (estatus) {
-                            Sucursale nueva = Sucursale();
-                            nueva.negocioId = sesion.idNegocio;
-                            nueva.nombreSucursal = controllerNombre.text;
-                            nueva.direccion = controllerEmail.text;
-                            nueva.telefono = controllerTelefono.text;
-                            negocio.addSucursal(nueva).then((value) {
-                              setState(() {
-                                textLoading = '';
-                                isLoading = false;
-                                globals.actualizaSucursales = true;
-                              });
-                              if (value.status == 1) {
-                                setState(() {
-                                  Navigator.pushReplacementNamed(
-                                      context, 'lista-sucursales');
-                                });
-                                mostrarAlerta(context, '', value.mensaje!);
-                              } else {
-                                mostrarAlerta(context, 'ERROR', value.mensaje!);
-                              }
-                            });
-                          } else {
-                            Sucursale nueva = Sucursale();
-                            nueva.id = sucursalSeleccionado.id;
-                            nueva.negocioId = sucursalSeleccionado.negocioId;
-                            nueva.nombreSucursal = controllerNombre.text;
-                            nueva.direccion = controllerEmail.text;
-                            nueva.telefono = controllerTelefono.text;
-                            negocio.editarSUcursal(nueva).then((value) {
-                              setState(() {
-                                textLoading = '';
-                                isLoading = false;
-                                globals.actualizaSucursales = true;
-                              });
-                              if (value.status == 1) {
-                                setState(() {
-                                  Navigator.pushReplacementNamed(
-                                      context, 'lista-sucursales');
-                                });
-                                mostrarAlerta(context, '', value.mensaje!);
-                              } else {
-                                mostrarAlerta(context, 'ERROR', value.mensaje!);
-                              }
-                            });
-                          }
+                          _guardarSucursal();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -189,22 +199,19 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             Text(funcion.text),
                           ],
                         )),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
                     const Divider(),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.2,
-                          child: const Text(
-                            'Seleccione Empleado',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        SizedBox(width: windowWidth * 0.1),
-                        Expanded(
-                          child: _empleado(),
-                        ),
-                      ],
+                    SizedBox(
+                      height: windowHeight * 0.01,
+                    ),
+                    const Text(
+                      'Empleados asiganados:',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.01,
                     ),
                     Container(
                       child: SingleChildScrollView(
@@ -331,6 +338,32 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                           },
                         ),
                       ),
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.1,
+                    ),
+                    const Text(
+                      'Asignar empleado:',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: windowWidth * 0.2,
+                          child: const Text(
+                            'Seleccione Empleado',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: windowWidth * 0.1),
+                        Expanded(
+                          child: _empleado(),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.05,
                     ),
                     ElevatedButton(
                         onPressed: () {

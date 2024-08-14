@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/sucursales.model.dart';
+import 'package:vende_facil/models/sucursales_model.dart';
 
 class InventoryPage extends StatelessWidget {
   const InventoryPage({super.key});
@@ -31,24 +31,24 @@ class InventoryPage extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             DropdownButtonFormField<String>(
-            decoration: const InputDecoration(
-              labelText: 'Select con sucursales',
-              border: OutlineInputBorder(),
+              decoration: const InputDecoration(
+                labelText: 'Select con sucursales',
+                border: OutlineInputBorder(),
+              ),
+              items: listaSucursales
+                  .map((sucursal) => DropdownMenuItem(
+                        value: sucursal.nombreSucursal,
+                        child: Text(sucursal.nombreSucursal ?? ''),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                // Find the selected Sucursale based on the nombreSucursal
+                sucursalSeleccionado = listaSucursales.firstWhere(
+                  (sucursal) => sucursal.nombreSucursal == value,
+                  orElse: () => Sucursal(),
+                );
+              },
             ),
-            items: listaSucursales
-                .map((sucursal) => DropdownMenuItem(
-                      value: sucursal.nombreSucursal,
-                      child: Text(sucursal.nombreSucursal ?? ''),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              // Find the selected Sucursale based on the nombreSucursal
-              sucursalSeleccionado = listaSucursales.firstWhere(
-                (sucursal) => sucursal.nombreSucursal == value,
-                orElse: () => Sucursale(),
-              );
-            },
-          ),
             const SizedBox(height: 16),
             const TextField(
               decoration: InputDecoration(
@@ -68,7 +68,7 @@ class InventoryPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                                ElevatedButton(
+                ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, 'InventoryPage');
                   },
@@ -85,23 +85,23 @@ class InventoryPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'productos');
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.cancel_outlined),
-                  SizedBox(
-                    width: 5,
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, 'productos');
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cancel_outlined),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        'Cancelar',
+                      ),
+                    ],
                   ),
-                  Text(
-                    'Cancelar',
-                  ),
-                ],
-              ),
-            ),
+                ),
               ],
             ),
           ],
