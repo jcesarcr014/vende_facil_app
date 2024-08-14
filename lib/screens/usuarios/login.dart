@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             // ignore: duplicate_ignore
             // ignore: use_build_context_synchronously
-            Navigator.pushReplacementNamed(context, 'home');
+            Navigator.pushReplacementNamed(context, 'menu');
           }
         } else {
           setState(() {

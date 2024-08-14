@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/screens/empresa/agregar_sucursales.dart';
-import 'package:vende_facil/screens/empresa/lista_sucursales.dart';
 import 'package:vende_facil/screens/screens.dart';
 
 class AppRoutes {
@@ -42,8 +40,7 @@ class AppRoutes {
     'planes': (BuildContext context) => const PlanesScreen(),
     'nvo-pass': (BuildContext context) => const CambioPassScreen(),
     'lista-sucursales': (BuildContext context) => const ListaSucursalesScreen(),
-    'registro-sucursale': (BuildContext context) =>
-        const RegistroSucursalesScreen(),
+    'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage()
   };

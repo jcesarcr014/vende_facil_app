@@ -8,10 +8,10 @@ class ListaSucursalesScreen extends StatefulWidget {
   const ListaSucursalesScreen({super.key});
 
   @override
-  State<ListaSucursalesScreen> createState() => _ListaEmpleadosScreenState();
+  State<ListaSucursalesScreen> createState() => _ListaSucursalesScreenState();
 }
 
-class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
+class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
   final negocios = NegocioProvider();
   bool isLoading = false;
   String textLoading = '';
@@ -20,40 +20,35 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaSucursales) {
+    if (globals.actualizaSucursales || globals.actualizarEmpleadoSucursales) {
       setState(() {
         textLoading = 'Leyendo Surcursales';
         isLoading = true;
       });
-      negocios.getlistaSucursales().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-        });
-        if (value.status != 1) {
+      negocios.getlistaSucursales().then((respSuc) {
+        if (respSuc.status == 1) {
+          setState(() {
+            textLoading = 'Leyendo Empleados';
+          });
+          negocios.getlistaempleadosEnsucursales().then((value) {
+            setState(() {
+              textLoading = '';
+              isLoading = false;
+            });
+            if (value.status == 1) {
+              globals.actualizaSucursales = false;
+              globals.actualizarEmpleadoSucursales = false;
+            } else {
+              Navigator.pop(context);
+              mostrarAlerta(context, 'ERROR', value.mensaje!);
+            }
+          });
+        } else {
           Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
+          mostrarAlerta(context, 'ERROR', respSuc.mensaje!);
         }
       });
-    } else {
-      if (globals.actualizarEmpleadoSucursales) {
-        setState(() {
-          textLoading = 'Leyendo Surcursales';
-          isLoading = true;
-        });
-        negocios.getlistaempleadosEnsucursales().then((value) {
-          setState(() {
-            textLoading = '';
-            isLoading = false;
-          });
-          if (value.status != 1) {
-            Navigator.pop(context);
-            mostrarAlerta(context, 'ERROR', value.mensaje!);
-          }
-        });
-      }
     }
-
     super.initState();
   }
 
@@ -90,7 +85,7 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         sucursalSeleccionado.limpiar();
-                        Navigator.pushNamed(context, 'registro-sucursale');
+                        Navigator.pushNamed(context, 'nva-sucursal');
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -111,50 +106,45 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
                   SizedBox(
                     height: windowHeight * 0.01,
                   ),
-                  Column(children: _empleados())
+                  Column(children: _sucursales())
                 ]),
               ));
   }
 
-  _empleados() {
-    List<Widget> empleados = [];
+  _sucursales() {
+    List<Widget> sucursales = [];
     for (int i = 0; i < listaSucursales.length; i++) {
-      Sucursale sucursale = listaSucursales[i];
-      empleados.add(
+      Sucursal sucursal = listaSucursales[i];
+      sucursales.add(
         ListTile(
           leading: const Icon(Icons.home),
           title: Text(
-            sucursale.nombreSucursal!,
+            sucursal.nombreSucursal!,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text(sucursale.direccion!),
+          subtitle: Text(sucursal.direccion!),
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
-            print(sucursale.id);
-            print(sucursale.negocioId);
-            print(sucursale.nombreSucursal);
-            print(sucursale.direccion);
-            print(sucursale.telefono);
             sucursalSeleccionado.asignarValores(
-              id: sucursale.id!,
-              negocioId: sucursale.negocioId,
-              nombreSucursal: sucursale.nombreSucursal,
-              direccion: sucursale.direccion,
-              telefono: sucursale.telefono,
+              id: sucursal.id!,
+              negocioId: sucursal.negocioId,
+              nombreSucursal: sucursal.nombreSucursal,
+              direccion: sucursal.direccion,
+              telefono: sucursal.telefono,
             );
-            Navigator.pushNamed(context, 'registro-sucursale');
+            Navigator.pushNamed(context, 'nva-sucursal');
           },
         ),
       );
     }
-    if (empleados.isEmpty) {
+    if (sucursales.isEmpty) {
       final TextTheme textTheme = Theme.of(context).textTheme;
 
-      empleados.add(Column(
+      sucursales.add(Column(
         children: [
           const Opacity(
             opacity: 0.2,
@@ -173,6 +163,6 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
         ],
       ));
     }
-    return empleados;
+    return sucursales;
   }
 }
