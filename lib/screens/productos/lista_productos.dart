@@ -52,7 +52,6 @@ class _ProductosScreenState extends State<ProductosScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Productos'),
-          automaticallyImplyLeading: false,
           actions: [
             //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
             //IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),

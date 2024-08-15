@@ -14,6 +14,7 @@ class SuscripcionScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text('Suscripción y método de pago'),
           actions: [
             IconButton(

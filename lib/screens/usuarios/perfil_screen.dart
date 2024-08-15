@@ -1,8 +1,10 @@
-// ignore_for_file: use_super_parameters, use_build_context_synchronously
+// ignore_for_file: use_super_parameters, use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
+import 'package:vende_facil/providers/providers.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -86,11 +88,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
               subtitle: const Text('Salir de la sesión actual'),
               trailing: const Icon(Icons.arrow_right),
-              onTap: () async {
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                prefs.setString('token', '');
-                Navigator.pushReplacementNamed(context, 'login');
+              onTap: () {
+                UsuarioProvider().logout().then((value) async {
+                  if (value.status == 1) {
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.setString('token', '');
+                    Navigator.pushReplacementNamed(context, 'login');
+                  } else {
+                    mostrarAlerta(context, "Alerta", value.mensaje!);
+                  }
+                });
               },
             ),
           ],

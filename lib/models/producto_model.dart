@@ -4,7 +4,9 @@ class Producto {
   String? descripcion;
   int? idCategoria;
   String? unidad;
-  double? precio;
+  double? precioPublico;
+  double? precioMayoreo;
+  double? precioDist;
   double? costo;
   String? clave;
   String? codigoBarras;
@@ -23,7 +25,9 @@ class Producto {
     this.descripcion,
     this.idCategoria,
     this.unidad,
-    this.precio,
+    this.precioPublico,
+    this.precioMayoreo,
+    this.precioDist,
     this.costo,
     this.clave,
     this.codigoBarras,
