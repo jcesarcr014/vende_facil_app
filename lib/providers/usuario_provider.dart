@@ -142,6 +142,30 @@ class UsuarioProvider {
     }
     return respuesta;
   }
+  Future<Resultado> logout(String email, String pass) async {
+    var url = Uri.parse('$baseUrl/usuario-logout/${sesion.idUsuario}');
+    
+    try {
+      final resp = await http.post(url,headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'email': email,
+        'password': pass,
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
 
   Future<Usuario> consultaUsuario() async {
     Usuario user = Usuario();
