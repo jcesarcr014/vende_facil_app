@@ -117,7 +117,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
-      producto.precio = double.parse(controllerPrecio.text.replaceAll(',', ''));
+      producto.precioPublico = double.parse(controllerPrecio.text.replaceAll(',', ''));
       producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
@@ -182,7 +182,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
         if (producto.producto == controllerProducto ||
             producto.descripcion == controllerDescripcion ||
-            producto.precio == controllerPrecio ||
+            producto.precioPublico == controllerPrecio ||
             producto.codigoBarras == controllerCodigoB ||
             producto.clave == controllerClave ||
             producto.inventario == inventario ||
@@ -299,7 +299,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       controllerProducto.text = args.producto!;
       controllerDescripcion.text = args.descripcion!;
       controllerPrecio.text =
-          (args.precio != null) ? args.precio!.toStringAsFixed(2) : '0.00';
+          (args.precioPublico != null) ? args.precioPublico!.toStringAsFixed(2) : '0.00';
 
       controllercosto.text =
           (args.costo != null) ? args.costo!.toStringAsFixed(2) : '0.00';

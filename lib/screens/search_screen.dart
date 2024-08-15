@@ -101,11 +101,11 @@ class Search extends SearchDelegate {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
             cantidad: 1,
-            precio: producto.precio!,
+            precio: producto.precioPublico!,
             idDescuento: 0,
             descuento: 0,
-            subTotalItem: producto.precio!,
-            totalItem: producto.precio!,
+            subTotalItem: producto.precioPublico!,
+            totalItem: producto.precioPublico!,
             apartado: (producto.apartado == 1) ? true : false));
       }
       _actualizaTotalTemporal();
@@ -125,11 +125,11 @@ class Search extends SearchDelegate {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
               cantidad: cantidad,
-              precio: producto.precio!,
+              precio: producto.precioPublico!,
               idDescuento: 0,
               descuento: 0,
-              subTotalItem: producto.precio!,
-              totalItem: producto.precio! * cantidad,
+              subTotalItem: producto.precioPublico!,
+              totalItem: producto.precioPublico! * cantidad,
               apartado: (producto.apartado == 1) ? true : false));
         }
         _actualizaTotalTemporal();

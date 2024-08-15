@@ -278,7 +278,13 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> listaProd = [];
     if (listaProductos.isNotEmpty) {
       for (Producto producto in listaProductos) {
+        print(producto.producto);
         for (Categoria categoria in listaCategorias) {
+          print(categoria.categoria);
+          print(
+            producto.idCategoria,
+          );
+          print(categoria.id);
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {
               if (color.id == categoria.idColor) {
@@ -366,11 +372,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
             cantidad: 1,
-            precio: producto.precio!,
+            precio: producto.precioPublico!,
             idDescuento: 0,
             descuento: 0,
-            subTotalItem: producto.precio!,
-            totalItem: producto.precio!,
+            subTotalItem: producto.precioPublico!,
+            totalItem: producto.precioPublico!,
             apartado: (producto.apartado == 1) ? true : false));
       }
       _actualizaTotalTemporal();
@@ -388,11 +394,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
               cantidad: cantidad,
-              precio: producto.precio!,
+              precio: producto.precioPublico!,
               idDescuento: 0,
               descuento: 0,
-              subTotalItem: producto.precio!,
-              totalItem: producto.precio! * cantidad,
+              subTotalItem: producto.precioPublico!,
+              totalItem: producto.precioPublico! * cantidad,
               apartado: (producto.apartado == 1) ? true : false));
         }
         _actualizaTotalTemporal();
