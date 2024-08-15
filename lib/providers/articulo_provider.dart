@@ -71,7 +71,10 @@ class ArticuloProvider {
           productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
           productoTemp.clave = decodedData['data'][x]['clave'];
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
-          productoTemp.cantidad =double.parse(decodedData['data'][x]['cantidad']);
+
+          productoTemp.cantidad =
+              double.parse(decodedData['data'][x]['cantidad']);
+
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
           listaProductos.add(productoTemp);
@@ -114,20 +117,13 @@ class ArticuloProvider {
         productoTemp.costo = double.parse(decodedData['producto']['costo']);
         productoTemp.clave = decodedData['producto']['clave'];
         productoTemp.codigoBarras = decodedData['producto']['codigo_barras'];
-        productoTemp.cantidad = decodedData['producto']['cantidad'];
+
+        productoTemp.cantidad =
+            double.parse(decodedData['producto']['cantidad']);
         productoTemp.apartado =
             int.parse(decodedData['producto']['aplica_apartado']);
-        if (productoTemp.inventario == 1) {
-          productoTemp.idInventario = decodedData['inventario']['id'];
-          productoTemp.idNegocio = decodedData['inventario']['negocio_id'];
-          productoTemp.idproducto = decodedData['inventario']['producto_id'];
-          productoTemp.cantidad =
-              double.parse(decodedData['inventario']['cantidad']);
-          productoTemp.catidadApartado =
-              double.parse(decodedData['inventario']['apartado']);
-          productoTemp.disponible =
-              double.parse(decodedData['inventario']['disponibles']);
-        }
+
+       
       } else {
         productoTemp.id = 0;
         productoTemp.producto = decodedData['msg'];

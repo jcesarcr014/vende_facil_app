@@ -187,7 +187,12 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          _guardarSucursal();
+                          if (estatus) {
+                            _agregar(sesion.idNegocio, controllerNombre.text,
+                                controllerEmail.text, controllerTelefono.text);
+                          } else {
+                            _editar();
+                          }
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -409,6 +414,53 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
               ),
             ),
     );
+  }
+  _editar(){
+    Sucursal nueva = Sucursal();
+      nueva.id = sucursalSeleccionado.id;
+      nueva.negocioId = sucursalSeleccionado.negocioId;
+      nueva.nombreSucursal = controllerNombre.text;
+      nueva.direccion = controllerEmail.text;
+      nueva.telefono = controllerTelefono.text;
+      negocio.editarSUcursal(nueva).then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+          globals.actualizaSucursales = true;
+        });
+        if (value.status == 1) {
+          setState(() {
+            Navigator.pushReplacementNamed(
+                context, 'lista-sucursales');
+          });
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
+  }
+
+  _agregar(seccion, nombre, direcion, telefono) {
+    Sucursal nueva = Sucursal();
+    nueva.negocioId = seccion;
+    nueva.nombreSucursal = nombre;
+    nueva.direccion = direcion;
+    nueva.telefono = telefono;
+    negocio.addSucursal(nueva).then((value) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+        globals.actualizaSucursales = true;
+      });
+      if (value.status == 1) {
+        setState(() {
+          Navigator.pushReplacementNamed(context, 'lista-sucursales');
+        });
+        mostrarAlerta(context, '', value.mensaje!);
+      } else {
+        mostrarAlerta(context, 'ERROR', value.mensaje!);
+      }
+    });
   }
 
   _empleado() {
