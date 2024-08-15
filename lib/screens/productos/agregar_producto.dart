@@ -27,6 +27,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final controllerCodigoB = TextEditingController();
   final controllerCantidad = TextEditingController();
 
+  final controllerPrecioMayoreo = TextEditingController();
+  final controllerPrecioDirecto = TextEditingController();
+
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -69,9 +72,20 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       errores++;
     }
     if (controllerPrecio.text.isEmpty) {
-      mensaje += 'Precio, ';
+      mensaje += 'Precio Público, ';
       errores++;
     }
+
+    if (controllerPrecioMayoreo.text.isEmpty) {
+      mensaje += 'Precio Mayoreo, ';
+      errores++;
+    }
+
+    if (controllerPrecioDirecto.text.isEmpty) {
+      mensaje += 'Precio Directo, ';
+      errores++;
+    }
+
     if (controllercosto.text.isEmpty) {
       mensaje += 'Costo, ';
       errores++;
@@ -102,7 +116,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
-      producto.precio = double.parse(controllerPrecio.text.replaceAll(',', ''));
       producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
@@ -167,7 +180,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
         if (producto.producto == controllerProducto ||
             producto.descripcion == controllerDescripcion ||
-            producto.precio == controllerPrecio ||
             producto.codigoBarras == controllerCodigoB ||
             producto.clave == controllerClave ||
             producto.inventario == inventario ||
@@ -209,9 +221,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  '¿Desea eliminar el articulo ${args.producto} ? Esta acción no podrá revertirse.',
-                )
+                Text('¿Desea eliminar el articulo ${args.producto} ? Esta acción no podrá revertirse.',)
               ],
             ),
             actions: [
@@ -221,9 +231,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     _eliminarProducto();
                   },
                   child: const Text('Eliminar')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
+              ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar'))
             ],
           );
         });
@@ -284,7 +292,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       controllerProducto.text = args.producto!;
       controllerDescripcion.text = args.descripcion!;
       controllerPrecio.text =
-          (args.precio != null) ? args.precio!.toStringAsFixed(2) : '0.00';
 
       controllercosto.text =
           (args.costo != null) ? args.costo!.toStringAsFixed(2) : '0.00';
@@ -331,9 +338,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Espere...$textLoading'),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10,),
                         const CircularProgressIndicator(),
                       ]),
                 )
@@ -341,56 +346,37 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                   padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                      InputField(
-                          labelText: 'Producto:',
-                          textCapitalization: TextCapitalization.sentences,
-                          controller: controllerProducto),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      InputField(
-                          labelText: 'Descripción:',
-                          textCapitalization: TextCapitalization.sentences,
-                          controller: controllerDescripcion),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
+                      SizedBox(height: windowHeight * 0.05,),
+                      InputField(labelText: 'Producto:',textCapitalization: TextCapitalization.sentences,controller: controllerProducto),
+                      SizedBox(height: windowHeight * 0.03,),
+                      InputField(labelText: 'Descripción:',textCapitalization: TextCapitalization.sentences,controller: controllerDescripcion),
+                      SizedBox(height: windowHeight * 0.03,),
                       _categorias(),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
+                      SizedBox(height: windowHeight * 0.03,),
                       SwitchListTile.adaptive(
-                          title: const Text('Vendido por: '),
-                          subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
-                          value: _valuePieza,
-                          onChanged: (value) {
-                            _valuePieza = value;
-                            setState(() {});
-                          }),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      InputFieldMoney(
-                          controller: controllerPrecio, labelText: 'Precio'),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      InputFieldMoney(
-                          controller: controllercosto, labelText: 'Costo'),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
+                        title: const Text('Vendido por: '),
+                        subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
+                        value: _valuePieza,
+                        onChanged: (value) {
+                          _valuePieza = value;
+                          setState(() {});
+                        }),
+                      SizedBox(height: windowHeight * 0.03,),
+                      InputFieldMoney(controller: controllercosto, labelText: 'Costo'),
+                      SizedBox(height: windowHeight * 0.03,),
+                      InputFieldMoney(controller: controllerPrecio, labelText: 'Precio Público'),
+                      SizedBox(height: windowHeight * 0.03,),
+                      InputFieldMoney(controller: controllerPrecioMayoreo, labelText: 'Precio Mayoreo'),
+                      SizedBox(height: windowHeight * 0.03,),
+                      InputFieldMoney(controller: controllerPrecioDirecto, labelText: 'Precio Directo'),
+                      SizedBox(height: windowHeight * 0.03,),
                       InputField(
-                          readOnly: true,
-                          labelText: 'Clave:',
-                          textCapitalization: TextCapitalization.none,
-                          controller: controllerClave),
-                      SizedBox(
-                        height: windowHeight * 0.03,
+                        readOnly: true,
+                        labelText: 'Clave:',
+                        textCapitalization: TextCapitalization.none,
+                        controller: controllerClave
                       ),
+                      SizedBox(height: windowHeight * 0.03,),
                       InputField(
                           labelText: 'Código de barras:',
                           textCapitalization: TextCapitalization.none,
@@ -411,18 +397,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             },
                           ),
                           controller: controllerCodigoB),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
+                      SizedBox(height: windowHeight * 0.03,),
                       InputField(
                         labelText: 'Cantidad:',
                         keyboardType: TextInputType.number,
                         controller: controllerCantidad,
                         readOnly: (args.id == 0) ? false : true,
                       ),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
+                      SizedBox(height: windowHeight * 0.03,),
                       SwitchListTile.adaptive(
                           title: const Text('Se puede apartar'),
                           value: _valueApartado,
@@ -430,12 +412,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             _valueApartado = value;
                             setState(() {});
                           }),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
+                      SizedBox(height: windowHeight * 0.03,),
+                      SizedBox(height: windowHeight * 0.05,),
                       Wrap(
                         alignment: WrapAlignment.spaceBetween,
                         children: [
@@ -445,40 +423,25 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.save),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Guardar',
-                                ),
+                                SizedBox(width: 5,),
+                                Text('Guardar'),
                               ],
                             ),
                           ),
-                          const SizedBox(
-                            height: 50,
-                          ),
+                          const SizedBox(height: 50,),
                           if (args.id != 0)
                             ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushReplacementNamed(
-                                    context, 'InventoryPage');
-                              },
+                              onPressed: () => Navigator.pushReplacementNamed(context, 'InventoryPage'),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.save),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Sucursal Inventario',
-                                  ),
+                                  SizedBox(width: 5,),
+                                  Text('Sucursal Inventario',),
                                 ],
                               ),
                             ),
-                          const SizedBox(
-                            height: 50,
-                          ),
+                          const SizedBox(height: 50,),
                           ElevatedButton(
                             onPressed: () {
                               globals.actualizaArticulos = true;
@@ -489,20 +452,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.cancel_outlined),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Cancelar',
-                                ),
+                                SizedBox(width: 5,),
+                                Text('Cancelar',),
                               ],
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: windowHeight * 0.08,
-                      ),
+                      SizedBox(height: windowHeight * 0.08,),
                     ],
                   ),
                 )),
