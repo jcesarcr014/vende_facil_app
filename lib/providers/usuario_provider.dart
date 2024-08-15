@@ -80,7 +80,7 @@ class UsuarioProvider {
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
           listaSucursales.clear();
           List<dynamic> sucursalesJson = decodedData['sucursales'];
-          List<Sucursale> sucursales = sucursalesJson
+          List<Sucursal> sucursales = sucursalesJson
               .map((json) => SucursalMapper.dataToSucursalModel(json))
               .toList();
           listaSucursales.addAll(sucursales);
@@ -125,7 +125,7 @@ class UsuarioProvider {
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
           listaSucursales.clear();
           List<dynamic> sucursalesJson = decodedData['sucursales'];
-          List<Sucursale> sucursales = sucursalesJson
+          List<Sucursal> sucursales = sucursalesJson
               .map((json) => SucursalMapper.dataToSucursalModel(json))
               .toList();
           listaSucursales.addAll(sucursales);

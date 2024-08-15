@@ -20,5 +20,5 @@ export 'package:vende_facil/models/variable_model.dart';
 export 'package:vende_facil/models/suscripcion_model.dart';
 export 'package:vende_facil/models/plan_model.dart';
 export 'package:vende_facil/models/detalle_plan_model.dart';
-export 'package:vende_facil/models/sucursales.model.dart';
+export 'package:vende_facil/models/sucursales_model.dart';
 export 'package:vende_facil/models/sucursalEmpleado_model.dart';

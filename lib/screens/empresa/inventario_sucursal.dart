@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/sucursales.model.dart';
+import 'package:vende_facil/models/sucursales_model.dart';
 
 class InventoryPage extends StatelessWidget {
   const InventoryPage({super.key});
@@ -58,7 +58,7 @@ class InventoryPage extends StatelessWidget {
               // Find the selected Sucursale based on the nombreSucursal
               sucursalSeleccionado = listaSucursales.firstWhere(
                 (sucursal) => sucursal.nombreSucursal == value,
-                orElse: () => Sucursale(),
+                orElse: () => Sucursal(),
               );
             },
           ),

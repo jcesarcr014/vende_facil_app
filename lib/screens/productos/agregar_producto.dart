@@ -97,22 +97,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             : 'Actualizando articulo';
         isLoading = true;
       });
-      // if (_rutaProducto != '') {
-      //   await imagenProvider.subirImagen(imagenProducto).then((value) {
-      //     if (value.status == 1) {
-      //       producto.imagen = value.url;
-      //     } else {
-      //       setState(() {
-      //         isLoading = false;
-      //         textLoading = '';
-      //       });
-      //       mostrarAlerta(context, '', value.mensaje!);
-      //     }
-      //   });
-      // } else {
-      //   _valueImagen = true;
-      //   producto.imagen = '';
-      // }
+
       producto.producto = controllerProducto.text;
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
@@ -434,9 +419,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                         labelText: 'Cantidad:',
                         keyboardType: TextInputType.number,
                         controller: controllerCantidad,
-                        enabled: args.cantidad == null
-                            ? false
-                            : true && sesion.tipoUsuario == "P",
+                        readOnly: (args.id == 0) ? false : true,
                       ),
                       SizedBox(
                         height: windowHeight * 0.03,

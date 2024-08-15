@@ -172,6 +172,11 @@ class _MenuScreenState extends State<MenuScreen> {
                   return;
                 }
 
+                if( menuRoutes[index] == 'productos') {
+                  Navigator.pushNamed(context, 'products-menu');
+                  return;
+                }
+
                 Navigator.pushReplacementNamed(context, menuRoutes[index]);
               },
               child: Column(

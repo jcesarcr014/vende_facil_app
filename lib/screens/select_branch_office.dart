@@ -38,13 +38,15 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     final sucursalSeleccionada = listaSucursales.firstWhere(
-                        (sucursal) => sucursal.id.toString() == _valueIdSucursal);
+                        (sucursal) =>
+                            sucursal.id.toString() == _valueIdSucursal);
                     sesion.idSucursal = sucursalSeleccionada.id;
                     Navigator.pushNamed(context, 'home');
                   },
                   child: const Text(
                     'Aceptar',
-                    style: TextStyle(fontSize: 22), // Aumentar el tamaño del texto
+                    style:
+                        TextStyle(fontSize: 22), // Aumentar el tamaño del texto
                   ),
                 ),
               ),
@@ -61,7 +63,7 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
           value: '0', child: SizedBox(child: Text('Seleccione sucursal')))
     ];
 
-    for (Sucursale sucursal in listaSucursales) {
+    for (Sucursal sucursal in listaSucursales) {
       listaSucursalesItems.add(DropdownMenuItem(
         value: sucursal.id.toString(),
         child: Text(sucursal.nombreSucursal!),
