@@ -46,7 +46,6 @@ class ArticuloProvider {
   }
 
   Future<Resultado> listarProductos() async {
-    listaProductos.clear();
     var url = Uri.parse('$baseUrl/productos/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
@@ -54,6 +53,7 @@ class ArticuloProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
           productoTemp.id = decodedData['data'][x]['id'];
@@ -71,8 +71,10 @@ class ArticuloProvider {
           productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
           productoTemp.clave = decodedData['data'][x]['clave'];
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+
           productoTemp.cantidad =
               double.parse(decodedData['data'][x]['cantidad']);
+
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
           listaProductos.add(productoTemp);
@@ -115,10 +117,13 @@ class ArticuloProvider {
         productoTemp.costo = double.parse(decodedData['producto']['costo']);
         productoTemp.clave = decodedData['producto']['clave'];
         productoTemp.codigoBarras = decodedData['producto']['codigo_barras'];
+
         productoTemp.cantidad =
             double.parse(decodedData['producto']['cantidad']);
         productoTemp.apartado =
             int.parse(decodedData['producto']['aplica_apartado']);
+
+       
       } else {
         productoTemp.id = 0;
         productoTemp.producto = decodedData['msg'];

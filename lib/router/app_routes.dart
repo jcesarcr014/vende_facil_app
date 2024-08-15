@@ -5,6 +5,8 @@ class AppRoutes {
   static const initialRoute = 'splash';
 
   static Map<String, Widget Function(BuildContext)> routes = {
+    'eliminar-producto-sucursal': (BuildContext context) => const EliminarProductoSucursal(),
+    'agregar-producto-sucursal': (BuildContext context) => const AgregarProductoSucursal(),
     'products-menu': (BuildContext context) => const ProductsScreen(),
     'splash': (BuildContext context) => const SplashScreen(),
     'select-branch-office': (BuildContext context) => const SucursalesScreen(),

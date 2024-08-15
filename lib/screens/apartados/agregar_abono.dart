@@ -39,6 +39,7 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Abono a venta'),
+        automaticallyImplyLeading: false,
         actions: [
           // ignore: sized_box_for_whitespace
           Container(
