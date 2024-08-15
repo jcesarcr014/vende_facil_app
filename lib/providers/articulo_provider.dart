@@ -116,7 +116,6 @@ class ArticuloProvider {
           productoTemp.disponible =
               double.parse(decodedData['inventario']['disponibles']);
         }
-        listaProductos.add(productoTemp);
       } else {
         productoTemp.id = 0;
         productoTemp.producto = decodedData['msg'];

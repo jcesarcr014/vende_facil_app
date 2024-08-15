@@ -8,7 +8,20 @@ class InventoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('INVENTARIOS'),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context); // Eliminar la vista actual
+                Navigator.pushNamed(context, 'productos');
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            const SizedBox(width: 8), // Espacio entre el icono y el texto
+            const Text('INVENTARIOS'),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -134,11 +134,6 @@ class _ListaEmpleadosScreenState extends State<ListaSucursalesScreen> {
           subtitle: Text(sucursale.direccion!),
           trailing: const Icon(Icons.arrow_right),
           onTap: () {
-            print(sucursale.id);
-            print(sucursale.negocioId);
-            print(sucursale.nombreSucursal);
-            print(sucursale.direccion);
-            print(sucursale.telefono);
             sucursalSeleccionado.asignarValores(
               id: sucursale.id!,
               negocioId: sucursale.negocioId,
