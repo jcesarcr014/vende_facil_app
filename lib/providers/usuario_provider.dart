@@ -142,15 +142,12 @@ class UsuarioProvider {
     }
     return respuesta;
   }
-  Future<Resultado> logout(String email, String pass) async {
+  Future<Resultado> logout() async {
     var url = Uri.parse('$baseUrl/usuario-logout/${sesion.idUsuario}');
     
     try {
       final resp = await http.post(url,headers: {
         'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'email': email,
-        'password': pass,
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

@@ -311,8 +311,8 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       _valueInventario = (args.inventario == 0) ? false : true;
       _valueApartado = (args.apartado == 0) ? false : true;
       if (_valueInventario) {
-        controllerCantidad.text = (args.disponible != null)
-            ? args.disponible!.toStringAsFixed(2)
+        controllerCantidad.text = (args.cantidad != null)
+            ? args.cantidad!.toStringAsFixed(2)
             : '0.00';
       }
     } else {
@@ -434,7 +434,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                         labelText: 'Cantidad:',
                         keyboardType: TextInputType.number,
                         controller: controllerCantidad,
-                        enabled: args.disponible == null
+                        enabled: args.cantidad == null
                             ? false
                             : true && sesion.tipoUsuario == "P",
                       ),
