@@ -28,7 +28,6 @@ class ArticuloProvider {
         'aplica_apartado': producto.apartado.toString(),
       });
       final decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -53,7 +52,6 @@ class ArticuloProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
-
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
           productoTemp.id = decodedData['data'][x]['id'];
@@ -71,10 +69,8 @@ class ArticuloProvider {
           productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
           productoTemp.clave = decodedData['data'][x]['clave'];
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
-
           productoTemp.cantidad =
               double.parse(decodedData['data'][x]['cantidad']);
-
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
           listaProductos.add(productoTemp);
@@ -95,13 +91,11 @@ class ArticuloProvider {
   Future<Producto> consultaProducto(int idProd) async {
     Producto productoTemp = Producto();
     var url = Uri.parse('$baseUrl/producto/$idProd');
-
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
         productoTemp.id = decodedData['producto']['id'];
         productoTemp.producto = decodedData['producto']['nombre'];
@@ -117,13 +111,10 @@ class ArticuloProvider {
         productoTemp.costo = double.parse(decodedData['producto']['costo']);
         productoTemp.clave = decodedData['producto']['clave'];
         productoTemp.codigoBarras = decodedData['producto']['codigo_barras'];
-
         productoTemp.cantidad =
             double.parse(decodedData['producto']['cantidad']);
         productoTemp.apartado =
             int.parse(decodedData['producto']['aplica_apartado']);
-
-       
       } else {
         productoTemp.id = 0;
         productoTemp.producto = decodedData['msg'];
@@ -189,6 +180,102 @@ class ArticuloProvider {
       respuesta.mensaje = 'Error en la peticion. $e';
     }
 
+    return respuesta;
+  }
+
+  //SUCURSALES
+  Future<Resultado> listarProductosSucursal(int idSucursal) async {
+    var url = Uri.parse('$baseUrl/productos-sucursal/$idSucursal');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          Producto productoTemp = Producto();
+          productoTemp.id = decodedData['data'][x]['id'];
+          productoTemp.producto = decodedData['data'][x]['nombre'];
+          productoTemp.idNegocio = decodedData['data'][x]['negocio_id'];
+          productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
+          productoTemp.unidad = decodedData['data'][x]['unidad'];
+          productoTemp.precioPublico =
+              double.parse(decodedData['data'][x]['precio_publico']);
+          productoTemp.precioMayoreo =
+              double.parse(decodedData['data'][x]['precio_mayoreo']);
+
+          productoTemp.precioDist =
+              double.parse(decodedData['data'][x]['precio_dist']);
+          productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
+          productoTemp.clave = decodedData['data'][x]['clave'];
+          productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+          productoTemp.cantidad =
+              double.parse(decodedData['data'][x]['cantidad']);
+          productoTemp.apartado =
+              int.parse(decodedData['data'][x]['aplica_apartado']);
+          productoTemp.idInv = decodedData['data'][x]['aplica_apartado'];
+          listaProductos.add(productoTemp);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> nvoInventarioSuc(Producto producto) async {
+    var url = Uri.parse('$baseUrl/inventario-nuevo/${sesion.idUsuario}');
+    try {
+      final resp = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}'
+      }, body: {
+        'sucursal_id': producto.idSucursal.toString(),
+        'producto_id': producto.id.toString(),
+        'cantidad': producto.cantidadInv.toString()
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> agregarProdSucursal(Producto producto) async {
+    var url = Uri.parse('$baseUrl/inventario-nuevo/${sesion.idUsuario}');
+    try {
+      final resp = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}'
+      }, body: {
+        'sucursal_id': producto.idSucursal.toString(),
+        'producto_id': producto.id.toString(),
+        'cantidad': producto.cantidadInv.toString()
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
     return respuesta;
   }
 }

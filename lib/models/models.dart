@@ -8,7 +8,6 @@ export 'package:vende_facil/models/categoria_model.dart';
 export 'package:vende_facil/models/cliente_model.dart';
 export 'package:vende_facil/models/colores_cat_model.dart';
 export 'package:vende_facil/models/descuento_model.dart';
-export 'package:vende_facil/models/inventario_model.dart';
 export 'package:vende_facil/models/item_venta_model.dart';
 export 'package:vende_facil/models/negocio_model.dart';
 export 'package:vende_facil/models/producto_model.dart';

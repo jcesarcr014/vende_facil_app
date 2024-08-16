@@ -1,45 +1,46 @@
 class Producto {
   int? id;
+  int? idCategoria;
+  int? idNegocio;
   String? producto;
   String? descripcion;
-  int? idCategoria;
   String? unidad;
   double? precioPublico;
   double? precioMayoreo;
   double? precioDist;
   double? costo;
+  double? cantidad;
   String? clave;
   String? codigoBarras;
-  int? inventario;
   int? apartado;
-  int? idInventario;
-  int? idNegocio;
-  int? idproducto;
-  double? cantidad;
-  double? catidadApartado;
-  double? disponible;
+  int? idInv;
+  int? idSucursal;
+  double? cantidadInv;
+  double? apartadoInv;
+  double? disponibleInv;
 
   Producto({
     this.id,
+    this.idCategoria,
+    this.idNegocio,
     this.producto,
     this.descripcion,
-    this.idCategoria,
     this.unidad,
     this.precioPublico,
     this.precioMayoreo,
     this.precioDist,
     this.costo,
+    this.cantidad,
     this.clave,
     this.codigoBarras,
-    this.inventario,
     this.apartado,
-    this.idInventario,
-    this.idNegocio,
-    this.idproducto,
-    this.cantidad,
-    this.catidadApartado,
-    this.disponible,
+    this.idInv,
+    this.idSucursal,
+    this.cantidadInv,
+    this.apartadoInv,
+    this.disponibleInv,
   });
 }
 
 List<Producto> listaProductos = [];
+List<Producto> listaProductosSucursal = [];
