@@ -22,6 +22,7 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   @override
   void initState() {
+    
     if (globals.actualizaArticulos) {
       setState(() {
         textLoading = 'Leyendo articulos';
@@ -53,8 +54,6 @@ class _ProductosScreenState extends State<ProductosScreen> {
         appBar: AppBar(
           title: const Text('Productos'),
           actions: [
-            //IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-            //IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
             IconButton(
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, 'menu');
