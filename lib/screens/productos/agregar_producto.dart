@@ -16,7 +16,6 @@ class AgregaProductoScreen extends StatefulWidget {
 
 class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final articulosProvider = ArticuloProvider();
-  final inventarioProvider = InventarioProvider();
   final imagenProvider = ImagenProvider();
   final categoriasProvider = CategoriaProvider();
   final controllerProducto = TextEditingController();
@@ -117,38 +116,39 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
 
-      producto.precioPublico = double.parse(controllerPrecio.text.replaceAll(',', ''));
+      producto.precioPublico =
+          double.parse(controllerPrecio.text.replaceAll(',', ''));
 
       producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
           ? controllerClave.text
           : controllerCodigoB.text;
-      producto.inventario = 1;
+
       producto.apartado = (_valueApartado) ? 1 : 0;
 
       if (args.id == 0) {
         articulosProvider.nuevoProducto(producto).then((value) {
           if (value.status == 1) {
-            globals.actualizaArticulos = true;
-            Existencia inventario = Existencia();
-            inventario.idArticulo = value.id;
-            var valor = double.parse(controllerCantidad.text);
-            inventario.cantidad = valor;
-            inventario.apartado = valor;
-            inventario.disponible = valor;
-            inventarioProvider.guardar(inventario).then((value) {
-              if (value.status == 1) {
-                Navigator.pushReplacementNamed(context, 'productos');
-                mostrarAlerta(context, '', value.mensaje!);
-              } else {
-                setState(() {
-                  isLoading = false;
-                  textLoading = '';
-                });
-                mostrarAlerta(context, '', value.mensaje!);
-              }
-            });
+            // globals.actualizaArticulos = true;
+            // Existencia inventario = Existencia();
+            // inventario.idArticulo = value.id;
+            // var valor = double.parse(controllerCantidad.text);
+            // inventario.cantidad = valor;
+            // inventario.apartado = valor;
+            // inventario.disponible = valor;
+            // inventarioProvider.guardar(inventario).then((value) {
+            //   if (value.status == 1) {
+            //     Navigator.pushReplacementNamed(context, 'productos');
+            //     mostrarAlerta(context, '', value.mensaje!);
+            //   } else {
+            //     setState(() {
+            //       isLoading = false;
+            //       textLoading = '';
+            //     });
+            //     mostrarAlerta(context, '', value.mensaje!);
+            //   }
+            // });
           } else {
             setState(() {
               isLoading = false;
@@ -158,37 +158,33 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           }
         });
       } else {
-        if (controllerCantidad != args.disponible) {
-          Existencia inventario = Existencia();
-          inventario.idArticulo = args.id;
-          var valor = double.parse(controllerCantidad.text);
-          inventario.cantidad = valor;
-          inventario.apartado = 0;
-          inventario.disponible = valor;
-          inventarioProvider.editar(inventario).then((value) {
-            if (value.status == 1) {
-              Navigator.pushReplacementNamed(context, 'productos');
-              mostrarAlerta(context, '', value.mensaje!);
-            } else {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-              });
-              mostrarAlerta(context, '', value.mensaje!);
-            }
-          });
-        }
+        // if (controllerCantidad != args.disponible) {
+        //   // Existencia inventario = Existencia();
+        //   // inventario.idArticulo = args.id;
+        //   // var valor = double.parse(controllerCantidad.text);
+        //   // inventario.cantidad = valor;
+        //   // inventario.apartado = 0;
+        //   // inventario.disponible = valor;
+        //   // inventarioProvider.editar(inventario).then((value) {
+        //   //   if (value.status == 1) {
+        //   //     Navigator.pushReplacementNamed(context, 'productos');
+        //   //     mostrarAlerta(context, '', value.mensaje!);
+        //   //   } else {
+        //   //     setState(() {
+        //   //       isLoading = false;
+        //   //       textLoading = '';
+        //   //     });
+        //   //     mostrarAlerta(context, '', value.mensaje!);
+        //   //   }
+        //   // });
+        // }
         var apartado = (_valueApartado) ? 1 : 0;
-        var inventario = 1;
 
         if (producto.producto == controllerProducto ||
             producto.descripcion == controllerDescripcion ||
-
             producto.precioPublico == controllerPrecio ||
-
             producto.codigoBarras == controllerCodigoB ||
             producto.clave == controllerClave ||
-            producto.inventario == inventario ||
             producto.apartado == apartado) {
         } else {
           producto.id = args.id;
@@ -227,7 +223,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('¿Desea eliminar el articulo ${args.producto} ? Esta acción no podrá revertirse.',)
+                Text(
+                  '¿Desea eliminar el articulo ${args.producto} ? Esta acción no podrá revertirse.',
+                )
               ],
             ),
             actions: [
@@ -237,7 +235,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                     _eliminarProducto();
                   },
                   child: const Text('Eliminar')),
-              ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar'))
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
             ],
           );
         });
@@ -297,10 +297,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       args = ModalRoute.of(context)?.settings.arguments as Producto;
       controllerProducto.text = args.producto!;
       controllerDescripcion.text = args.descripcion!;
-      controllerPrecio.text =
-
-          (args.precioPublico != null) ? args.precioPublico!.toStringAsFixed(2) : '0.00';
-
+      controllerPrecio.text = (args.precioPublico != null)
+          ? args.precioPublico!.toStringAsFixed(2)
+          : '0.00';
 
       controllercosto.text =
           (args.costo != null) ? args.costo!.toStringAsFixed(2) : '0.00';
@@ -309,7 +308,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
       controllerCodigoB.text =
           (args.codigoBarras != null) ? args.codigoBarras! : '';
-      _valueInventario = (args.inventario == 0) ? false : true;
+
       _valueApartado = (args.apartado == 0) ? false : true;
       if (_valueInventario) {
         controllerCantidad.text = (args.cantidad != null)
@@ -347,7 +346,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Espere...$textLoading'),
-                        const SizedBox(height: 10,),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         const CircularProgressIndicator(),
                       ]),
                 )
@@ -355,37 +356,69 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                   padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(height: windowHeight * 0.05,),
-                      InputField(labelText: 'Producto:',textCapitalization: TextCapitalization.sentences,controller: controllerProducto),
-                      SizedBox(height: windowHeight * 0.03,),
-                      InputField(labelText: 'Descripción:',textCapitalization: TextCapitalization.sentences,controller: controllerDescripcion),
-                      SizedBox(height: windowHeight * 0.03,),
-                      _categorias(),
-                      SizedBox(height: windowHeight * 0.03,),
-                      SwitchListTile.adaptive(
-                        title: const Text('Vendido por: '),
-                        subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
-                        value: _valuePieza,
-                        onChanged: (value) {
-                          _valuePieza = value;
-                          setState(() {});
-                        }),
-                      SizedBox(height: windowHeight * 0.03,),
-                      InputFieldMoney(controller: controllercosto, labelText: 'Costo'),
-                      SizedBox(height: windowHeight * 0.03,),
-                      InputFieldMoney(controller: controllerPrecio, labelText: 'Precio Público'),
-                      SizedBox(height: windowHeight * 0.03,),
-                      InputFieldMoney(controller: controllerPrecioMayoreo, labelText: 'Precio Mayoreo'),
-                      SizedBox(height: windowHeight * 0.03,),
-                      InputFieldMoney(controller: controllerPrecioDirecto, labelText: 'Precio Directo'),
-                      SizedBox(height: windowHeight * 0.03,),
-                      InputField(
-                        readOnly: true,
-                        labelText: 'Clave:',
-                        textCapitalization: TextCapitalization.none,
-                        controller: controllerClave
+                      SizedBox(
+                        height: windowHeight * 0.05,
                       ),
-                      SizedBox(height: windowHeight * 0.03,),
+                      InputField(
+                          labelText: 'Producto:',
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: controllerProducto),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputField(
+                          labelText: 'Descripción:',
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: controllerDescripcion),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      _categorias(),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      SwitchListTile.adaptive(
+                          title: const Text('Vendido por: '),
+                          subtitle: Text((_valuePieza) ? 'Piezas' : 'kg/m'),
+                          value: _valuePieza,
+                          onChanged: (value) {
+                            _valuePieza = value;
+                            setState(() {});
+                          }),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputFieldMoney(
+                          controller: controllercosto, labelText: 'Costo'),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputFieldMoney(
+                          controller: controllerPrecio,
+                          labelText: 'Precio Público'),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputFieldMoney(
+                          controller: controllerPrecioMayoreo,
+                          labelText: 'Precio Mayoreo'),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputFieldMoney(
+                          controller: controllerPrecioDirecto,
+                          labelText: 'Precio Directo'),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      InputField(
+                          readOnly: true,
+                          labelText: 'Clave:',
+                          textCapitalization: TextCapitalization.none,
+                          controller: controllerClave),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
                       InputField(
                           labelText: 'Código de barras:',
                           textCapitalization: TextCapitalization.none,
@@ -406,14 +439,18 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             },
                           ),
                           controller: controllerCodigoB),
-                      SizedBox(height: windowHeight * 0.03,),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
                       InputField(
                         labelText: 'Cantidad:',
                         keyboardType: TextInputType.number,
                         controller: controllerCantidad,
                         readOnly: (args.id == 0) ? false : true,
                       ),
-                      SizedBox(height: windowHeight * 0.03,),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
                       SwitchListTile.adaptive(
                           title: const Text('Se puede apartar'),
                           value: _valueApartado,
@@ -421,8 +458,12 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             _valueApartado = value;
                             setState(() {});
                           }),
-                      SizedBox(height: windowHeight * 0.03,),
-                      SizedBox(height: windowHeight * 0.05,),
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
                       Wrap(
                         alignment: WrapAlignment.spaceBetween,
                         children: [
@@ -432,25 +473,36 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.save),
-                                SizedBox(width: 5,),
+                                SizedBox(
+                                  width: 5,
+                                ),
                                 Text('Guardar'),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 50,),
+                          const SizedBox(
+                            height: 50,
+                          ),
                           if (args.id != 0)
                             ElevatedButton(
-                              onPressed: () => Navigator.pushReplacementNamed(context, 'InventoryPage'),
+                              onPressed: () => Navigator.pushReplacementNamed(
+                                  context, 'InventoryPage'),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.save),
-                                  SizedBox(width: 5,),
-                                  Text('Sucursal Inventario',),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Sucursal Inventario',
+                                  ),
                                 ],
                               ),
                             ),
-                          const SizedBox(height: 50,),
+                          const SizedBox(
+                            height: 50,
+                          ),
                           ElevatedButton(
                             onPressed: () {
                               globals.actualizaArticulos = true;
@@ -461,14 +513,20 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.cancel_outlined),
-                                SizedBox(width: 5,),
-                                Text('Cancelar',),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  'Cancelar',
+                                ),
                               ],
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: windowHeight * 0.08,),
+                      SizedBox(
+                        height: windowHeight * 0.08,
+                      ),
                     ],
                   ),
                 )),
