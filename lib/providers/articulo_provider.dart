@@ -253,6 +253,52 @@ class ArticuloProvider {
     }
     return respuesta;
   }
+    Future<Resultado> nvoInventarioSucAgregar(Producto producto) async {
+    var url = Uri.parse('$baseUrl/inventario-agregar');
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}'
+      }, body: {
+        'inventario_id': producto.idSucursal.toString(),
+        'cantidad': producto.cantidadInv.toString()
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+    Future<Resultado> nvoInventarioSucQuitar(Producto producto) async {
+    var url = Uri.parse('$baseUrl/inventario-quitar');
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}'
+      }, body: {
+        'inventario_id': producto.idSucursal.toString(),
+        'cantidad': producto.cantidadInv.toString()
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
 
   Future<Resultado> agregarProdSucursal(Producto producto) async {
     var url = Uri.parse('$baseUrl/inventario-nuevo/${sesion.idUsuario}');
