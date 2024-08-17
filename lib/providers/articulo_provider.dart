@@ -259,7 +259,7 @@ class ArticuloProvider {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
       }, body: {
-        'inventario_id': producto.idSucursal.toString(),
+        'inventario_id': producto.idInv.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
       final decodedData = jsonDecode(resp.body);
@@ -282,7 +282,7 @@ class ArticuloProvider {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
       }, body: {
-        'inventario_id': producto.idSucursal.toString(),
+        'inventario_id': producto.idInv.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
       final decodedData = jsonDecode(resp.body);
