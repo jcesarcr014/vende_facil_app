@@ -13,6 +13,7 @@ class AjustesApartadoScreen extends StatefulWidget {
 
 class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   final apartadoProvider = ApartadoProvider();
+  final variablesprovider = VariablesProvider();
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
   final controllerArticulos = TextEditingController();
@@ -38,7 +39,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
       textLoading = 'Leyendo valores.';
       isLoading = true;
     });
-    apartadoProvider.variablesApartado().then((value) {
+    variablesprovider.variablesApartado().then((value) {
       setState(() {
         isLoading = false;
         textLoading = '';
@@ -217,11 +218,11 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
       textLoading = 'Guardando ajustes.....';
       isLoading = true;
     });
-    apartadoProvider
+    variablesprovider
         .modificarVariables(idVarPorcentaje, controllerPorcentaje.text)
         .then((respPorcentaje) {
       if (respPorcentaje.status == 1) {
-        apartadoProvider
+        variablesprovider
             .modificarVariables(idVarArticulos, controllerArticulos.text)
             .then((respArticulos) {
           if (respArticulos.status == 1) {

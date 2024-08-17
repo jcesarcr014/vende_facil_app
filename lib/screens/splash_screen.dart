@@ -18,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final clientesProvider = ClienteProvider();
   final descuentosProvider = DescuentoProvider();
   final apartadoProvider = ApartadoProvider();
+  final variablesprovider = VariablesProvider();
   final negocios = NegocioProvider();
   double windowWidth = 0.0;
   double windowHeight = 0.0;
@@ -104,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaDescuentos = true;
           }
         });
-        await apartadoProvider.variablesApartado().then((value) {
+        await variablesprovider.variablesApartado().then((value) {
           if (value.status == 1) {
             globals.actualizaVariables = false;
           } else {

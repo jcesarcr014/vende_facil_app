@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final articulosProvider = ArticuloProvider();
   final clientesProvider = ClienteProvider();
   final descuentosProvider = DescuentoProvider();
+  final variablesprovider = VariablesProvider();
   final apartadoProvider = ApartadoProvider();
   final controllerUser = TextEditingController();
   final controllerPass = TextEditingController();
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
               globals.actualizaDescuentos = true;
             }
           });
-          await apartadoProvider.variablesApartado().then((value) {
+          await variablesprovider.variablesApartado().then((value) {
             if (value.status == 1) {
               globals.actualizaVariables = false;
             } else {
