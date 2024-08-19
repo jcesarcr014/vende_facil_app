@@ -53,8 +53,6 @@ class ArticuloProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      print("Soy el listado de productos");
-      print(decodedData['data'].length);
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
@@ -243,7 +241,16 @@ class ArticuloProvider {
         'producto_id': producto.id.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
+
+      print(sesion.token);
+      print(sesion.idUsuario);
+      print(producto.idSucursal.toString());
+      print(producto.id.toString());
+      print(producto.cantidadInv.toString());
+
       final decodedData = jsonDecode(resp.body);
+      print("paso");
+      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
