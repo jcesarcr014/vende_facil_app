@@ -32,6 +32,7 @@ class ArticuloProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['data']['id'];
+        listaProductos.add(producto);
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -45,12 +46,15 @@ class ArticuloProvider {
   }
 
   Future<Resultado> listarProductos() async {
+    listaProductos.clear();
     var url = Uri.parse('$baseUrl/productos/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
+      print("Soy el listado de productos");
+      print(decodedData['data'].length);
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();

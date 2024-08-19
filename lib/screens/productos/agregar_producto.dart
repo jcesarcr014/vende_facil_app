@@ -111,73 +111,40 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         isLoading = true;
       });
 
+      producto.cantidad = double.parse(controllerCantidad.text);
+      producto.precioDist = double.parse(controllerPrecioDirecto.text);
+      producto.precioMayoreo = double.parse(controllerPrecioMayoreo.text);
+
       producto.producto = controllerProducto.text;
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
 
-      producto.precioPublico =
-          double.parse(controllerPrecio.text.replaceAll(',', ''));
-
+      producto.precioPublico = double.parse(controllerPrecio.text.replaceAll(',', ''));
       producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
-          ? controllerClave.text
-          : controllerCodigoB.text;
+        ? controllerClave.text
+        : controllerCodigoB.text;
 
       producto.apartado = (_valueApartado) ? 1 : 0;
 
       if (args.id == 0) {
         articulosProvider.nuevoProducto(producto).then((value) {
-          if (value.status == 1) {
-            // globals.actualizaArticulos = true;
-            // Existencia inventario = Existencia();
-            // inventario.idArticulo = value.id;
-            // var valor = double.parse(controllerCantidad.text);
-            // inventario.cantidad = valor;
-            // inventario.apartado = valor;
-            // inventario.disponible = valor;
-            // inventarioProvider.guardar(inventario).then((value) {
-            //   if (value.status == 1) {
-            //     Navigator.pushReplacementNamed(context, 'productos');
-            //     mostrarAlerta(context, '', value.mensaje!);
-            //   } else {
-            //     setState(() {
-            //       isLoading = false;
-            //       textLoading = '';
-            //     });
-            //     mostrarAlerta(context, '', value.mensaje!);
-            //   }
-            // });
-          } else {
+          print(value.status);
+          print(value.mensaje);
+          if (value.status != 1) {
             setState(() {
               isLoading = false;
               textLoading = '';
             });
             mostrarAlerta(context, '', value.mensaje!);
+            return;
           }
+
+          Navigator.pushNamed(context, 'menu');
         });
       } else {
-        // if (controllerCantidad != args.disponible) {
-        //   // Existencia inventario = Existencia();
-        //   // inventario.idArticulo = args.id;
-        //   // var valor = double.parse(controllerCantidad.text);
-        //   // inventario.cantidad = valor;
-        //   // inventario.apartado = 0;
-        //   // inventario.disponible = valor;
-        //   // inventarioProvider.editar(inventario).then((value) {
-        //   //   if (value.status == 1) {
-        //   //     Navigator.pushReplacementNamed(context, 'productos');
-        //   //     mostrarAlerta(context, '', value.mensaje!);
-        //   //   } else {
-        //   //     setState(() {
-        //   //       isLoading = false;
-        //   //       textLoading = '';
-        //   //     });
-        //   //     mostrarAlerta(context, '', value.mensaje!);
-        //   //   }
-        //   // });
-        // }
         var apartado = (_valueApartado) ? 1 : 0;
 
         if (producto.producto == controllerProducto ||
