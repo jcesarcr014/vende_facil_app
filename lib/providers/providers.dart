@@ -9,3 +9,4 @@ export 'package:vende_facil/providers/usuario_provider.dart';
 export 'package:vende_facil/providers/imagen_provider.dart';
 export 'package:vende_facil/providers/suscripcion_provider.dart';
 export 'package:vende_facil/providers/apartado_provider.dart';
+export 'package:vende_facil/providers/variables_provider.dart';
