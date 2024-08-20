@@ -220,7 +220,7 @@ class _ventaScreenState extends State<VentaScreen> {
       cambio = double.parse(CambioController.text);
       totalEfectivo = efectivo - cambio;
       double resultado = totalEfectivo + tarjeta;
-      if (tarjeta > total) {
+      if (resultado > total) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -282,7 +282,7 @@ class _ventaScreenState extends State<VentaScreen> {
         idVenta: idCabecera,
         idProd: item.idArticulo,
         cantidad: item.cantidad,
-        precio: item.precio,
+        precio: item.precioPublico,
         idDesc: venta.idDescuento,
         cantidadDescuento: venta.descuento,
         total: item.totalItem,

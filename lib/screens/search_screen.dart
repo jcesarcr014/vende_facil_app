@@ -93,7 +93,7 @@ class Search extends SearchDelegate {
         if (item.idArticulo == producto.id) {
           existe = true;
           item.cantidad++;
-          item.subTotalItem = item.precio * item.cantidad;
+          item.subTotalItem = item.precioPublico * item.cantidad;
           item.totalItem = item.subTotalItem - item.descuento;
         }
       }
@@ -101,7 +101,9 @@ class Search extends SearchDelegate {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
             cantidad: 1,
-            precio: producto.precioPublico!,
+            precioPublico: producto.precioPublico!,
+            preciodistribuidor: producto.precioDist!,
+            preciomayoreo: producto.precioMayoreo!,
             idDescuento: 0,
             descuento: 0,
             subTotalItem: producto.precioPublico!,
@@ -117,7 +119,7 @@ class Search extends SearchDelegate {
           if (item.idArticulo == producto.id) {
             existe = true;
             item.cantidad++;
-            item.subTotalItem = item.precio * cantidad;
+            item.subTotalItem = item.precioPublico * cantidad;
             item.totalItem = item.subTotalItem - item.descuento;
           }
         }
@@ -125,7 +127,9 @@ class Search extends SearchDelegate {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
               cantidad: cantidad,
-              precio: producto.precioPublico!,
+              precioPublico: producto.precioPublico!,
+              preciodistribuidor: producto.precioDist!,
+              preciomayoreo: producto.precioMayoreo!,
               idDescuento: 0,
               descuento: 0,
               subTotalItem: producto.precioPublico!,

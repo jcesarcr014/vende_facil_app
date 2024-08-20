@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (item.idArticulo == producto.id) {
           existe = true;
           item.cantidad++;
-          item.subTotalItem = item.precio * item.cantidad;
+          item.subTotalItem = item.precioPublico * item.cantidad;
           item.totalItem = item.subTotalItem - item.descuento;
         }
       }
@@ -366,7 +366,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
             cantidad: 1,
-            precio: producto.precioPublico!,
+            precioPublico: producto.precioPublico!,
+            preciomayoreo: producto.precioMayoreo!,
+            preciodistribuidor: producto.precioDist!,
             idDescuento: 0,
             descuento: 0,
             subTotalItem: producto.precioPublico!,
@@ -380,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (item.idArticulo == producto.id) {
             existe = true;
             item.cantidad++;
-            item.subTotalItem = item.precio * cantidad;
+            item.subTotalItem = item.precioPublico * cantidad;
             item.totalItem = item.subTotalItem - item.descuento;
           }
         }
@@ -388,7 +390,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
               cantidad: cantidad,
-              precio: producto.precioPublico!,
+              precioPublico: producto.precioPublico!,
+              preciodistribuidor: producto.precioDist!,
+              preciomayoreo: producto.precioMayoreo!,
               idDescuento: 0,
               descuento: 0,
               subTotalItem: producto.precioPublico!,

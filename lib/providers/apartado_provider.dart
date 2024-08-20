@@ -6,44 +6,6 @@ import 'package:vende_facil/providers/globals.dart' as globals;
 class ApartadoProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
-
-  Future<Resultado> guardaApartado(ApartadoCabecera apartado) async {
-    var url = Uri.parse('$baseUrl/apartado/${sesion.idNegocio}');
-    try {
-      final resp = await http.post(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'usuario_id': sesion.idUsuario.toString(),
-        'cliente_id': apartado.clienteId.toString(),
-        'subtotal': apartado.subtotal!.toStringAsFixed(2),
-        'descuento_id': apartado.descuentoId.toString(),
-        'descuento': apartado.descuento!.toStringAsFixed(2),
-        'total': apartado.total!.toStringAsFixed(2),
-        'anticipo': apartado.anticipo!.toStringAsFixed(2),
-        'pago_efectivo': apartado.pagoEfectivo!.toStringAsFixed(2),
-        'pago_tarjeta': apartado.pagoTarjeta!.toStringAsFixed(2),
-        'saldo_pendiente': apartado.saldoPendiente!.toStringAsFixed(2),
-        'fecha_apartado': apartado.fechaApartado,
-        'fecha_vencimiento': apartado.fechaVencimiento,
-        'fecha_pago_total': apartado.fechaVencimiento,
-        'id_sucursal':apartado.idsucursal,
-      });
-      final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-        respuesta.id = decodedData['apartado_id'];
-      } else {
-        respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
-      }
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion. $e';
-    }
-
-    return respuesta;
-  }
     Future<Resultado> guardaApartadoSucursal(ApartadoCabecera apartado) async {
     var url = Uri.parse('$baseUrl/apartado/${sesion.idSucursal}');
     try {

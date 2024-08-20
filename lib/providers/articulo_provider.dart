@@ -53,8 +53,6 @@ class ArticuloProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      print("Soy el listado de productos");
-      print(decodedData['data'].length);
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();

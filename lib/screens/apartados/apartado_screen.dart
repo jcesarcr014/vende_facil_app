@@ -38,7 +38,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
   void initState() {
     totalCompra = totalVentaTemporal.toStringAsFixed(2);
     anticipoMinimo =
-        ((totalVentaTemporal * (num.parse(listaVariables[0].valor) as double)) /
+        ((totalVentaTemporal * (num.parse(listaVariables[0].valor!) as double)) /
                 100)
             .toStringAsFixed(2);
     efectivoController.text = "0.00";
@@ -273,7 +273,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
       apartado.fechaApartado = fechaFormateada.format(fechaActual);
       apartado.fechaVencimiento = fechaController.text;
 
-      apartadosCabecera.guardaApartado(apartado).then((respCabecera) async {
+      apartadosCabecera.guardaApartadoSucursal(apartado).then((respCabecera) async {
         if (respCabecera.status == 1) {
           int contador = ventaTemporal.length;
           for (ItemVenta item in ventaTemporal) {
@@ -281,7 +281,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
               apartadoId: respCabecera.id,
               productoId: item.idArticulo,
               cantidad: item.cantidad,
-              precio: item.precio,
+              precio: item.precioPublico,
               subtotal: item.subTotalItem,
               descuentoId: apartado.descuentoId,
               descuento: item.descuento,
