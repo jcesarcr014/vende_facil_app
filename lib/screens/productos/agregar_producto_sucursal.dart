@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vende_facil/formatters/double_input_formatter.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
@@ -16,9 +17,9 @@ class AgregarProductoSucursal extends StatefulWidget {
 }
 
 class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
-  String? _selectedProduct;
+  int? _selectedProduct;
   Producto? _productoSeleccionado;
-  String? _selectedSucursal;
+  int? _selectedSucursal;
   String? _cantidadSucursal;
   ArticuloProvider provider = ArticuloProvider();
   bool isLoading = false;
@@ -46,7 +47,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     }
   }
 
-  void _setProductsSucursal(String? value) async {
+  void _setProductsSucursal(int? value) async {
     _selectedSucursal = value;
     setState(() {});
 
@@ -59,7 +60,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     setState(() {});
 
     Sucursal sucursalSeleccionado = listaSucursales.firstWhere(
-      (sucursal) => sucursal.nombreSucursal == value,
+      (sucursal) => sucursal.id == value,
       orElse: () => Sucursal(),
     );
 
@@ -119,7 +120,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     try {
       Resultado resultado = await provider.listarProductosSucursal(
           listaSucursales
-              .firstWhere((s) => s.nombreSucursal == _selectedSucursal)
+              .firstWhere((s) => s.id == _selectedSucursal)
               .id!);
 
       if (resultado.status != 1) {
@@ -143,6 +144,41 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       mostrarAlerta(context, 'Error', e.toString());
     }
   }
+
+  void _guardarProductoSucursal() async {
+    if (controller.text.isEmpty || _cantidadSucursal == null) return;
+
+    // Asigna la cantidad ingresada al producto seleccionado
+    _productoSeleccionado?.cantidadInv = double.parse(controller.text);
+
+    globals.actualizaArticulos = true;
+
+    // Si el producto no existe en la sucursal, crea un nuevo inventario
+    if (existe == false) {
+      Resultado resultado = await provider.nvoInventarioSuc(_productoSeleccionado!);
+      if (resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje!);
+        return;
+      }
+
+      // Añade el producto a la lista de productos de la sucursal
+      listaProductosSucursal.add(_productoSeleccionado!);
+      Navigator.pushReplacementNamed(context, 'products-menu');
+      return;
+    }
+
+    // Si el producto ya existe en la sucursal, actualiza la cantidad
+    Resultado resultado = await provider.inventarioSucAgregar(_productoSeleccionado!);
+    if (resultado.status != 1) {
+      mostrarAlerta(context, 'Error', resultado.mensaje!);
+      return;
+    }
+
+    // Actualiza la lista de productos de la sucursal y navega a la pantalla de productos
+    listaProductosSucursal.add(_productoSeleccionado!);
+    Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +214,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  DropdownButtonFormField<String>(
+                  DropdownButtonFormField<int>(
                     decoration: const InputDecoration(
                       labelText: 'Nombre Producto',
                       border: OutlineInputBorder(),
@@ -186,14 +222,14 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     value: _selectedProduct,
                     isExpanded: true,
                     items: listaProductos.map((producto) {
-                      return DropdownMenuItem<String>(
-                        value: producto.id.toString(),
+                      return DropdownMenuItem<int>(
+                        value: producto.id,
                         child: Text(producto.producto!),
                       );
                     }).toList(),
-                    onChanged: (String? newValue) {
+                    onChanged: (int? newValue) {
                       _productoSeleccionado = listaProductos.firstWhere(
-                          (producto) => producto.id.toString() == newValue);
+                          (producto) => producto.id == newValue);
                       setState(() {
                         _selectedProduct = newValue;
                       });
@@ -213,7 +249,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
-                  DropdownButtonFormField<String>(
+                  DropdownButtonFormField<int>(
                     decoration: const InputDecoration(
                       labelText: 'Select con sucursales',
                       border: OutlineInputBorder(),
@@ -222,7 +258,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     isExpanded: true,
                     items: listaSucursales
                         .map((sucursal) => DropdownMenuItem(
-                              value: sucursal.nombreSucursal,
+                              value: sucursal.id,
                               child: Text(sucursal.nombreSucursal ?? ''),
                             ))
                         .toList(),
@@ -243,7 +279,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                          RegExp(r'^[0-9]*\.?[0-9]*$')),
+                      RegExp(r'^[0-9]*\.?[0-9]*$')),
                       DoubleInputFormatter(),
                     ],
                     controller: controller,
@@ -257,38 +293,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: () async {
-                          if (controller.text.isEmpty ||
-                              _cantidadSucursal == null) return;
-                          _productoSeleccionado?.cantidadInv =
-                              double.parse(controller.text);
-
-                          globals.actualizaArticulos = true;
-
-                          if (existe == false) {
-                            Resultado resultado = await provider
-                                .nvoInventarioSuc(_productoSeleccionado!);
-                            if (resultado.status != 1) {
-                              mostrarAlerta(
-                                  context, 'Error', resultado.mensaje!);
-                              return;
-                            }
-                            listaProductosSucursal.add(_productoSeleccionado!);
-                            Navigator.pushReplacementNamed(
-                                context, 'products-menu');
-                            return;
-                          }
-                          
-                          Resultado resultado = await provider
-                              .inventarioSucAgregar(_productoSeleccionado!);
-                          if (resultado.status != 1) {
-                            mostrarAlerta(context, 'Error', resultado.mensaje!);
-                            return;
-                          }
-                          listaProductosSucursal.add(_productoSeleccionado!);
-                          Navigator.pushReplacementNamed(
-                              context, 'products-menu');
-                        },
+                        onPressed: _guardarProductoSucursal,
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -324,17 +329,5 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
               ),
             ),
     );
-  }
-}
-
-class DoubleInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    final regex = RegExp(r'^[0-9]*\.?[0-9]*$');
-    if (regex.hasMatch(newValue.text)) {
-      return newValue;
-    }
-    return oldValue;
   }
 }
