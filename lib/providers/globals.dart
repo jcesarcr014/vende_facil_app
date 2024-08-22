@@ -12,5 +12,7 @@ bool actualizaVariables = false;
 bool actualizaSucursales = false;
 bool actualizarEmpleadoSucursales = false;
 
+bool actualizaArticulosSucursal = false;
+
 String opMerchantId = 'mk5tbux7s2qsfpboy49i';
 String opPublicKey = 'pk_6509292d8eae4fba924a2055cd2492f8';

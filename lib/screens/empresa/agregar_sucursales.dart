@@ -59,6 +59,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     super.dispose();
   }
 
+/*
   _guardarSucursal() {
     if (estatus) {
       Sucursal nueva = Sucursal();
@@ -105,6 +106,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       });
     }
   }
+*/
 
   @override
   Widget build(BuildContext context) {

@@ -36,7 +36,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   String _valueIdCategoria = '0';
   bool firstLoad = true;
   bool _valuePieza = true;
-  bool _valueInventario = true;
+  final bool _valueInventario = true;
   bool _valueApartado = true;
   bool _puedeGurdar = false;
   Producto producto = Producto();
@@ -131,8 +131,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
       if (args.id == 0) {
         articulosProvider.nuevoProducto(producto).then((value) {
-          print(value.status);
-          print(value.mensaje);
           if (value.status != 1) {
             setState(() {
               isLoading = false;
@@ -141,8 +139,10 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             mostrarAlerta(context, '', value.mensaje!);
             return;
           }
-
-          Navigator.pushNamed(context, 'menu');
+          
+          Navigator.pushReplacementNamed(context, 'menu');
+          globals.actualizaArticulos = true;
+          mostrarAlerta(context, '', 'Producto Guardado Correctamente');
         });
       } else {
         var apartado = (_valueApartado) ? 1 : 0;
