@@ -346,7 +346,13 @@ class _HomeScreenState extends State<HomeScreen> {
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
-      totalVentaTemporal += item.totalItem;
+      if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+        totalVentaTemporal = item.cantidad * item.preciomayoreo;
+        item.subTotalItem = totalVentaTemporal;
+        item.totalItem = totalVentaTemporal;
+      } else {
+        totalVentaTemporal += item.totalItem;
+      }
     }
     setState(() {});
   }

@@ -187,6 +187,7 @@ class ArticuloProvider {
 
   //SUCURSALES
   Future<Resultado> listarProductosSucursal(int idSucursal) async {
+    listaProductosSucursal.clear();
     var url = Uri.parse('$baseUrl/productos-sucursal/$idSucursal');
     try {
       final resp = await http.get(url, headers: {
@@ -216,7 +217,7 @@ class ArticuloProvider {
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
           productoTemp.idInv = decodedData['data'][x]['aplica_apartado'];
-          listaProductos.add(productoTemp);
+          listaProductosSucursal.add(productoTemp);
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -255,7 +256,8 @@ class ArticuloProvider {
     }
     return respuesta;
   }
-    Future<Resultado> nvoInventarioSucAgregar(Producto producto) async {
+
+  Future<Resultado> nvoInventarioSucAgregar(Producto producto) async {
     var url = Uri.parse('$baseUrl/inventario-agregar');
     try {
       final resp = await http.put(url, headers: {
@@ -278,7 +280,8 @@ class ArticuloProvider {
     }
     return respuesta;
   }
-    Future<Resultado> nvoInventarioSucQuitar(Producto producto) async {
+
+  Future<Resultado> nvoInventarioSucQuitar(Producto producto) async {
     var url = Uri.parse('$baseUrl/inventario-quitar');
     try {
       final resp = await http.put(url, headers: {
