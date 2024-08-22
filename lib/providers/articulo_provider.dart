@@ -32,6 +32,7 @@ class ArticuloProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         respuesta.id = decodedData['data']['id'];
+        producto.id = decodedData['data']['id'];
         listaProductos.add(producto);
       } else {
         respuesta.status = 0;
@@ -195,6 +196,7 @@ class ArticuloProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+        listaProductosSucursal.clear();
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
           productoTemp.id = decodedData['data'][x]['id'];
@@ -202,21 +204,36 @@ class ArticuloProvider {
           productoTemp.idNegocio = decodedData['data'][x]['negocio_id'];
           productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
           productoTemp.unidad = decodedData['data'][x]['unidad'];
+
           productoTemp.precioPublico =
               double.parse(decodedData['data'][x]['precio_publico']);
+
           productoTemp.precioMayoreo =
               double.parse(decodedData['data'][x]['precio_mayoreo']);
 
           productoTemp.precioDist =
               double.parse(decodedData['data'][x]['precio_dist']);
+
           productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
+
           productoTemp.clave = decodedData['data'][x]['clave'];
+
           productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+
           productoTemp.cantidad =
               double.parse(decodedData['data'][x]['cantidad']);
+
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
-          productoTemp.idInv = decodedData['data'][x]['aplica_apartado'];
+
+
+          productoTemp.idInv = decodedData['data'][x]['id_inv'];
+
+          productoTemp.cantidadInv = double.parse(decodedData['data'][x]['cantidad_inv']);
+          productoTemp.apartadoInv = double.parse(decodedData['data'][x]['apartado_inv']);
+          productoTemp.disponibleInv = double.parse(decodedData['data'][x]['disponibles_inv']);
+
+
           listaProductosSucursal.add(productoTemp);
         }
         respuesta.status = 1;
@@ -234,6 +251,7 @@ class ArticuloProvider {
 
   Future<Resultado> nvoInventarioSuc(Producto producto) async {
     var url = Uri.parse('$baseUrl/inventario-nuevo/${sesion.idUsuario}');
+
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
@@ -242,6 +260,7 @@ class ArticuloProvider {
         'producto_id': producto.id.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
+
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
@@ -257,7 +276,9 @@ class ArticuloProvider {
     return respuesta;
   }
 
-  Future<Resultado> nvoInventarioSucAgregar(Producto producto) async {
+
+  Future<Resultado> inventarioSucAgregar(Producto producto) async {
+
     var url = Uri.parse('$baseUrl/inventario-agregar');
     try {
       final resp = await http.put(url, headers: {
@@ -281,7 +302,9 @@ class ArticuloProvider {
     return respuesta;
   }
 
-  Future<Resultado> nvoInventarioSucQuitar(Producto producto) async {
+
+  Future<Resultado> inventarioSucQuitar(Producto producto) async {
+
     var url = Uri.parse('$baseUrl/inventario-quitar');
     try {
       final resp = await http.put(url, headers: {
