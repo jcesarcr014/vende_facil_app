@@ -1,3 +1,5 @@
+// ignore_for_file: dead_code
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -23,6 +25,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
+   bool _valuePieza = false;
 
   final cantidadConttroller = TextEditingController();
   @override
@@ -111,6 +114,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                           overflow: TextOverflow.ellipsis,
                         )),
                   ]),
+                  
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
                   const SizedBox(height: 10),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
@@ -148,6 +155,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     ),
                     SizedBox(width: windowWidth * 0.1),
                   ]),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: SwitchListTile.adaptive(
+                      title: const Text('Tipo de venta:'),
+                      subtitle: Text(_valuePieza ? 'Domicilio' : 'Tienda'),
+                      value: _valuePieza,
+                      onChanged: (value) {
+                        _valuePieza = value;
+                        setState(() {});
+                      },
+                    ),
+                  ),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
                     SizedBox(
