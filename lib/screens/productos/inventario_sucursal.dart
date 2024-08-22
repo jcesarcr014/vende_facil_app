@@ -82,9 +82,6 @@ class _InventoryPageState extends State<InventoryPage> {
         title: const Text('INVENTARIOS'),
         actions: [
           IconButton(
-              onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-              icon: const Icon(Icons.menu)),
-          IconButton(
               onPressed: () =>
                   showSearch(context: context, delegate: Searchproductos()),
               icon: const Icon(Icons.search)),

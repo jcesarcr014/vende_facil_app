@@ -99,9 +99,6 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
         title: const Text('Eliminar Producto Sucursal'),
         actions: [
           IconButton(
-              onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-              icon: const Icon(Icons.menu)),
-          IconButton(
               onPressed: () =>
                   showSearch(context: context, delegate: Searchproductos()),
               icon: const Icon(Icons.search)),
