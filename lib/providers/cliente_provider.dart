@@ -23,6 +23,7 @@ class ClienteProvider {
         'pais': cliente.pais,
         'codigo_cliente': cliente.codigoCliente,
         'nota': cliente.nota,
+        'distribuidor': cliente.distribuidor.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -62,6 +63,7 @@ class ClienteProvider {
           clienteTemp.pais = decodedData['data'][x]['pais'];
           clienteTemp.codigoCliente = decodedData['data'][x]['codigo_cliente'];
           clienteTemp.nota = decodedData['data'][x]['nota'];
+          clienteTemp.distribuidor=  int.parse(decodedData['data'][x]['distribuidor']);
           listaClientes.add(clienteTemp);
         }
         respuesta.status = 1;
@@ -98,6 +100,7 @@ class ClienteProvider {
         cliente.pais = decodedData['data'][0]['pais'];
         cliente.codigoCliente = decodedData['data'][0]['codigo_cliente'];
         cliente.nota = decodedData['data'][0]['nota'];
+        cliente.distribuidor=  int.parse(decodedData['data'][0]['distribuidor']);
       } else {
         cliente.id = 0;
         cliente.nombre = decodedData['msg'];
@@ -126,6 +129,7 @@ class ClienteProvider {
         'pais': cliente.pais,
         'codigo_cliente': cliente.codigoCliente,
         'nota': cliente.nota,
+        'distribuidor': cliente.distribuidor.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

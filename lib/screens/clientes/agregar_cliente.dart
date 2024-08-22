@@ -29,6 +29,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   Cliente args = Cliente(id: 0, nombre: '', correo: '');
+  bool _valuecliente = false;
 
   String _generaCodigo() {
     final numClientes = (listaClientes.length + 1).toString();
@@ -58,6 +59,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       cliente.pais = controllerPais.text;
       cliente.codigoCliente = controllerCodigo.text;
       cliente.nota = controllerNota.text;
+      cliente.distribuidor = (_valuecliente) ? 1 : 0;
       if (args.id == 0) {
         clienteProvider.nuevoCliente(cliente).then((value) {
           setState(() {
@@ -187,6 +189,8 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       controllerPais.text = args.pais ?? '';
       controllerCodigo.text = args.codigoCliente ?? '';
       controllerNota.text = args.nota ?? '';
+      _valuecliente  = (args.distribuidor == 1) ? true : false;
+
     }
     final title = (args.id == 0) ? 'Nuevo cliente' : 'Editar cliente';
     windowWidth = MediaQuery.of(context).size.width;
@@ -301,7 +305,19 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                         textCapitalization: TextCapitalization.sentences,
                         controller: controllerNota),
                     SizedBox(
-                      height: windowHeight * 0.05,
+                      height: windowHeight * 0.03,
+                    ),
+                    SwitchListTile.adaptive(
+                        title: const Text('Tipo de cliente: '),
+                        subtitle:
+                            Text((_valuecliente) ? 'Distribuidor' : 'Normal'),
+                        value: _valuecliente,
+                        onChanged: (value) {
+                          _valuecliente = value;
+                          setState(() {});
+                        }),
+                    SizedBox(
+                      height: windowHeight * 0.03,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

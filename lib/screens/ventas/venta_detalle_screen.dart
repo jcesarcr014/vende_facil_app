@@ -248,7 +248,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                                 ? () {
                                     item.cantidad--;
                                     item.subTotalItem =
-                                        item.precio * item.cantidad;
+                                        item.precioPublico * item.cantidad;
                                     item.totalItem =
                                         item.subTotalItem - item.descuento;
                                     if (item.cantidad == 0) {
@@ -270,12 +270,23 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             width: windowWidth * 0.1,
                             child: IconButton(
                                 onPressed: () {
-                                  item.cantidad++;
-                                  item.subTotalItem =
-                                      item.precio * item.cantidad;
-                                  item.totalItem =
-                                      item.subTotalItem - item.descuento;
+                                  if (item.cantidad >=
+                                      double.parse(listaVariables[3].valor!)) {
+                                        item.cantidad++;
+                                        item.subTotalItem =
+                                            item.preciomayoreo * item.cantidad;
+                                        item.totalItem =
+                                            item.subTotalItem - item.descuento;
+                                        _actualizaTotalTemporal();
+
+                                      }else{
+                                        item.cantidad++;
+                                       item.subTotalItem =
+                                       item.precioPublico * item.cantidad;
+                                       item.totalItem =
+                                       item.subTotalItem - item.descuento;
                                   _actualizaTotalTemporal();
+                                      }
                                 },
                                 icon: const Icon(Icons.add_circle_outline))),
                       ],
@@ -302,7 +313,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         numArticulos = numArticulos + articuloTemporal.cantidad;
       }
     }
-    if (double.parse(listaVariables[1].valor) < numArticulos) {
+    if (double.parse(listaVariables[1].valor!) < numArticulos) {
       apartadoValido = false;
       mostrarAlerta(context, 'ERROR',
           'Superas la cantidad de artículos que se pueden apartar. Para modificar este valor, ve a Configuración -> Ajustes apartado.');
@@ -425,7 +436,22 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       value: _valueIdcliente,
       onChanged: (value) {
         _valueIdcliente = value!;
-        setState(() {});
+        setState(() {
+          var clienteseleccionado = listaClientes.firstWhere(
+              (cliente) => cliente.id == int.parse(_valueIdcliente));
+          if (clienteseleccionado.distribuidor == 1) {
+            setState(() {
+              // totalVentaTemporal += item.totalItem;
+              // subTotalItem += item.subTotalItem;
+              // descuento += item.descuento;
+              totalVentaTemporal = 0.00;
+              for (ItemVenta item in ventaTemporal) {
+                totalVentaTemporal = item.cantidad * item.preciodistribuidor;
+                subTotalItem = totalVentaTemporal;
+              }
+            });
+          }
+        });
       },
     );
   }

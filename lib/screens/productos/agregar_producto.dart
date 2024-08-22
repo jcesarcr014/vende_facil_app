@@ -1,4 +1,4 @@
-// ignore_for_file: unrelated_type_equality_checks, avoid_print
+// ignore_for_file: unrelated_type_equality_checks, avoid_print, prefer_final_fields
 
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';

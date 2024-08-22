@@ -10,6 +10,7 @@ class Cliente {
   String? pais;
   String? codigoCliente;
   String? nota;
+  int? distribuidor;
   Cliente({
     this.id,
     this.nombre,
@@ -22,6 +23,7 @@ class Cliente {
     this.pais,
     this.codigoCliente,
     this.nota,
+    this.distribuidor,
   });
 }
 

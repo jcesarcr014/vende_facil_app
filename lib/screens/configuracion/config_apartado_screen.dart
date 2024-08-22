@@ -17,6 +17,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
   final controllerArticulos = TextEditingController();
+  final controllerArticulosMayoreo = TextEditingController();
   String? _porcentajeError;
   String? _articulosError;
   bool isLoading = false;
@@ -47,11 +48,19 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
       if (value.status == 1) {
         for (VariableConf varTemp in listaVariables) {
           if (varTemp.nombre == 'porcentaje_anticipo') {
-            idVarPorcentaje = varTemp.id;
-            controllerPorcentaje.text = varTemp.valor;
+            idVarPorcentaje = varTemp.id!;
+            controllerPorcentaje.text = varTemp.valor!;
           } else if (varTemp.nombre == 'productos_apartados') {
-            idVarArticulos = varTemp.id;
-            controllerArticulos.text = varTemp.valor;
+            idVarArticulos = varTemp.id!;
+            controllerArticulos.text = varTemp.valor!;
+          }
+          if (varTemp.nombre == "productos_mayoreo") {
+            idVarArticulos = varTemp.id!;
+            if (varTemp.valor == null) {
+              controllerArticulosMayoreo.text = "";
+            } else {
+              controllerArticulosMayoreo.text = varTemp.valor!;
+            }
           }
         }
       } else {
@@ -198,6 +207,51 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     SizedBox(
                       height: windowHeight * 0.08,
                     ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: windowWidth * 0.6,
+                          child: const Text(
+                            'numeros de articulos para descuento mayoreo: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            maxLines: 2,
+                          ),
+                        ),
+                        SizedBox(
+                          width: windowWidth * 0.02,
+                        ),
+                        Expanded(
+                          child: InputField(
+                            controller: controllerArticulosMayoreo,
+                            labelText: 'Cantidad de artículos',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor ingrese un número de artículos maximos permitidos';
+                              }
+                              final numericValue = value;
+
+                              try {
+                                final int parsedValue = int.parse(numericValue);
+                                if (parsedValue < 0) {
+                                  return 'Valor mínimo permitido es 0';
+                                }
+                              } catch (e) {
+                                return 'Valor no válido';
+                              }
+                              return null;
+                            },
+                            errorText: _articulosError,
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.08,
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         if (_formApartadoConf.currentState!.validate()) {
@@ -226,13 +280,26 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
             .modificarVariables(idVarArticulos, controllerArticulos.text)
             .then((respArticulos) {
           if (respArticulos.status == 1) {
-            setState(() {
-              textLoading = '';
-              isLoading = false;
-            });
-            // Navigator.pop(context);
-            mostrarAlerta(
-                context, 'Guardado', 'Ajustes guardados correctamente');
+                    variablesprovider
+                    .modificarVariables(idVarArticulos, controllerArticulosMayoreo.text)
+                    .then((respArticulosmayoreo) {
+                  if (respArticulosmayoreo.status == 1) {
+                    setState(() {
+                      textLoading = '';
+                      isLoading = false;
+                    });
+                    // Navigator.pop(context);
+                    mostrarAlerta(
+                        context, 'Guardado', 'Ajustes guardados correctamente');
+                  } else {
+                    setState(() {
+                      textLoading = '';
+                      isLoading = false;
+                    });
+                    mostrarAlerta(context, 'Error',
+                        'Error al guardar los valores: ${respArticulos.mensaje}');
+                  }
+                });
           } else {
             setState(() {
               textLoading = '';

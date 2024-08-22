@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/providers.dart';
 
 class SucursalesScreen extends StatefulWidget {
   const SucursalesScreen({super.key});
@@ -10,6 +11,7 @@ class SucursalesScreen extends StatefulWidget {
 
 class _SucursalesScreenState extends State<SucursalesScreen> {
   String? _valueIdSucursal = '0';
+  final articulosProvider = ArticuloProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,12 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
                         (sucursal) =>
                             sucursal.id.toString() == _valueIdSucursal);
                     sesion.idSucursal = sucursalSeleccionada.id;
-                    Navigator.pushNamed(context, 'home');
+                    articulosProvider
+                        .listarProductosSucursal(sucursalSeleccionada.id!)
+                        .then((value) {});
+                    setState(() {
+                    });
+                    Navigator.pushReplacementNamed(context, 'home');
                   },
                   child: const Text(
                     'Aceptar',

@@ -6,9 +6,8 @@ import 'package:vende_facil/providers/globals.dart' as globals;
 class ApartadoProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
-
-  Future<Resultado> guardaApartado(ApartadoCabecera apartado) async {
-    var url = Uri.parse('$baseUrl/apartado/${sesion.idNegocio}');
+    Future<Resultado> guardaApartadoSucursal(ApartadoCabecera apartado) async {
+    var url = Uri.parse('$baseUrl/apartado/${sesion.idSucursal}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

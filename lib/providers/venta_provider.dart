@@ -22,7 +22,7 @@ class VentasProvider {
         'total': venta.total!.toStringAsFixed(2),
         'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
         'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
-        'id_sucursal':venta.id_sucursal.toString(),
+        'sucursal_id': sesion.idSucursal.toString(),
       });
 
       final decodedData = jsonDecode(resp.body);
@@ -39,7 +39,6 @@ class VentasProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
     }
-
     return respuesta;
   }
 
@@ -63,7 +62,7 @@ class VentasProvider {
         'descuento': venta.cantidadDescuento.toString(),
         'total': venta.total.toString(),
         'descuento_id': venta.idDesc.toString(),
-        'id_sucursal':venta.id_sucursal.toString(),
+        'id_sucursal': venta.id_sucursal.toString(),
       });
 
       final decodedData = jsonDecode(resp.body);
