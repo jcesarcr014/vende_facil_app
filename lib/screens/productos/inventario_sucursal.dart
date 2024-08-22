@@ -20,6 +20,12 @@ class _InventoryPageState extends State<InventoryPage> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
+  @override
+  void initState() {
+    super.initState();
+    listaProductosSucursal.clear();
+  }
+
   void _setProductsSucursal(String? value) async {
     setState(() {
       isLoading = true;
