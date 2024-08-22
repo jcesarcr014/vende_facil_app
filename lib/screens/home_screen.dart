@@ -276,8 +276,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    if (listaProductos.isNotEmpty) {
-      for (Producto producto in listaProductos) {
+    if (listaProductosSucursal.isNotEmpty) {
+      for (Producto producto in listaProductosSucursal) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {

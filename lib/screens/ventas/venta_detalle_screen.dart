@@ -270,12 +270,23 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             width: windowWidth * 0.1,
                             child: IconButton(
                                 onPressed: () {
-                                  item.cantidad++;
-                                  item.subTotalItem =
-                                      item.precioPublico * item.cantidad;
-                                  item.totalItem =
-                                      item.subTotalItem - item.descuento;
+                                  if (item.cantidad >=
+                                      double.parse(listaVariables[3].valor!)) {
+                                        item.cantidad++;
+                                        item.subTotalItem =
+                                            item.preciomayoreo * item.cantidad;
+                                        item.totalItem =
+                                            item.subTotalItem - item.descuento;
+                                        _actualizaTotalTemporal();
+
+                                      }else{
+                                        item.cantidad++;
+                                       item.subTotalItem =
+                                       item.precioPublico * item.cantidad;
+                                       item.totalItem =
+                                       item.subTotalItem - item.descuento;
                                   _actualizaTotalTemporal();
+                                      }
                                 },
                                 icon: const Icon(Icons.add_circle_outline))),
                       ],
