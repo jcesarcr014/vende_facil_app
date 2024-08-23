@@ -308,7 +308,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                       ),
                       ElevatedButton(
                         onPressed: () => Navigator.pushReplacementNamed(
-                            context, 'productos'),
+                            context, 'products-menu'),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

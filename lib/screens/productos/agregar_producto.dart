@@ -140,7 +140,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             return;
           }
           
-          Navigator.pushReplacementNamed(context, 'menu');
+          Navigator.pushReplacementNamed(context, 'products-menu');
           globals.actualizaArticulos = true;
           mostrarAlerta(context, '', 'Producto Guardado Correctamente');
         });
@@ -293,7 +293,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       canPop: false,
       onPopInvoked: (didpop) {
         globals.actualizaArticulos = true;
-        if (!didpop) Navigator.pushReplacementNamed(context, 'productos');
+        if (!didpop) Navigator.pushReplacementNamed(context, 'products-menu');
       },
       child: Scaffold(
           appBar: AppBar(
@@ -474,7 +474,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                             onPressed: () {
                               globals.actualizaArticulos = true;
                               Navigator.pushReplacementNamed(
-                                  context, 'productos');
+                                  context, 'products-menu');
                             },
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,

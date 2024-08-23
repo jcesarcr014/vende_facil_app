@@ -197,7 +197,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(context, 'productos'),
+                        onPressed: () => Navigator.pushReplacementNamed(context, 'products-menu'),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
