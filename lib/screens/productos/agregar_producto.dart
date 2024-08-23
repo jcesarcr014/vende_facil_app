@@ -121,6 +121,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.unidad = (_valuePieza) ? '1' : '0';
 
       producto.precioPublico = double.parse(controllerPrecio.text.replaceAll(',', ''));
+      producto.precioMayoreo = double.parse(controllerPrecioMayoreo.text.replaceAll(',', ''));
+      producto.precioDist = double.parse(controllerPrecioDirecto.text.replaceAll(',', ''));
+
       producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
@@ -128,7 +131,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         : controllerCodigoB.text;
 
       producto.apartado = (_valueApartado) ? 1 : 0;
-
       if (args.id == 0) {
         articulosProvider.nuevoProducto(producto).then((value) {
           if (value.status != 1) {
@@ -146,13 +148,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         });
       } else {
         var apartado = (_valueApartado) ? 1 : 0;
-
-        if (producto.producto == controllerProducto ||
-            producto.descripcion == controllerDescripcion ||
-            producto.precioPublico == controllerPrecio ||
-            producto.codigoBarras == controllerCodigoB ||
-            producto.clave == controllerClave ||
+        if (producto.producto == controllerProducto &&
+            producto.descripcion == controllerDescripcion &&
+            producto.precioPublico == controllerPrecio &&
+            producto.codigoBarras == controllerCodigoB &&
+            producto.clave == controllerClave &&
             producto.apartado == apartado) {
+            mostrarAlerta(context, 'Error', 'Actualiza por lo menos un campo');
         } else {
           producto.id = args.id;
           articulosProvider.editaProducto(producto).then((value) {
@@ -267,9 +269,12 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       controllerPrecio.text = (args.precioPublico != null)
           ? args.precioPublico!.toStringAsFixed(2)
           : '0.00';
-
+      
       controllercosto.text =
           (args.costo != null) ? args.costo!.toStringAsFixed(2) : '0.00';
+
+      controllerPrecioMayoreo.text = args.precioMayoreo.toString() == "null" ? '0.00' : args.precioMayoreo.toString();
+      controllerPrecioDirecto.text = args.precioDist.toString() == "null" ? '0.00' : args.precioDist.toString();
 
       controllerClave.text = args.clave!;
 

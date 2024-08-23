@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/formatters/double_input_formatter.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/models/producto_model.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
