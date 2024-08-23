@@ -292,6 +292,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
+        if(args.id == -1 && !didpop) {
+          Navigator.pushNamedAndRemoveUntil(context, 'InventoryPage', (route) => false,);
+          return;
+        }
+        if(args.id != 0 && !didpop) {
+          Navigator.pushNamedAndRemoveUntil(context, 'productos', (route) => false,);
+          return;
+        }
         globals.actualizaArticulos = true;
         if (!didpop) Navigator.pushReplacementNamed(context, 'products-menu');
       },
