@@ -20,6 +20,12 @@ class _InventoryPageState extends State<InventoryPage> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
+  @override
+  void initState() {
+    super.initState();
+    listaProductosSucursal.clear();
+  }
+
   void _setProductsSucursal(String? value) async {
     setState(() {
       isLoading = true;
@@ -81,9 +87,6 @@ class _InventoryPageState extends State<InventoryPage> {
       appBar: AppBar(
         title: const Text('INVENTARIOS'),
         actions: [
-          IconButton(
-              onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-              icon: const Icon(Icons.menu)),
           IconButton(
               onPressed: () =>
                   showSearch(context: context, delegate: Searchproductos()),
