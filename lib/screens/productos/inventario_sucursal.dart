@@ -20,6 +20,12 @@ class _InventoryPageState extends State<InventoryPage> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
+  @override
+  void initState() {
+    super.initState();
+    listaProductosSucursal.clear();
+  }
+
   void _setProductsSucursal(String? value) async {
     setState(() {
       isLoading = true;
@@ -77,57 +83,60 @@ class _InventoryPageState extends State<InventoryPage> {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('INVENTARIOS'),
-        actions: [
-          IconButton(
-              onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-              icon: const Icon(Icons.menu)),
-          IconButton(
-              onPressed: () =>
-                  showSearch(context: context, delegate: Searchproductos()),
-              icon: const Icon(Icons.search)),
-        ],
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didpop) {
+        if(!didpop) Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false,);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('INVENTARIOS'),
+          actions: [
+            IconButton(
+                onPressed: () =>
+                    showSearch(context: context, delegate: Searchproductos()),
+                icon: const Icon(Icons.search)),
+          ],
+        ),
+        body: (isLoading)
+            ? Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Espere...$textLoading'),
+                      SizedBox(
+                        height: windowHeight * 0.01,
+                      ),
+                      const CircularProgressIndicator(),
+                    ]),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Espere...$textLoading'),
-                    SizedBox(
-                      height: windowHeight * 0.01,
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Select con sucursales',
+                        border: OutlineInputBorder(),
+                      ),
+                      value: _selectedSucursal,
+                      isExpanded: true,
+                      items: listaSucursales
+                          .map((sucursal) => DropdownMenuItem(
+                                value: sucursal.nombreSucursal,
+                                child: Text(sucursal.nombreSucursal ?? ''),
+                              ))
+                          .toList(),
+                      onChanged: _setProductsSucursal,
                     ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: 'Select con sucursales',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedSucursal,
-                    isExpanded: true,
-                    items: listaSucursales
-                        .map((sucursal) => DropdownMenuItem(
-                              value: sucursal.nombreSucursal,
-                              child: Text(sucursal.nombreSucursal ?? ''),
-                            ))
-                        .toList(),
-                    onChanged: _setProductsSucursal,
-                  ),
-                  const SizedBox(height: 16),
-                  const Divider(),
-                  Column(children: _productosSucursal()),
-                ],
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    Column(children: _productosSucursal()),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 
@@ -156,6 +165,7 @@ class _InventoryPageState extends State<InventoryPage> {
                         isLoading = false;
                       });
                       if (value.id != 0) {
+                        value.id = -1;
                         Navigator.pushNamed(context, 'nvo-producto',
                             arguments: value);
                       } else {

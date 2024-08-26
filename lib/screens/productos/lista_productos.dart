@@ -48,17 +48,12 @@ class _ProductosScreenState extends State<ProductosScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+        if (!didpop) Navigator.pushReplacementNamed(context, 'products-menu');
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Productos'),
           actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'menu');
-                },
-                icon: const Icon(Icons.menu)),
             IconButton(
                 onPressed: () {
                   showSearch(context: context, delegate: Searchproductos());

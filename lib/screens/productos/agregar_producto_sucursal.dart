@@ -164,6 +164,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       // Añade el producto a la lista de productos de la sucursal
       listaProductosSucursal.add(_productoSeleccionado!);
       Navigator.pushReplacementNamed(context, 'products-menu');
+      mostrarAlerta(context, 'Exitoso', 'Se agrego correctamente el producto a la sucursal.');
       return;
     }
 
@@ -177,6 +178,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     // Actualiza la lista de productos de la sucursal y navega a la pantalla de productos
     listaProductosSucursal.add(_productoSeleccionado!);
     Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
+    mostrarAlerta(context, 'Exitoso', 'Se agrego correctamente el producto a la sucursal.');
   }
 
 
@@ -188,9 +190,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       appBar: AppBar(
         title: const Text('Agregar Producto Sucursal'),
         actions: [
-          IconButton(
-              onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-              icon: const Icon(Icons.menu)),
           IconButton(
               onPressed: () =>
                   showSearch(context: context, delegate: Searchproductos()),
@@ -309,7 +308,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                       ),
                       ElevatedButton(
                         onPressed: () => Navigator.pushReplacementNamed(
-                            context, 'productos'),
+                            context, 'products-menu'),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
