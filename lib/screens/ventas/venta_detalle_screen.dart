@@ -25,7 +25,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
-   bool _valuePieza = false;
+  bool _valuePieza = false;
 
   final cantidadConttroller = TextEditingController();
   @override
@@ -46,8 +46,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle de venta'),
-        automaticallyImplyLeading: true,
+       automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, 'home');
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+            const SizedBox(width: 8),
+            const Text('Detalle de venta'),
+          ],
+        ),
       ),
       body: (isLoading)
           ? Center(
@@ -114,10 +126,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                           overflow: TextOverflow.ellipsis,
                         )),
                   ]),
-                  
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
+                  SizedBox(
+                    height: windowHeight * 0.03,
+                  ),
                   const SizedBox(height: 10),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
@@ -163,7 +174,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       value: _valuePieza,
                       onChanged: (value) {
                         _valuePieza = value;
-                        setState(() {});
+                        setState(() {
+                          _actualizaTotalTemporal();
+                        });
                       },
                     ),
                   ),
@@ -266,10 +279,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             onPressed: item.totalItem > 0.00
                                 ? () {
                                     item.cantidad--;
-                                    item.subTotalItem =
-                                        item.precioPublico * item.cantidad;
-                                    item.totalItem =
-                                        item.subTotalItem - item.descuento;
+                                    // item.subTotalItem =
+                                    //     item.precioPublico * item.cantidad;
+                                    // item.totalItem =
+                                    //     item.subTotalItem - item.descuento;
                                     if (item.cantidad == 0) {
                                       _removerItemTemporal(item);
                                     }
@@ -289,23 +302,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             width: windowWidth * 0.1,
                             child: IconButton(
                                 onPressed: () {
-                                  if (item.cantidad >=
-                                      double.parse(listaVariables[3].valor!)) {
-                                        item.cantidad++;
-                                        item.subTotalItem =
-                                            item.preciomayoreo * item.cantidad;
-                                        item.totalItem =
-                                            item.subTotalItem - item.descuento;
-                                        _actualizaTotalTemporal();
-
-                                      }else{
-                                        item.cantidad++;
-                                       item.subTotalItem =
-                                       item.precioPublico * item.cantidad;
-                                       item.totalItem =
-                                       item.subTotalItem - item.descuento;
+                                  item.cantidad++;
+                                  // item.subTotalItem =
+                                  //     item.precioPublico * item.cantidad;
+                                  // item.totalItem =
+                                  //     item.subTotalItem - item.descuento;
                                   _actualizaTotalTemporal();
-                                      }
                                 },
                                 icon: const Icon(Icons.add_circle_outline))),
                       ],
@@ -364,10 +366,26 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     totalVentaTemporal = 0;
     subTotalItem = 0;
     descuento = 0;
-    for (ItemVenta item in ventaTemporal) {
-      totalVentaTemporal += item.totalItem;
-      subTotalItem += item.subTotalItem;
-      descuento += item.descuento;
+    if (_valuePieza == true) {
+      for (ItemVenta item in ventaTemporal) {
+        totalVentaTemporal += item.cantidad * item.precioPublico;
+        subTotalItem += item.cantidad * item.precioPublico;
+        item.totalItem = item.cantidad * item.precioPublico;
+      }
+    } else {
+      for (ItemVenta item in ventaTemporal) {
+        if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+          totalVentaTemporal += item.cantidad * item.preciomayoreo;
+          subTotalItem += item.cantidad * item.preciomayoreo;
+          item.totalItem = item.cantidad * item.preciomayoreo;
+          descuento += item.descuento;
+        }else{
+          totalVentaTemporal += item.cantidad * item.precioPublico;
+          subTotalItem += item.cantidad * item.precioPublico;
+          item.totalItem = item.cantidad * item.precioPublico;
+          descuento += item.descuento;
+        }
+      }
     }
     setState(() {});
   }
@@ -408,6 +426,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                 totalVentaTemporal = subTotalItem;
                 descuento = (totalVentaTemporal * descuento) / 100;
                 totalVentaTemporal = totalVentaTemporal - descuento;
+                _valuePieza = false;
               });
             } else {
               setState(() {
@@ -417,6 +436,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                 totalVentaTemporal = subTotalItem;
                 totalVentaTemporal =
                     totalVentaTemporal - descuentoSeleccionado.valor!;
+                    _valuePieza = false;
               });
             }
           } else {
@@ -468,6 +488,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                 totalVentaTemporal = item.cantidad * item.preciodistribuidor;
                 subTotalItem = totalVentaTemporal;
               }
+              _valuePieza = false;
             });
           }
         });
@@ -516,6 +537,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     totalVentaTemporal = subTotalItem;
                     descuento = (totalVentaTemporal * descuento) / 100;
                     totalVentaTemporal = totalVentaTemporal - descuento;
+                    _valuePieza = false;
                   });
                 } else {
                   setState(() {
@@ -524,6 +546,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     descuento = double.parse(cantidadConttroller.text);
                     totalVentaTemporal = subTotalItem;
                     totalVentaTemporal = totalVentaTemporal - descuento;
+                    _valuePieza = false;
                   });
                 }
               },
@@ -538,40 +561,4 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       },
     );
   }
-
-  // tuFuncion() {
-  //   try {
-  //     double total = double.parse(totalConttroller.text);
-  //     double efectivo = double.parse(efectivoConttroller.text);
-  //     var cambio = efectivo - total;
-  //     if (cambio < 0) {
-  //       cambioConttroller.text = "0.00";
-  //     } else {
-  //       cambioConttroller.text = cambio.toStringAsFixed(2);
-  //     }
-
-  //     setState(() {
-  //       // Actualiza el estado
-  //     });
-  //     // ignore: empty_catches
-  //   } catch (e) {}
-  // }
-
-  // apartadosomprobacion() {
-  //   try {
-  //     double total = double.parse(totalConttroller.text);
-  //     double efectivo = double.parse(efectivoConttroller.text);
-  //     var cambio = efectivo - total;
-  //     if (cambio < 0) {
-  //       cambioConttroller.text = "0.00";
-  //     } else {
-  //       cambioConttroller.text = cambio.toStringAsFixed(2);
-  //     }
-
-  //     setState(() {
-  //       // Actualiza el estado
-  //     });
-  //     // ignore: empty_catches
-  //   } catch (e) {}
-  // }
 }
