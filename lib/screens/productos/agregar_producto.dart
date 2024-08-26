@@ -1,6 +1,7 @@
 // ignore_for_file: unrelated_type_equality_checks, avoid_print, prefer_final_fields
 
 import 'package:flutter/material.dart';
+import 'package:vende_facil/helpers/app_state_manager.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -165,8 +166,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             });
             if (value.status == 1) {
               globals.actualizaArticulos = true;
-              Navigator.pushReplacementNamed(context, 'productos');
-              mostrarAlerta(context, '', value.mensaje!);
+              if(manager.currentScreen == 'InventoryPage') {
+                Navigator.popAndPushNamed(context, 'InventoryPage');
+              } else if(manager.currentScreen == 'productos') {
+                Navigator.pop(context);
+              }
+              mostrarAlerta(context, 'Exito', value.mensaje!);
+              manager.setCurrentScreen('defaultScreen');
             } else {
               mostrarAlerta(context, '', value.mensaje!);
             }
@@ -297,10 +303,10 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if(args.id == -1 && !didpop) {
+        if(manager.currentScreen == 'InventoryPage' && !didpop) {
+          manager.setCurrentScreen('defaultScreen');
           Navigator.pop(context);
           Navigator.popAndPushNamed(context, 'InventoryPage');
-          //Navigator.pushNamedAndRemoveUntil(context, 'InventoryPage', (route) => false,);
           return;
         }
         if(args.id != 0 && !didpop) {
@@ -390,7 +396,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       ),
                       InputFieldMoney(
                           controller: controllerPrecioDirecto,
-                          labelText: 'Precio Directo'),
+                          labelText: 'Precio Distribuidor'),
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
