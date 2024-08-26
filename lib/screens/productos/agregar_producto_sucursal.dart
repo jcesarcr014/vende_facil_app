@@ -306,22 +306,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                           ],
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(
-                            context, 'products-menu'),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.cancel_outlined),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Cancelar',
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ],

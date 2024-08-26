@@ -298,11 +298,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       canPop: false,
       onPopInvoked: (didpop) {
         if(args.id == -1 && !didpop) {
-          Navigator.pushNamedAndRemoveUntil(context, 'InventoryPage', (route) => false,);
+          Navigator.pop(context);
+          Navigator.popAndPushNamed(context, 'InventoryPage');
+          //Navigator.pushNamedAndRemoveUntil(context, 'InventoryPage', (route) => false,);
           return;
         }
         if(args.id != 0 && !didpop) {
-          Navigator.pushNamedAndRemoveUntil(context, 'productos', (route) => false,);
+          Navigator.pop(context);
+          Navigator.popAndPushNamed(context, 'productos');
           return;
         }
         globals.actualizaArticulos = true;
@@ -457,48 +460,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                                   width: 5,
                                 ),
                                 Text('Guardar'),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          if (args.id != 0)
-                            ElevatedButton(
-                              onPressed: () => Navigator.pushReplacementNamed(
-                                  context, 'InventoryPage'),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.save),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Sucursal Inventario',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              globals.actualizaArticulos = true;
-                              Navigator.pushReplacementNamed(
-                                  context, 'products-menu');
-                            },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.cancel_outlined),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Cancelar',
-                                ),
                               ],
                             ),
                           ),
