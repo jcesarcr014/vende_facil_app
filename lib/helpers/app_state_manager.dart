@@ -1,5 +1,5 @@
 class AppStateManager {
-  late String _currentScreen;
+  String _currentScreen = 'defaultScreen';
 
   AppStateManager();
 
