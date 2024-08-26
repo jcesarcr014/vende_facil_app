@@ -1,5 +1,4 @@
 // ignore_for_file: unrelated_type_equality_checks, avoid_print, prefer_final_fields
-
 import 'package:flutter/material.dart';
 import 'package:vende_facil/helpers/app_state_manager.dart';
 import 'package:vende_facil/models/models.dart';
@@ -294,7 +293,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             : '0.00';
       }
     } else {
-      _valueApartado = false;
       setState(() {});
     }
     final title = (args.id == 0) ? 'Nuevo producto' : 'Editar producto';
