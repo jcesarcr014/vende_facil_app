@@ -36,13 +36,10 @@ class SuscripcionProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error al obtener el token de la tarjeta. $e';
-      print(e);
     }
     String ultimos4Digitos =
         tarjeta.numero!.substring(tarjeta.numero!.length - 4);
-    print(' ====================== $deviceID ========================');
-    print(' ====================== $token ========================');
-    print(' ====================== $ultimos4Digitos ========================');
+
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -132,6 +129,8 @@ class SuscripcionProvider {
           planTemp.idPlanOp = decodedData['planes'][x]['id_plan_op'];
           planTemp.nombrePlan = decodedData['planes'][x]['nombre_plan'];
           planTemp.periodicidad = decodedData['planes'][x]['periodicidad'];
+          planTemp.sucursales = decodedData['planes'][x]['sucursales'];
+          planTemp.empleados = decodedData['planes'][x]['empleados'];
           planTemp.divisa = decodedData['planes'][x]['divisa'];
           if (suscripcionActual.idPlan == planTemp.id) {
             planTemp.activo = true;

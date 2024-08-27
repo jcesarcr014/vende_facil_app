@@ -14,7 +14,6 @@ class PlanCard extends StatelessWidget {
     List<DetallePlan> planDetalles =
         listaDetalles.where((detalle) => detalle.idPlan == plan.id).toList();
 
-
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -35,13 +34,20 @@ class PlanCard extends StatelessWidget {
               const SizedBox(height: 8),
               const Text('Detalles:'),
               const SizedBox(height: 8),
-              ...planDetalles
-                  .map((detalle) => Text('- ${detalle.descripcion}'))
-                  // ignore: unnecessary_to_list_in_spreads
-                  .toList(),
+              Text(
+                'Plan mensual para ${plan.sucursales} sucursales y hasta ${plan.empleados} empleados.',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
               const SizedBox(height: 8),
               plan.activo == true
-                  ? const Icon(Icons.check, color: Colors.green)
+                  ? const Row(
+                      children: [
+                        Icon(Icons.check, color: Colors.green),
+                        SizedBox(width: 8),
+                        Text('Suscripción actual.')
+                      ],
+                    )
                   : const SizedBox(),
             ],
           ),
