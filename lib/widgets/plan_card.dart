@@ -11,8 +11,8 @@ class PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<DetallePlan> planDetalles =
-        listaDetalles.where((detalle) => detalle.idPlan == plan.id).toList();
+    // List<DetallePlan> planDetalles =
+    //     listaDetalles.where((detalle) => detalle.idPlan == plan.id).toList();
 
     return GestureDetector(
       onTap: onTap,
