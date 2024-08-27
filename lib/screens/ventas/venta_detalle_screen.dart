@@ -40,7 +40,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     setState(() {});
   }
     
-    
+
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
@@ -330,6 +330,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     for (ItemVenta articuloTemporal in ventaTemporal) {
       if (articuloTemporal.apartado == false) {
         apartadoValido = false;
+        mostrarAlerta(context, 'ERROR',
+          'El articulo nose puede apartar. Para modificar este valor, ve a Productos -> Editar producto.');
+
         return;
       } else {
         numArticulos = numArticulos + articuloTemporal.cantidad;

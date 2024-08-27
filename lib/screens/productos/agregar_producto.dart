@@ -37,7 +37,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   bool firstLoad = true;
   bool _valuePieza = true;
   final bool _valueInventario = true;
-  bool _valueApartado = true;
+  bool _valueApartado = false;
   bool _puedeGurdar = false;
   Producto producto = Producto();
   Producto args = Producto(
@@ -120,15 +120,18 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
 
-      producto.precioPublico = double.parse(controllerPrecio.text.replaceAll(',', ''));
-      producto.precioMayoreo = double.parse(controllerPrecioMayoreo.text.replaceAll(',', ''));
-      producto.precioDist = double.parse(controllerPrecioDirecto.text.replaceAll(',', ''));
+      producto.precioPublico =
+          double.parse(controllerPrecio.text.replaceAll(',', ''));
+      producto.precioMayoreo =
+          double.parse(controllerPrecioMayoreo.text.replaceAll(',', ''));
+      producto.precioDist =
+          double.parse(controllerPrecioDirecto.text.replaceAll(',', ''));
 
       producto.costo = double.parse(controllercosto.text.replaceAll(',', ''));
       producto.clave = controllerClave.text;
       producto.codigoBarras = (controllerCodigoB.text.isEmpty)
-        ? controllerClave.text
-        : controllerCodigoB.text;
+          ? controllerClave.text
+          : controllerCodigoB.text;
 
       producto.apartado = (_valueApartado) ? 1 : 0;
       if (args.id == 0) {
@@ -141,7 +144,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             mostrarAlerta(context, '', value.mensaje!);
             return;
           }
-          
+
           Navigator.pushReplacementNamed(context, 'products-menu');
           globals.actualizaArticulos = true;
           mostrarAlerta(context, '', 'Producto Guardado Correctamente');
@@ -154,7 +157,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             producto.codigoBarras == controllerCodigoB &&
             producto.clave == controllerClave &&
             producto.apartado == apartado) {
-            mostrarAlerta(context, 'Error', 'Actualiza por lo menos un campo');
+          mostrarAlerta(context, 'Error', 'Actualiza por lo menos un campo');
         } else {
           producto.id = args.id;
           articulosProvider.editaProducto(producto).then((value) {
@@ -269,12 +272,16 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       controllerPrecio.text = (args.precioPublico != null)
           ? args.precioPublico!.toStringAsFixed(2)
           : '0.00';
-      
+
       controllercosto.text =
           (args.costo != null) ? args.costo!.toStringAsFixed(2) : '0.00';
 
-      controllerPrecioMayoreo.text = args.precioMayoreo.toString() == "null" ? '0.00' : args.precioMayoreo.toString();
-      controllerPrecioDirecto.text = args.precioDist.toString() == "null" ? '0.00' : args.precioDist.toString();
+      controllerPrecioMayoreo.text = args.precioMayoreo.toString() == "null"
+          ? '0.00'
+          : args.precioMayoreo.toString();
+      controllerPrecioDirecto.text = args.precioDist.toString() == "null"
+          ? '0.00'
+          : args.precioDist.toString();
 
       controllerClave.text = args.clave!;
 
@@ -282,6 +289,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           (args.codigoBarras != null) ? args.codigoBarras! : '';
 
       _valueApartado = (args.apartado == 0) ? false : true;
+      print(_valueApartado);
       if (_valueInventario) {
         controllerCantidad.text = (args.cantidad != null)
             ? args.cantidad!.toStringAsFixed(2)
@@ -297,12 +305,20 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if(args.id == -1 && !didpop) {
-          Navigator.pushNamedAndRemoveUntil(context, 'InventoryPage', (route) => false,);
+        if (args.id == -1 && !didpop) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            'InventoryPage',
+            (route) => false,
+          );
           return;
         }
-        if(args.id != 0 && !didpop) {
-          Navigator.pushNamedAndRemoveUntil(context, 'productos', (route) => false,);
+        if (args.id != 0 && !didpop) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            'productos',
+            (route) => false,
+          );
           return;
         }
         globals.actualizaArticulos = true;
