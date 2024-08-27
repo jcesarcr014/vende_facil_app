@@ -226,13 +226,14 @@ class ArticuloProvider {
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
 
-
           productoTemp.idInv = decodedData['data'][x]['id_inv'];
 
-          productoTemp.cantidadInv = double.parse(decodedData['data'][x]['cantidad_inv']);
-          productoTemp.apartadoInv = double.parse(decodedData['data'][x]['apartado_inv']);
-          productoTemp.disponibleInv = double.parse(decodedData['data'][x]['disponibles_inv']);
-
+          productoTemp.cantidadInv =
+              double.parse(decodedData['data'][x]['cantidad_inv']);
+          productoTemp.apartadoInv =
+              double.parse(decodedData['data'][x]['apartado_inv']);
+          productoTemp.disponibleInv =
+              double.parse(decodedData['data'][x]['disponibles_inv']);
 
           listaProductosSucursal.add(productoTemp);
         }
@@ -276,9 +277,7 @@ class ArticuloProvider {
     return respuesta;
   }
 
-
   Future<Resultado> inventarioSucAgregar(Producto producto) async {
-
     var url = Uri.parse('$baseUrl/inventario-agregar');
     try {
       final resp = await http.put(url, headers: {
@@ -302,9 +301,7 @@ class ArticuloProvider {
     return respuesta;
   }
 
-
   Future<Resultado> inventarioSucQuitar(Producto producto) async {
-
     var url = Uri.parse('$baseUrl/inventario-quitar');
     try {
       final resp = await http.put(url, headers: {
