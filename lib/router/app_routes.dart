@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/screens/screens.dart';
 
+import '../models/producto_model.dart';
+
 class AppRoutes {
   static const initialRoute = 'splash';
 
@@ -45,9 +47,19 @@ class AppRoutes {
     'lista-sucursales': (BuildContext context) => const ListaSucursalesScreen(),
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
-    'InventoryPage': (BuildContext context) => const InventoryPage()
+    'InventoryPage': (BuildContext context) => const InventoryPage(),
   };
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    return MaterialPageRoute(builder: (context) => const ErrorScreen());
-  }
+
+    static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+      switch (settings.name) {
+        case 'detalles-producto-sucursal':
+          final producto = settings.arguments as Producto;
+          return MaterialPageRoute(
+            builder: (context) => DetallesProductoSucursal(producto: producto),
+          );
+        default:
+          return MaterialPageRoute(builder: (context) => const ErrorScreen());
+      }
+    }
+
 }
