@@ -4,6 +4,8 @@ class PlanSuscripcion {
   String? idPlanOp;
   String? nombrePlan;
   String? periodicidad;
+  int? sucursales;
+  int? empleados;
   String? divisa;
   bool? activo;
 
@@ -13,6 +15,8 @@ class PlanSuscripcion {
     this.idPlanOp,
     this.nombrePlan,
     this.periodicidad,
+    this.sucursales,
+    this.empleados,
     this.divisa,
     this.activo,
   });
