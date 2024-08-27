@@ -39,7 +39,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   void _fetchData() {
     setState(() {});
   }
-
+    
+    
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
