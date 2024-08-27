@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/productos/detalles_producto_sucursal.dart';
 export 'package:vende_facil/screens/productos/eliminar_producto_sucursal.dart';
 export 'package:vende_facil/screens/productos/agregar_producto_sucursal.dart';
 export 'package:vende_facil/screens/productos/products_screen.dart'; // Sub menu de Productos

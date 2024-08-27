@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:vende_facil/helpers/app_state_manager.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
@@ -62,8 +61,7 @@ class _InventoryPageState extends State<InventoryPage> {
         setState(() {
           isLoading = false;
         });
-        mostrarAlerta(
-            context, 'Error', 'No cuentas con productos en esta sucursal');
+        //mostrarAlerta(context, 'Error', 'No cuentas con productos en esta sucursal');
         return;
       }
 
@@ -88,11 +86,7 @@ class _InventoryPageState extends State<InventoryPage> {
       canPop: false,
       onPopInvoked: (didpop) {
         if (!didpop) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            'products-menu',
-            (route) => false,
-          );
+          Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false,);
         }
       },
       child: Scaffold(
@@ -146,6 +140,13 @@ class _InventoryPageState extends State<InventoryPage> {
       ),
     );
   }
+  
+  Producto searchProductos(int id) {
+    return listaProductosSucursal.firstWhere(
+      (producto) => producto.id == id,
+      orElse: () => Producto(id: null),
+    );
+  }
 
   List<Widget> _productosSucursal() {
     List<Widget> listaProd = [];
@@ -161,25 +162,12 @@ class _InventoryPageState extends State<InventoryPage> {
                     color: color.color,
                   ),
                   onTap: (() {
-                    setState(() {
-                      textLoading = 'Leyendo producto';
-                      isLoading = true;
-                    });
-
-                    provider.consultaProducto(producto.id!).then((value) {
-                      setState(() {
-                        textLoading = '';
-                        isLoading = false;
-                      });
-                      if (value.id != 0) {
-                        manager.setCurrentScreen('InventoryPage');
-                        Navigator.pushNamed(context, 'nvo-producto',
-                            arguments: value);
-                      } else {
-                        mostrarAlerta(context, 'ERROR',
-                            'Error en la consulta: ${value.producto}');
-                      }
-                    });
+                    Producto productoData = searchProductos(producto.id!);
+                    if(productoData.id == 0) {
+                      mostrarAlerta(context, 'ERROR', 'Error al obtener la información del ${productoData.producto} con el ID ${productoData.id}');
+                      return;
+                    }
+                    Navigator.pushNamed(context, 'detalles-producto-sucursal', arguments: productoData);
                   }),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
