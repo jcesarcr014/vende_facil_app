@@ -18,8 +18,8 @@ class EliminarProductoSucursal extends StatefulWidget {
 }
 
 class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
-  int? _selectedProduct;
-  int? _selectedSucursalId;
+  String? _selectedProduct;
+  String? _selectedSucursal;
 
   String? cantidad;
   Producto? _producto;
@@ -36,9 +36,9 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
     listaProductosSucursal.clear();
   }
 
-  void _seleccionarSucursal(int? value) async {
+  void _seleccionarSucursal(String? value) async {
     sucursalSeleccionado = listaSucursales.firstWhere(
-      (sucursal) => sucursal.id == value,
+      (sucursal) => sucursal.nombreSucursal == value,
       orElse: () => Sucursal(id: null),
     );
 
@@ -52,19 +52,19 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       return;
     }
 
-    _selectedSucursalId = sucursalSeleccionado.id;
+    _selectedSucursal = sucursalSeleccionado.nombreSucursal;
     isLoading = false;
     setState(() {});
   }
 
-  void _seleccionarProducto(int? value) async {
-    if(_selectedSucursalId == null) {
+  void _seleccionarProducto(String? value) async {
+    if(_selectedSucursal == null) {
       mostrarAlerta(context, 'Error', 'Selecciona una sucursal primero');
       return;
     }
 
     Producto producto = listaProductosSucursal.firstWhere(
-      (producto) => producto.id == value,
+      (producto) => producto.producto == value,
       orElse: () => Producto(id: null),
     );
 
@@ -126,30 +126,23 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CustomDropdownSearch<int>(
-                    items: listaSucursales.map((sucursal) => sucursal.id!).toList(),
-                    selectedItem: _selectedSucursalId,
-                    onChanged: (int? newValue) {
+                  CustomDropdownSearch(
+                    items: listaSucursales.map((sucursal) => sucursal.nombreSucursal!).toList(),
+                    selectedItem: _selectedSucursal,
+                    onChanged: (String? newValue) {
                       _seleccionarSucursal(newValue);
                     },
                     labelText: 'Select con Sucursales',
-                    itemAsString: (int id) {
-                      final sucursal = listaSucursales.firstWhere((sucursal) => sucursal.id == id);
-                      return sucursal.nombreSucursal ?? '';
-                    },
                   ),
                   const SizedBox(height: 16),
-                  CustomDropdownSearch<int>(
-                    items: listaProductosSucursal.map((producto) => producto.id!).toList(),
+                  CustomDropdownSearch(
+                    items: listaProductosSucursal.map((producto) => producto.producto!).toList(),
                     selectedItem: _selectedProduct,
-                    onChanged: (int? newValue) {
+                    onChanged: (String? newValue) {
                       _seleccionarProducto(newValue);
                     },
                     labelText: 'Nombre Producto',
-                    itemAsString: (int id) {
-                      final producto = listaProductosSucursal.firstWhere((producto) => producto.id == id);
-                      return producto.producto ?? '';
-                    },
+                    emptyMessage: 'Primero Selecciona una Sucursal',
                   ),
                   const SizedBox(height: 16),
                   TextField(
