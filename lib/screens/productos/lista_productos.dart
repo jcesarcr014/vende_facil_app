@@ -47,7 +47,7 @@ class _ProductosScreenState extends State<ProductosScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'products-menu');
+        if (!didpop) Navigator.pop(context);
       },
       child: Scaffold(
         appBar: AppBar(

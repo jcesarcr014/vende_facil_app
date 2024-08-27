@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:vende_facil/helpers/app_state_manager.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
@@ -170,7 +171,7 @@ class _InventoryPageState extends State<InventoryPage> {
                         isLoading = false;
                       });
                       if (value.id != 0) {
-                        value.id = -1;
+                        manager.setCurrentScreen('InventoryPage');
                         Navigator.pushNamed(context, 'nvo-producto',
                             arguments: value);
                       } else {

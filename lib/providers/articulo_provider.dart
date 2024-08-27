@@ -188,7 +188,6 @@ class ArticuloProvider {
 
   //SUCURSALES
   Future<Resultado> listarProductosSucursal(int idSucursal) async {
-    listaProductosSucursal.clear();
     var url = Uri.parse('$baseUrl/productos-sucursal/$idSucursal');
     try {
       final resp = await http.get(url, headers: {
@@ -196,7 +195,7 @@ class ArticuloProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
-        listaProductosSucursal.clear();
+           listaProductosSucursal.clear();
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
           productoTemp.id = decodedData['data'][x]['id'];

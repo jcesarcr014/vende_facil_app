@@ -8,6 +8,8 @@ import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
+import '../../widgets/custom_dropdown_search.dart';
+
 class AgregarProductoSucursal extends StatefulWidget {
   const AgregarProductoSucursal({super.key});
 
@@ -215,19 +217,11 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Seleccione un producto',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedProduct,
-                    isExpanded: true,
-                    items: listaProductos.map((producto) {
-                      return DropdownMenuItem<int>(
-                        value: producto.id,
-                        child: Text(producto.producto!),
-                      );
-                    }).toList(),
+
+                  CustomDropdownSearch<int>(
+                    items: listaProductos.map((producto) => producto.id!).toList(),
+                    selectedItem: _selectedProduct,
+
                     onChanged: (int? newValue) {
                       _productoSeleccionado = listaProductos
                           .firstWhere((producto) => producto.id == newValue);
@@ -235,6 +229,11 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                         _selectedProduct = newValue;
                       });
                       _updateCantidadSucursal();
+                    },
+                    labelText: 'Nombre Producto',
+                    itemAsString: (int id) {
+                      final producto = listaProductos.firstWhere((producto) => producto.id == id);
+                      return producto.producto!;
                     },
                   ),
                   const SizedBox(height: 16),
@@ -250,20 +249,17 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Select con sucursales',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedSucursal,
-                    isExpanded: true,
-                    items: listaSucursales
-                        .map((sucursal) => DropdownMenuItem(
-                              value: sucursal.id,
-                              child: Text(sucursal.nombreSucursal ?? ''),
-                            ))
-                        .toList(),
-                    onChanged: _setProductsSucursal,
+                  CustomDropdownSearch<int>(
+                    items: listaSucursales.map((sucursal) => sucursal.id!).toList(),
+                    selectedItem: _selectedSucursal,
+                    onChanged: (int? newValue) {
+                      _setProductsSucursal(newValue);
+                    },
+                    labelText: 'Select con sucursales',
+                    itemAsString: (int id) {
+                      final sucursal = listaSucursales.firstWhere((sucursal) => sucursal.id == id);
+                      return sucursal.nombreSucursal ?? '';
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -304,22 +300,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                             ),
                             Text(
                               'Agregar',
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(
-                            context, 'products-menu'),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.cancel_outlined),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Cancelar',
                             ),
                           ],
                         ),
