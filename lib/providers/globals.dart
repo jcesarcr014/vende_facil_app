@@ -14,5 +14,5 @@ bool actualizarEmpleadoSucursales = false;
 
 bool actualizaArticulosSucursal = false;
 
-String opMerchantId = 'mk5tbux7s2qsfpboy49i';
-String opPublicKey = 'pk_6509292d8eae4fba924a2055cd2492f8';
+String opMerchantId = 'mrfxnb2cytmppzzly7oi';
+String opPublicKey = 'pk_d5c9b0e23f5945cf821f36a5b9a8011f';

@@ -125,7 +125,8 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                           }
                           final RegExp numeric = RegExp(r'^[0-9]+$');
                           if (!numeric.hasMatch(numTarjeta) ||
-                              numTarjeta.length < 16) {
+                              numTarjeta.length < 16 ||
+                              numTarjeta.length > 16) {
                             return 'Numero de tarjeta invalido';
                           }
 
@@ -141,7 +142,7 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                           Expanded(
                             child: InputField(
                               icon: Icons.calendar_today,
-                              labelText: 'Mes',
+                              labelText: 'Mes- MM',
                               keyboardType: TextInputType.number,
                               controller: controllerVencM,
                               validator: (vencM) {
@@ -150,7 +151,8 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                                 }
                                 final RegExp numeric = RegExp(r'^[0-9]+$');
                                 if (!numeric.hasMatch(vencM) ||
-                                    vencM.length < 2) {
+                                    vencM.length < 2 ||
+                                    vencM.length > 2) {
                                   return 'Mes invalido';
                                 }
                                 return null;
@@ -164,7 +166,7 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                           Expanded(
                             child: InputField(
                               icon: Icons.calendar_today,
-                              labelText: 'Año',
+                              labelText: 'Año - AA',
                               controller: controllerVencA,
                               keyboardType: TextInputType.number,
                               validator: (vencA) {
@@ -173,7 +175,8 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                                 }
                                 final RegExp numeric = RegExp(r'^[0-9]+$');
                                 if (!numeric.hasMatch(vencA) ||
-                                    vencA.length < 2) {
+                                    vencA.length < 2 ||
+                                    vencA.length > 2) {
                                   return 'Año invalido';
                                 }
                                 return null;
@@ -196,7 +199,9 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                             return 'Este campo es obligatorio';
                           }
                           final RegExp numeric = RegExp(r'^[0-9]+$');
-                          if (!numeric.hasMatch(ccv) || ccv.length < 3) {
+                          if (!numeric.hasMatch(ccv) ||
+                              ccv.length < 3 ||
+                              ccv.length > 3) {
                             return 'CCV invalido';
                           }
                           return null;
