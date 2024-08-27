@@ -30,7 +30,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
   TextEditingController controller = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
@@ -121,9 +120,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     try {
       Resultado resultado = await provider.listarProductosSucursal(
-          listaSucursales
-              .firstWhere((s) => s.id == _selectedSucursal)
-              .id!);
+          listaSucursales.firstWhere((s) => s.id == _selectedSucursal).id!);
 
       if (resultado.status != 1) {
         isLoading = false;
@@ -136,8 +133,9 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
           (producto) => producto.id == _productoSeleccionado!.id,
           orElse: () => Producto(id: null, producto: 'No encontrado'));
 
-      _cantidadSucursal =
-          producto.id != null ? producto.disponibleInv!.toInt().toString() : '0';
+      _cantidadSucursal = producto.id != null
+          ? producto.disponibleInv!.toInt().toString()
+          : '0';
       isLoading = false;
       setState(() {});
     } catch (e) {
@@ -157,7 +155,8 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     // Si el producto no existe en la sucursal, crea un nuevo inventario
     if (existe == false) {
-      Resultado resultado = await provider.nvoInventarioSuc(_productoSeleccionado!);
+      Resultado resultado =
+          await provider.nvoInventarioSuc(_productoSeleccionado!);
       if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
@@ -166,12 +165,14 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       // Añade el producto a la lista de productos de la sucursal
       listaProductosSucursal.add(_productoSeleccionado!);
       Navigator.pushReplacementNamed(context, 'products-menu');
-      mostrarAlerta(context, 'Exitoso', 'Se agrego correctamente el producto a la sucursal.');
+      mostrarAlerta(context, 'Exitoso',
+          'Se agrego correctamente el producto a la sucursal.');
       return;
     }
 
     // Si el producto ya existe en la sucursal, actualiza la cantidad
-    Resultado resultado = await provider.inventarioSucAgregar(_productoSeleccionado!);
+    Resultado resultado =
+        await provider.inventarioSucAgregar(_productoSeleccionado!);
     if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
@@ -179,10 +180,11 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     // Actualiza la lista de productos de la sucursal y navega a la pantalla de productos
     listaProductosSucursal.add(_productoSeleccionado!);
-    Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
-    mostrarAlerta(context, 'Exitoso', 'Se agrego correctamente el producto a la sucursal.');
+    Navigator.pushNamedAndRemoveUntil(
+        context, 'products-menu', (route) => false);
+    mostrarAlerta(context, 'Exitoso',
+        'Se agrego correctamente el producto a la sucursal.');
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -215,12 +217,14 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+
                   CustomDropdownSearch<int>(
                     items: listaProductos.map((producto) => producto.id!).toList(),
                     selectedItem: _selectedProduct,
+
                     onChanged: (int? newValue) {
-                      _productoSeleccionado = listaProductos.firstWhere(
-                          (producto) => producto.id == newValue);
+                      _productoSeleccionado = listaProductos
+                          .firstWhere((producto) => producto.id == newValue);
                       setState(() {
                         _selectedProduct = newValue;
                       });
@@ -272,7 +276,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                      RegExp(r'^[0-9]*\.?[0-9]*$')),
+                          RegExp(r'^[0-9]*\.?[0-9]*$')),
                       DoubleInputFormatter(),
                     ],
                     controller: controller,

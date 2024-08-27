@@ -62,14 +62,14 @@ class _InventoryPageState extends State<InventoryPage> {
         setState(() {
           isLoading = false;
         });
-        mostrarAlerta(context, 'Error', 'No cuentas con productos en esta sucursal');
+        mostrarAlerta(
+            context, 'Error', 'No cuentas con productos en esta sucursal');
         return;
       }
 
       setState(() {
         isLoading = false;
       });
-
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -87,7 +87,12 @@ class _InventoryPageState extends State<InventoryPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if(!didpop) Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false,);
+        if (!didpop)
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            'products-menu',
+            (route) => false,
+          );
       },
       child: Scaffold(
         appBar: AppBar(
@@ -118,7 +123,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   children: [
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(
-                        labelText: 'Select con sucursales',
+                        labelText: 'Seleccione una sucursal',
                         border: OutlineInputBorder(),
                       ),
                       value: _selectedSucursal,
