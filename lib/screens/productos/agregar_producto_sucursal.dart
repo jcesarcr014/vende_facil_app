@@ -8,6 +8,8 @@ import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
+import '../../widgets/custom_dropdown_search.dart';
+
 class AgregarProductoSucursal extends StatefulWidget {
   const AgregarProductoSucursal({super.key});
 
@@ -27,7 +29,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   bool? existe;
 
   TextEditingController controller = TextEditingController();
-
 
   @override
   void initState() {
@@ -119,9 +120,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     try {
       Resultado resultado = await provider.listarProductosSucursal(
-          listaSucursales
-              .firstWhere((s) => s.id == _selectedSucursal)
-              .id!);
+          listaSucursales.firstWhere((s) => s.id == _selectedSucursal).id!);
 
       if (resultado.status != 1) {
         isLoading = false;
@@ -134,8 +133,9 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
           (producto) => producto.id == _productoSeleccionado!.id,
           orElse: () => Producto(id: null, producto: 'No encontrado'));
 
-      _cantidadSucursal =
-          producto.id != null ? producto.disponibleInv!.toInt().toString() : '0';
+      _cantidadSucursal = producto.id != null
+          ? producto.disponibleInv!.toInt().toString()
+          : '0';
       isLoading = false;
       setState(() {});
     } catch (e) {
@@ -155,7 +155,8 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     // Si el producto no existe en la sucursal, crea un nuevo inventario
     if (existe == false) {
-      Resultado resultado = await provider.nvoInventarioSuc(_productoSeleccionado!);
+      Resultado resultado =
+          await provider.nvoInventarioSuc(_productoSeleccionado!);
       if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
@@ -164,12 +165,14 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       // Añade el producto a la lista de productos de la sucursal
       listaProductosSucursal.add(_productoSeleccionado!);
       Navigator.pushReplacementNamed(context, 'products-menu');
-      mostrarAlerta(context, 'Exitoso', 'Se agrego correctamente el producto a la sucursal.');
+      mostrarAlerta(context, 'Exitoso',
+          'Se agrego correctamente el producto a la sucursal.');
       return;
     }
 
     // Si el producto ya existe en la sucursal, actualiza la cantidad
-    Resultado resultado = await provider.inventarioSucAgregar(_productoSeleccionado!);
+    Resultado resultado =
+        await provider.inventarioSucAgregar(_productoSeleccionado!);
     if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
@@ -177,10 +180,11 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     // Actualiza la lista de productos de la sucursal y navega a la pantalla de productos
     listaProductosSucursal.add(_productoSeleccionado!);
-    Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
-    mostrarAlerta(context, 'Exitoso', 'Se agrego correctamente el producto a la sucursal.');
+    Navigator.pushNamedAndRemoveUntil(
+        context, 'products-menu', (route) => false);
+    mostrarAlerta(context, 'Exitoso',
+        'Se agrego correctamente el producto a la sucursal.');
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -213,26 +217,23 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Nombre Producto',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedProduct,
-                    isExpanded: true,
-                    items: listaProductos.map((producto) {
-                      return DropdownMenuItem<int>(
-                        value: producto.id,
-                        child: Text(producto.producto!),
-                      );
-                    }).toList(),
+
+                  CustomDropdownSearch<int>(
+                    items: listaProductos.map((producto) => producto.id!).toList(),
+                    selectedItem: _selectedProduct,
+
                     onChanged: (int? newValue) {
-                      _productoSeleccionado = listaProductos.firstWhere(
-                          (producto) => producto.id == newValue);
+                      _productoSeleccionado = listaProductos
+                          .firstWhere((producto) => producto.id == newValue);
                       setState(() {
                         _selectedProduct = newValue;
                       });
                       _updateCantidadSucursal();
+                    },
+                    labelText: 'Nombre Producto',
+                    itemAsString: (int id) {
+                      final producto = listaProductos.firstWhere((producto) => producto.id == id);
+                      return producto.producto!;
                     },
                   ),
                   const SizedBox(height: 16),
@@ -248,20 +249,17 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Select con sucursales',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedSucursal,
-                    isExpanded: true,
-                    items: listaSucursales
-                        .map((sucursal) => DropdownMenuItem(
-                              value: sucursal.id,
-                              child: Text(sucursal.nombreSucursal ?? ''),
-                            ))
-                        .toList(),
-                    onChanged: _setProductsSucursal,
+                  CustomDropdownSearch<int>(
+                    items: listaSucursales.map((sucursal) => sucursal.id!).toList(),
+                    selectedItem: _selectedSucursal,
+                    onChanged: (int? newValue) {
+                      _setProductsSucursal(newValue);
+                    },
+                    labelText: 'Select con sucursales',
+                    itemAsString: (int id) {
+                      final sucursal = listaSucursales.firstWhere((sucursal) => sucursal.id == id);
+                      return sucursal.nombreSucursal ?? '';
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -278,7 +276,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                      RegExp(r'^[0-9]*\.?[0-9]*$')),
+                          RegExp(r'^[0-9]*\.?[0-9]*$')),
                       DoubleInputFormatter(),
                     ],
                     controller: controller,
@@ -302,22 +300,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                             ),
                             Text(
                               'Agregar',
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(
-                            context, 'products-menu'),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.cancel_outlined),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Cancelar',
                             ),
                           ],
                         ),

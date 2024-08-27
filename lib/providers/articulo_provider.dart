@@ -233,6 +233,7 @@ class ArticuloProvider {
               double.parse(decodedData['data'][x]['apartado_inv']);
           productoTemp.disponibleInv =
               double.parse(decodedData['data'][x]['disponibles_inv']);
+
           listaProductosSucursal.add(productoTemp);
         }
         respuesta.status = 1;

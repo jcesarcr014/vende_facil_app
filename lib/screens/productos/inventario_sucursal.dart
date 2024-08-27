@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:vende_facil/helpers/app_state_manager.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
@@ -61,14 +62,14 @@ class _InventoryPageState extends State<InventoryPage> {
         setState(() {
           isLoading = false;
         });
-        mostrarAlerta(context, 'Error', 'No cuentas con productos en esta sucursal');
+        mostrarAlerta(
+            context, 'Error', 'No cuentas con productos en esta sucursal');
         return;
       }
 
       setState(() {
         isLoading = false;
       });
-
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -86,7 +87,12 @@ class _InventoryPageState extends State<InventoryPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if(!didpop) Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false,);
+        if (!didpop)
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            'products-menu',
+            (route) => false,
+          );
       },
       child: Scaffold(
         appBar: AppBar(
@@ -117,7 +123,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   children: [
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(
-                        labelText: 'Select con sucursales',
+                        labelText: 'Seleccione una sucursal',
                         border: OutlineInputBorder(),
                       ),
                       value: _selectedSucursal,
@@ -165,7 +171,7 @@ class _InventoryPageState extends State<InventoryPage> {
                         isLoading = false;
                       });
                       if (value.id != 0) {
-                        value.id = -1;
+                        manager.setCurrentScreen('InventoryPage');
                         Navigator.pushNamed(context, 'nvo-producto',
                             arguments: value);
                       } else {
