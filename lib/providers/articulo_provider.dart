@@ -118,6 +118,10 @@ class ArticuloProvider {
             double.parse(decodedData['producto']['cantidad']);
         productoTemp.apartado =
             int.parse(decodedData['producto']['aplica_apartado']);
+
+        productoTemp.cantidadInv = double.parse(decodedData['producto']['cantidad_inv']);
+        productoTemp.apartadoInv = double.parse(decodedData['producto']['apartado_inv']);
+        productoTemp.disponibleInv = double.parse(decodedData['producto']['disponibles_inv']);
       } else {
         productoTemp.id = 0;
         productoTemp.producto = decodedData['msg'];
