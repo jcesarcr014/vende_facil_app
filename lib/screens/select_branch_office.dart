@@ -38,12 +38,12 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
                 width: 300,
                 height: 70, // Aumentar la altura del botón
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final sucursalSeleccionada = listaSucursales.firstWhere(
                         (sucursal) =>
                             sucursal.id.toString() == _valueIdSucursal);
                     sesion.idSucursal = sucursalSeleccionada.id;
-                    articulosProvider
+                     await articulosProvider
                         .listarProductosSucursal(sucursalSeleccionada.id!)
                         .then((value) {});
                     setState(() {

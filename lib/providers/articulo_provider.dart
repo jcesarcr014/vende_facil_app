@@ -188,7 +188,6 @@ class ArticuloProvider {
 
   //SUCURSALES
   Future<Resultado> listarProductosSucursal(int idSucursal) async {
-    listaProductosSucursal.clear();
     var url = Uri.parse('$baseUrl/productos-sucursal/$idSucursal');
     try {
       final resp = await http.get(url, headers: {
@@ -196,7 +195,7 @@ class ArticuloProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
-        listaProductosSucursal.clear();
+           listaProductosSucursal.clear();
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
           productoTemp.id = decodedData['data'][x]['id'];
@@ -226,14 +225,14 @@ class ArticuloProvider {
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
 
-
           productoTemp.idInv = decodedData['data'][x]['id_inv'];
 
-          productoTemp.cantidadInv = double.parse(decodedData['data'][x]['cantidad_inv']);
-          productoTemp.apartadoInv = double.parse(decodedData['data'][x]['apartado_inv']);
-          productoTemp.disponibleInv = double.parse(decodedData['data'][x]['disponibles_inv']);
-
-
+          productoTemp.cantidadInv =
+              double.parse(decodedData['data'][x]['cantidad_inv']);
+          productoTemp.apartadoInv =
+              double.parse(decodedData['data'][x]['apartado_inv']);
+          productoTemp.disponibleInv =
+              double.parse(decodedData['data'][x]['disponibles_inv']);
           listaProductosSucursal.add(productoTemp);
         }
         respuesta.status = 1;
@@ -276,9 +275,7 @@ class ArticuloProvider {
     return respuesta;
   }
 
-
   Future<Resultado> inventarioSucAgregar(Producto producto) async {
-
     var url = Uri.parse('$baseUrl/inventario-agregar');
     try {
       final resp = await http.put(url, headers: {
@@ -302,9 +299,7 @@ class ArticuloProvider {
     return respuesta;
   }
 
-
   Future<Resultado> inventarioSucQuitar(Producto producto) async {
-
     var url = Uri.parse('$baseUrl/inventario-quitar');
     try {
       final resp = await http.put(url, headers: {

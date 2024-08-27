@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/formatters/double_input_formatter.dart';
