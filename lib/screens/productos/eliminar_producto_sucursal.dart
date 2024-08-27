@@ -6,6 +6,8 @@ import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
+import '../../widgets/custom_dropdown_search.dart';
+
 class EliminarProductoSucursal extends StatefulWidget {
   const EliminarProductoSucursal({super.key});
 
@@ -122,36 +124,30 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Select con Sucursales',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedSucursalId,
-                    isExpanded: true,
-                    items: listaSucursales
-                        .map((sucursal) => DropdownMenuItem(
-                              value: sucursal.id,
-                              child: Text(sucursal.nombreSucursal ?? ''),
-                            ))
-                        .toList(),
-                    onChanged: _seleccionarSucursal,
+                  CustomDropdownSearch<int>(
+                    items: listaSucursales.map((sucursal) => sucursal.id!).toList(),
+                    selectedItem: _selectedSucursalId,
+                    onChanged: (int? newValue) {
+                      _seleccionarSucursal(newValue);
+                    },
+                    labelText: 'Select con Sucursales',
+                    itemAsString: (int id) {
+                      final sucursal = listaSucursales.firstWhere((sucursal) => sucursal.id == id);
+                      return sucursal.nombreSucursal ?? '';
+                    },
                   ),
                   const SizedBox(height: 16),
-                  DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Nombre Producto',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedProduct,
-                    isExpanded: true,
-                    items: listaProductosSucursal.map((producto) {
-                      return DropdownMenuItem<int>(
-                        value: producto.id,
-                        child: Text(producto.producto!),
-                      );
-                    }).toList(),
-                    onChanged: _seleccionarProducto,
+                  CustomDropdownSearch<int>(
+                    items: listaProductosSucursal.map((producto) => producto.id!).toList(),
+                    selectedItem: _selectedProduct,
+                    onChanged: (int? newValue) {
+                      _seleccionarProducto(newValue);
+                    },
+                    labelText: 'Nombre Producto',
+                    itemAsString: (int id) {
+                      final producto = listaProductosSucursal.firstWhere((producto) => producto.id == id);
+                      return producto.producto ?? '';
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -194,22 +190,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                             ),
                           ],
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(context, 'products-menu'),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.cancel_outlined),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Cancelar',
-                            ),
-                          ],
-                        ),
-                      ),
+                      )
                     ],
                   ),
                 ],
