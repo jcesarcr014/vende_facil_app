@@ -87,12 +87,13 @@ class _InventoryPageState extends State<InventoryPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if (!didpop)
+        if (!didpop) {
           Navigator.pushNamedAndRemoveUntil(
             context,
             'products-menu',
             (route) => false,
           );
+        }
       },
       child: Scaffold(
         appBar: AppBar(

@@ -22,6 +22,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   String? _articulosError;
   bool isLoading = false;
   int idVarArticulos = 0;
+  int idcatidadVarArticulos = 0;
   int idVarPorcentaje = 0;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -51,7 +52,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
             idVarPorcentaje = varTemp.id!;
             controllerPorcentaje.text = varTemp.valor!;
           } else if (varTemp.nombre == 'productos_apartados') {
-            idVarArticulos = varTemp.id!;
+            idcatidadVarArticulos = varTemp.id!;
             controllerArticulos.text = varTemp.valor!;
           }
           if (varTemp.nombre == "productos_mayoreo") {
@@ -277,7 +278,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
         .then((respPorcentaje) {
       if (respPorcentaje.status == 1) {
         variablesprovider
-            .modificarVariables(idVarArticulos, controllerArticulos.text)
+            .modificarVariables(idcatidadVarArticulos, controllerArticulos.text)
             .then((respArticulos) {
           if (respArticulos.status == 1) {
                     variablesprovider
