@@ -19,7 +19,7 @@ class EliminarProductoSucursal extends StatefulWidget {
 
 class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
   String? _selectedProduct;
-  String? _selectedSucursal;
+  int? _selectedSucursal;
 
   String? cantidad;
   Producto? _producto;
@@ -36,9 +36,9 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
     listaProductosSucursal.clear();
   }
 
-  void _seleccionarSucursal(String? value) async {
+  void _seleccionarSucursal(int? value) async {
     sucursalSeleccionado = listaSucursales.firstWhere(
-      (sucursal) => sucursal.nombreSucursal == value,
+      (sucursal) => sucursal.id == value,
       orElse: () => Sucursal(id: null),
     );
 
@@ -52,7 +52,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       return;
     }
 
-    _selectedSucursal = sucursalSeleccionado.nombreSucursal;
+    _selectedSucursal = sucursalSeleccionado.id;
     isLoading = false;
     setState(() {});
   }
@@ -126,13 +126,20 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CustomDropdownSearch(
-                    items: listaSucursales.map((sucursal) => sucursal.nombreSucursal!).toList(),
-                    selectedItem: _selectedSucursal,
-                    onChanged: (String? newValue) {
-                      _seleccionarSucursal(newValue);
-                    },
-                    labelText: 'Select con Sucursales',
+                  DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(
+                      labelText: 'Select con Sucursales',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _selectedSucursal,
+                    isExpanded: true,
+                    items: listaSucursales
+                        .map((sucursal) => DropdownMenuItem(
+                              value: sucursal.id,
+                              child: Text(sucursal.nombreSucursal ?? ''),
+                            ))
+                        .toList(),
+                    onChanged: _seleccionarSucursal,
                   ),
                   const SizedBox(height: 16),
                   CustomDropdownSearch(

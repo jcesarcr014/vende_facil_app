@@ -21,7 +21,7 @@ class AgregarProductoSucursal extends StatefulWidget {
 class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   String? _selectedProduct;
   Producto? _productoSeleccionado;
-  String? _selectedSucursal;
+  int? _selectedSucursal;
   String? _cantidadSucursal;
   ArticuloProvider provider = ArticuloProvider();
   bool isLoading = false;
@@ -48,13 +48,13 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     }
   }
 
-  void _setProductsSucursal(String? value) async {
+  void _setProductsSucursal(int? value) async {
     _selectedSucursal = value;
     isLoading = true;
     setState(() {});
 
     Sucursal sucursalSeleccionado = listaSucursales.firstWhere(
-      (sucursal) => sucursal.nombreSucursal == value,
+      (sucursal) => sucursal.id == value,
       orElse: () => Sucursal(),
     );
 
@@ -113,7 +113,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     try {
       Resultado resultado = await provider.listarProductosSucursal(
-          listaSucursales.firstWhere((s) => s.id.toString() == _selectedSucursal).id!);
+          listaSucursales.firstWhere((s) => s.id == _selectedSucursal).id!);
 
       if (resultado.status != 1) {
         isLoading = false;
@@ -238,13 +238,20 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
-                  CustomDropdownSearch(
-                    items: listaSucursales.map((sucursal) => sucursal.nombreSucursal!).toList(),
-                    selectedItem: _selectedSucursal,
-                    onChanged: (String? newValue) {
-                      _setProductsSucursal(newValue);
-                    },
-                    labelText: 'Select con sucursales',
+                  DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(
+                      labelText: 'Select con sucursales',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _selectedSucursal,
+                    isExpanded: true,
+                    items: listaSucursales
+                        .map((sucursal) => DropdownMenuItem(
+                              value: sucursal.id,
+                              child: Text(sucursal.nombreSucursal ?? ''),
+                            ))
+                        .toList(),
+                    onChanged: _setProductsSucursal,
                   ),
                   const SizedBox(height: 16),
                   TextField(
