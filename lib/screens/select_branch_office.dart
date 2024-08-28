@@ -12,6 +12,12 @@ class SucursalesScreen extends StatefulWidget {
 class _SucursalesScreenState extends State<SucursalesScreen> {
   String? _valueIdSucursal = '0';
   final articulosProvider = ArticuloProvider();
+  final sucursal = NegocioProvider();
+  @override
+  void initState() {
+    sucursal.getlistaSucursales();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +49,10 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
                         (sucursal) =>
                             sucursal.id.toString() == _valueIdSucursal);
                     sesion.idSucursal = sucursalSeleccionada.id;
-                     await articulosProvider
+                    await articulosProvider
                         .listarProductosSucursal(sucursalSeleccionada.id!)
                         .then((value) {});
-                    setState(() {
-                    });
+                    setState(() {});
                     Navigator.pushReplacementNamed(context, 'home');
                   },
                   child: const Text(

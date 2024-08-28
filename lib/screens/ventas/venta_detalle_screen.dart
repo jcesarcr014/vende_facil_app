@@ -46,7 +46,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-       automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             IconButton(
@@ -329,6 +329,9 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     for (ItemVenta articuloTemporal in ventaTemporal) {
       if (articuloTemporal.apartado == false) {
         apartadoValido = false;
+        mostrarAlerta(context, 'ERROR',
+            'El articulo nose puede apartar. Para modificar este valor, ve a Productos -> Editar producto.');
+
         return;
       } else {
         numArticulos = numArticulos + articuloTemporal.cantidad;
@@ -363,6 +366,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _actualizaTotalTemporal() {
+    var aplica = listaVariables
+        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
     totalVentaTemporal = 0;
     subTotalItem = 0;
     descuento = 0;
@@ -374,17 +379,23 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     } else {
       for (ItemVenta item in ventaTemporal) {
-        if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-          totalVentaTemporal += item.cantidad * item.preciomayoreo;
-          subTotalItem += item.cantidad * item.preciomayoreo;
-          item.totalItem = item.cantidad * item.preciomayoreo;
-          descuento += item.descuento;
-        }else{
+        if (aplica.valor=="0") {
           totalVentaTemporal += item.cantidad * item.precioPublico;
           subTotalItem += item.cantidad * item.precioPublico;
           item.totalItem = item.cantidad * item.precioPublico;
           descuento += item.descuento;
-        }
+        }else{ 
+          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+          totalVentaTemporal += item.cantidad * item.preciomayoreo;
+          subTotalItem += item.cantidad * item.preciomayoreo;
+          item.totalItem = item.cantidad * item.preciomayoreo;
+          descuento += item.descuento;
+        } else {
+          totalVentaTemporal += item.cantidad * item.precioPublico;
+          subTotalItem += item.cantidad * item.precioPublico;
+          item.totalItem = item.cantidad * item.precioPublico;
+          descuento += item.descuento;
+        }}
       }
     }
     setState(() {});
@@ -436,7 +447,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                 totalVentaTemporal = subTotalItem;
                 totalVentaTemporal =
                     totalVentaTemporal - descuentoSeleccionado.valor!;
-                    _valuePieza = false;
+                _valuePieza = false;
               });
             }
           } else {

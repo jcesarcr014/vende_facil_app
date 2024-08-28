@@ -13,6 +13,7 @@ class AjustesApartadoScreen extends StatefulWidget {
 
 class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   final apartadoProvider = ApartadoProvider();
+  bool _valuePieza = false;
   final variablesprovider = VariablesProvider();
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
@@ -22,6 +23,8 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   String? _articulosError;
   bool isLoading = false;
   int idVarArticulos = 0;
+  int idaplicamayoreo = 0;
+  int idcatidadVarArticulos = 0;
   int idVarPorcentaje = 0;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -51,7 +54,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
             idVarPorcentaje = varTemp.id!;
             controllerPorcentaje.text = varTemp.valor!;
           } else if (varTemp.nombre == 'productos_apartados') {
-            idVarArticulos = varTemp.id!;
+            idcatidadVarArticulos = varTemp.id!;
             controllerArticulos.text = varTemp.valor!;
           }
           if (varTemp.nombre == "productos_mayoreo") {
@@ -60,6 +63,13 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
               controllerArticulosMayoreo.text = "";
             } else {
               controllerArticulosMayoreo.text = varTemp.valor!;
+            }
+          }
+          if (varTemp.nombre == "aplica_mayoreo") {
+            idaplicamayoreo = varTemp.id!;
+            if (varTemp.valor == null) {
+            } else {
+              _valuePieza = (varTemp.valor == "1") ? true : false;
             }
           }
         }
@@ -204,8 +214,21 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: windowHeight * 0.08,
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: SwitchListTile.adaptive(
+                        title: const Text('Se permite mayoreo:'),
+                        subtitle: Text(_valuePieza ? 'Permirtir ' : 'Negar'),
+                        value: _valuePieza,
+                        onChanged: (value) {
+                          _valuePieza = value;
+                          setState(() {
+                            if (_valuePieza == false) {
+                              controllerArticulosMayoreo.text ="0";
+                            }
+                          });
+                        },
+                      ),
                     ),
                     Row(
                       children: [
@@ -227,6 +250,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                           child: InputField(
                             controller: controllerArticulosMayoreo,
                             labelText: 'Cantidad de artículos',
+                            enabled: _valuePieza,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor ingrese un número de artículos maximos permitidos';
@@ -250,7 +274,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                       ],
                     ),
                     SizedBox(
-                      height: windowHeight * 0.08,
+                      height: windowHeight * 0.03,
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -277,13 +301,19 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
         .then((respPorcentaje) {
       if (respPorcentaje.status == 1) {
         variablesprovider
-            .modificarVariables(idVarArticulos, controllerArticulos.text)
+            .modificarVariables(idcatidadVarArticulos, controllerArticulos.text)
             .then((respArticulos) {
           if (respArticulos.status == 1) {
-                    variablesprovider
-                    .modificarVariables(idVarArticulos, controllerArticulosMayoreo.text)
-                    .then((respArticulosmayoreo) {
-                  if (respArticulosmayoreo.status == 1) {
+            variablesprovider
+                .modificarVariables(
+                    idVarArticulos, controllerArticulosMayoreo.text)
+                .then((respArticulosmayoreo) {
+              if (respArticulosmayoreo.status == 1) {
+                variablesprovider
+                    .modificarVariables(
+                        idaplicamayoreo, (_valuePieza) ? '1' : '0')
+                    .then((aplicamayoreo) {
+                  if (aplicamayoreo.status == 1) {
                     setState(() {
                       textLoading = '';
                       isLoading = false;
@@ -300,6 +330,15 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                         'Error al guardar los valores: ${respArticulos.mensaje}');
                   }
                 });
+              } else {
+                setState(() {
+                  textLoading = '';
+                  isLoading = false;
+                });
+                mostrarAlerta(context, 'Error',
+                    'Error al guardar los valores: ${respArticulos.mensaje}');
+              }
+            });
           } else {
             setState(() {
               textLoading = '';

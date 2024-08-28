@@ -345,13 +345,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
+    var aplica = listaVariables
+        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
     for (ItemVenta item in ventaTemporal) {
-      if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-        totalVentaTemporal = item.cantidad * item.preciomayoreo;
-        item.subTotalItem = totalVentaTemporal;
-        item.totalItem = totalVentaTemporal;
+      if (aplica.valor == "0") {
+        totalVentaTemporal = item.cantidad * item.precioPublico;
+        item.subTotalItem = item.cantidad * item.precioPublico;
+        item.totalItem = item.cantidad * item.precioPublico;
       } else {
-        totalVentaTemporal += item.totalItem;
+        if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+          totalVentaTemporal = item.cantidad * item.preciomayoreo;
+          item.subTotalItem = totalVentaTemporal;
+          item.totalItem = totalVentaTemporal;
+        } else {
+          totalVentaTemporal += item.totalItem;
+        }
       }
     }
     setState(() {});
