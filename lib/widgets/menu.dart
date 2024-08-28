@@ -68,12 +68,36 @@ class Menu extends StatelessWidget {
               sesion.idUsuario = 0;
               sesion.idNegocio = 0;
               sesion.token = '';
+              _clear();
               Navigator.pushReplacementNamed(context, 'login');
             },
           )
         ],
       ),
     );
+  }
+
+  _clear() {
+    listaAbonos.clear();
+    listaApartados.clear();
+    listaApartados2.clear();
+    listaCategorias.clear();
+    listaClientes.clear();
+    listaColores.clear();
+    listaDescuentos.clear();
+    listaDetalles.clear();
+    listaEmpleados.clear();
+    listaPlanes.clear();
+    listaProductos.clear();
+    listaProductosSucursal.clear();
+    listaSucursales.clear();
+    listaTarjetas.clear();
+    listaUsuarios.clear();
+    listaVariables.clear();
+    listaVentaCabecera.clear();
+    listaVentaCabecera2.clear();
+    listaVentadetalles.clear();
+    listasucursalEmpleado.clear();
   }
 
   _articulos(BuildContext context) {
@@ -114,8 +138,7 @@ class Menu extends StatelessWidget {
   _configuraciones(BuildContext context) {
     List<Widget> opcConfig = [];
 
-    opcConfig.add(
-      ListTile(
+    opcConfig.add(ListTile(
       leading: const Icon(Icons.chevron_right),
       title: const Text(
         'Empresa',
@@ -123,8 +146,8 @@ class Menu extends StatelessWidget {
       ),
       onTap: () {
         Navigator.pushNamed(context, 'negocio');
-      },)
-    );
+      },
+    ));
     opcConfig.add(ListTile(
       leading: const Icon(Icons.chevron_right),
       title: const Text(

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
+import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
@@ -94,6 +94,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     final SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     prefs.setString('token', '');
+                    _clear();
                     Navigator.pushReplacementNamed(context, 'login');
                   } else {
                     mostrarAlerta(context, "Alerta", value.mensaje!);
@@ -105,5 +106,28 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
       ),
     );
+  }
+
+  _clear() {
+    listaAbonos.clear();
+    listaApartados.clear();
+    listaApartados2.clear();
+    listaCategorias.clear();
+    listaClientes.clear();
+    listaColores.clear();
+    listaDescuentos.clear();
+    listaDetalles.clear();
+    listaEmpleados.clear();
+    listaPlanes.clear();
+    listaProductos.clear();
+    listaProductosSucursal.clear();
+    listaSucursales.clear();
+    listaTarjetas.clear();
+    listaUsuarios.clear();
+    listaVariables.clear();
+    listaVentaCabecera.clear();
+    listaVentaCabecera2.clear();
+    listaVentadetalles.clear();
+    listasucursalEmpleado.clear();
   }
 }

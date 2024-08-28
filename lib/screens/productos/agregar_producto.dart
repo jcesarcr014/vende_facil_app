@@ -294,7 +294,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           (args.codigoBarras != null) ? args.codigoBarras! : '';
 
       _valueApartado = (args.apartado == 0) ? false : true;
-      print(_valueApartado);
       if (_valueInventario) {
         controllerCantidad.text = (args.cantidad != null)
             ? args.cantidad!.toStringAsFixed(2)
