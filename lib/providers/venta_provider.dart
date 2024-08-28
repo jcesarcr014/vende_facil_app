@@ -10,6 +10,16 @@ class VentasProvider {
 
   Future<Resultado> guardarVenta(VentaCabecera venta) async {
     var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
+    print("id de negocio ${sesion.idNegocio}");
+    print("id de usurio${sesion.idUsuario}");
+    print(" id di cliente${venta.idCliente}");
+    print("subtotal ${venta.subtotal}");
+    print(" id descuento${venta.idDescuento}");
+    print("descuento${venta.descuento}");
+    print("total ${venta.total}");
+    print("importe en efectivo${venta.importeEfectivo}");
+    print("importe de tarjetas${venta.importeTarjeta}");
+    print("id de sucursal ${sesion.idSucursal}");
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -39,6 +49,7 @@ class VentasProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
     }
+    print(respuesta.mensaje);
     return respuesta;
   }
 

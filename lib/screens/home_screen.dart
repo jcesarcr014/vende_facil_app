@@ -291,7 +291,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (producto.unidad == "0") {
                       _alertaProducto(producto);
                     } else {
-                      _agregaProductoVenta(producto, 0);
+                      if (producto.disponibleInv! > 0) {
+                        if (ventaTemporal.isEmpty) {
+                          _agregaProductoVenta(producto, 0);
+                        } else {
+                          ItemVenta? descue = ventaTemporal.firstWhere((descuento) =>
+                              descuento.idArticulo == producto.id,orElse: () => ItemVenta(idArticulo: -1,apartado: true,cantidad:1,descuento: 1,idDescuento: 1,precioPublico: 10,preciodistribuidor: 10,preciomayoreo: 10,subTotalItem: 10,totalItem: 10 ),);
+                          var catidad = descue.cantidad + 1;
+                          if (catidad > producto.disponibleInv!) {
+                            mostrarAlerta(context, "AVISO", "Nose puede agregar mas articulos de este producto :${producto.producto}");
+                          }else{
+                             _agregaProductoVenta(producto, 0);
+                          }
+                        }
+                      }
                     }
                   }),
                   title: Row(
@@ -349,14 +362,14 @@ class _HomeScreenState extends State<HomeScreen> {
         .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
     for (ItemVenta item in ventaTemporal) {
       if (aplica.valor == "0") {
-        totalVentaTemporal = item.cantidad * item.precioPublico;
-        item.subTotalItem = item.cantidad * item.precioPublico;
-        item.totalItem = item.cantidad * item.precioPublico;
+        totalVentaTemporal += item.cantidad * item.precioPublico;
+        item.subTotalItem += item.cantidad * item.precioPublico;
+        item.totalItem += item.cantidad * item.precioPublico;
       } else {
         if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-          totalVentaTemporal = item.cantidad * item.preciomayoreo;
-          item.subTotalItem = totalVentaTemporal;
-          item.totalItem = totalVentaTemporal;
+          totalVentaTemporal += item.cantidad * item.preciomayoreo;
+          item.subTotalItem += totalVentaTemporal;
+          item.totalItem += totalVentaTemporal;
         } else {
           totalVentaTemporal += item.totalItem;
         }
