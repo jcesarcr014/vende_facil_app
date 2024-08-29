@@ -29,7 +29,7 @@ class Search extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    List<Producto> resultados = listaProductos
+    List<Producto> resultados = listaProductosSucursal
         .where((producto) =>
             producto.producto?.toLowerCase().contains(query.toLowerCase()) ??
             false)
@@ -54,7 +54,37 @@ class Search extends SearchDelegate {
           onTap: (() {
             if (resultados[index].unidad == "0") {
             } else {
-              _agregaProductoVenta(resultados[index], 1, context);
+              print(resultados[index].disponibleInv!);
+              if (resultados[index].disponibleInv! > 0) {
+                if (ventaTemporal.isEmpty) {
+                  _agregaProductoVenta(resultados[index], 1, context);
+                } else {
+                  ItemVenta? descue = ventaTemporal.firstWhere(
+                    (descuento) => descuento.idArticulo == resultados[index].id,
+                    orElse: () => ItemVenta(
+                        idArticulo: -1,
+                        apartado: true,
+                        cantidad: 1,
+                        descuento: 1,
+                        idDescuento: 1,
+                        precioPublico: 10,
+                        preciodistribuidor: 10,
+                        preciomayoreo: 10,
+                        subTotalItem: 10,
+                        totalItem: 10),
+                  );
+                  var catidad = descue.cantidad + 1;
+                  print(descue);
+                  print(catidad);
+                  print(resultados[index].disponibleInv);
+                  if (catidad > resultados[index].disponibleInv!) {
+                    mostrarAlerta(context, "AVISO",
+                        "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
+                  } else {
+                    _agregaProductoVenta(resultados[index], 1, context);
+                  }
+                }
+              }
             }
           }),
           title: Row(
