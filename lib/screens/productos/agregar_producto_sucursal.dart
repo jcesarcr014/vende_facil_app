@@ -19,7 +19,7 @@ class AgregarProductoSucursal extends StatefulWidget {
 }
 
 class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
-  int? _selectedProduct;
+  String? _selectedProduct;
   Producto? _productoSeleccionado;
   int? _selectedSucursal;
   String? _cantidadSucursal;
@@ -50,13 +50,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
   void _setProductsSucursal(int? value) async {
     _selectedSucursal = value;
-    setState(() {});
-
-    if (_productoSeleccionado?.id == null) {
-      mostrarAlerta(context, 'Error', 'Selecciona primero un producto.');
-      return;
-    }
-
     isLoading = true;
     setState(() {});
 
@@ -217,24 +210,20 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-
-                  CustomDropdownSearch<int>(
-                    items: listaProductos.map((producto) => producto.id!).toList(),
-                    selectedItem: _selectedProduct,
-
-                    onChanged: (int? newValue) {
-                      _productoSeleccionado = listaProductos
-                          .firstWhere((producto) => producto.id == newValue);
-                      setState(() {
-                        _selectedProduct = newValue;
-                      });
-                      _updateCantidadSucursal();
+                  CustomDropdownSearch(
+                    items: listaProductos.map((producto) => producto.producto!).toList(),
+                    selectedItem: _selectedProduct ?? "Selecciona un producto",
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        _productoSeleccionado = listaProductos
+                            .firstWhere((producto) => producto.producto == newValue);
+                        setState(() {
+                          _selectedProduct = newValue;
+                        });
+                        _updateCantidadSucursal();
+                      }
                     },
                     labelText: 'Nombre Producto',
-                    itemAsString: (int id) {
-                      final producto = listaProductos.firstWhere((producto) => producto.id == id);
-                      return producto.producto!;
-                    },
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -249,17 +238,20 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
-                  CustomDropdownSearch<int>(
-                    items: listaSucursales.map((sucursal) => sucursal.id!).toList(),
-                    selectedItem: _selectedSucursal,
-                    onChanged: (int? newValue) {
-                      _setProductsSucursal(newValue);
-                    },
-                    labelText: 'Select con sucursales',
-                    itemAsString: (int id) {
-                      final sucursal = listaSucursales.firstWhere((sucursal) => sucursal.id == id);
-                      return sucursal.nombreSucursal ?? '';
-                    },
+                  DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(
+                      labelText: 'Select con sucursales',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _selectedSucursal,
+                    isExpanded: true,
+                    items: listaSucursales
+                        .map((sucursal) => DropdownMenuItem(
+                              value: sucursal.id,
+                              child: Text(sucursal.nombreSucursal ?? ''),
+                            ))
+                        .toList(),
+                    onChanged: _setProductsSucursal,
                   ),
                   const SizedBox(height: 16),
                   TextField(

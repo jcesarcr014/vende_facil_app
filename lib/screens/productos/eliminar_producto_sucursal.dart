@@ -18,8 +18,8 @@ class EliminarProductoSucursal extends StatefulWidget {
 }
 
 class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
-  int? _selectedProduct;
-  int? _selectedSucursalId;
+  String? _selectedProduct;
+  int? _selectedSucursal;
 
   String? cantidad;
   Producto? _producto;
@@ -52,19 +52,19 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       return;
     }
 
-    _selectedSucursalId = sucursalSeleccionado.id;
+    _selectedSucursal = sucursalSeleccionado.id;
     isLoading = false;
     setState(() {});
   }
 
-  void _seleccionarProducto(int? value) async {
-    if(_selectedSucursalId == null) {
+  void _seleccionarProducto(String? value) async {
+    if(_selectedSucursal == null) {
       mostrarAlerta(context, 'Error', 'Selecciona una sucursal primero');
       return;
     }
 
     Producto producto = listaProductosSucursal.firstWhere(
-      (producto) => producto.id == value,
+      (producto) => producto.producto == value,
       orElse: () => Producto(id: null),
     );
 
@@ -126,30 +126,30 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CustomDropdownSearch<int>(
-                    items: listaSucursales.map((sucursal) => sucursal.id!).toList(),
-                    selectedItem: _selectedSucursalId,
-                    onChanged: (int? newValue) {
-                      _seleccionarSucursal(newValue);
-                    },
-                    labelText: 'Select con Sucursales',
-                    itemAsString: (int id) {
-                      final sucursal = listaSucursales.firstWhere((sucursal) => sucursal.id == id);
-                      return sucursal.nombreSucursal ?? '';
-                    },
+                  DropdownButtonFormField<int>(
+                    decoration: const InputDecoration(
+                      labelText: 'Select con Sucursales',
+                      border: OutlineInputBorder(),
+                    ),
+                    value: _selectedSucursal,
+                    isExpanded: true,
+                    items: listaSucursales
+                        .map((sucursal) => DropdownMenuItem(
+                              value: sucursal.id,
+                              child: Text(sucursal.nombreSucursal ?? ''),
+                            ))
+                        .toList(),
+                    onChanged: _seleccionarSucursal,
                   ),
                   const SizedBox(height: 16),
-                  CustomDropdownSearch<int>(
-                    items: listaProductosSucursal.map((producto) => producto.id!).toList(),
+                  CustomDropdownSearch(
+                    items: listaProductosSucursal.map((producto) => producto.producto!).toList(),
                     selectedItem: _selectedProduct,
-                    onChanged: (int? newValue) {
+                    onChanged: (String? newValue) {
                       _seleccionarProducto(newValue);
                     },
                     labelText: 'Nombre Producto',
-                    itemAsString: (int id) {
-                      final producto = listaProductosSucursal.firstWhere((producto) => producto.id == id);
-                      return producto.producto ?? '';
-                    },
+                    emptyMessage: 'Primero Selecciona una Sucursal',
                   ),
                   const SizedBox(height: 16),
                   TextField(
