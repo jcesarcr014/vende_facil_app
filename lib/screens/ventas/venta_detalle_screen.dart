@@ -247,7 +247,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   _listaTemporal() {
     List<Widget> productos = [];
     for (ItemVenta item in ventaTemporal) {
-      for (Producto prod in listaProductos) {
+      for (Producto prod in listaProductosSucursal) {
         if (prod.id == item.idArticulo) {
           productos.add(Dismissible(
               key: Key(item.idArticulo.toString()),
@@ -302,12 +302,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             width: windowWidth * 0.1,
                             child: IconButton(
                                 onPressed: () {
-                                  item.cantidad++;
-                                  // item.subTotalItem =
-                                  //     item.precioPublico * item.cantidad;
-                                  // item.totalItem =
-                                  //     item.subTotalItem - item.descuento;
-                                  _actualizaTotalTemporal();
+                                  var catidad = item.cantidad + 1;
+                                  if (catidad > prod.disponibleInv!) {
+                                    mostrarAlerta(context, "AVISO",
+                                        "Nose puede agregar mas articulos de este producto ");
+                                  } else {
+                                    item.cantidad++;
+                                    // item.subTotalItem =
+                                    //     item.precioPublico * item.cantidad;
+                                    // item.totalItem =
+                                    //     item.subTotalItem - item.descuento;
+                                    _actualizaTotalTemporal();
+                                  }
                                 },
                                 icon: const Icon(Icons.add_circle_outline))),
                       ],
@@ -379,23 +385,24 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     } else {
       for (ItemVenta item in ventaTemporal) {
-        if (aplica.valor=="0") {
+        if (aplica.valor == "0") {
           totalVentaTemporal += item.cantidad * item.precioPublico;
           subTotalItem += item.cantidad * item.precioPublico;
           item.totalItem = item.cantidad * item.precioPublico;
-          descuento += item.descuento;
-        }else{ 
-          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-          totalVentaTemporal += item.cantidad * item.preciomayoreo;
-          subTotalItem += item.cantidad * item.preciomayoreo;
-          item.totalItem = item.cantidad * item.preciomayoreo;
           descuento += item.descuento;
         } else {
-          totalVentaTemporal += item.cantidad * item.precioPublico;
-          subTotalItem += item.cantidad * item.precioPublico;
-          item.totalItem = item.cantidad * item.precioPublico;
-          descuento += item.descuento;
-        }}
+          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+            totalVentaTemporal += item.cantidad * item.preciomayoreo;
+            subTotalItem += item.cantidad * item.preciomayoreo;
+            item.totalItem = item.cantidad * item.preciomayoreo;
+            descuento += item.descuento;
+          } else {
+            totalVentaTemporal += item.cantidad * item.precioPublico;
+            subTotalItem += item.cantidad * item.precioPublico;
+            item.totalItem = item.cantidad * item.precioPublico;
+            descuento += item.descuento;
+          }
+        }
       }
     }
     setState(() {});
