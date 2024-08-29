@@ -54,7 +54,6 @@ class Search extends SearchDelegate {
           onTap: (() {
             if (resultados[index].unidad == "0") {
             } else {
-              print(resultados[index].disponibleInv!);
               if (resultados[index].disponibleInv! > 0) {
                 if (ventaTemporal.isEmpty) {
                   _agregaProductoVenta(resultados[index], 1, context);
@@ -74,9 +73,6 @@ class Search extends SearchDelegate {
                         totalItem: 10),
                   );
                   var catidad = descue.cantidad + 1;
-                  print(descue);
-                  print(catidad);
-                  print(resultados[index].disponibleInv);
                   if (catidad > resultados[index].disponibleInv!) {
                     mostrarAlerta(context, "AVISO",
                         "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");

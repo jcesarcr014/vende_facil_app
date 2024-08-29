@@ -126,7 +126,6 @@ class ArticuloProvider {
       productoTemp.id = 0;
       productoTemp.producto = 'Error en la peticion. $e';
     }
-    print(productoTemp.producto);
     return productoTemp;
   }
 
