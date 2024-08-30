@@ -215,9 +215,13 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(1.0),
                       child: SwitchListTile.adaptive(
-                        title: const Text('Se permite mayoreo:'),
+                        title: const Text('Se permite mayoreo:',
+                        style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),),
                         subtitle: Text(_valuePieza ? 'Permirtir ' : 'Negar'),
                         value: _valuePieza,
                         onChanged: (value) {
@@ -225,6 +229,8 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                           setState(() {
                             if (_valuePieza == false) {
                               controllerArticulosMayoreo.text ="0";
+                            }else{
+                               controllerArticulosMayoreo.text ="10";
                             }
                           });
                         },
@@ -235,7 +241,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                         SizedBox(
                           width: windowWidth * 0.6,
                           child: const Text(
-                            'numeros de articulos para descuento mayoreo: ',
+                            'Números de artículos para descuento de mayoreo: ',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
