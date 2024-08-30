@@ -319,7 +319,6 @@ _compra(VentaCabecera venta) async {
         });
       }
 
-      // Verificar si todos los detalles fueron guardados correctamente
       if (detallesGuardadosCorrectamente == ventaTemporal.length) {
         setState(() {
           textLoading = '';
@@ -328,8 +327,8 @@ _compra(VentaCabecera venta) async {
         ventaTemporal.clear();
         setState(() {});
         totalVentaTemporal = 0.0;
-
-        Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pop(context); // Eliminar la vista actual
+                Navigator.pushNamed(context, 'home');
 
         mostrarAlerta(context, '', 'Venta realizada');
       }

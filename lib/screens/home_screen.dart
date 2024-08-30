@@ -38,7 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
         textLoading = 'Actualizando lista de articulos';
         isLoading = true;
       });
-      articulosProvider.listarProductos().then((value) {
+      articulosProvider
+          .listarProductosSucursal(sesion.idSucursal!)
+          .then((value) {
         setState(() {
           globals.actualizaArticulos = false;
           textLoading = '';
@@ -255,11 +257,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pop(context);
                 if (CantidadConttroller.text.isEmpty ||
                     double.parse(CantidadConttroller.text) <= 0) {
+                  mostrarAlerta(context, "AVISO", "valor invalido");
                 } else {
-                  _agregaProductoVenta(
-                    producto,
-                    double.parse(CantidadConttroller.text),
-                  );
+                  if (double.parse(CantidadConttroller.text) >
+                      producto.disponibleInv!) {
+                    mostrarAlerta(context, "AVISO",
+                        "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
+                  } else {
+                    _agregaProductoVenta(
+                      producto,
+                      double.parse(CantidadConttroller.text),
+                    );
+                  }
                 }
               },
               child: const Text('Aceptar '),
@@ -289,7 +298,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: (() {
                     if (producto.unidad == "0") {
-                      _alertaProducto(producto);
+                      if (producto.disponibleInv! > 0) {
+                        _alertaProducto(producto);
+                      } else {
+                        mostrarAlerta(context, "AVISO",
+                            "No cuenta con productos disponibles");
+                      }
                     } else {
                       if (producto.disponibleInv! > 0) {
                         if (ventaTemporal.isEmpty) {
@@ -317,6 +331,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             _agregaProductoVenta(producto, 0);
                           }
                         }
+                      } else {
+                        mostrarAlerta(context, "AVISO",
+                            "No cuenta con productos disponibles");
                       }
                     }
                   }),
