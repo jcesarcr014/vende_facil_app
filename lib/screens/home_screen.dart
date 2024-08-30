@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pop(context);
                 if (CantidadConttroller.text.isEmpty ||
-                    double.parse(CantidadConttroller.text) >= 0) {
+                    double.parse(CantidadConttroller.text) <= 0) {
                 } else {
                   _agregaProductoVenta(
                     producto,
@@ -295,13 +295,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (ventaTemporal.isEmpty) {
                           _agregaProductoVenta(producto, 0);
                         } else {
-                          ItemVenta? descue = ventaTemporal.firstWhere((descuento) =>
-                              descuento.idArticulo == producto.id,orElse: () => ItemVenta(idArticulo: -1,apartado: true,cantidad:1,descuento: 1,idDescuento: 1,precioPublico: 10,preciodistribuidor: 10,preciomayoreo: 10,subTotalItem: 10,totalItem: 10 ),);
+                          ItemVenta? descue = ventaTemporal.firstWhere(
+                            (descuento) => descuento.idArticulo == producto.id,
+                            orElse: () => ItemVenta(
+                                idArticulo: -1,
+                                apartado: true,
+                                cantidad: 1,
+                                descuento: 1,
+                                idDescuento: 1,
+                                precioPublico: 10,
+                                preciodistribuidor: 10,
+                                preciomayoreo: 10,
+                                subTotalItem: 10,
+                                totalItem: 10),
+                          );
                           var catidad = descue.cantidad + 1;
                           if (catidad > producto.disponibleInv!) {
-                            mostrarAlerta(context, "AVISO", "Nose puede agregar mas articulos de este producto :${producto.producto}");
-                          }else{
-                             _agregaProductoVenta(producto, 0);
+                            mostrarAlerta(context, "AVISO",
+                                "Nose puede agregar mas articulos de este producto :${producto.producto}");
+                          } else {
+                            _agregaProductoVenta(producto, 0);
                           }
                         }
                       }
