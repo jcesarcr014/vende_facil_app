@@ -197,13 +197,11 @@ class _HistorialScreenState extends State<HistorialScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    _empleado(),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
+                    SizedBox(height: windowHeight * 0.05,),
+                    _sucursales(),
+                    SizedBox(height: windowHeight * 0.05,),
+                    _empleados(),
+                    SizedBox(height: windowHeight * 0.05,),
                     Expanded(
                       child: SingleChildScrollView(
                         child: _listaVentas(),
@@ -254,7 +252,29 @@ class _HistorialScreenState extends State<HistorialScreen> {
     });
   }
 
-  _empleado() {
+  _empleados() {
+    var lista = [
+      const DropdownMenuItem(value: '0', child: SizedBox(child: Text('Todos')),),
+      const DropdownMenuItem(value: '1', child: SizedBox(child: Text('Todos1')),),
+
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('EMPLEADOS', style: TextStyle(fontSize: 13),),
+        DropdownButton(
+          value: '0',
+          isExpanded: true,
+          items: lista,
+          onChanged: (value) {
+            
+          },
+        )
+      ],
+    );
+  }
+
+  _sucursales() {
     if (sesion.tipoUsuario == "p") {
       var listades = [
         const DropdownMenuItem(
@@ -269,61 +289,77 @@ class _HistorialScreenState extends State<HistorialScreen> {
       if (_valueIdEmpleado.isEmpty) {
         _valueIdEmpleado = '0';
       }
-      return DropdownButton(
-        items: listades,
-        isExpanded: true,
-        value: _valueIdEmpleado,
-        onChanged: (value) {
-          _valueIdEmpleado = value!;
-          if (value == "0") {
-            setState(() {});
-            _consultarVentas();
-          } else {
-            Usuario empleadoSeleccionado = listaEmpleados
-                .firstWhere((empleado) => empleado.id.toString() == value);
-            if (empleadoSeleccionado.id == 0) {
-              _valueIdEmpleado = '0';
-              setState(() {});
-              _consultarVentas();
-            } else {
-              _valueIdEmpleado = empleadoSeleccionado.id.toString();
-              setState(() {});
-              _consultarVentas();
-            }
-          }
-        },
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Seleccione una opción', style: TextStyle(fontSize: 13),),
+          DropdownButton(
+            items: listades,
+            isExpanded: true,
+            value: _valueIdEmpleado,
+            onChanged: (value) {
+              _valueIdEmpleado = value!;
+              if (value == "0") {
+                setState(() {});
+                _consultarVentas();
+              } else {
+                Usuario empleadoSeleccionado = listaEmpleados
+                    .firstWhere((empleado) => empleado.id.toString() == value);
+                if (empleadoSeleccionado.id == 0) {
+                  _valueIdEmpleado = '0';
+                  setState(() {});
+                  _consultarVentas();
+                } else {
+                  _valueIdEmpleado = empleadoSeleccionado.id.toString();
+                  setState(() {});
+                  _consultarVentas();
+                }
+              }
+            },
+          ),
+        ],
       );
     } else {
       var listades = [
+        const DropdownMenuItem(
+          value: '0',
+          child: SizedBox(child: Text('Todos')),
+        ),
         DropdownMenuItem(
           value: sesion.idUsuario.toString(),
           child: SizedBox(child: Text(sesion.nombreUsuario!)),
         )
       ];
-      return DropdownButton(
-        items: listades,
-        isExpanded: true,
-        value: sesion.idUsuario.toString(),
-        onChanged: (value) {
-          _valueIdEmpleado = value.toString();
-          if (value == sesion.idUsuario.toString()) {
-            _valueIdEmpleado = sesion.idUsuario.toString();
-            setState(() {});
-            _consultarVentas();
-          } else {
-            Usuario empleadoSeleccionado = listaEmpleados
-                .firstWhere((empleado) => empleado.id.toString() == value);
-            if (empleadoSeleccionado.id == 0) {
-              _valueIdEmpleado = '0';
-              setState(() {});
-              _consultarVentas();
-            } else {
-              _valueIdEmpleado = empleadoSeleccionado.id.toString();
-              setState(() {});
-              _consultarVentas();
-            }
-          }
-        },
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('SUCURSALES', style: TextStyle(fontSize: 13),),
+          DropdownButton(
+            items: listades,
+            isExpanded: true,
+            value: sesion.idUsuario.toString(),
+            onChanged: (value) {
+              _valueIdEmpleado = value.toString();
+              if (value == sesion.idUsuario.toString()) {
+                _valueIdEmpleado = sesion.idUsuario.toString();
+                setState(() {});
+                _consultarVentas();
+              } else {
+                Usuario empleadoSeleccionado = listaEmpleados
+                    .firstWhere((empleado) => empleado.id.toString() == value);
+                if (empleadoSeleccionado.id == 0) {
+                  _valueIdEmpleado = '0';
+                  setState(() {});
+                  _consultarVentas();
+                } else {
+                  _valueIdEmpleado = empleadoSeleccionado.id.toString();
+                  setState(() {});
+                  _consultarVentas();
+                }
+              }
+            },
+          ),
+        ],
       );
     }
   }
