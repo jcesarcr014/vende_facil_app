@@ -35,7 +35,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   double windowHeight = 0.0;
   String _valueIdCategoria = '0';
   bool firstLoad = true;
-  bool _valuePieza = true;
+  bool _valuePieza = false;
   final bool _valueInventario = true;
   bool _valueApartado = false;
   bool _puedeGurdar = false;
@@ -119,7 +119,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
-
+      print(_valuePieza);
       producto.precioPublico =
           double.parse(controllerPrecio.text.replaceAll(',', ''));
       producto.precioMayoreo =
@@ -272,6 +272,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     if (ModalRoute.of(context)?.settings.arguments != null && firstLoad) {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Producto;
+      _valuePieza = args.unidad == "1" ? true : false;
       controllerProducto.text = args.producto!;
       controllerDescripcion.text = args.descripcion!;
       controllerPrecio.text = (args.precioPublico != null)
