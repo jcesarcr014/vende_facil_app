@@ -46,6 +46,7 @@ void initState() {
 
 void alerta() {
     Navigator.pushReplacementNamed(context,'select-branch-office');
+    mostrarAlerta(context, "Aviso", "Favor de elegir una sucursal primero");
 }
 
   @override
