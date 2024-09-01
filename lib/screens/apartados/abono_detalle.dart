@@ -29,6 +29,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    efectivoConttroller.text = "0.0";
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -72,7 +73,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Total: \$${listaApartados2[0].total}0',
+                        'Total: \$${listaApartados2[0].total}',
                         style: const TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -119,7 +120,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                       DataCell(
                                           Text(detalle.descuento.toString())),
                                       DataCell(Text(
-                                          "\$${detalle.total.toString()}0")),
+                                          "\$${detalle.total.toString()}")),
                                     ]))
                                 .toList(),
                           ),
@@ -147,7 +148,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                       DataCell(
                                           Text(detalle.fechaAbono.toString())),
                                       DataCell(Text(
-                                          "\$${(detalle.cantidadEfectivo! + detalle.cantidadTarjeta!).toString()}0")),
+                                          "\$${(detalle.cantidadEfectivo! + detalle.cantidadTarjeta!).toString()}")),
                                     ]))
                                 .toList(),
                           ),

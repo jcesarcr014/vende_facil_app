@@ -303,7 +303,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
 
                   Navigator.pushReplacementNamed(context, 'home');
 
-                  mostrarAlerta(context, '', 'Venta realizada');
+                  mostrarAlerta(context, '', 'Apartado realizada');
                 }
               } else {
                 setState(() {

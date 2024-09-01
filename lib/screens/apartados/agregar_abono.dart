@@ -1,8 +1,11 @@
+// ignore_for_file: unnecessary_import
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/screens/screens.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class AgregarAbonoScreen extends StatefulWidget {
   const AgregarAbonoScreen({super.key});
@@ -19,20 +22,32 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
   double windowHeight = 0.0;
 
   @override
-  void initState() {
+void initState() {
+  super.initState();
+  
+  if (sesion.idSucursal != null) {
     setState(() {
       textLoading = 'Leyendo apartados';
       isLoading = true;
     });
+
     apartados.listarApartados().then((value) {
       setState(() {
         textLoading = '';
         isLoading = false;
       });
     });
-
-    super.initState();
+  } else {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      alerta();
+    });
   }
+}
+
+void alerta() {
+    Navigator.pushReplacementNamed(context,'select-branch-office');
+    mostrarAlerta(context, "Aviso", "Favor de elegir una sucursal primero");
+}
 
   @override
   Widget build(BuildContext context) {

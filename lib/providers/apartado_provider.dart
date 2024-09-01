@@ -312,10 +312,13 @@ class ApartadoProvider {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
-        'saldo_anterior': "0",
+        'saldo_anterior': "100",
         'cantidad_efectivo': abono.cantidadEfectivo?.toStringAsFixed(2),
         'cantidad_tarjeta': abono.cantidadTarjeta?.toStringAsFixed(2),
         'saldo_actual': "0",
+        'usuario_id': sesion.idUsuario.toString(),
+        'negocio_id': sesion.idNegocio.toString(),
+        'sucursal_id': sesion.idSucursal.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

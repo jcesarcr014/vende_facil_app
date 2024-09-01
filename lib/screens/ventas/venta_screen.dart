@@ -5,6 +5,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:vende_facil/widgets/input_field_money.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class VentaScreen extends StatefulWidget {
   const VentaScreen({super.key});
@@ -37,10 +38,13 @@ class _ventaScreenState extends State<VentaScreen> {
     CambioController.text = "0.00";
     EfectivoController.addListener(_updateCambio);
   }
+
   void _updateCambio() {
     setState(() {
-      double efectivo = double.tryParse(EfectivoController.text.replaceAll(',', '')) ?? 0.0;
-      double tarjeta = double.tryParse(TarjetaController.text.replaceAll(',', '')) ?? 0.0;
+      double efectivo =
+          double.tryParse(EfectivoController.text.replaceAll(',', '')) ?? 0.0;
+      double tarjeta =
+          double.tryParse(TarjetaController.text.replaceAll(',', '')) ?? 0.0;
       double total = double.tryParse(TotalConttroller.text) ?? 0.0;
       double totalEfectivo = efectivo - tarjeta;
       double cambio = totalEfectivo - total;
@@ -134,7 +138,6 @@ class _ventaScreenState extends State<VentaScreen> {
                         Flexible(
                             child: InputFieldMoney(
                           controller: EfectivoController,
-                          
                         ))
                       ],
                     ),
@@ -281,66 +284,64 @@ class _ventaScreenState extends State<VentaScreen> {
     }
   }
 
-_compra(VentaCabecera venta) async {
-  int idCabecera = 0;
-  int detallesGuardadosCorrectamente = 0;
-  setState(() {
-    isLoading = true;
-    textLoading = 'Guardando venta';
-  });
-  venta.importeTarjeta = tarjeta;
-  venta.importeEfectivo = totalEfectivo;
+  _compra(VentaCabecera venta) async {
+    int idCabecera = 0;
+    int detallesGuardadosCorrectamente = 0;
+    setState(() {
+      isLoading = true;
+      textLoading = 'Guardando venta';
+    });
+    venta.importeTarjeta = tarjeta;
+    venta.importeEfectivo = totalEfectivo;
 
-  await ventaCabecera.guardarVenta(venta).then((respCab) async {
-    if (respCab.status == 1) {
-      idCabecera = respCab.id!;
-      for (ItemVenta item in ventaTemporal) {
-        VentaDetalle ventaDetalle = VentaDetalle(
-          idVenta: idCabecera,
-          idProd: item.idArticulo,
-          cantidad: item.cantidad,
-          precio: item.precioPublico,
-          idDesc: venta.idDescuento,
-          cantidadDescuento: venta.descuento,
-          total: item.totalItem,
-          subtotal: item.subTotalItem,
-        );
+    await ventaCabecera.guardarVenta(venta).then((respCab) async {
+      if (respCab.status == 1) {
+        idCabecera = respCab.id!;
+        for (ItemVenta item in ventaTemporal) {
+          VentaDetalle ventaDetalle = VentaDetalle(
+            idVenta: idCabecera,
+            idProd: item.idArticulo,
+            cantidad: item.cantidad,
+            precio: item.precioPublico,
+            idDesc: venta.idDescuento,
+            cantidadDescuento: venta.descuento,
+            total: item.totalItem,
+            subtotal: item.subTotalItem,
+          );
 
-        await ventaCabecera.guardarVentaDetalle(ventaDetalle).then((respDet) {
-          if (respDet.status == 1) {
-            detallesGuardadosCorrectamente++;
-          } else {
-            setState(() {
-              isLoading = false;
-              textLoading = '';
-            });
-            mostrarAlerta(context, 'ERROR', respDet.mensaje!);
-          }
-        });
-      }
+          await ventaCabecera.guardarVentaDetalle(ventaDetalle).then((respDet) {
+            if (respDet.status == 1) {
+              detallesGuardadosCorrectamente++;
+            } else {
+              setState(() {
+                isLoading = false;
+                textLoading = '';
+              });
+              mostrarAlerta(context, 'ERROR', respDet.mensaje!);
+            }
+          });
+        }
 
-      // Verificar si todos los detalles fueron guardados correctamente
-      if (detallesGuardadosCorrectamente == ventaTemporal.length) {
+        if (detallesGuardadosCorrectamente == ventaTemporal.length) {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+          ventaTemporal.clear();
+          setState(() {});
+          totalVentaTemporal = 0.0;
+          globals.actualizaArticulos = true;
+          Navigator.pushReplacementNamed(context, 'home');
+
+          mostrarAlerta(context, '', 'Venta realizada');
+        }
+      } else {
         setState(() {
-          textLoading = '';
           isLoading = false;
+          textLoading = '';
         });
-        ventaTemporal.clear();
-        setState(() {});
-        totalVentaTemporal = 0.0;
-
-        Navigator.pushReplacementNamed(context, 'home');
-
-        mostrarAlerta(context, '', 'Venta realizada');
+        mostrarAlerta(context, 'ERROR', respCab.mensaje!);
       }
-    } else {
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
-      mostrarAlerta(context, 'ERROR', respCab.mensaje!);
-    }
-  });
-}
-
+    });
+  }
 }
