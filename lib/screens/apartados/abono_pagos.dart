@@ -3,9 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/input_field_money.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
-
 import '../../providers/apartado_provider.dart';
 
 class AbonoScreenpago extends StatefulWidget {
