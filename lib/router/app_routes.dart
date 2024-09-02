@@ -48,6 +48,7 @@ class AppRoutes {
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage(),
+    'abonosPagos':(BuildContext context)=> const AbonoScreenpago(),
   };
 
     static Route<dynamic> onGenerateRoute(RouteSettings settings) {

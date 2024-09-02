@@ -30,6 +30,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
   @override
   Widget build(BuildContext context) {
     efectivoConttroller.text = "0.0";
+    tarjetaConttroller.text = "0.0";
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -158,185 +159,17 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                         ),
                         Center(
                           child: ElevatedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    content: SingleChildScrollView(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.all(5.0),
-                                          ),
-                                          SizedBox(height: windowHeight * 0.05),
-                                          Container(
-                                            width: windowWidth * 0.9,
-                                            child: Row(
-                                              children: [
-                                                const Flexible(
-                                                  child: Text(
-                                                    'Efectivo :',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                    width: windowWidth * 0.05),
-                                                Flexible(
-                                                  fit: FlexFit.loose,
-                                                  child: TextFormField(
-                                                    textCapitalization:
-                                                        TextCapitalization
-                                                            .words,
-                                                    controller:
-                                                        efectivoConttroller,
-                                                    decoration: InputDecoration(
-                                                      contentPadding:
-                                                          const EdgeInsets
-                                                              .symmetric(
-                                                              vertical: 15.0,
-                                                              horizontal: 1.0),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10.0),
-                                                      ),
-                                                    ),
-                                                    onChanged: (value) {},
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: windowHeight * 0.05),
-                                          Container(
-                                            width: windowWidth * 0.9,
-                                            child: Row(
-                                              children: [
-                                                const Flexible(
-                                                  child: Text(
-                                                    'Tarjeta  :',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                    width: windowWidth * 0.05),
-                                                Flexible(
-                                                  fit: FlexFit.loose,
-                                                  child: TextFormField(
-                                                    textCapitalization:
-                                                        TextCapitalization
-                                                            .words,
-                                                    controller:
-                                                        tarjetaConttroller,
-                                                    decoration: InputDecoration(
-                                                      contentPadding:
-                                                          const EdgeInsets
-                                                              .symmetric(
-                                                              vertical: 15.0,
-                                                              horizontal: 1.0),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10.0),
-                                                      ),
-                                                    ),
-                                                    onChanged: (value) {},
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          final abono = Abono(
-                                            id: 0,
-                                            apartadoId: listaApartados2[0].id,
-                                            cantidadEfectivo: double.parse(
-                                                efectivoConttroller.text),
-                                            cantidadTarjeta: double.parse(
-                                                tarjetaConttroller.text),
-                                          );
-                                          apartado
-                                              .abono(
-                                                  listaApartados2[0].id!, abono)
-                                              .then((value) {
-                                            if (value.status == 1) {
-                                              Navigator.pop(context);
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        'Abono Agregado'),
-                                                    content: const Text(
-                                                        'El abono se ha agregado correctamente'),
-                                                    actions: [
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          setState(() {});
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              'nvo-abono',
-                                                              arguments: value);
-                                                        },
-                                                        child: const Text(
-                                                            'Aceptar'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            } else {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text('Error'),
-                                                    content: const Text(
-                                                        'No se pudo agregar el abono'),
-                                                    actions: [
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text(
-                                                            'Aceptar'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            }
-                                          });
-                                        },
-                                        child: const Text('Aceptar '),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('Cancelar'),
-                                      ),
-                                    ],
-                                  );
-                                },
+                            onPressed: () { 
+                              
+                              VentaCabecera venta = VentaCabecera(
+                                idCliente: listaApartados2[0].id,
+                                subtotal: listaApartados2[0].saldoPendiente,
+                                idDescuento: 0,
+                                descuento: 0,
+                                total: listaApartados2[0].saldoPendiente,
                               );
-                            },
+                               Navigator.pushNamed(context, 'abonosPagos',
+                                  arguments: venta); },
                             child: SizedBox(
                               height: windowHeight * 0.1,
                               width: windowWidth * 0.4,
@@ -346,6 +179,9 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                               ),
                             ),
                           ),
+                        ),
+                        SizedBox(
+                          height: windowHeight * 0.1,
                         ),
                       ],
                     )
