@@ -3,5 +3,6 @@
         "Cabecera",
         "Cantidad",
         "producto"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic"
 }

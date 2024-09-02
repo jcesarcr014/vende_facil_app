@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/helpers/app_state_manager.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -35,7 +34,6 @@ class ProductsScreen extends StatelessWidget {
                   subtitle: const Text('Visualiza tus productos'),
                   trailing: const Icon(Icons.arrow_right),
                   onTap: () {
-                    manager.setCurrentScreen('productos');
                     Navigator.pushNamed(context, 'productos');
                   }
                 ),
@@ -51,7 +49,6 @@ class ProductsScreen extends StatelessWidget {
                   title: const Text('Inventarios Sucursales', style: TextStyle(fontWeight: FontWeight.bold,), maxLines: 2, overflow: TextOverflow.ellipsis, ),
                   subtitle: const Text('Selecciona tu sucursal y visualiza tus productos'), trailing: const Icon(Icons.arrow_right),
                   onTap: () {
-                    manager.setCurrentScreen('InventoryPage');
                     Navigator.pushNamed(context, 'InventoryPage');
                   }
                 ),

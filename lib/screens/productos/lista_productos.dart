@@ -149,23 +149,25 @@ class _ProductosScreenState extends State<ProductosScreen> {
     } else {
       final TextTheme textTheme = Theme.of(context).textTheme;
 
-      listaProd.add(Column(
-        children: [
-          const Opacity(
-            opacity: 0.2,
-            child: Icon(
-              Icons.filter_alt_off,
-              size: 130,
+      listaProd.add(Center(
+        child: Column(
+          children: [
+            const Opacity(
+              opacity: 0.2,
+              child: Icon(
+                Icons.filter_alt_off,
+                size: 130,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Text(
-            'No hay productos guardados.',
-            style: textTheme.titleMedium,
-          )
-        ],
+            const SizedBox(
+              height: 15,
+            ),
+            Text(
+              'No hay productos guardados.',
+              style: textTheme.titleMedium,
+            )
+          ],
+        ),
       ));
     }
 
