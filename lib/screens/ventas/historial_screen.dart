@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/negocio_provider.dart';
+import 'package:vende_facil/providers/reportes_provider.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class HistorialScreen extends StatefulWidget {
   // ignore: use_key_in_widget_constructors
@@ -31,6 +34,14 @@ class _HistorialScreenState extends State<HistorialScreen> {
   late DateFormat dateFormatter;
   final _dateController = TextEditingController();
 
+
+  bool? _allBranchOffice = true;
+  String? _selectedBranchOffice = '0';
+  String? _selectedEmployees = '0';
+
+  NegocioProvider provider = NegocioProvider();
+  ReportesProvider reportesProvider = ReportesProvider();
+
   @override
   void initState() {
     if (sesion.tipoUsuario == "p") {
@@ -44,8 +55,10 @@ class _HistorialScreenState extends State<HistorialScreen> {
     formattedStartDate = dateFormatter.format(_startDate);
     formattedEndDate = dateFormatter.format(_endDate);
     _dateController.text = '$formattedStartDate - $formattedEndDate';
+    listaVentas.clear();
     super.initState();
     _consultarVentas();
+  
   }
 
   @override
@@ -252,23 +265,49 @@ class _HistorialScreenState extends State<HistorialScreen> {
     });
   }
 
+  _setEmpleados(String? value) async {
+    isLoading = true;
+    setState(() {});
+    _selectedEmployees = value;
+
+    //* Aca entra
+    if(value == '0') {
+      // * Aca se hace uso del reporteSucursal
+      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, sesion.idNegocio.toString());
+      isLoading = false;
+      setState(() {});
+      if(resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje!);
+        return;
+      }
+      return;
+    }
+
+    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _selectedBranchOffice!, value!);
+    isLoading = false;
+    setState(() {});
+    if(resultado.status != 1) {
+      mostrarAlerta(context, 'Error', resultado.mensaje!);
+      return;
+    }
+  }
+
   _empleados() {
     var lista = [
       const DropdownMenuItem(value: '0', child: SizedBox(child: Text('Todos')),),
-      const DropdownMenuItem(value: '1', child: SizedBox(child: Text('Todos1')),),
-
     ];
+    lista.addAll(
+      listasucursalEmpleado.map((empleado) => DropdownMenuItem(value: empleado.id.toString(), child: SizedBox(child: Text(empleado.name!),),))
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('EMPLEADOS', style: TextStyle(fontSize: 13),),
         DropdownButton(
-          value: '0',
+          value: _selectedEmployees,
           isExpanded: true,
           items: lista,
-          onChanged: (value) {
-            
-          },
+          onChanged: _allBranchOffice != null ? _setEmpleados : null
         )
       ],
     );
@@ -325,11 +364,16 @@ class _HistorialScreenState extends State<HistorialScreen> {
           value: '0',
           child: SizedBox(child: Text('Todos')),
         ),
-        DropdownMenuItem(
-          value: sesion.idUsuario.toString(),
-          child: SizedBox(child: Text(sesion.nombreUsuario!)),
-        )
       ];
+      listades.addAll(
+        listaSucursales.map((sucursal) {
+          return DropdownMenuItem(
+            value: sucursal.id.toString(),
+            child: SizedBox(child: Text(sucursal.nombreSucursal ?? '')),
+          );
+        }).toList(),
+      );
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -337,9 +381,39 @@ class _HistorialScreenState extends State<HistorialScreen> {
           DropdownButton(
             items: listades,
             isExpanded: true,
-            value: sesion.idUsuario.toString(),
-            onChanged: (value) {
-              _valueIdEmpleado = value.toString();
+            value: _selectedBranchOffice,
+            onChanged: (value) async {
+              //* Aca se selecciono todas las sucursales
+              isLoading = true;
+              setState(() {});
+
+              if(value == '0') {
+                _allBranchOffice = null;
+                _selectedBranchOffice = value;
+                final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
+                isLoading = false;
+                setState(() {});
+                if(resultado.status != 1) {
+                  mostrarAlerta(context, 'Error', resultado.mensaje!);
+                  return;
+                }
+                return;
+              }
+
+
+              isLoading = true;
+              _allBranchOffice = true;
+              _selectedBranchOffice = value;
+              final resultado = await provider.getlistaempleadosEnsucursales();
+              if(resultado.status == 1) {
+                isLoading = false;
+                setState(() {});
+                return;
+              }
+              isLoading = false;
+              setState(() {});
+              mostrarAlerta(context, 'Selecciona otra sucursal', resultado.mensaje!);
+              /*
               if (value == sesion.idUsuario.toString()) {
                 _valueIdEmpleado = sesion.idUsuario.toString();
                 setState(() {});
@@ -357,6 +431,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                   _consultarVentas();
                 }
               }
+              */
             },
           ),
         ],
@@ -365,14 +440,14 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   _listaVentas() {
-    if (listaVentaCabecera.isEmpty) {
+    if (listaVentas.isEmpty) {
       return const Center(
         child: Text(
             'No hay ventas realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(
-        children: listaVentaCabecera.map((venta) {
+        children: listaVentas.map((venta) {
           return ListTile(
             title: Text(venta.name!),
             subtitle: Text(venta.tipo_movimiento!),
