@@ -32,6 +32,7 @@ class UsuarioProvider {
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
+        sesion.cotizar = false;
         suscripcionActual.id = decodedData['suscripcion']['id'];
         suscripcionActual.idUsuario =
             decodedData['suscripcion']['id_usuario_app'];
@@ -75,6 +76,7 @@ class UsuarioProvider {
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
+        sesion.cotizar = false;
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
@@ -120,6 +122,7 @@ class UsuarioProvider {
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
+        sesion.cotizar = false;
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
@@ -142,11 +145,12 @@ class UsuarioProvider {
     }
     return respuesta;
   }
+
   Future<Resultado> logout() async {
     var url = Uri.parse('$baseUrl/usuario-logout/${sesion.idUsuario}');
-    
+
     try {
-      final resp = await http.post(url,headers: {
+      final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);

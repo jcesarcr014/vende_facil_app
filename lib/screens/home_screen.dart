@@ -186,7 +186,8 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: windowWidth * 0.05,
           ),
-          ElevatedButton(
+          if (sesion.cotizar == false)
+            ElevatedButton(
               onPressed: () async {
                 var res = await Navigator.push(
                     context,
@@ -200,7 +201,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: SizedBox(
                   width: windowWidth * 0.10,
                   height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.qr_code_scanner)))),
+                  child: const Center(child: Icon(Icons.qr_code_scanner))),
+            ),
           SizedBox(
             width: windowWidth * 0.05,
           ),
@@ -255,19 +257,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                if (CantidadConttroller.text.isEmpty ||
-                    double.parse(CantidadConttroller.text) <= 0) {
-                  mostrarAlerta(context, "AVISO", "valor invalido");
+                if (sesion.cotizar!) {
+                  _agregaProductoVenta(
+                    producto,
+                    double.parse(CantidadConttroller.text),
+                  );
                 } else {
-                  if (double.parse(CantidadConttroller.text) >
-                      producto.disponibleInv!) {
-                    mostrarAlerta(context, "AVISO",
-                        "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
+                  if (CantidadConttroller.text.isEmpty ||
+                      double.parse(CantidadConttroller.text) <= 0) {
+                    mostrarAlerta(context, "AVISO", "valor invalido");
                   } else {
-                    _agregaProductoVenta(
-                      producto,
-                      double.parse(CantidadConttroller.text),
-                    );
+                    if (double.parse(CantidadConttroller.text) >
+                        producto.disponibleInv!) {
+                      mostrarAlerta(context, "AVISO",
+                          "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
+                    } else {
+                      _agregaProductoVenta(
+                        producto,
+                        double.parse(CantidadConttroller.text),
+                      );
+                    }
                   }
                 }
               },
@@ -284,9 +293,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _productos() {
+    final selectedList =
+        sesion.cotizar! ? listaProductos : listaProductosSucursal;
     List<Widget> listaProd = [];
-    if (listaProductosSucursal.isNotEmpty) {
-      for (Producto producto in listaProductosSucursal) {
+    if (selectedList.isNotEmpty) {
+      for (Producto producto
+          in sesion.cotizar! ? listaProductos : listaProductosSucursal) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {
@@ -298,42 +310,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: (() {
                     if (producto.unidad == "0") {
-                      if (producto.disponibleInv! > 0) {
+                      if (sesion.cotizar!) {
                         _alertaProducto(producto);
                       } else {
-                        mostrarAlerta(context, "AVISO",
-                            "No cuenta con productos disponibles");
+                        if (producto.disponibleInv! > 0) {
+                          _alertaProducto(producto);
+                        } else {
+                          mostrarAlerta(context, "AVISO",
+                              "No cuenta con productos disponibles");
+                        }
                       }
                     } else {
-                      if (producto.disponibleInv! > 0) {
-                        if (ventaTemporal.isEmpty) {
-                          _agregaProductoVenta(producto, 0);
-                        } else {
-                          ItemVenta? descue = ventaTemporal.firstWhere(
-                            (descuento) => descuento.idArticulo == producto.id,
-                            orElse: () => ItemVenta(
-                                idArticulo: -1,
-                                apartado: true,
-                                cantidad: 1,
-                                descuento: 1,
-                                idDescuento: 1,
-                                precioPublico: 10,
-                                preciodistribuidor: 10,
-                                preciomayoreo: 10,
-                                subTotalItem: 10,
-                                totalItem: 10),
-                          );
-                          var catidad = descue.cantidad + 1;
-                          if (catidad > producto.disponibleInv!) {
-                            mostrarAlerta(context, "AVISO",
-                                "Nose puede agregar mas articulos de este producto :${producto.producto}");
-                          } else {
-                            _agregaProductoVenta(producto, 0);
-                          }
-                        }
+                      if (sesion.cotizar!) {
+                        _agregaProductoVenta(producto, 0);
                       } else {
-                        mostrarAlerta(context, "AVISO",
-                            "No cuenta con productos disponibles");
+                        if (producto.disponibleInv! > 0) {
+                          if (ventaTemporal.isEmpty) {
+                            _agregaProductoVenta(producto, 0);
+                          } else {
+                            ItemVenta? descue = ventaTemporal.firstWhere(
+                              (descuento) =>
+                                  descuento.idArticulo == producto.id,
+                              orElse: () => ItemVenta(
+                                  idArticulo: -1,
+                                  apartado: true,
+                                  cantidad: 1,
+                                  descuento: 1,
+                                  idDescuento: 1,
+                                  precioPublico: 10,
+                                  preciodistribuidor: 10,
+                                  preciomayoreo: 10,
+                                  subTotalItem: 10,
+                                  totalItem: 10),
+                            );
+                            var catidad = descue.cantidad + 1;
+                            if (catidad > producto.disponibleInv!) {
+                              mostrarAlerta(context, "AVISO",
+                                  "Nose puede agregar mas articulos de este producto :${producto.producto}");
+                            } else {
+                              _agregaProductoVenta(producto, 0);
+                            }
+                          }
+                        } else {
+                          mostrarAlerta(context, "AVISO",
+                              "No cuenta con productos disponibles");
+                        }
                       }
                     }
                   }),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/helpers/app_state_manager.dart';
+import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -30,47 +31,91 @@ class ProductsScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.list_alt),
-                  title: const Text('Listado de Productos', style: TextStyle(fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  subtitle: const Text('Visualiza tus productos'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    manager.setCurrentScreen('productos');
-                    Navigator.pushNamed(context, 'productos');
-                  }
-                ),
+                    leading: const Icon(Icons.list_alt),
+                    title: const Text('Listado de Productos',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                    subtitle: const Text('Visualiza tus productos'),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () {
+                      manager.setCurrentScreen('productos');
+                      Navigator.pushNamed(context, 'productos');
+                    }),
                 ListTile(
-                  leading: const Icon(Icons.add_box),
-                  title: const Text('Agregar Producto', style: TextStyle(fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  subtitle: const Text('Crea un nuevo producto'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () => Navigator.pushNamed(context, 'nvo-producto')
-                ),
+                    leading: const Icon(Icons.add_box),
+                    title: const Text('Agregar Producto',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                    subtitle: const Text('Crea un nuevo producto'),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () => Navigator.pushNamed(context, 'nvo-producto')),
                 ListTile(
-                  leading: const Icon(Icons.warehouse),
-                  title: const Text('Inventarios Sucursales', style: TextStyle(fontWeight: FontWeight.bold,), maxLines: 2, overflow: TextOverflow.ellipsis, ),
-                  subtitle: const Text('Selecciona tu sucursal y visualiza tus productos'), trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    manager.setCurrentScreen('InventoryPage');
-                    Navigator.pushNamed(context, 'InventoryPage');
-                  }
-                ),
+                    leading: const Icon(Icons.warehouse),
+                    title: const Text(
+                      'Inventarios Sucursales',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: const Text(
+                        'Selecciona tu sucursal y visualiza tus productos'),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () {
+                      manager.setCurrentScreen('InventoryPage');
+                      Navigator.pushNamed(context, 'InventoryPage');
+                    }),
                 ListTile(
-                  leading: const Icon(Icons.add),
-                  title: const Text('Agregar Producto Sucursal', style: TextStyle(fontWeight: FontWeight.bold,), maxLines: 2, overflow: TextOverflow.ellipsis, ),
-                  subtitle: const Text('Agrega un producto a tu sucursal'), trailing: const Icon(Icons.arrow_right),
-                  onTap: () => Navigator.pushNamed(context, 'agregar-producto-sucursal')
-                ),
+                    leading: const Icon(Icons.add),
+                    title: const Text(
+                      'Agregar Producto Sucursal',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: const Text('Agrega un producto a tu sucursal'),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () => Navigator.pushNamed(
+                        context, 'agregar-producto-sucursal')),
                 ListTile(
-                  leading: const Icon(Icons.delete),
-                  title: const Text('Quitar Producto Sucursal', style: TextStyle(fontWeight: FontWeight.bold,), maxLines: 2, overflow: TextOverflow.ellipsis, ),
-                  subtitle: const Text('Elimina un producto de una sucursal'), trailing: const Icon(Icons.arrow_right),
-                  onTap: () => Navigator.pushNamed(context, 'eliminar-producto-sucursal')
-                )
+                    leading: const Icon(Icons.delete),
+                    title: const Text(
+                      'Quitar Producto Sucursal',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: const Text('Elimina un producto de una sucursal'),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () => Navigator.pushNamed(
+                        context, 'eliminar-producto-sucursal')),
+                ListTile(
+                    leading: const Icon(Icons.request_quote),
+                    title: const Text(
+                      'Cotizar Productos',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: const Text('Estimacion de costo de productos '),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () {
+                      sesion.cotizar = true;
+                      
+                      Navigator.pushNamed(context, 'home');
+                    })
               ],
             )),
       ),
     );
-
   }
 }

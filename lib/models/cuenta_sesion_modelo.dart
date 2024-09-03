@@ -7,6 +7,7 @@ class CuentaSesion {
   String? nombreUsuario;
   String? email;
   String? telefono;
+  bool? cotizar;
 
   CuentaSesion(
       {this.idUsuario,
@@ -16,7 +17,9 @@ class CuentaSesion {
       this.token,
       this.nombreUsuario,
       this.email,
-      this.telefono});
+      this.telefono,
+      this.cotizar
+      });
 }
 
 CuentaSesion sesion = CuentaSesion();

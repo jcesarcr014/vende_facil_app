@@ -150,22 +150,23 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         )),
                   ]),
                   const SizedBox(height: 10),
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        'Selecione el  cliente',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: windowWidth * 0.1),
-                    Expanded(
-                      child: _clientes(),
-                    ),
-                    SizedBox(width: windowWidth * 0.1),
-                  ]),
+                  if (sesion.cotizar==false)
+                      Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                        SizedBox(width: windowWidth * 0.1),
+                        SizedBox(
+                          width: windowWidth * 0.2,
+                          child: const Text(
+                            'Selecione el  cliente',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: windowWidth * 0.1),
+                        Expanded(
+                          child: _clientes(),
+                        ),
+                        SizedBox(width: windowWidth * 0.1),
+                      ]),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: SwitchListTile.adaptive(
@@ -187,58 +188,83 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       height: windowHeight * 0.1,
                     ),
                   ]),
-                  Center(
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              VentaCabecera venta = VentaCabecera(
-                                idCliente: int.parse(_valueIdcliente),
-                                subtotal: subTotalItem,
-                                idDescuento: idDescuento,
-                                descuento: descuento,
-                                total: totalVentaTemporal,
-                              );
-                              Navigator.pushNamed(context, 'venta',
-                                  arguments: venta);
-                              setState(() {});
-                            },
-                            child: SizedBox(
-                              height: windowHeight * 0.1,
-                              width: windowWidth * 0.6,
-                              child: Center(
-                                child: Text(
-                                  'Cobrar   \$${totalVentaTemporal.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w600,
+                  if (sesion.cotizar==false)
+                      Center(
+                        child: Column(
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  VentaCabecera venta = VentaCabecera(
+                                    idCliente: int.parse(_valueIdcliente),
+                                    subtotal: subTotalItem,
+                                    idDescuento: idDescuento,
+                                    descuento: descuento,
+                                    total: totalVentaTemporal,
+                                  );
+                                  Navigator.pushNamed(context, 'venta',
+                                      arguments: venta);
+                                  setState(() {});
+                                },
+                                child: SizedBox(
+                                  height: windowHeight * 0.1,
+                                  width: windowWidth * 0.6,
+                                  child: Center(
+                                    child: Text(
+                                      'Cobrar   \$${totalVentaTemporal.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            )),
-                        const SizedBox(
-                          height: 30,
+                                )),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  _validaApartado();
+                                },
+                                child: SizedBox(
+                                  height: windowHeight * 0.07,
+                                  width: windowWidth * 0.6,
+                                  child: const Center(
+                                    child: Text(
+                                      'Apartar',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                          ],
                         ),
-                        ElevatedButton(
-                            onPressed: () {
-                              _validaApartado();
-                            },
-                            child: SizedBox(
-                              height: windowHeight * 0.07,
-                              width: windowWidth * 0.6,
-                              child: const Center(
-                                child: Text(
-                                  'Apartar',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  ),
+                      ),
+                    if (sesion.cotizar==true)
+                      Center(
+                          child: Column(
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                  },
+                                  child: SizedBox(
+                                    height: windowHeight * 0.07,
+                                    width: windowWidth * 0.6,
+                                    child: const Center(
+                                      child: Text(
+                                        'General',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+
                 ],
               )),
     );
@@ -247,7 +273,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   _listaTemporal() {
     List<Widget> productos = [];
     for (ItemVenta item in ventaTemporal) {
-      for (Producto prod in listaProductosSucursal) {
+      for (Producto prod in sesion.cotizar! ? listaProductos : listaProductosSucursal) {
         if (prod.id == item.idArticulo) {
           productos.add(Dismissible(
               key: Key(item.idArticulo.toString()),
