@@ -26,7 +26,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
   String formattedEndDate = "";
   String formattedStartDate = "";
   DateTime now = DateTime.now();
-  String _valueIdEmpleado = '0';
 
   late DateTime _startDate;
   late DateTime _endDate;
@@ -36,19 +35,14 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
 
   bool? _allBranchOffice = true;
-  String? _selectedBranchOffice = '0';
-  String? _selectedEmployees = '0';
+  String? _sucursalSeleccionada = '-1';
+  String? _empleadoSeleccionado = '0';
 
   NegocioProvider provider = NegocioProvider();
   ReportesProvider reportesProvider = ReportesProvider();
 
   @override
   void initState() {
-    if (sesion.tipoUsuario == "p") {
-      _valueIdEmpleado = '0';
-    } else {
-      _valueIdEmpleado = sesion.idUsuario.toString();
-    }
     _startDate = DateTime(now.year, now.month, now.day);
     _endDate = _startDate.add(const Duration(days: 30));
     dateFormatter = DateFormat('yyyy-MM-dd');
@@ -56,8 +50,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
     formattedEndDate = dateFormatter.format(_endDate);
     _dateController.text = '$formattedStartDate - $formattedEndDate';
     listaVentas.clear();
+    listasucursalEmpleado.clear();
     super.initState();
-    _consultarVentas();
   
   }
 
@@ -157,7 +151,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                     _dateController.text =
                                         '$formattedStartDate - $formattedEndDate';
                                   });
-                                  _consultarVentas();
+                                  //_consultarVentas();
                                 }
                               },
                               decoration: InputDecoration(
@@ -199,7 +193,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                         _dateController.text =
                                             '$formattedStartDate - $formattedEndDate';
                                       });
-                                      _consultarVentas();
+                                      //_consultarVentas();
                                     }
                                   },
                                   icon: const Icon(Icons.calendar_today),
@@ -238,6 +232,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
     );
   }
 
+/*
   _consultarVentas() async {
     setState(() {
       isLoading = true;
@@ -264,16 +259,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
       }
     });
   }
+  */
 
   _setEmpleados(String? value) async {
+    if(value == '-1') return;
+
     isLoading = true;
     setState(() {});
-    _selectedEmployees = value;
+    _empleadoSeleccionado = value;
 
-    //* Aca entra
     if(value == '0') {
-      // * Aca se hace uso del reporteSucursal
-      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, sesion.idNegocio.toString());
+      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       isLoading = false;
       setState(() {});
       if(resultado.status != 1) {
@@ -283,7 +279,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
       return;
     }
 
-    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _selectedBranchOffice!, value!);
+    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
     isLoading = false;
     setState(() {});
     if(resultado.status != 1) {
@@ -294,6 +290,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   _empleados() {
     var lista = [
+      const DropdownMenuItem(value: '-1', child: SizedBox(child: Text('Seleccione un Empleado')),),
       const DropdownMenuItem(value: '0', child: SizedBox(child: Text('Todos')),),
     ];
     lista.addAll(
@@ -304,7 +301,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
       children: [
         const Text('EMPLEADOS', style: TextStyle(fontSize: 13),),
         DropdownButton(
-          value: _selectedEmployees,
+          value: _empleadoSeleccionado,
           isExpanded: true,
           items: lista,
           onChanged: _allBranchOffice != null ? _setEmpleados : null
@@ -314,52 +311,12 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   _sucursales() {
-    if (sesion.tipoUsuario == "p") {
+    if (sesion.tipoUsuario == "P") {
       var listades = [
         const DropdownMenuItem(
-          value: '0',
-          child: SizedBox(child: Text('Todos')),
-        )
-      ];
-      for (Usuario empleado in listaEmpleados) {
-        listades.add(DropdownMenuItem(
-            value: empleado.id.toString(), child: Text(empleado.nombre!)));
-      }
-      if (_valueIdEmpleado.isEmpty) {
-        _valueIdEmpleado = '0';
-      }
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Seleccione una opción', style: TextStyle(fontSize: 13),),
-          DropdownButton(
-            items: listades,
-            isExpanded: true,
-            value: _valueIdEmpleado,
-            onChanged: (value) {
-              _valueIdEmpleado = value!;
-              if (value == "0") {
-                setState(() {});
-                _consultarVentas();
-              } else {
-                Usuario empleadoSeleccionado = listaEmpleados
-                    .firstWhere((empleado) => empleado.id.toString() == value);
-                if (empleadoSeleccionado.id == 0) {
-                  _valueIdEmpleado = '0';
-                  setState(() {});
-                  _consultarVentas();
-                } else {
-                  _valueIdEmpleado = empleadoSeleccionado.id.toString();
-                  setState(() {});
-                  _consultarVentas();
-                }
-              }
-            },
-          ),
-        ],
-      );
-    } else {
-      var listades = [
+          value: '-1',
+          child: SizedBox(child: Text('Seleccione una Sucursal')),
+        ),
         const DropdownMenuItem(
           value: '0',
           child: SizedBox(child: Text('Todos')),
@@ -381,15 +338,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
           DropdownButton(
             items: listades,
             isExpanded: true,
-            value: _selectedBranchOffice,
+            value: _sucursalSeleccionada,
             onChanged: (value) async {
               //* Aca se selecciono todas las sucursales
+              if(value == '-1') return;
+
               isLoading = true;
+              _sucursalSeleccionada = value;
               setState(() {});
 
               if(value == '0') {
                 _allBranchOffice = null;
-                _selectedBranchOffice = value;
                 final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
                 isLoading = false;
                 setState(() {});
@@ -400,10 +359,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
                 return;
               }
 
-
               isLoading = true;
               _allBranchOffice = true;
-              _selectedBranchOffice = value;
               final resultado = await provider.getlistaempleadosEnsucursales();
               if(resultado.status == 1) {
                 isLoading = false;
@@ -413,25 +370,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
               isLoading = false;
               setState(() {});
               mostrarAlerta(context, 'Selecciona otra sucursal', resultado.mensaje!);
-              /*
-              if (value == sesion.idUsuario.toString()) {
-                _valueIdEmpleado = sesion.idUsuario.toString();
-                setState(() {});
-                _consultarVentas();
-              } else {
-                Usuario empleadoSeleccionado = listaEmpleados
-                    .firstWhere((empleado) => empleado.id.toString() == value);
-                if (empleadoSeleccionado.id == 0) {
-                  _valueIdEmpleado = '0';
-                  setState(() {});
-                  _consultarVentas();
-                } else {
-                  _valueIdEmpleado = empleadoSeleccionado.id.toString();
-                  setState(() {});
-                  _consultarVentas();
-                }
-              }
-              */
             },
           ),
         ],
