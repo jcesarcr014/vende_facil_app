@@ -42,3 +42,5 @@ class VentaCabecera {
 
 List<VentaCabecera> listaVentaCabecera = [];
 List<VentaCabecera> listaVentaCabecera2 = [];
+
+List<VentaCabecera> listaVentas = [];
