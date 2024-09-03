@@ -1,6 +1,5 @@
 // ignore_for_file: unrelated_type_equality_checks, avoid_print, prefer_final_fields
 import 'package:flutter/material.dart';
-import 'package:vende_facil/helpers/app_state_manager.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -35,7 +34,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   double windowHeight = 0.0;
   String _valueIdCategoria = '0';
   bool firstLoad = true;
-  bool _valuePieza = true;
+  bool _valuePieza = false;
   final bool _valueInventario = true;
   bool _valueApartado = false;
   bool _puedeGurdar = false;
@@ -119,7 +118,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.descripcion = controllerDescripcion.text;
       producto.idCategoria = int.parse(_valueIdCategoria);
       producto.unidad = (_valuePieza) ? '1' : '0';
-
       producto.precioPublico =
           double.parse(controllerPrecio.text.replaceAll(',', ''));
       producto.precioMayoreo =
@@ -168,13 +166,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             });
             if (value.status == 1) {
               globals.actualizaArticulos = true;
-              if(manager.currentScreen == 'InventoryPage') {
-                Navigator.popAndPushNamed(context, 'InventoryPage');
-              } else if(manager.currentScreen == 'productos') {
-                Navigator.pop(context);
-              }
+              Navigator.pop(context);
+              Navigator.popAndPushNamed(context, 'productos');
               mostrarAlerta(context, 'Exito', value.mensaje!);
-              manager.setCurrentScreen('defaultScreen');
             } else {
               mostrarAlerta(context, '', value.mensaje!);
             }
@@ -272,6 +266,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     if (ModalRoute.of(context)?.settings.arguments != null && firstLoad) {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Producto;
+      _valuePieza = args.unidad == "1" ? true : false;
       controllerProducto.text = args.producto!;
       controllerDescripcion.text = args.descripcion!;
       controllerPrecio.text = (args.precioPublico != null)
@@ -308,12 +303,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if(manager.currentScreen == 'InventoryPage' && !didpop) {
-          manager.setCurrentScreen('defaultScreen');
-          Navigator.pop(context);
-          Navigator.popAndPushNamed(context, 'InventoryPage');
-          return;
-        }
         if(args.id != 0 && !didpop) {
           Navigator.pop(context);
           Navigator.popAndPushNamed(context, 'productos');
