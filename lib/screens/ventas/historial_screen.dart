@@ -267,7 +267,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
     isLoading = true;
     setState(() {});
     _empleadoSeleccionado = value;
-    print(value);
     if(value == '0') {
       final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       isLoading = false;
