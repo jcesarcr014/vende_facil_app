@@ -95,7 +95,6 @@ class ReportesProvider {
   }
 
   Future<Resultado> reporteEmpleado(String startDate, String endDate, String idSucursal, String idEmpleado) async {
-    print('/reporte-empleado/$startDate/$endDate/$idSucursal/$idEmpleado');
     final url = Uri.parse('$baseUrl/reporte-empleado/$startDate/$endDate/$idSucursal/$idEmpleado');
     try {
       final response = await http.get(url, headers: {

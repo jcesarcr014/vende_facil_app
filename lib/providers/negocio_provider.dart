@@ -276,9 +276,10 @@ class NegocioProvider {
     return respuesta;
   }
 
-  Future<Resultado> getlistaempleadosEnsucursales() async {
+  Future<Resultado> getlistaempleadosEnsucursales(String? idSucursal) async {
+    idSucursal ??= sesion.idNegocio.toString();
     listasucursalEmpleado.clear();
-    var url = Uri.parse('$baseUrl/sucursales-empleados/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/sucursales-empleados/$idSucursal');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -288,13 +289,13 @@ class NegocioProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         for (int i = 0; i < decodedData['data'].length; i++) {
-          SucursalEmpleado Surcusalempleado = SucursalEmpleado();
-          Surcusalempleado.id = decodedData['data'][i]['id'];
-          Surcusalempleado.negocioId = decodedData['data'][i]['negocio_id'];
-          Surcusalempleado.sucursalId = decodedData['data'][i]['usuario_id'];
-          Surcusalempleado.usuarioId = decodedData['data'][i]['sucursal_id'];
-          Surcusalempleado.name = decodedData['data'][i]['name'];
-          listasucursalEmpleado.add(Surcusalempleado);
+          SucursalEmpleado empleado = SucursalEmpleado();
+          empleado.id = decodedData['data'][i]['id'];
+          empleado.negocioId = decodedData['data'][i]['negocio_id'];
+          empleado.sucursalId = decodedData['data'][i]['sucursal_id'];
+          empleado.usuarioId = decodedData['data'][i]['usuario_id'];
+          empleado.name = decodedData['data'][i]['name'];
+          listasucursalEmpleado.add(empleado);
         }
       } else {
         respuesta.status = 0;

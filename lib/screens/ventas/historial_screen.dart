@@ -232,38 +232,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
     );
   }
 
-/*
-  _consultarVentas() async {
-    setState(() {
-      isLoading = true;
-    });
-    if (_valueIdEmpleado == '0') {
-      // ignore: unused_local_variable
-      final result = await ventaProvider.consultarVentasFecha(
-        formattedStartDate,
-        formattedEndDate,
-      );
-    } else {
-      // ignore: unused_local_variable
-      final result = await ventaProvider.consultarVentasFechaUsuario(
-        formattedStartDate,
-        formattedEndDate,
-        _valueIdEmpleado,
-      );
-      setState(() {});
-    }
-    setState(() {
-      isLoading = false;
-      for (VentaCabecera venta in listaVentaCabecera) {
-        totalVentas += venta.total!;
-      }
-    });
-  }
-  */
-
   _setEmpleados(String? value) async {
     if(value == '-1') return;
-
     isLoading = true;
     setState(() {});
     _empleadoSeleccionado = value;
@@ -277,6 +247,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
       }
       return;
     }
+
 
     final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
     isLoading = false;
@@ -293,7 +264,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
       const DropdownMenuItem(value: '0', child: SizedBox(child: Text('Todos')),),
     ];
     lista.addAll(
-      listasucursalEmpleado.map((empleado) => DropdownMenuItem(value: empleado.id.toString(), child: SizedBox(child: Text(empleado.name!),),))
+      listasucursalEmpleado.map((empleado) => DropdownMenuItem(value: empleado.usuarioId.toString(), child: SizedBox(child: Text(empleado.name!),),))
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,9 +310,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
             isExpanded: true,
             value: _sucursalSeleccionada,
             onChanged: (value) async {
-              //* Aca se selecciono todas las sucursales
               if(value == '-1') return;
-
               isLoading = true;
               _sucursalSeleccionada = value;
               setState(() {});
@@ -357,10 +326,9 @@ class _HistorialScreenState extends State<HistorialScreen> {
                 }
                 return;
               }
-
               isLoading = true;
               _allBranchOffice = true;
-              final resultado = await provider.getlistaempleadosEnsucursales();
+              final resultado = await provider.getlistaempleadosEnsucursales(value!);
               if(resultado.status == 1) {
                 isLoading = false;
                 setState(() {});
