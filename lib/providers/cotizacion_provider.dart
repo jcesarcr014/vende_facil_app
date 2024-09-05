@@ -44,7 +44,7 @@ class CotizarProvider {
   }
 
   Future<Resultado> guardarCotizacionDetalle(CotizacionDetalle cotiz) async {
-    var url = Uri.parse('$baseUrl/ventas-detalle/${cotiz.idcotizacion}');
+    var url = Uri.parse('$baseUrl/cotizacion-detalle/${cotiz.idcotizacion}');
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -54,9 +54,9 @@ class CotizarProvider {
         'cantidad': cotiz.cantidad.toString(),
         'precio': cotiz.precio.toString(),
         'subtotal': cotiz.subtotal.toString(),
-        'descuento': cotiz.cantidadDescuento.toString(),
+        'descuento': '0',
         'total': cotiz.total.toString(),
-        'descuento_id': cotiz.idDesc.toString(),
+        'descuento_id': '0',
         'id_sucursal': cotiz.id_sucursal.toString(),
       });
 
@@ -73,7 +73,7 @@ class CotizarProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
     }
-
+    print(respuesta.mensaje);
     return respuesta;
   }
 }
