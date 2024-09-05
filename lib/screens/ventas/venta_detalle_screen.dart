@@ -107,32 +107,32 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   ]),
                   const SizedBox(height: 0.5),
                   if (sesion.cotizar == false)
-                          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                            SizedBox(width: windowWidth * 0.1),
-                            SizedBox(
-                              width: windowWidth * 0.2,
-                              child: const Text(
-                                'Descuento ',
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            SizedBox(width: windowWidth * 0.1),
-                            Expanded(
-                              child: _descuentos(),
-                            ),
-                            SizedBox(width: windowWidth * 0.1),
-                            SizedBox(
-                                width: windowWidth * 0.2,
-                                child: Text(
-                                  '\$${descuento.toStringAsFixed(2)}',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                )),
-                          ]),
-                          SizedBox(
-                            height: windowHeight * 0.03,
-                          ),
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      SizedBox(width: windowWidth * 0.1),
+                      SizedBox(
+                        width: windowWidth * 0.2,
+                        child: const Text(
+                          'Descuento ',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      SizedBox(width: windowWidth * 0.1),
+                      Expanded(
+                        child: _descuentos(),
+                      ),
+                      SizedBox(width: windowWidth * 0.1),
+                      SizedBox(
+                          width: windowWidth * 0.2,
+                          child: Text(
+                            '\$${descuento.toStringAsFixed(2)}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          )),
+                    ]),
+                  SizedBox(
+                    height: windowHeight * 0.03,
+                  ),
                   const SizedBox(height: 10),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
@@ -154,22 +154,22 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         )),
                   ]),
                   const SizedBox(height: 10),
-                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      SizedBox(width: windowWidth * 0.1),
-                      SizedBox(
-                        width: windowWidth * 0.2,
-                        child: const Text(
-                          'Selecione el  cliente',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Selecione el  cliente',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(width: windowWidth * 0.1),
-                      Expanded(
-                        child: _clientes(),
-                      ),
-                      SizedBox(width: windowWidth * 0.1),
-                    ]),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
+                    Expanded(
+                      child: _clientes(),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
+                  ]),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: SwitchListTile.adaptive(
@@ -471,40 +471,50 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _actualizaTotalTemporal() {
-    var aplica = listaVariables
-        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
-    totalVentaTemporal = 0;
-    subTotalItem = 0;
-    descuento = 0;
-    if (_valuePieza == true) {
+    if (sesion.cotizar!) {
       for (ItemVenta item in ventaTemporal) {
         totalVentaTemporal += item.cantidad * item.precioPublico;
         subTotalItem += item.cantidad * item.precioPublico;
         item.totalItem = item.cantidad * item.precioPublico;
+        descuento += item.descuento;
       }
+      setState(() {});
     } else {
-      for (ItemVenta item in ventaTemporal) {
-        if (aplica.valor == "0") {
+      var aplica = listaVariables
+          .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
+      totalVentaTemporal = 0;
+      subTotalItem = 0;
+      descuento = 0;
+      if (_valuePieza == true) {
+        for (ItemVenta item in ventaTemporal) {
           totalVentaTemporal += item.cantidad * item.precioPublico;
           subTotalItem += item.cantidad * item.precioPublico;
           item.totalItem = item.cantidad * item.precioPublico;
-          descuento += item.descuento;
-        } else {
-          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-            totalVentaTemporal += item.cantidad * item.preciomayoreo;
-            subTotalItem += item.cantidad * item.preciomayoreo;
-            item.totalItem = item.cantidad * item.preciomayoreo;
-            descuento += item.descuento;
-          } else {
+        }
+      } else {
+        for (ItemVenta item in ventaTemporal) {
+          if (aplica.valor == "0") {
             totalVentaTemporal += item.cantidad * item.precioPublico;
             subTotalItem += item.cantidad * item.precioPublico;
             item.totalItem = item.cantidad * item.precioPublico;
             descuento += item.descuento;
+          } else {
+            if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+              totalVentaTemporal += item.cantidad * item.preciomayoreo;
+              subTotalItem += item.cantidad * item.preciomayoreo;
+              item.totalItem = item.cantidad * item.preciomayoreo;
+              descuento += item.descuento;
+            } else {
+              totalVentaTemporal += item.cantidad * item.precioPublico;
+              subTotalItem += item.cantidad * item.precioPublico;
+              item.totalItem = item.cantidad * item.precioPublico;
+              descuento += item.descuento;
+            }
           }
         }
       }
+      setState(() {});
     }
-    setState(() {});
   }
 
   _descuentos() {
