@@ -12,7 +12,9 @@ class CotizacionDetalle {
   double? subtotal;
   String? nombreProducto;
   int? id_sucursal;
+  String? folio;
   CotizacionDetalle({
+    this.folio,
     this.id,
     this.idcotizacion,
     this.idProd,

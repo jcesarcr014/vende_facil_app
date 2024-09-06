@@ -1,10 +1,20 @@
 // ignore_for_file: dead_code, prefer_final_fields
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
+import 'package:vende_facil/providers/ticket_provider.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
+
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'dart:io';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+
 
 class VentaDetalleScreen extends StatefulWidget {
   const VentaDetalleScreen({super.key});
@@ -30,11 +40,17 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   int idDescuento = 0;
   bool _valuePieza = false;
 
+  final TicketProvider ticketProvider = TicketProvider();
+  List<Producto> listaProductosCotizaciones = [];
+
+
+
   final cantidadConttroller = TextEditingController();
   @override
   void initState() {
     _actualizaTotalTemporal();
     listaDescuentos;
+    _loadData();
     super.initState();
     _fetchData();
   }
@@ -42,6 +58,157 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   void _fetchData() {
     setState(() {});
   }
+
+  void _loadData() async {
+      try {
+        final TicketModel model = await ticketProvider.getData(sesion.idNegocio.toString());
+        setState(() {
+          ticketModel.id = model.id;
+          ticketModel.negocioId = model.negocioId;
+          ticketModel.logo = model.logo;
+          ticketModel.message = model.message;
+        });
+      } catch(e) {
+        mostrarAlerta(context, 'Error', e.toString());
+      }
+  }
+
+Future<void> _generatePDF() async {
+  // Crear un documento PDF
+  final PdfDocument document = PdfDocument();
+
+  // Agregar una página
+  final PdfPage page = document.pages.add();
+
+  // Crear fuentes
+  final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
+  final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
+  final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14, style: PdfFontStyle.italic);
+
+  // Definir color para la tabla
+  final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
+
+  // Dibujar encabezado de la cotización
+  page.graphics.drawString('Cotización de Productos', boldFont, brush: brush,
+      bounds: const Rect.fromLTWH(0, 0, 500, 30)); // Encabezado
+  page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
+      bounds: const Rect.fromLTWH(0, 30, 500, 30)); // Número de folio
+
+  // Crear la tabla
+  final PdfGrid grid = PdfGrid();
+  grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
+
+  // Estilo para la tabla
+  grid.style = PdfGridStyle(
+    font: font,
+    cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
+  );
+
+  // Añadir encabezados a la tabla
+  final PdfGridRow headerRow = grid.headers.add(1)[0];
+  headerRow.style = PdfGridRowStyle(
+    backgroundBrush: PdfSolidBrush(PdfColor(68, 114, 196)),
+    textPen: PdfPens.white,
+    textBrush: PdfBrushes.white,
+    font: boldFont,
+  );
+  headerRow.cells[0].value = 'Producto';
+  headerRow.cells[1].value = 'Cantidad';
+  headerRow.cells[2].value = 'Total';
+
+  // Rellenar filas dinámicamente desde listaProductosCotizaciones
+  for (var producto in listaProductosCotizaciones) {
+    final PdfGridRow row = grid.rows.add();
+    row.cells[0].value = producto.producto; // Asume que tienes un campo nombre
+    row.cells[1].value = producto.cantidad.toString(); // Campo cantidad
+    row.cells[2].value = producto.costo!.toStringAsFixed(2); // Total
+  }
+
+  // Añadir fila de subtotal
+  final PdfGridRow subtotalRow = grid.rows.add();
+  subtotalRow.cells[0].value = 'Subtotal';
+  subtotalRow.cells[1].value = ''; // Celda vacía para alineación
+  subtotalRow.cells[2].value = cotizacionDetalle.subtotal!.toStringAsFixed(2);
+  subtotalRow.style = PdfGridRowStyle(
+    font: boldFont,
+    textBrush: PdfBrushes.black,
+  );
+
+  // Añadir fila de total
+  final PdfGridRow totalRow = grid.rows.add();
+  totalRow.cells[0].value = 'Total';
+  totalRow.cells[1].value = ''; // Celda vacía para alineación
+  totalRow.cells[2].value = cotizacionDetalle.total!.toStringAsFixed(2);
+  totalRow.style = PdfGridRowStyle(
+    font: boldFont,
+    textBrush: PdfBrushes.black,
+  );
+
+  // Dibujar la tabla en el PDF
+  grid.draw(
+    page: page,
+    bounds: const Rect.fromLTWH(0, 60, 0, 0), // Alineación para dejar espacio para la imagen
+  );
+
+  // Centrar la imagen debajo de la tabla
+  if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
+    final logoImage = await _downloadImage(ticketModel.logo!);
+    if (logoImage != null) {
+      final PdfBitmap image = PdfBitmap(logoImage);
+      double pageWidth = page.getClientSize().width;
+      double imageWidth = 100;
+      double xPosition = (pageWidth - imageWidth) / 2; // Centrar la imagen horizontalmente
+      page.graphics.drawImage(image, Rect.fromLTWH(xPosition, 250, 100, 100)); // Ajustar la posición y el tamaño
+    }
+  }
+
+  // Centrar el mensaje del ticket debajo de la imagen
+  if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
+    double pageWidth = page.getClientSize().width;
+    String message = ticketModel.message!;
+    double textWidth = boldFont.measureString(message).width;
+    double xPosition = (pageWidth - textWidth) / 2; // Centrar el texto horizontalmente
+    page.graphics.drawString(
+      message,
+      italicFont,
+      brush: brush,
+      bounds: Rect.fromLTWH(xPosition, 370, textWidth, 30), // Debajo de la imagen
+    );
+  }
+
+  // Guardar el PDF en bytes
+  List<int> bytes = document.saveSync();
+
+  // Liberar el documento
+  document.dispose();
+
+  // Guardar el archivo en el dispositivo
+  final directory = await getApplicationSupportDirectory();
+  final path = directory.path;
+  File file = File('$path/Output.pdf');
+
+  await file.writeAsBytes(bytes, flush: true);
+
+  // Abrir el PDF generado en el dispositivo
+  OpenFile.open('$path/Output.pdf');
+}
+
+
+  Future<Uint8List?> _downloadImage(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      mostrarAlerta(context, 'Error', 'Error al descargar la imagen: $e');
+      return null;
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -288,12 +455,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       isLoading = true;
       textLoading = 'Guardando cotizacion';
     });
-
     await cotizaciones.guardarCotizacion(cotiz).then((respCab) async {
       if (respCab.status == 1) {
         idCabecera = respCab.id!;
         for (ItemVenta item in ventaTemporal) {
           CotizacionDetalle ventaDetalle = CotizacionDetalle(
+            folio: respCab.folio,
             idcotizacion: idCabecera,
             idProd: item.idArticulo,
             cantidad: item.cantidad,
@@ -303,6 +470,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             total: item.totalItem,
             subtotal: item.subTotalItem,
           );
+          cotizacionDetalle = ventaDetalle;
+
 
           await cotizaciones
               .guardarCotizacionDetalle(ventaDetalle)
@@ -328,9 +497,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           setState(() {});
           totalVentaTemporal = 0.0;
           globals.actualizaArticulos = true;
-          Navigator.pushReplacementNamed(context, 'home');
-
+          listacotizacion.add(cotiz);
           mostrarAlerta(context, '', 'cotizacion realizada');
+          _generatePDF();
+          Navigator.pushReplacementNamed(context, 'home');
         }
       } else {
         setState(() {
@@ -348,6 +518,11 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       for (Producto prod
           in sesion.cotizar! ? listaProductos : listaProductosSucursal) {
         if (prod.id == item.idArticulo) {
+          prod.costo = item.totalItem;
+          prod.cantidad = item.cantidad;
+          if (!listaProductosCotizaciones.any((p) => p.id == prod.id)) {
+            listaProductosCotizaciones.add(prod);
+          }
           productos.add(Dismissible(
               key: Key(item.idArticulo.toString()),
               onDismissed: (direction) {
@@ -425,6 +600,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         }
       }
     }
+    setState(() {});
     return productos;
   }
 

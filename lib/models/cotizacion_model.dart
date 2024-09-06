@@ -1,4 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
+import 'package:vende_facil/models/cotizacion_detalle_model.dart';
+
 class Cotizacion {
   int? id;
   int? negocioId;
@@ -43,3 +45,5 @@ class Cotizacion {
 }
 
 List<Cotizacion> listacotizacion = [];
+
+CotizacionDetalle cotizacionDetalle = CotizacionDetalle();
