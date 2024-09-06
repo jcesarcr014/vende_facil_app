@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/negocio_provider.dart';
+import 'package:vende_facil/providers/reportes_provider.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class HistorialScreen extends StatefulWidget {
   // ignore: use_key_in_widget_constructors
@@ -23,7 +26,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
   String formattedEndDate = "";
   String formattedStartDate = "";
   DateTime now = DateTime.now();
-  String _valueIdEmpleado = '0';
 
   late DateTime _startDate;
   late DateTime _endDate;
@@ -31,21 +33,26 @@ class _HistorialScreenState extends State<HistorialScreen> {
   late DateFormat dateFormatter;
   final _dateController = TextEditingController();
 
+
+  bool? _allBranchOffice = true;
+  String? _sucursalSeleccionada = '-1';
+  String? _empleadoSeleccionado = '0';
+
+  NegocioProvider provider = NegocioProvider();
+  ReportesProvider reportesProvider = ReportesProvider();
+
   @override
   void initState() {
-    if (sesion.tipoUsuario == "p") {
-      _valueIdEmpleado = '0';
-    } else {
-      _valueIdEmpleado = sesion.idUsuario.toString();
-    }
     _startDate = DateTime(now.year, now.month, now.day);
     _endDate = _startDate.add(const Duration(days: 30));
     dateFormatter = DateFormat('yyyy-MM-dd');
     formattedStartDate = dateFormatter.format(_startDate);
     formattedEndDate = dateFormatter.format(_endDate);
     _dateController.text = '$formattedStartDate - $formattedEndDate';
+    listaVentas.clear();
+    listasucursalEmpleado.clear();
     super.initState();
-    _consultarVentas();
+  
   }
 
   @override
@@ -144,7 +151,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                     _dateController.text =
                                         '$formattedStartDate - $formattedEndDate';
                                   });
-                                  _consultarVentas();
+                                  //_consultarVentas();
                                 }
                               },
                               decoration: InputDecoration(
@@ -186,7 +193,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                         _dateController.text =
                                             '$formattedStartDate - $formattedEndDate';
                                       });
-                                      _consultarVentas();
+                                      //_consultarVentas();
                                     }
                                   },
                                   icon: const Icon(Icons.calendar_today),
@@ -225,111 +232,75 @@ class _HistorialScreenState extends State<HistorialScreen> {
     );
   }
 
-  _consultarVentas() async {
-    setState(() {
-      isLoading = true;
-    });
-    if (_valueIdEmpleado == '0') {
-      // ignore: unused_local_variable
-      final result = await ventaProvider.consultarVentasFecha(
-        formattedStartDate,
-        formattedEndDate,
-      );
-    } else {
-      // ignore: unused_local_variable
-      final result = await ventaProvider.consultarVentasFechaUsuario(
-        formattedStartDate,
-        formattedEndDate,
-        _valueIdEmpleado,
-      );
-      setState(() {});
-    }
-    setState(() {
+  _setEmpleados(String? value) async {
+    if(value == '-1') return;
+    isLoading = true;
+    setState(() {});
+    _empleadoSeleccionado = value;
+    if(value == '0') {
+      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       isLoading = false;
-      for (VentaCabecera venta in listaVentaCabecera) {
-        totalVentas += venta.total!;
+      setState(() {});
+      if(resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje!);
+        return;
       }
-    });
+      return;
+    }
+
+
+    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
+    isLoading = false;
+    setState(() {});
+    if(resultado.status != 1) {
+      mostrarAlerta(context, 'Error', resultado.mensaje!);
+      return;
+    }
   }
 
   _empleados() {
     var lista = [
+      const DropdownMenuItem(value: '-1', child: SizedBox(child: Text('Seleccione un Empleado')),),
       const DropdownMenuItem(value: '0', child: SizedBox(child: Text('Todos')),),
-      const DropdownMenuItem(value: '1', child: SizedBox(child: Text('Todos1')),),
-
     ];
+    lista.addAll(
+      listasucursalEmpleado.map((empleado) => DropdownMenuItem(value: empleado.usuarioId.toString(), child: SizedBox(child: Text(empleado.name!),),))
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('EMPLEADOS', style: TextStyle(fontSize: 13),),
         DropdownButton(
-          value: '0',
+          value: _empleadoSeleccionado,
           isExpanded: true,
           items: lista,
-          onChanged: (value) {
-            
-          },
+          onChanged: _allBranchOffice != null ? _setEmpleados : null
         )
       ],
     );
   }
 
   _sucursales() {
-    if (sesion.tipoUsuario == "p") {
+    if (sesion.tipoUsuario == "P") {
       var listades = [
         const DropdownMenuItem(
-          value: '0',
-          child: SizedBox(child: Text('Todos')),
-        )
-      ];
-      for (Usuario empleado in listaEmpleados) {
-        listades.add(DropdownMenuItem(
-            value: empleado.id.toString(), child: Text(empleado.nombre!)));
-      }
-      if (_valueIdEmpleado.isEmpty) {
-        _valueIdEmpleado = '0';
-      }
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Seleccione una opción', style: TextStyle(fontSize: 13),),
-          DropdownButton(
-            items: listades,
-            isExpanded: true,
-            value: _valueIdEmpleado,
-            onChanged: (value) {
-              _valueIdEmpleado = value!;
-              if (value == "0") {
-                setState(() {});
-                _consultarVentas();
-              } else {
-                Usuario empleadoSeleccionado = listaEmpleados
-                    .firstWhere((empleado) => empleado.id.toString() == value);
-                if (empleadoSeleccionado.id == 0) {
-                  _valueIdEmpleado = '0';
-                  setState(() {});
-                  _consultarVentas();
-                } else {
-                  _valueIdEmpleado = empleadoSeleccionado.id.toString();
-                  setState(() {});
-                  _consultarVentas();
-                }
-              }
-            },
-          ),
-        ],
-      );
-    } else {
-      var listades = [
+          value: '-1',
+          child: SizedBox(child: Text('Seleccione una Sucursal')),
+        ),
         const DropdownMenuItem(
           value: '0',
           child: SizedBox(child: Text('Todos')),
         ),
-        DropdownMenuItem(
-          value: sesion.idUsuario.toString(),
-          child: SizedBox(child: Text(sesion.nombreUsuario!)),
-        )
       ];
+      listades.addAll(
+        listaSucursales.map((sucursal) {
+          return DropdownMenuItem(
+            value: sucursal.id.toString(),
+            child: SizedBox(child: Text(sucursal.nombreSucursal ?? '')),
+          );
+        }).toList(),
+      );
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -337,26 +308,35 @@ class _HistorialScreenState extends State<HistorialScreen> {
           DropdownButton(
             items: listades,
             isExpanded: true,
-            value: sesion.idUsuario.toString(),
-            onChanged: (value) {
-              _valueIdEmpleado = value.toString();
-              if (value == sesion.idUsuario.toString()) {
-                _valueIdEmpleado = sesion.idUsuario.toString();
+            value: _sucursalSeleccionada,
+            onChanged: (value) async {
+              if(value == '-1') return;
+              isLoading = true;
+              _sucursalSeleccionada = value;
+              setState(() {});
+
+              if(value == '0') {
+                _allBranchOffice = null;
+                final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
+                isLoading = false;
                 setState(() {});
-                _consultarVentas();
-              } else {
-                Usuario empleadoSeleccionado = listaEmpleados
-                    .firstWhere((empleado) => empleado.id.toString() == value);
-                if (empleadoSeleccionado.id == 0) {
-                  _valueIdEmpleado = '0';
-                  setState(() {});
-                  _consultarVentas();
-                } else {
-                  _valueIdEmpleado = empleadoSeleccionado.id.toString();
-                  setState(() {});
-                  _consultarVentas();
+                if(resultado.status != 1) {
+                  mostrarAlerta(context, 'Error', resultado.mensaje!);
+                  return;
                 }
+                return;
               }
+              isLoading = true;
+              _allBranchOffice = true;
+              final resultado = await provider.getlistaempleadosEnsucursales(value!);
+              if(resultado.status == 1) {
+                isLoading = false;
+                setState(() {});
+                return;
+              }
+              isLoading = false;
+              setState(() {});
+              mostrarAlerta(context, 'Selecciona otra sucursal', resultado.mensaje!);
             },
           ),
         ],
@@ -365,14 +345,14 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   _listaVentas() {
-    if (listaVentaCabecera.isEmpty) {
+    if (listaVentas.isEmpty) {
       return const Center(
         child: Text(
             'No hay ventas realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(
-        children: listaVentaCabecera.map((venta) {
+        children: listaVentas.map((venta) {
           return ListTile(
             title: Text(venta.name!),
             subtitle: Text(venta.tipo_movimiento!),

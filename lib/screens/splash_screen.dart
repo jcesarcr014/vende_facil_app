@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
         setState(() {
           textLoading = 'Leyendo información de empleados';
         });
-        await negocios.getlistaempleadosEnsucursales().then((value) {
+        await negocios.getlistaempleadosEnsucursales(null).then((value) {
           if (value.status == 1) {
             globals.actualizarEmpleadoSucursales = false;
           } else {

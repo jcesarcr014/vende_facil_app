@@ -6,7 +6,6 @@ class MenuEmpresaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configuración negocio'),
@@ -20,7 +19,6 @@ class MenuEmpresaScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
         child: Column(
           children: [
             ListTile(

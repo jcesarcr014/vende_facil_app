@@ -30,7 +30,7 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
           setState(() {
             textLoading = 'Leyendo Empleados';
           });
-          negocios.getlistaempleadosEnsucursales().then((value) {
+          negocios.getlistaempleadosEnsucursales(null).then((value) {
             setState(() {
               textLoading = '';
               isLoading = false;

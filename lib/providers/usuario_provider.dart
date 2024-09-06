@@ -130,6 +130,7 @@ class UsuarioProvider {
               .toList();
           listaSucursales.addAll(sucursales);
         } else {
+          globals.actualizaArticulos = true;
           sesion.idSucursal = decodedData["sucursales"];
         }
       } else {
