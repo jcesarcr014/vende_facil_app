@@ -21,3 +21,5 @@ export 'package:vende_facil/models/plan_model.dart';
 export 'package:vende_facil/models/detalle_plan_model.dart';
 export 'package:vende_facil/models/sucursales_model.dart';
 export 'package:vende_facil/models/sucursalEmpleado_model.dart';
+export 'package:vende_facil/models/cotizacion_model.dart';
+export 'package:vende_facil/models/cotizacion_detalle_model.dart';

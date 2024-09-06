@@ -19,10 +19,10 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
   String textLoading = '';
   @override
   initState() {
-      setState(() {
-        textLoading = 'Cargar Sucursales';
-        isLoading = true;
-      });
+    setState(() {
+      textLoading = 'Cargar Sucursales';
+      isLoading = true;
+    });
     cargar();
     super.initState();
   }
@@ -31,7 +31,7 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
     await sucursal.getlistaSucursales().then(
       (value) {
         setState(() {
-           textLoading = '';
+          textLoading = '';
           isLoading = false;
         });
       },
@@ -86,6 +86,7 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
                               .listarProductosSucursal(sucursalSeleccionada.id!)
                               .then((value) {
                             if (value.status == 1) {
+                              sesion.cotizar = false;
                               Navigator.pushReplacementNamed(context, 'home');
                             } else {
                               mostrarAlerta(context, "Error ",
