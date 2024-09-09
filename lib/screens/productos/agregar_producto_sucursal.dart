@@ -145,7 +145,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     _productoSeleccionado?.cantidadInv = double.parse(controller.text);
 
     globals.actualizaArticulos = true;
-
     // Si el producto no existe en la sucursal, crea un nuevo inventario
     if (existe == false) {
       Resultado resultado =
@@ -215,8 +214,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     selectedItem: _selectedProduct ?? "Selecciona un producto",
                     onChanged: (String? newValue) {
                       if (newValue != null) {
-                        _productoSeleccionado = listaProductos
-                            .firstWhere((producto) => producto.producto == newValue);
+                        _productoSeleccionado = listaProductos.firstWhere((producto) => producto.producto == newValue);
                         setState(() {
                           _selectedProduct = newValue;
                         });
@@ -230,7 +228,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     readOnly: true,
                     controller: TextEditingController()
                       ..text =
-                          _productoSeleccionado?.cantidad!.toInt().toString() ??
+                          _productoSeleccionado?.cantidad!.toString() ??
                               '0',
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
