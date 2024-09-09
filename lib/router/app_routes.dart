@@ -49,6 +49,7 @@ class AppRoutes {
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage(),
     'abonosPagos':(BuildContext context)=> const AbonoScreenpago(),
+    'listaCotizaciones':(BuildContext context)=> const HistorialCotizacionesScreen(),
   };
 
     static Route<dynamic> onGenerateRoute(RouteSettings settings) {

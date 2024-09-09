@@ -370,7 +370,7 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
     if (listaVentas.isEmpty) {
       return const Center(
         child: Text(
-            'No hay ventas realizadas en el rango de fechas seleccionado.'),
+            'No hay cotizaciones realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(
