@@ -33,7 +33,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
   late DateFormat dateFormatter;
   final _dateController = TextEditingController();
 
-
   bool? _allBranchOffice = true;
   String? _sucursalSeleccionada = '-1';
   String? _empleadoSeleccionado = '0';
@@ -52,7 +51,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
     listaVentas.clear();
     listasucursalEmpleado.clear();
     super.initState();
-  
   }
 
   @override
@@ -204,11 +202,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: windowHeight * 0.05,),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
                     _sucursales(),
-                    SizedBox(height: windowHeight * 0.05,),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
                     _empleados(),
-                    SizedBox(height: windowHeight * 0.05,),
+                    SizedBox(
+                      height: windowHeight * 0.05,
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: _listaVentas(),
@@ -233,26 +237,27 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   _setEmpleados(String? value) async {
-    if(value == '-1') return;
+    if (value == '-1') return;
     isLoading = true;
     setState(() {});
     _empleadoSeleccionado = value;
-    if(value == '0') {
-      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
+    if (value == '0') {
+      final resultado = await reportesProvider.reporteSucursal(
+          formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       isLoading = false;
       setState(() {});
-      if(resultado.status != 1) {
+      if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
       }
       return;
     }
 
-
-    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
+    final resultado = await reportesProvider.reporteEmpleado(
+        formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
     isLoading = false;
     setState(() {});
-    if(resultado.status != 1) {
+    if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
     }
@@ -260,22 +265,33 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   _empleados() {
     var lista = [
-      const DropdownMenuItem(value: '-1', child: SizedBox(child: Text('Seleccione un Empleado')),),
-      const DropdownMenuItem(value: '0', child: SizedBox(child: Text('Todos')),),
+      const DropdownMenuItem(
+        value: '-1',
+        child: SizedBox(child: Text('Seleccione un Empleado')),
+      ),
+      const DropdownMenuItem(
+        value: '0',
+        child: SizedBox(child: Text('Todos')),
+      ),
     ];
-    lista.addAll(
-      listasucursalEmpleado.map((empleado) => DropdownMenuItem(value: empleado.usuarioId.toString(), child: SizedBox(child: Text(empleado.name!),),))
-    );
+    lista.addAll(listasucursalEmpleado.map((empleado) => DropdownMenuItem(
+          value: empleado.usuarioId.toString(),
+          child: SizedBox(
+            child: Text(empleado.name!),
+          ),
+        )));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('EMPLEADOS', style: TextStyle(fontSize: 13),),
+        const Text(
+          'EMPLEADOS',
+          style: TextStyle(fontSize: 13),
+        ),
         DropdownButton(
-          value: _empleadoSeleccionado,
-          isExpanded: true,
-          items: lista,
-          onChanged: _allBranchOffice != null ? _setEmpleados : null
-        )
+            value: _empleadoSeleccionado,
+            isExpanded: true,
+            items: lista,
+            onChanged: _allBranchOffice != null ? _setEmpleados : null)
       ],
     );
   }
@@ -304,23 +320,27 @@ class _HistorialScreenState extends State<HistorialScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('SUCURSALES', style: TextStyle(fontSize: 13),),
+          const Text(
+            'SUCURSALES',
+            style: TextStyle(fontSize: 13),
+          ),
           DropdownButton(
             items: listades,
             isExpanded: true,
             value: _sucursalSeleccionada,
             onChanged: (value) async {
-              if(value == '-1') return;
+              if (value == '-1') return;
               isLoading = true;
               _sucursalSeleccionada = value;
               setState(() {});
 
-              if(value == '0') {
+              if (value == '0') {
                 _allBranchOffice = null;
-                final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
+                final resultado = await reportesProvider.reporteGeneral(
+                    formattedStartDate, formattedEndDate);
                 isLoading = false;
                 setState(() {});
-                if(resultado.status != 1) {
+                if (resultado.status != 1) {
                   mostrarAlerta(context, 'Error', resultado.mensaje!);
                   return;
                 }
@@ -328,15 +348,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
               }
               isLoading = true;
               _allBranchOffice = true;
-              final resultado = await provider.getlistaempleadosEnsucursales(value!);
-              if(resultado.status == 1) {
+              final resultado =
+                  await provider.getlistaempleadosEnsucursales(value!);
+              if (resultado.status == 1) {
                 isLoading = false;
                 setState(() {});
                 return;
               }
               isLoading = false;
               setState(() {});
-              mostrarAlerta(context, 'Selecciona otra sucursal', resultado.mensaje!);
+              mostrarAlerta(
+                  context, 'Selecciona otra sucursal', resultado.mensaje!);
             },
           ),
         ],
@@ -357,6 +379,9 @@ class _HistorialScreenState extends State<HistorialScreen> {
             title: Text(venta.name!),
             subtitle: Text(venta.tipo_movimiento!),
             trailing: Text('\$${venta.total}'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, "ventasD");
+            },
           );
         }).toList(),
       );

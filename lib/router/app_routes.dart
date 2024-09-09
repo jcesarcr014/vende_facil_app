@@ -33,7 +33,7 @@ class AppRoutes {
     'suscripcion': (BuildContext context) => const SuscripcionScreen(),
     'tarjetas': (BuildContext context) => const TarjetaScreen(),
     'nvo-tarjetas': (BuildContext context) => const AgregaTarjetaScreen(),
-    "ventasD": (BuildContext context) => const VentaDetallesScreen(),
+    ""ventasD: (BuildContext context) => const VentaDetallesScreen(),
     'perfil': (BuildContext context) => const PerfilScreen(),
     'abono_detalle': (BuildContext context) => const AbonoDetallesScreen(),
     'config-apartado': (BuildContext context) => const AjustesApartadoScreen(),
