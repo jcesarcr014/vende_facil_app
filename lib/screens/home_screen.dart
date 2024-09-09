@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    listacotizacion.clear();
     _actualizaTotalTemporal();
     if (globals.actualizaArticulos) {
       setState(() {
@@ -162,7 +163,9 @@ class _HomeScreenState extends State<HomeScreen> {
               width: windowWidth * 0.4,
               child: Center(
                 child:
-                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+                    Text(
+                      sesion.cotizar! ? 'Cotizar': 'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'
+                    ),
               ),
             ),
           ),
@@ -322,6 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     } else {
                       if (sesion.cotizar!) {
+                        //print("Entro aca");
                         _agregaProductoVenta(producto, 0);
                       } else {
                         if (producto.disponibleInv! > 0) {
@@ -410,6 +414,8 @@ class _HomeScreenState extends State<HomeScreen> {
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
     if (sesion.cotizar!) {
+
+     //print("Entro aca 3");
       for (ItemVenta item in ventaTemporal) {
         totalVentaTemporal += item.cantidad * item.precioPublico;
         item.subTotalItem += item.cantidad * item.precioPublico;
@@ -442,6 +448,8 @@ class _HomeScreenState extends State<HomeScreen> {
   _agregaProductoVenta(Producto producto, cantidad) {
     bool existe = false;
     if (producto.unidad == "1") {
+      //print("Entro aca 2");
+      //print("Seleccionaron el Producto: ${producto.descripcion} y con un total de productos: $cantidad y cantidad es del ${cantidad.runtimeType}");
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
           existe = true;
