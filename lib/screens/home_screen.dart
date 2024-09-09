@@ -325,7 +325,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     } else {
                       if (sesion.cotizar!) {
-                        print("Entro aca");
                         _agregaProductoVenta(producto, 0);
                       } else {
                         if (producto.disponibleInv! > 0) {
