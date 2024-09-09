@@ -414,6 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
         totalVentaTemporal += item.cantidad * item.precioPublico;
         item.subTotalItem += item.cantidad * item.precioPublico;
         item.totalItem = item.cantidad * item.precioPublico;
+        totalVentaTemporal = item.subTotalItem;
       }
       setState(() {});
     } else {
