@@ -1,4 +1,4 @@
-// ignore_for_file: dead_code, prefer_final_fields
+// ignore_for_file: dead_code, prefer_final_fields, depend_on_referenced_packages
 
 import 'dart:typed_data';
 
