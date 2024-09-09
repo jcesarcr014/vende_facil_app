@@ -402,6 +402,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             child: IconButton(
                                 onPressed: () {
                                   var catidad = item.cantidad + 1;
+                                  
                                   if (catidad > prod.disponibleInv!) {
                                     mostrarAlerta(context, "AVISO",
                                         "Nose puede agregar mas articulos de este producto ");
