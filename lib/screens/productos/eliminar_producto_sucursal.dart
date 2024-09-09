@@ -9,6 +9,8 @@ import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 import '../../widgets/custom_dropdown_search.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
+
 
 class EliminarProductoSucursal extends StatefulWidget {
   const EliminarProductoSucursal({super.key});
@@ -73,7 +75,6 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
     _producto = producto;
     cantidad = producto.disponibleInv.toString();
     setState(() {});
-
   }
 
   void _quitar() async {
@@ -82,14 +83,14 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       return;
     }
 
-    _producto!.cantidad = double.parse(controller.text);
-    Resultado resultado = await provider.inventarioSucQuitar(_producto!);
+    Resultado resultado = await provider.inventarioSucQuitar(_producto!.idInv.toString(), controller.text);
 
     if(resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
     }
     Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
+    globals.actualizaArticulos = true;
     mostrarAlerta(context, 'Exito', resultado.mensaje!);
   }
 
