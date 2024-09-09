@@ -41,11 +41,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   bool _valuePieza = false;
 
   final TicketProvider ticketProvider = TicketProvider();
+  final NegocioProvider negocioProvider = NegocioProvider();
   List<Producto> listaProductosCotizaciones = [];
 
 
-
   final cantidadConttroller = TextEditingController();
+
   @override
   void initState() {
     _actualizaTotalTemporal();
@@ -73,125 +74,174 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
   }
 
-Future<void> _generatePDF() async {
-  // Crear un documento PDF
-  final PdfDocument document = PdfDocument();
+  Future<void> _generatePDF() async {
+    // Crear un documento PDF
+    final PdfDocument document = PdfDocument();
 
-  // Agregar una página
-  final PdfPage page = document.pages.add();
+    // Agregar una página
+    final PdfPage page = document.pages.add();
 
-  // Crear fuentes
-  final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-  final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
-  final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14, style: PdfFontStyle.italic);
+    // Crear fuentes
+    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
+    final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
+    final PdfFont titleFont = PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
+    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14, style: PdfFontStyle.italic);
 
-  // Definir color para la tabla
-  final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
+    // Definir color para la tabla
+    final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
 
-  // Dibujar encabezado de la cotización
-  page.graphics.drawString('Cotización de Productos', boldFont, brush: brush,
-      bounds: const Rect.fromLTWH(0, 0, 500, 30)); // Encabezado
-  page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
-      bounds: const Rect.fromLTWH(0, 30, 500, 30)); // Número de folio
+    Negocio negocio = await negocioProvider.consultaNegocio();
 
-  // Crear la tabla
-  final PdfGrid grid = PdfGrid();
-  grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
+    // Información estática del negocio
+    String nombreNegocio = negocio.nombreNegocio ?? 'PENDIENTE';
+    String telefono = "Teléfono: ${negocio.telefono}";
+    String direccion = "Dirección: ${negocio.direccion}";
 
-  // Estilo para la tabla
-  grid.style = PdfGridStyle(
-    font: font,
-    cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
-  );
-
-  // Añadir encabezados a la tabla
-  final PdfGridRow headerRow = grid.headers.add(1)[0];
-  headerRow.style = PdfGridRowStyle(
-    backgroundBrush: PdfSolidBrush(PdfColor(68, 114, 196)),
-    textPen: PdfPens.white,
-    textBrush: PdfBrushes.white,
-    font: boldFont,
-  );
-  headerRow.cells[0].value = 'Producto';
-  headerRow.cells[1].value = 'Cantidad';
-  headerRow.cells[2].value = 'Total';
-
-  // Rellenar filas dinámicamente desde listaProductosCotizaciones
-  for (var producto in listaProductosCotizaciones) {
-    final PdfGridRow row = grid.rows.add();
-    row.cells[0].value = producto.producto; // Asume que tienes un campo nombre
-    row.cells[1].value = producto.cantidad.toString(); // Campo cantidad
-    row.cells[2].value = producto.costo!.toStringAsFixed(2); // Total
-  }
-
-  // Añadir fila de subtotal
-  final PdfGridRow subtotalRow = grid.rows.add();
-  subtotalRow.cells[0].value = 'Subtotal';
-  subtotalRow.cells[1].value = ''; // Celda vacía para alineación
-  subtotalRow.cells[2].value = cotizacionDetalle.subtotal!.toStringAsFixed(2);
-  subtotalRow.style = PdfGridRowStyle(
-    font: boldFont,
-    textBrush: PdfBrushes.black,
-  );
-
-  // Añadir fila de total
-  final PdfGridRow totalRow = grid.rows.add();
-  totalRow.cells[0].value = 'Total';
-  totalRow.cells[1].value = ''; // Celda vacía para alineación
-  totalRow.cells[2].value = cotizacionDetalle.total!.toStringAsFixed(2);
-  totalRow.style = PdfGridRowStyle(
-    font: boldFont,
-    textBrush: PdfBrushes.black,
-  );
-
-  // Dibujar la tabla en el PDF
-  grid.draw(
-    page: page,
-    bounds: const Rect.fromLTWH(0, 60, 0, 0), // Alineación para dejar espacio para la imagen
-  );
-
-  // Centrar la imagen debajo de la tabla
-  if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
-    final logoImage = await _downloadImage(ticketModel.logo!);
-    if (logoImage != null) {
-      final PdfBitmap image = PdfBitmap(logoImage);
-      double pageWidth = page.getClientSize().width;
-      double imageWidth = 100;
-      double xPosition = (pageWidth - imageWidth) / 2; // Centrar la imagen horizontalmente
-      page.graphics.drawImage(image, Rect.fromLTWH(xPosition, 250, 100, 100)); // Ajustar la posición y el tamaño
-    }
-  }
-
-  // Centrar el mensaje del ticket debajo de la imagen
-  if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
+    // Calcular posición del logo y el nombre del negocio
     double pageWidth = page.getClientSize().width;
-    String message = ticketModel.message!;
-    double textWidth = boldFont.measureString(message).width;
-    double xPosition = (pageWidth - textWidth) / 2; // Centrar el texto horizontalmente
-    page.graphics.drawString(
-      message,
-      italicFont,
-      brush: brush,
-      bounds: Rect.fromLTWH(xPosition, 370, textWidth, 30), // Debajo de la imagen
+    double logoWidth = 100;
+    double logoXPosition = 0;
+    double nombreXPosition = logoWidth + 20; // Espacio entre el logo y el nombre
+
+    // Dibujar el logo y el nombre de la empresa juntos en la parte superior
+    if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
+      final logoImage = await _downloadImage(ticketModel.logo!);
+      if (logoImage != null) {
+        final PdfBitmap image = PdfBitmap(logoImage);
+        page.graphics.drawImage(image, Rect.fromLTWH(logoXPosition, 0, logoWidth, 100)); // Ajustar el tamaño del logo
+      }
+    }
+    
+    // Dibujar el nombre de la empresa al lado del logo
+    page.graphics.drawString(nombreNegocio, titleFont, brush: brush, 
+        bounds: Rect.fromLTWH(nombreXPosition, 0, pageWidth - nombreXPosition, 30));
+
+    // Dibujar el teléfono y la dirección debajo del nombre
+    page.graphics.drawString(telefono, italicFont, brush: brush, 
+        bounds: Rect.fromLTWH(nombreXPosition, 30, pageWidth - nombreXPosition, 20));
+    page.graphics.drawString(direccion, italicFont, brush: brush, 
+        bounds: Rect.fromLTWH(nombreXPosition, 50, pageWidth - nombreXPosition, 20));
+
+    // Ajustar el mensaje del ticketModel debajo del logo
+    if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
+      double yPosition = 100; // Justo debajo de la imagen y el encabezado del negocio
+
+      // Si el texto es más largo que el ancho de la página, dividir en varias líneas
+      final List<String> messageLines = _wrapText(ticketModel.message!, pageWidth, italicFont);
+
+      for (var line in messageLines) {
+        page.graphics.drawString(
+          line,
+          italicFont,
+          brush: brush,
+          bounds: Rect.fromLTWH(0, yPosition, pageWidth, 30), // Alinear a la izquierda
+        );
+        yPosition += 20; // Espacio entre líneas
+      }
+    }
+
+    // Reducir el espacio antes de la cotización de productos
+    double yPosAfterMessage = 120; // Ajusta esta variable según sea necesario
+
+    // Dibujar encabezado de la cotización
+    page.graphics.drawString('Cotización de Productos', boldFont, brush: brush,
+        bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
+    page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
+        bounds: Rect.fromLTWH(0, yPosAfterMessage + 30, 500, 30)); // Número de folio
+
+    // Crear la tabla
+    final PdfGrid grid = PdfGrid();
+    grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
+
+    // Estilo para la tabla
+    grid.style = PdfGridStyle(
+      font: font,
+      cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
     );
+
+    // Añadir encabezados a la tabla
+    final PdfGridRow headerRow = grid.headers.add(1)[0];
+    headerRow.style = PdfGridRowStyle(
+      backgroundBrush: PdfSolidBrush(PdfColor(68, 114, 196)),
+      textPen: PdfPens.white,
+      textBrush: PdfBrushes.white,
+      font: boldFont,
+    );
+    headerRow.cells[0].value = 'Producto';
+    headerRow.cells[1].value = 'Cantidad';
+    headerRow.cells[2].value = 'Total';
+
+    // Rellenar filas dinámicamente desde listaProductosCotizaciones
+    for (var producto in listaProductosCotizaciones) {
+      final PdfGridRow row = grid.rows.add();
+      row.cells[0].value = producto.producto; // Asume que tienes un campo nombre
+      row.cells[1].value = producto.cantidad.toString(); // Campo cantidad
+      row.cells[2].value = producto.costo!.toStringAsFixed(2); // Total
+    }
+
+    // Añadir fila de subtotal
+    final PdfGridRow subtotalRow = grid.rows.add();
+    subtotalRow.cells[0].value = 'Subtotal';
+    subtotalRow.cells[1].value = ''; // Celda vacía para alineación
+    subtotalRow.cells[2].value = cotizacionDetalle.subtotal!.toStringAsFixed(2);
+    subtotalRow.style = PdfGridRowStyle(
+      font: boldFont,
+      textBrush: PdfBrushes.black,
+    );
+
+    // Añadir fila de total
+    final PdfGridRow totalRow = grid.rows.add();
+    totalRow.cells[0].value = 'Total';
+    totalRow.cells[1].value = ''; // Celda vacía para alineación
+    totalRow.cells[2].value = cotizacionDetalle.total!.toStringAsFixed(2);
+    totalRow.style = PdfGridRowStyle(
+      font: boldFont,
+      textBrush: PdfBrushes.black,
+    );
+
+    // Dibujar la tabla en el PDF
+    grid.draw(
+      page: page,
+      bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0), // Reducir espacio antes de la tabla
+    );
+
+    // Guardar el PDF en bytes
+    List<int> bytes = document.saveSync();
+
+    // Liberar el documento
+    document.dispose();
+
+    // Guardar el archivo en el dispositivo
+    final directory = await getApplicationSupportDirectory();
+    final path = directory.path;
+    File file = File('$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
+
+    await file.writeAsBytes(bytes, flush: true);
+
+    // Abrir el PDF generado en el dispositivo
+    OpenFile.open('$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
   }
 
-  // Guardar el PDF en bytes
-  List<int> bytes = document.saveSync();
+  List<String> _wrapText(String text, double maxWidth, PdfFont font) {
+    final List<String> lines = [];
+    String currentLine = '';
 
-  // Liberar el documento
-  document.dispose();
+    for (var word in text.split(' ')) {
+      final testLine = currentLine.isEmpty ? word : '$currentLine $word';
+      if (font.measureString(testLine).width < maxWidth) {
+        currentLine = testLine;
+      } else {
+        lines.add(currentLine);
+        currentLine = word;
+      }
+    }
+    if (currentLine.isNotEmpty) {
+      lines.add(currentLine);
+    }
 
-  // Guardar el archivo en el dispositivo
-  final directory = await getApplicationSupportDirectory();
-  final path = directory.path;
-  File file = File('$path/Output.pdf');
+    return lines;
+  }
 
-  await file.writeAsBytes(bytes, flush: true);
-
-  // Abrir el PDF generado en el dispositivo
-  OpenFile.open('$path/Output.pdf');
-}
 
 
   Future<Uint8List?> _downloadImage(String url) async {
