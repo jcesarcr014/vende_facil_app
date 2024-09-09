@@ -379,7 +379,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
             title: Text(venta.name!),
             subtitle: Text(venta.tipo_movimiento!),
             trailing: Text('\$${venta.total}'),
-            onTap: () {
+            onTap: () async {
+              await ventaProvider.consultarventa(venta.id!);
               Navigator.pushReplacementNamed(context, "ventasD");
             },
           );

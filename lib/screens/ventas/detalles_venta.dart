@@ -27,7 +27,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalles de Venta'),
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
