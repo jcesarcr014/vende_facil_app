@@ -380,7 +380,7 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
             subtitle: Text(venta.tipo_movimiento!),
             trailing: Text('\$${venta.total}'),
             onTap: () async {
-              await ventaProvider.consultarventa(venta.id!);
+              await ventaProvider.consultarventa(venta.id!);// se cambiara  cuando  se tenga la ruta
               Navigator.pushReplacementNamed(context, "ventasD");
             },
           );

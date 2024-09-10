@@ -116,7 +116,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
+                  '¿Desea eliminar la lista de articulos de la cotizacion ? Esta acción no podrá revertirse.',
                 )
               ],
             ),
