@@ -49,9 +49,9 @@ class _DetallesApartadoScreenState extends State<DetallesApartadoScreen> {
               children: [
                 const Divider(),
                 SizedBox(
-                  height: 400, // Define una altura fija para la tabla
+                  height: 250, // Define una altura fija para la tabla
                   child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: Axis.vertical,
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: DataTable(
@@ -68,6 +68,35 @@ class _DetallesApartadoScreenState extends State<DetallesApartadoScreen> {
                                   DataCell(Text(detalle.cantidad.toString())),
                                   DataCell(Text(detalle.descuento.toString())),
                                   DataCell(Text(detalle.total.toString())),
+                                ]))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(),
+                SizedBox(
+                  height: 200, // Define una altura fija
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: DataTable(
+                        columnSpacing: 20, // Espacio entre columnas
+                        columns: const [
+                          DataColumn(label: Text('Anterior',)),
+                          DataColumn(label: Text('Efectivo',)),
+                          DataColumn(label: Text('Tarjeta',)),
+                          DataColumn(label: Text('Actual',)),
+                          DataColumn(label: Text('Fecha',)),
+                        ],
+                        rows: listaAbonos
+                            .map((abono) => DataRow(cells: [
+                                  DataCell(Text(abono.saldoAnterior!.toStringAsFixed(2))),
+                                  DataCell(Text(abono.cantidadEfectivo!.toStringAsFixed(2))),
+                                  DataCell(Text(abono.cantidadTarjeta!.toStringAsFixed(2))),
+                                  DataCell(Text(abono.saldoActual!.toStringAsFixed(2))),
+                                  DataCell(Text(abono.fechaAbono.toString())),
                                 ]))
                             .toList(),
                       ),
