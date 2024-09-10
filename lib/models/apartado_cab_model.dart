@@ -22,6 +22,8 @@ class ApartadoCabecera {
   int? idnegocio;
   int? idsucursal;
 
+  String? nombreCliente;
+
   ApartadoCabecera({
     this.id,
     this.usuarioId,
@@ -45,6 +47,7 @@ class ApartadoCabecera {
     this.fechaCancelacion,
     this.idnegocio,
     this.idsucursal,
+    this.nombreCliente
   });
 }
 

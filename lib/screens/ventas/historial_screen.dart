@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/negocio_provider.dart';
 import 'package:vende_facil/providers/reportes_provider.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
@@ -38,10 +39,14 @@ class _HistorialScreenState extends State<HistorialScreen> {
   String? _sucursalSeleccionada = '-1';
   String? _empleadoSeleccionado = '0';
 
-  NegocioProvider provider = NegocioProvider();
-  ReportesProvider reportesProvider = ReportesProvider();
+  final provider = NegocioProvider();
+  final reportesProvider = ReportesProvider();
 
-  VentasProvider ventasProvider = VentasProvider();
+  final ventasProvider = VentasProvider();
+  final apartadoProvider = ApartadoProvider();
+
+  final negocioProvider = NegocioProvider();
+
 
   @override
   void initState() {
@@ -347,6 +352,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   void _getDetails(VentaCabecera venta) async {
+    await negocioProvider.getlistaSucursales();
+
     if(venta.tipo_movimiento == "V") {
       final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
       if(resultado.status != 1) {
@@ -358,7 +365,13 @@ class _HistorialScreenState extends State<HistorialScreen> {
     }
 
     if(venta.tipo_movimiento == "P") {
-      
+      final resultado = await apartadoProvider.detallesApartado(venta.idMovimiento!);
+      if(resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+        return;
+      }
+      Navigator.pushNamed(context, 'apartadosD');
+      return;
     }
   }
 
