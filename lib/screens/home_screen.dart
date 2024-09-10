@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Center(
                 child:
                     Text(
-                      sesion.cotizar! ? 'Cotizar': 'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'
+                      sesion.cotizar! ? 'Cotizar \$${totalVentaTemporal.toStringAsFixed(2)}': 'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'
                     ),
               ),
             ),
@@ -325,7 +325,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     } else {
                       if (sesion.cotizar!) {
-                        //print("Entro aca");
                         _agregaProductoVenta(producto, 0);
                       } else {
                         if (producto.disponibleInv! > 0) {

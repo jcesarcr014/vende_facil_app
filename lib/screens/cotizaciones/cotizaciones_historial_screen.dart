@@ -9,15 +9,15 @@ import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
-class HistorialScreen extends StatefulWidget {
+class HistorialCotizacionesScreen extends StatefulWidget {
   // ignore: use_key_in_widget_constructors
-  const HistorialScreen({Key? key});
+  const HistorialCotizacionesScreen({Key? key});
 
   @override
-  State<HistorialScreen> createState() => _HistorialScreenState();
+  State<HistorialCotizacionesScreen> createState() => _HistorialCotizacionesScreenState();
 }
 
-class _HistorialScreenState extends State<HistorialScreen> {
+class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScreen> {
   final ventaProvider = VentasProvider();
   bool isLoading = false;
   String textLoading = '';
@@ -66,7 +66,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Historial de Ventas'),
+          title: const Text('Historial de Cotizaciones'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -370,7 +370,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
     if (listaVentas.isEmpty) {
       return const Center(
         child: Text(
-            'No hay ventas realizadas en el rango de fechas seleccionado.'),
+            'No hay cotizaciones realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(

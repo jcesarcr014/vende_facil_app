@@ -109,6 +109,21 @@ class ProductsScreen extends StatelessWidget {
                       sesion.cotizar = true;
                       
                       Navigator.pushNamed(context, 'home');
+                    }),
+                                    ListTile(
+                    leading: const Icon(Icons.request_quote),
+                    title: const Text(
+                      'Lista de Cotizaciones',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: const Text('visualizacion de cotizaciones'),
+                    trailing: const Icon(Icons.arrow_right),
+                    onTap: () {  
+                      Navigator.pushNamed(context,'listaCotizaciones');
                     })
               ],
             )),
