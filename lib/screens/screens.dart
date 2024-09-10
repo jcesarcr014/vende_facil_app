@@ -45,3 +45,5 @@ export 'package:vende_facil/screens/empresa/agregar_sucursales.dart';
 export 'package:vende_facil/screens/empresa/lista_sucursales.dart';
 export 'package:vende_facil/screens/apartados/abono_pagos.dart';
 export 'package:vende_facil/screens/cotizaciones/cotizaciones_historial_screen.dart';
+export 'package:vende_facil/screens/cotizaciones/cotizaciones_screen.dart';
+export 'package:vende_facil/screens/cotizaciones/cotizaciones_detalle_screen.dart';

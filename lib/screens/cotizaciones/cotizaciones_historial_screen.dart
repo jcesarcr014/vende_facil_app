@@ -221,17 +221,6 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
                   ],
                 ),
               ),
-        persistentFooterButtons: [
-          BottomAppBar(
-            child: SizedBox(
-              height: 50,
-              child: Center(
-                child: Text(
-                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -380,7 +369,7 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
             subtitle: Text(venta.tipo_movimiento!),
             trailing: Text('\$${venta.total}'),
             onTap: () async {
-              await ventaProvider.consultarventa(venta.id!);
+              await ventaProvider.consultarventa(venta.id!);// se cambiara  cuando  se tenga la ruta
               Navigator.pushReplacementNamed(context, "ventasD");
             },
           );

@@ -50,6 +50,8 @@ class AppRoutes {
     'InventoryPage': (BuildContext context) => const InventoryPage(),
     'abonosPagos':(BuildContext context)=> const AbonoScreenpago(),
     'listaCotizaciones':(BuildContext context)=> const HistorialCotizacionesScreen(),
+    'HomerCotizar':(BuildContext context)=>const HomeCotizarScreen(),
+    'DetalleCotizar':(BuildContext context)=> const CotizacionDetalleScreen(),
   };
 
     static Route<dynamic> onGenerateRoute(RouteSettings settings) {
