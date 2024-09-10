@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/negocio_provider.dart';
 
 class VentaDetallesScreen extends StatefulWidget {
   // ignore: use_super_parameters
@@ -15,9 +16,16 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
-  @override
+  final negocioProvider = NegocioProvider();
+
+  @override  
   void initState() {
+    _loadData();
     super.initState();
+  }
+
+  void _loadData() async {
+    await negocioProvider.getlistaSucursales();
   }
 
   @override
@@ -26,7 +34,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalles de Venta'),
+        title: Text('Venta: ${listaVentaCabecera2[0].folio}'),
         automaticallyImplyLeading: true,
       ),
       body: Column(
@@ -38,40 +46,31 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'folio: ${listaVentaCabecera2[0].folio}',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold),
+                  const Center(
+                    child: Text('Datos de la Sucursal', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
                   ),
-                  Text(
-                    'cliente: ${listaVentaCabecera2[0].nombreCliente}',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold),
+                  const Divider(),
+                  Text('Nombre de la Sucursal: ${listaSucursales.first.nombreSucursal}'),
+                  const SizedBox(height: 5,),
+                  Text('Dirección de la Sucursal: ${listaSucursales.first.direccion}'),
+                  const SizedBox(height: 5,),
+                  Text('Telefono: ${listaSucursales.first.telefono}'),
+                  const SizedBox(height: 5,),
+                  Text('Cliente: ${listaVentaCabecera2[0].nombreCliente}',),
+
+                  const SizedBox(height: 15,),
+
+                  const Center(
+                    child: Text('Detalles de la Venta', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
                   ),
-                  Text(
-                    'fecha de compra: ${listaVentaCabecera2[0].fecha_venta}',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Total: ${listaVentaCabecera2[0].total}',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Descuento: ${listaVentaCabecera2[0].descuento}',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
+                  const Divider(),
+                  Text('Fecha de compra: ${listaVentaCabecera2[0].fecha_venta}'),
                 ],
               ),
             ),
           ),
           const Center(
-            child: Text(
-              'Productos',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            child: Text('Productos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
           ),
           (isLoading)
               ? Center(
@@ -86,32 +85,68 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                       ]),
                 )
               : Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: DataTable(
-                        columnSpacing: 20, // Espacio entre columnas
-                        columns: const [
-                          DataColumn(label: Text('Producto')),
-                          DataColumn(label: Text('Cantidad')),
-                          DataColumn(label: Text('Descuento')),
-                          DataColumn(label: Text('Total')),
-                        ],
-                        rows: listaVentadetalles
-                            .map((detalle) => DataRow(cells: [
-                                  DataCell(
-                                      Text(detalle.nombreProducto.toString())),
-                                  DataCell(Text(detalle.cantidad.toString())),
-                                  DataCell(Text(
-                                      detalle.cantidadDescuento.toString())),
-                                  DataCell(Text(detalle.total.toString())),
-                                ]))
-                            .toList(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 350, // Define una altura fija
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: DataTable(
+                              columnSpacing: 20, // Espacio entre columnas
+                              columns: const [
+                                DataColumn(label: Text('Producto')),
+                                DataColumn(label: Text('Cantidad')),
+                                DataColumn(label: Text('Descuento')),
+                                DataColumn(label: Text('Total')),
+                              ],
+                              rows: listaVentadetalles
+                                  .map((detalle) => DataRow(cells: [
+                                        DataCell(Text(detalle.nombreProducto.toString())),
+                                        DataCell(Text(detalle.cantidad.toString())),
+                                        DataCell(Text(detalle.cantidadDescuento.toString())),
+                                        DataCell(Text(detalle.total.toString())),
+                                      ]))
+                                  .toList(),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 25),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text('Subtotal: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                                  Text('${listaVentaCabecera2.first.subtotal}')
+                                ],
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                children: [
+                                  const Text('Total: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                                  Text('${listaVentaCabecera2.first.total}')
+                                ],
+                              ),
+                              const SizedBox(height: 5,),
+                              Row(
+                                children: [
+                                  const Text('Descuento: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                                  Text('${listaVentaCabecera2.first.descuento}')
+                                ],
+                              )
+                          ],),
+                        ),
+                      )
+                    ],
                   ),
                 ),
+
         ],
       ),
     );

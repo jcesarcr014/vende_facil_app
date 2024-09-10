@@ -18,6 +18,7 @@ class VentaCabecera {
   String? name;
   String? tipo_movimiento;
   int? id_sucursal;
+  int? idMovimiento;
   VentaCabecera({
     this.id,
     this.negocioId,
@@ -37,6 +38,7 @@ class VentaCabecera {
     this.name,
     this.tipo_movimiento,
     this.id_sucursal,
+    this.idMovimiento
   });
 }
 

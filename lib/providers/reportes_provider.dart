@@ -38,6 +38,7 @@ class ReportesProvider {
             fecha_venta: venta['fecha'],
             id_sucursal: venta['sucursal_id'],
             nombreCliente: venta['nombre_sucursal'],
+            idMovimiento: venta['id_movimiento']
           );
           listaVentas.add(nuevaVenta);
       }
@@ -81,6 +82,7 @@ class ReportesProvider {
             fecha_venta: venta['fecha'],
             id_sucursal: venta['sucursal_id'],
             nombreCliente: venta['nombre_sucursal'],
+            idMovimiento: venta['id_movimiento']
           );
           listaVentas.add(nuevaVenta);
       }
@@ -124,6 +126,7 @@ class ReportesProvider {
             fecha_venta: venta['fecha'],
             id_sucursal: venta['sucursal_id'],
             nombreCliente: venta['nombre_sucursal'],
+            idMovimiento: venta['id_movimiento']
           );
           listaVentas.add(nuevaVenta);
       }

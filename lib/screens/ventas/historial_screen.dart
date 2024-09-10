@@ -41,6 +41,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
   NegocioProvider provider = NegocioProvider();
   ReportesProvider reportesProvider = ReportesProvider();
 
+  VentasProvider ventasProvider = VentasProvider();
+
   @override
   void initState() {
     _startDate = DateTime(now.year, now.month, now.day);
@@ -344,6 +346,22 @@ class _HistorialScreenState extends State<HistorialScreen> {
     }
   }
 
+  void _getDetails(VentaCabecera venta) async {
+    if(venta.tipo_movimiento == "V") {
+      final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
+      if(resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+        return;
+      }
+      Navigator.pushNamed(context, 'ventasD');
+      return;
+    }
+
+    if(venta.tipo_movimiento == "P") {
+      
+    }
+  }
+
   _listaVentas() {
     if (listaVentas.isEmpty) {
       return const Center(
@@ -357,6 +375,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
             title: Text(venta.name!),
             subtitle: Text(venta.tipo_movimiento!),
             trailing: Text('\$${venta.total}'),
+            onTap: () => _getDetails(venta)
           );
         }).toList(),
       );
