@@ -15,7 +15,6 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
-
 class VentaDetalleScreen extends StatefulWidget {
   const VentaDetalleScreen({super.key});
   @override
@@ -44,14 +43,13 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   final NegocioProvider negocioProvider = NegocioProvider();
   List<Producto> listaProductosCotizaciones = [];
 
-
   final cantidadConttroller = TextEditingController();
 
   @override
   void initState() {
     _actualizaTotalTemporal();
     listaDescuentos;
-    _loadData();
+    if (sesion.cotizar!) { _loadData();}
     super.initState();
     _fetchData();
   }
@@ -61,17 +59,18 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   void _loadData() async {
-      try {
-        final TicketModel model = await ticketProvider.getData(sesion.idNegocio.toString());
-        setState(() {
-          ticketModel.id = model.id;
-          ticketModel.negocioId = model.negocioId;
-          ticketModel.logo = model.logo;
-          ticketModel.message = model.message;
-        });
-      } catch(e) {
-        mostrarAlerta(context, 'Error', e.toString());
-      }
+    try {
+      final TicketModel model =
+          await ticketProvider.getData(sesion.idNegocio.toString());
+      setState(() {
+        ticketModel.id = model.id;
+        ticketModel.negocioId = model.negocioId;
+        ticketModel.logo = model.logo;
+        ticketModel.message = model.message;
+      });
+    } catch (e) {
+      mostrarAlerta(context, 'Error', e.toString());
+    }
   }
 
   Future<void> _generatePDF() async {
@@ -83,9 +82,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
 
     // Crear fuentes
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-    final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
-    final PdfFont titleFont = PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
-    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14, style: PdfFontStyle.italic);
+    final PdfFont boldFont =
+        PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
+    final PdfFont titleFont =
+        PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
+    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14,
+        style: PdfFontStyle.italic);
 
     // Definir color para la tabla
     final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
@@ -101,40 +103,53 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     double pageWidth = page.getClientSize().width;
     double logoWidth = 100;
     double logoXPosition = 0;
-    double nombreXPosition = logoWidth + 20; // Espacio entre el logo y el nombre
+    double nombreXPosition =
+        logoWidth + 20; // Espacio entre el logo y el nombre
 
     // Dibujar el logo y el nombre de la empresa juntos en la parte superior
     if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
       final logoImage = await _downloadImage(ticketModel.logo!);
       if (logoImage != null) {
         final PdfBitmap image = PdfBitmap(logoImage);
-        page.graphics.drawImage(image, Rect.fromLTWH(logoXPosition, 0, logoWidth, 100)); // Ajustar el tamaño del logo
+        page.graphics.drawImage(
+            image,
+            Rect.fromLTWH(logoXPosition, 0, logoWidth,
+                100)); // Ajustar el tamaño del logo
       }
     }
-    
+
     // Dibujar el nombre de la empresa al lado del logo
-    page.graphics.drawString(nombreNegocio, titleFont, brush: brush, 
-        bounds: Rect.fromLTWH(nombreXPosition, 0, pageWidth - nombreXPosition, 30));
+    page.graphics.drawString(nombreNegocio, titleFont,
+        brush: brush,
+        bounds:
+            Rect.fromLTWH(nombreXPosition, 0, pageWidth - nombreXPosition, 30));
 
     // Dibujar el teléfono y la dirección debajo del nombre
-    page.graphics.drawString(telefono, italicFont, brush: brush, 
-        bounds: Rect.fromLTWH(nombreXPosition, 30, pageWidth - nombreXPosition, 20));
-    page.graphics.drawString(direccion, italicFont, brush: brush, 
-        bounds: Rect.fromLTWH(nombreXPosition, 50, pageWidth - nombreXPosition, 20));
+    page.graphics.drawString(telefono, italicFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(
+            nombreXPosition, 30, pageWidth - nombreXPosition, 20));
+    page.graphics.drawString(direccion, italicFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(
+            nombreXPosition, 50, pageWidth - nombreXPosition, 20));
 
     // Ajustar el mensaje del ticketModel debajo del logo
     if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
-      double yPosition = 100; // Justo debajo de la imagen y el encabezado del negocio
+      double yPosition =
+          100; // Justo debajo de la imagen y el encabezado del negocio
 
       // Si el texto es más largo que el ancho de la página, dividir en varias líneas
-      final List<String> messageLines = _wrapText(ticketModel.message!, pageWidth, italicFont);
+      final List<String> messageLines =
+          _wrapText(ticketModel.message!, pageWidth, italicFont);
 
       for (var line in messageLines) {
         page.graphics.drawString(
           line,
           italicFont,
           brush: brush,
-          bounds: Rect.fromLTWH(0, yPosition, pageWidth, 30), // Alinear a la izquierda
+          bounds: Rect.fromLTWH(
+              0, yPosition, pageWidth, 30), // Alinear a la izquierda
         );
         yPosition += 20; // Espacio entre líneas
       }
@@ -144,10 +159,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     double yPosAfterMessage = 120; // Ajusta esta variable según sea necesario
 
     // Dibujar encabezado de la cotización
-    page.graphics.drawString('Cotización de Productos', boldFont, brush: brush,
+    page.graphics.drawString('Cotización de Productos', boldFont,
+        brush: brush,
         bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
     page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
-        bounds: Rect.fromLTWH(0, yPosAfterMessage + 30, 500, 30)); // Número de folio
+        bounds: Rect.fromLTWH(
+            0, yPosAfterMessage + 30, 500, 30)); // Número de folio
 
     // Crear la tabla
     final PdfGrid grid = PdfGrid();
@@ -174,7 +191,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     // Rellenar filas dinámicamente desde listaProductosCotizaciones
     for (var producto in listaProductosCotizaciones) {
       final PdfGridRow row = grid.rows.add();
-      row.cells[0].value = producto.producto; // Asume que tienes un campo nombre
+      row.cells[0].value =
+          producto.producto; // Asume que tienes un campo nombre
       row.cells[1].value = producto.cantidad.toString(); // Campo cantidad
       row.cells[2].value = producto.costo!.toStringAsFixed(2); // Total
     }
@@ -202,7 +220,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     // Dibujar la tabla en el PDF
     grid.draw(
       page: page,
-      bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0), // Reducir espacio antes de la tabla
+      bounds: Rect.fromLTWH(
+          0, yPosAfterMessage + 60, 0, 0), // Reducir espacio antes de la tabla
     );
 
     // Guardar el PDF en bytes
@@ -214,12 +233,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     // Guardar el archivo en el dispositivo
     final directory = await getApplicationSupportDirectory();
     final path = directory.path;
-    File file = File('$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
+    File file =
+        File('$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
 
     await file.writeAsBytes(bytes, flush: true);
 
     // Abrir el PDF generado en el dispositivo
-    OpenFile.open('$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
+    OpenFile.open(
+        '$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
   }
 
   List<String> _wrapText(String text, double maxWidth, PdfFont font) {
@@ -242,8 +263,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     return lines;
   }
 
-
-
   Future<Uint8List?> _downloadImage(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -257,8 +276,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       return null;
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -522,7 +539,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           );
           cotizacionDetalle = ventaDetalle;
 
-
           await cotizaciones
               .guardarCotizacionDetalle(ventaDetalle)
               .then((respDet) {
@@ -626,18 +642,23 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             width: windowWidth * 0.1,
                             child: IconButton(
                                 onPressed: () {
-                                  var catidad = item.cantidad + 1;
-                                  
-                                  if (catidad > prod.disponibleInv!) {
-                                    mostrarAlerta(context, "AVISO",
-                                        "Nose puede agregar mas articulos de este producto ");
-                                  } else {
+                                  if (sesion.cotizar!) {
                                     item.cantidad++;
-                                    // item.subTotalItem =
-                                    //     item.precioPublico * item.cantidad;
-                                    // item.totalItem =
-                                    //     item.subTotalItem - item.descuento;
                                     _actualizaTotalTemporal();
+                                  } else {
+                                    var catidad = item.cantidad + 1;
+
+                                    if (catidad > prod.disponibleInv!) {
+                                      mostrarAlerta(context, "AVISO",
+                                          "Nose puede agregar mas articulos de este producto ");
+                                    } else {
+                                      item.cantidad++;
+                                      // item.subTotalItem =
+                                      //     item.precioPublico * item.cantidad;
+                                      // item.totalItem =
+                                      //     item.subTotalItem - item.descuento;
+                                      _actualizaTotalTemporal();
+                                    }
                                   }
                                 },
                                 icon: const Icon(Icons.add_circle_outline))),
