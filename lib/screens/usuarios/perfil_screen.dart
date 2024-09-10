@@ -91,10 +91,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
               onTap: () {
                 UsuarioProvider().logout().then((value) async {
                   if (value.status == 1) {
+                    _clear();
                     final SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     prefs.setString('token', '');
-                    _clear();
                     Navigator.pushReplacementNamed(context, 'login');
                   } else {
                     mostrarAlerta(context, "Alerta", value.mensaje!);

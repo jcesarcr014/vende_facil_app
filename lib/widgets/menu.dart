@@ -65,10 +65,10 @@ class Menu extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Cerrar sesión'),
             onTap: () {
+              _clear();
               sesion.idUsuario = 0;
               sesion.idNegocio = 0;
               sesion.token = '';
-              _clear();
               Navigator.pushReplacementNamed(context, 'login');
             },
           )
