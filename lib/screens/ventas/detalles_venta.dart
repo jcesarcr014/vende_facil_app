@@ -20,12 +20,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
 
   @override  
   void initState() {
-    _loadData();
     super.initState();
-  }
-
-  void _loadData() async {
-    await negocioProvider.getlistaSucursales();
   }
 
   @override
@@ -46,10 +41,6 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Center(
-                    child: Text('Datos de la Sucursal', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
-                  ),
-                  const Divider(),
                   Text('Nombre de la Sucursal: ${listaSucursales.first.nombreSucursal}'),
                   const SizedBox(height: 5,),
                   Text('Dirección de la Sucursal: ${listaSucursales.first.direccion}'),
@@ -57,20 +48,11 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                   Text('Telefono: ${listaSucursales.first.telefono}'),
                   const SizedBox(height: 5,),
                   Text('Cliente: ${listaVentaCabecera2[0].nombreCliente}',),
-
-                  const SizedBox(height: 15,),
-
-                  const Center(
-                    child: Text('Detalles de la Venta', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)
-                  ),
-                  const Divider(),
+                  const SizedBox(height: 5,),
                   Text('Fecha de compra: ${listaVentaCabecera2[0].fecha_venta}'),
                 ],
               ),
             ),
-          ),
-          const Center(
-            child: Text('Productos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
           ),
           (isLoading)
               ? Center(
@@ -86,10 +68,10 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                 )
               : Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Divider(),
                       SizedBox(
-                        height: 350, // Define una altura fija
+                        height: 400, // Define una altura fija
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
@@ -116,11 +98,14 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                       ),
                       SizedBox(
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 25),
+                          padding: const EdgeInsets.only(right: 25),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
+                              const Divider(),
+                              const SizedBox(height: 25,),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   const Text('Subtotal: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                                   Text('${listaVentaCabecera2.first.subtotal}')
@@ -128,6 +113,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                               ),
                               const SizedBox(height: 5,),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   const Text('Total: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                                   Text('${listaVentaCabecera2.first.total}')
@@ -135,6 +121,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                               ),
                               const SizedBox(height: 5,),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   const Text('Descuento: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                                   Text('${listaVentaCabecera2.first.descuento}')
