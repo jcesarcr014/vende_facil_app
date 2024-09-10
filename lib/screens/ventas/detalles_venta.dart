@@ -11,7 +11,6 @@ class VentaDetallesScreen extends StatefulWidget {
 }
 
 class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
-  bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
@@ -54,19 +53,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
               ),
             ),
           ),
-          (isLoading)
-              ? Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Espere...$textLoading'),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const CircularProgressIndicator(),
-                      ]),
-                )
-              : Expanded(
+          Expanded(
                   child: Column(
                     children: [
                       const Divider(),
