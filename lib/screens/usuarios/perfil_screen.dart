@@ -129,5 +129,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
     listaVentaCabecera2.clear();
     listaVentadetalles.clear();
     listasucursalEmpleado.clear();
+    listaVentas.clear();
+    listacotizacion.clear();
+    listacotizaciondetalles.clear();
   }
 }

@@ -108,7 +108,7 @@ class ProductsScreen extends StatelessWidget {
                     onTap: () {
                       sesion.cotizar = true;
                       
-                      Navigator.pushNamed(context, 'home');
+                      Navigator.pushNamed(context, 'HomerCotizar');
                     }),
                                     ListTile(
                     leading: const Icon(Icons.request_quote),

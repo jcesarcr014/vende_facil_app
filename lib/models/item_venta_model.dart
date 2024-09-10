@@ -28,4 +28,6 @@ class ItemVenta {
 
 List<ItemVenta> ventaTemporal = [];
 double totalVentaTemporal = 0;
+List<ItemVenta> cotizarTemporal = [];
+double totalCotizacionTemporal = 0;
 bool apartadoValido = true;

@@ -98,6 +98,9 @@ class Menu extends StatelessWidget {
     listaVentaCabecera2.clear();
     listaVentadetalles.clear();
     listasucursalEmpleado.clear();
+    listaVentas.clear();
+    listacotizacion.clear();
+    listacotizaciondetalles.clear();
   }
 
   _articulos(BuildContext context) {
