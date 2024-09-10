@@ -221,17 +221,6 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
                   ],
                 ),
               ),
-        persistentFooterButtons: [
-          BottomAppBar(
-            child: SizedBox(
-              height: 50,
-              child: Center(
-                child: Text(
-                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
