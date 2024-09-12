@@ -9,6 +9,7 @@ class CotizarProvider {
   Resultado respuesta = Resultado();
 
   Future<Resultado> guardarCotizacion(Cotizacion cotiza) async {
+    sesion.idSucursal = 0;
     var url = Uri.parse('$baseUrl/cotizacion-cabecera/${sesion.idNegocio}');
     try {
       final resp = await http.post(url, headers: {

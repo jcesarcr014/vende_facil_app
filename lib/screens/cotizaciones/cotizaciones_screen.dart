@@ -2,19 +2,18 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeCotizarScreen extends StatefulWidget {
+  const HomeCotizarScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeCotizarScreen> createState() => _HomeCotizarScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   final articulosProvider = ArticuloProvider();
   final categoriasProvider = CategoriaProvider();
   final descuentoProvider = DescuentoProvider();
@@ -32,15 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    listacotizacion.clear();
     _actualizaTotalTemporal();
     if (globals.actualizaArticulos) {
       setState(() {
         textLoading = 'Actualizando lista de articulos';
         isLoading = true;
       });
-      articulosProvider
-          .listarProductosSucursal(sesion.idSucursal!)
-          .then((value) {
+      articulosProvider.listarProductos().then((value) {
         setState(() {
           globals.actualizaArticulos = false;
           textLoading = '';
@@ -63,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Vende Fácil'),
+          title: const Text('Vende Fácil Cotizaciones'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -118,16 +116,16 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
+                  '¿Desea eliminar la lista de articulos de la cotizacion ? Esta acción no podrá revertirse.',
                 )
               ],
             ),
             actions: [
               ElevatedButton(
                   onPressed: () {
-                    ventaTemporal.clear();
+                    cotizarTemporal.clear();
                     setState(() {});
-                    totalVentaTemporal = 0.0;
+                    totalCotizacionTemporal = 0.0;
                     Navigator.pop(context);
                   },
                   child: const Text('Eliminar')),
@@ -149,12 +147,12 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           ElevatedButton(
             onPressed: () {
-              if (ventaTemporal.isNotEmpty) {
-                Navigator.pushNamed(context, 'detalle-venta');
+              if (cotizarTemporal.isNotEmpty) {
+                Navigator.pushNamed(context, 'DetalleCotizar');
                 setState(() {});
               } else {
-                mostrarAlerta(
-                    context, '¡Atención!', 'No hay productos en la venta.');
+                mostrarAlerta(context, '¡Atención!',
+                    'No hay productos en la Cotizaciones.');
               }
             },
             child: SizedBox(
@@ -162,9 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: windowWidth * 0.4,
               child: Center(
                 child:
-                    Text(
-                      'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'
-                    ),
+                    Text('Cotizar \$${totalCotizacionTemporal.toStringAsFixed(2)}'),
               ),
             ),
           ),
@@ -188,32 +184,13 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: windowWidth * 0.05,
           ),
-            ElevatedButton(
-              onPressed: () async {
-                var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(),
-                    ));
-                setState(() {
-                  if (res is String) {}
-                });
-              },
-              child: SizedBox(
-                  width: windowWidth * 0.10,
-                  height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.qr_code_scanner))),
-            ),
-          SizedBox(
-            width: windowWidth * 0.05,
-          ),
           ElevatedButton(
               onPressed: () {
-                if (ventaTemporal.isNotEmpty) {
+                if (cotizarTemporal.isNotEmpty) {
                   _alertaElimnar();
                 } else {
-                  mostrarAlerta(
-                      context, '¡Atención!', 'No hay productos en la venta.');
+                  mostrarAlerta(context, '¡Atención!',
+                      'No hay productos en la Cotizacion.');
                 }
               },
               child: SizedBox(
@@ -258,21 +235,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                  if (CantidadConttroller.text.isEmpty ||
-                      double.parse(CantidadConttroller.text) <= 0) {
-                    mostrarAlerta(context, "AVISO", "valor invalido");
-                  } else {
-                    if (double.parse(CantidadConttroller.text) >
-                        producto.disponibleInv!) {
-                      mostrarAlerta(context, "AVISO",
-                          "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
-                    } else {
-                      _agregaProductoVenta(
-                        producto,
-                        double.parse(CantidadConttroller.text),
-                      );
-                    }
-                  }
+                _agregaProductoVenta(
+                  producto,
+                  double.parse(CantidadConttroller.text),
+                );
               },
               child: const Text('Aceptar '),
             ),
@@ -288,9 +254,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    if ( listaProductosSucursal.isNotEmpty) {
-      for (Producto producto
-          in  listaProductosSucursal) {
+    if (listaProductos.isNotEmpty) {
+      for (Producto producto in listaProductos) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {
@@ -302,44 +267,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: (() {
                     if (producto.unidad == "0") {
-                        if (producto.disponibleInv! > 0) {
-                          _alertaProducto(producto);
-                        } else {
-                          mostrarAlerta(context, "AVISO",
-                              "No cuenta con productos disponibles");
-                        }
+                      _alertaProducto(producto);
                     } else {
-                        if (producto.disponibleInv! > 0) {
-                          if (ventaTemporal.isEmpty) {
-                            _agregaProductoVenta(producto, 0);
-                          } else {
-                            ItemVenta? descue = ventaTemporal.firstWhere(
-                              (descuento) =>
-                                  descuento.idArticulo == producto.id,
-                              orElse: () => ItemVenta(
-                                  idArticulo: -1,
-                                  apartado: true,
-                                  cantidad: 1,
-                                  descuento: 1,
-                                  idDescuento: 1,
-                                  precioPublico: 10,
-                                  preciodistribuidor: 10,
-                                  preciomayoreo: 10,
-                                  subTotalItem: 10,
-                                  totalItem: 10),
-                            );
-                            var catidad = descue.cantidad + 1;
-                            if (catidad > producto.disponibleInv!) {
-                              mostrarAlerta(context, "AVISO",
-                                  "Nose puede agregar mas articulos de este producto :${producto.producto}");
-                            } else {
-                              _agregaProductoVenta(producto, 0);
-                            }
-                          }
-                        } else {
-                          mostrarAlerta(context, "AVISO",
-                              "No cuenta con productos disponibles");
-                        }
+                      _agregaProductoVenta(producto, 0);
                     }
                   }),
                   title: Row(
@@ -392,34 +322,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
-      var aplica = listaVariables
-          .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
-      for (ItemVenta item in ventaTemporal) {
-        if (aplica.valor == "0") {
-          totalVentaTemporal += item.cantidad * item.precioPublico;
-          item.subTotalItem += item.cantidad * item.precioPublico;
-          item.totalItem += item.cantidad * item.precioPublico;
-        } else {
-          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-            totalVentaTemporal += item.cantidad * item.preciomayoreo;
-            item.subTotalItem += totalVentaTemporal;
-            item.totalItem += totalVentaTemporal;
-          } else {
-            totalVentaTemporal += item.totalItem;
-          }
-        }
-      }
-      setState(() {});
-    
+    totalCotizacionTemporal = 0;
+
+    //print("Entro aca 3");
+    for (ItemVenta item in cotizarTemporal) {
+      totalCotizacionTemporal += item.cantidad * item.precioPublico;
+      item.subTotalItem += item.cantidad * item.precioPublico;
+      item.totalItem = item.cantidad * item.precioPublico;
+      totalCotizacionTemporal = item.subTotalItem;
+    }
+    setState(() {});
   }
 
   _agregaProductoVenta(Producto producto, cantidad) {
     bool existe = false;
     if (producto.unidad == "1") {
-      //print("Entro aca 2");
-      //print("Seleccionaron el Producto: ${producto.descripcion} y con un total de productos: $cantidad y cantidad es del ${cantidad.runtimeType}");
-      for (ItemVenta item in ventaTemporal) {
+      for (ItemVenta item in cotizarTemporal) {
         if (item.idArticulo == producto.id) {
           existe = true;
           item.cantidad++;
@@ -428,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
       if (!existe) {
-        ventaTemporal.add(ItemVenta(
+        cotizarTemporal.add(ItemVenta(
             idArticulo: producto.id!,
             cantidad: 1,
             precioPublico: producto.precioPublico!,
@@ -443,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _actualizaTotalTemporal();
     } else {
       if (producto.unidad == "0") {
-        for (ItemVenta item in ventaTemporal) {
+        for (ItemVenta item in cotizarTemporal) {
           if (item.idArticulo == producto.id) {
             existe = true;
             item.cantidad++;
@@ -452,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
         if (!existe) {
-          ventaTemporal.add(ItemVenta(
+          cotizarTemporal.add(ItemVenta(
               idArticulo: producto.id!,
               cantidad: cantidad,
               precioPublico: producto.precioPublico!,

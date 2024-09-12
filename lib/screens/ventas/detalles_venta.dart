@@ -28,8 +28,10 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
+
         title: Text('Venta: ${listaVentaCabecera2[0].folio}'),
         automaticallyImplyLeading: true,
+
       ),
       body: Column(
         children: [

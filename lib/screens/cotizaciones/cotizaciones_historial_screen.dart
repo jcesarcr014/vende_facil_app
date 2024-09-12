@@ -3,22 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/negocio_provider.dart';
 import 'package:vende_facil/providers/reportes_provider.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
-class HistorialScreen extends StatefulWidget {
+class HistorialCotizacionesScreen extends StatefulWidget {
   // ignore: use_key_in_widget_constructors
-  const HistorialScreen({Key? key});
+  const HistorialCotizacionesScreen({Key? key});
 
   @override
-  State<HistorialScreen> createState() => _HistorialScreenState();
+  State<HistorialCotizacionesScreen> createState() => _HistorialCotizacionesScreenState();
 }
 
-class _HistorialScreenState extends State<HistorialScreen> {
+class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScreen> {
   final ventaProvider = VentasProvider();
   bool isLoading = false;
   String textLoading = '';
@@ -38,14 +37,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
   String? _sucursalSeleccionada = '-1';
   String? _empleadoSeleccionado = '0';
 
-  final provider = NegocioProvider();
-  final reportesProvider = ReportesProvider();
-
-  final ventasProvider = VentasProvider();
-  final apartadoProvider = ApartadoProvider();
-
-  final negocioProvider = NegocioProvider();
-
+  NegocioProvider provider = NegocioProvider();
+  ReportesProvider reportesProvider = ReportesProvider();
 
   @override
   void initState() {
@@ -73,7 +66,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Historial de Ventas'),
+          title: const Text('Historial de Cotizaciones'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -228,17 +221,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
                   ],
                 ),
               ),
-        persistentFooterButtons: [
-          BottomAppBar(
-            child: SizedBox(
-              height: 50,
-              child: Center(
-                child: Text(
-                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -373,35 +355,11 @@ class _HistorialScreenState extends State<HistorialScreen> {
     }
   }
 
-  void _getDetails(VentaCabecera venta) async {
-    await negocioProvider.getlistaSucursales();
-
-    if(venta.tipo_movimiento == "V") {
-      final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
-      if(resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
-        return;
-      }
-      Navigator.pushNamed(context, 'ventasD');
-      return;
-    }
-
-    if(venta.tipo_movimiento == "P") {
-      final resultado = await apartadoProvider.detallesApartado(venta.idMovimiento!);
-      if(resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
-        return;
-      }
-      Navigator.pushNamed(context, 'apartadosD');
-      return;
-    }
-  }
-
   _listaVentas() {
     if (listaVentas.isEmpty) {
       return const Center(
         child: Text(
-            'No hay ventas realizadas en el rango de fechas seleccionado.'),
+            'No hay cotizaciones realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(
@@ -410,9 +368,10 @@ class _HistorialScreenState extends State<HistorialScreen> {
             title: Text(venta.name!),
             subtitle: Text(venta.tipo_movimiento!),
             trailing: Text('\$${venta.total}'),
-
-            onTap: () => _getDetails(venta)
-
+            onTap: () async {
+              await ventaProvider.consultarventa(venta.id!);// se cambiara  cuando  se tenga la ruta
+              Navigator.pushReplacementNamed(context, "ventasD");
+            },
           );
         }).toList(),
       );
