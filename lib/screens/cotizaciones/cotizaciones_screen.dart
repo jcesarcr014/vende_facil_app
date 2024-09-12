@@ -54,48 +54,34 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Vende Fácil Cotizaciones'),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu),
-            ),
-          ],
-        ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    const CircularProgressIndicator(),
-                  ],
-                ),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
-                child: Column(
-                  children: [
-                    ..._listaWidgets(),
-                    const Divider(),
-                    ..._productos(),
-                  ],
-                ),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vende Fácil Cotizaciones'),
+        automaticallyImplyLeading: true,
       ),
+      body: (isLoading)
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Espere...$textLoading'),
+                  SizedBox(
+                    height: windowHeight * 0.01,
+                  ),
+                  const CircularProgressIndicator(),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
+              child: Column(
+                children: [
+                  ..._listaWidgets(),
+                  const Divider(),
+                  ..._productos(),
+                ],
+              ),
+            ),
     );
   }
 

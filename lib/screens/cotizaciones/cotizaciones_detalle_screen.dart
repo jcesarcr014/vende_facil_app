@@ -15,6 +15,9 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:flutter/services.dart' show rootBundle;
+
+
 class CotizacionDetalleScreen extends StatefulWidget {
   const CotizacionDetalleScreen({super.key});
   @override
@@ -58,18 +61,13 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   }
 
   void _loadData() async {
-    try {
-      final TicketModel model =
-          await ticketProvider.getData(sesion.idNegocio.toString());
-      setState(() {
-        ticketModel.id = model.id;
-        ticketModel.negocioId = model.negocioId;
-        ticketModel.logo = model.logo;
-        ticketModel.message = model.message;
-      });
-    } catch (e) {
-      mostrarAlerta(context, 'Error', e.toString());
-    }
+    final TicketModel model = await ticketProvider.getData(sesion.idNegocio.toString());
+    setState(() {
+      ticketModel.id = model.id;
+      ticketModel.negocioId = model.negocioId;
+      ticketModel.logo = model.logo;
+      ticketModel.message = model.message;
+    });
   }
 
   Future<void> _generatePDF() async {
@@ -102,9 +100,11 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     double pageWidth = page.getClientSize().width;
     double logoWidth = 100;
     double logoXPosition = 0;
-    double nombreXPosition =
-        logoWidth + 20; // Espacio entre el logo y el nombre
+    double nombreXPosition = logoWidth + 20; // Espacio entre el logo y el nombre
 
+    // Cargar la imagen del logo si está disponible, o cargar la imagen de los assets si está vacío o nulo
+    PdfBitmap? logoBitmap;
+  
     // Dibujar el logo y el nombre de la empresa juntos en la parte superior
     if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
       final logoImage = await _downloadImage(ticketModel.logo!);
@@ -115,8 +115,20 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
             Rect.fromLTWH(logoXPosition, 0, logoWidth,
                 100)); // Ajustar el tamaño del logo
       }
+      } else {
+      // Cargar la imagen desde los assets
+      final ByteData imageData = await rootBundle.load('assets/logo.png');
+      final List<int> imageBytes = imageData.buffer.asUint8List();
+      logoBitmap = PdfBitmap(imageBytes);
     }
 
+    // Dibujar el logo si existe
+    if (logoBitmap != null) {
+      page.graphics.drawImage(
+        logoBitmap,
+        Rect.fromLTWH(logoXPosition, 0, logoWidth, 100), // Ajustar el tamaño del logo
+      );
+    }
     // Dibujar el nombre de la empresa al lado del logo
     page.graphics.drawString(nombreNegocio, titleFont,
         brush: brush,
@@ -293,7 +305,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
               icon: const Icon(Icons.arrow_back),
             ),
             const SizedBox(width: 8),
-            const Text('Detalle de venta'),
+            const Text('Detalle de Cotización'),
           ],
         ),
       ),
@@ -483,7 +495,9 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
           listacotizacion.add(cotiz);
           mostrarAlerta(context, '', 'cotizacion realizada');
           _generatePDF();
-          Navigator.pushReplacementNamed(context, 'home');
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.popAndPushNamed(context, 'HomerCotizar');
         }
       } else {
         setState(() {
