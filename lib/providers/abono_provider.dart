@@ -14,18 +14,17 @@ class AbonoProvider {
       final response = await http.get(url, headers: {
           'Authorization': 'Bearer ${sesion.token}',
       });
-  
       final decodedData = jsonDecode(response.body);
 
       respuesta.mensaje = decodedData['msg'];
 
       if(decodedData['status'] == 1) {
         respuesta.status = 1;
-        abonoSeleccionado.saldoActual = decodedData['abono']['saldo_actual'];
-        abonoSeleccionado.saldoAnterior = decodedData['abono']['saldo_anterior'];
+        abonoSeleccionado.saldoActual = double.parse(decodedData['abono']['saldo_actual']);
+        abonoSeleccionado.saldoAnterior = double.parse(decodedData['abono']['saldo_anterior']);
         abonoSeleccionado.fechaAbono = decodedData['abono']['fecha_abono'];
-        abonoSeleccionado.cantidadEfectivo = decodedData['abono']['cantidad_efectivo'];
-        abonoSeleccionado.cantidadTarjeta = decodedData['abono']['cantidad_tarjeta'];
+        abonoSeleccionado.cantidadEfectivo = double.parse(decodedData['abono']['cantidad_efectivo']);
+        abonoSeleccionado.cantidadTarjeta = double.parse(decodedData['abono']['cantidad_tarjeta']);
       } else {
         respuesta.status = 0;
       }

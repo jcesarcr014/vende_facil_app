@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/abono_model.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/models/sucursales_model.dart';
 
 class DetallesAbonoScreen extends StatelessWidget {
   const DetallesAbonoScreen({super.key});
