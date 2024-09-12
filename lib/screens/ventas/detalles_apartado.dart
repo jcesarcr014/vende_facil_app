@@ -1,22 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
-import '../../providers/providers.dart';
 
-class DetallesApartadoScreen extends StatefulWidget {
+class DetallesApartadoScreen extends StatelessWidget {
   const DetallesApartadoScreen({super.key});
 
-  @override
-  State<DetallesApartadoScreen> createState() => _DetallesApartadoScreenState();
-}
 
-class _DetallesApartadoScreenState extends State<DetallesApartadoScreen> {
-  final negocioProvider = NegocioProvider();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
