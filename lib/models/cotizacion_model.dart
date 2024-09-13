@@ -45,4 +45,5 @@ class Cotizacion {
 }
 
 List<Cotizacion> listacotizacion = [];
+List<Cotizacion> listacotizacionCabecera = [];
 CotizacionDetalle cotizacionDetalle = CotizacionDetalle();

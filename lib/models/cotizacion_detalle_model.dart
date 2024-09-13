@@ -30,3 +30,4 @@ class CotizacionDetalle {
 }
 
 List<CotizacionDetalle> listacotizaciondetalles = [];
+List<CotizacionDetalle> listacotizaciondetalles2 = [];

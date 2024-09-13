@@ -227,6 +227,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
+                  keyboardType: TextInputType.number, // This will show the numeric keyboard
                 ),
               ),
             ],

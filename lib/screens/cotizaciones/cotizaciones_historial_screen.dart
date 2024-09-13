@@ -6,7 +6,6 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/negocio_provider.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/providers/reportes_provider.dart';
-import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
@@ -21,7 +20,6 @@ class HistorialCotizacionesScreen extends StatefulWidget {
 
 class _HistorialCotizacionesScreenState
     extends State<HistorialCotizacionesScreen> {
-  final ventaProvider = VentasProvider();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -396,12 +394,14 @@ class _HistorialCotizacionesScreenState
       );
     } else {
       return Column(
-        children: resultadoCotizaciones.map((venta) {
+        children: resultadoCotizaciones.map((cotizar) {
           return ListTile(
-            title: Text(venta.folio!),
-            subtitle: Text('${venta.venta_realizada!}'),
-            trailing: Text('\$${venta.subtotal}'),
+            title: Text(cotizar.folio!),
+            subtitle: Text('${cotizar.venta_realizada!}'),
+            trailing: Text('\$${cotizar.subtotal}'),
             onTap: () async {
+              await cotizaciones.consultarcotizacion(cotizar.id!);
+              Navigator.pushNamed(context, 'detalleCotizacions');
             },
           );
         }).toList(),
