@@ -11,10 +11,10 @@ class Cotizacion {
   int? idDescuento;
   double? descuento;
   double? total;
-  double? importeEfectivo;
+  int? venta_realizada;
   double? importeTarjeta;
   int? cancelado;
-  String? fecha_venta;
+  String? fecha_cotizacion;
   String? fecha_cancelacion;
   String? nombreCliente;
   String? name;
@@ -31,10 +31,10 @@ class Cotizacion {
     this.idDescuento,
     this.descuento,
     this.total,
-    this.importeEfectivo,
+    this.venta_realizada,
     this.importeTarjeta,
     this.cancelado,
-    this.fecha_venta,
+    this. fecha_cotizacion,
     this.fecha_cancelacion,
     this.nombreCliente,
     this.name,
@@ -45,5 +45,4 @@ class Cotizacion {
 }
 
 List<Cotizacion> listacotizacion = [];
-
 CotizacionDetalle cotizacionDetalle = CotizacionDetalle();

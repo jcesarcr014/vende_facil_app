@@ -75,4 +75,48 @@ class CotizarProvider {
     }
     return respuesta;
   }
+
+  Future<Resultado> listarCotizaciones() async {
+    listacotizacion.clear();
+    var url = Uri.parse('$baseUrl/cotizacion-cabeceras/${sesion.idNegocio}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['cotizaciones'].length; x++) {
+          Cotizacion cotizar = Cotizacion();
+          cotizar.id = decodedData['cotizaciones'][x]['id'];
+          cotizar.negocioId = decodedData['cotizaciones'][x]['negocio_id'];
+          cotizar.id_sucursal = decodedData['cotizaciones'][x]['sucursal_id'];
+          cotizar.usuarioId = decodedData['cotizaciones'][x]['usuario_id'];
+          cotizar.idCliente = decodedData['cotizaciones'][x]['cliente_id'];
+          cotizar.folio = decodedData['cotizaciones'][x]['folio'];
+          cotizar.subtotal =
+              double.parse(decodedData['cotizaciones'][x]['subtotal']);
+          cotizar.idDescuento = decodedData['cotizaciones'][x]['descuento_id'];
+          cotizar.descuento =
+              double.parse(decodedData['cotizaciones'][x]['descuento']);
+          cotizar.total = double.parse(decodedData['cotizaciones'][x]['total']);
+          cotizar.venta_realizada =
+              int.parse(decodedData['cotizaciones'][x]['venta_realizada']);
+          cotizar.fecha_cotizacion =
+              decodedData['cotizaciones'][x]['fecha_cotizacion'];
+          cotizar.dias_vigentes =
+              decodedData['cotizaciones'][x]['dias_vigencia'];
+          listacotizacion.add(cotizar);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion: $e';
+    }
+    return respuesta;
+  }
 }
