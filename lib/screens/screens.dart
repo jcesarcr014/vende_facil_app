@@ -49,4 +49,5 @@ export 'package:vende_facil/screens/cotizaciones/cotizaciones_historial_screen.d
 export 'package:vende_facil/screens/cotizaciones/cotizaciones_screen.dart';
 export 'package:vende_facil/screens/cotizaciones/cotizaciones_detalle_screen.dart';
 export 'package:vende_facil/screens/apartados/abono_selecionar.dart';
+export 'package:vende_facil/screens/apartados/menu_abonos.dart';
 

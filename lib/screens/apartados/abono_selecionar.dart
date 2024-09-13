@@ -87,7 +87,7 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
                               .then((value) {
                             if (value.status == 1) {
                               sesion.cotizar = false;
-                              Navigator.pushReplacementNamed(context, 'nvo-abono');
+                              Navigator.pushReplacementNamed(context,'menuAbonos');
                             } else {
                               mostrarAlerta(context, "Error ",
                                   "Nose pudo cargar  los productos");
