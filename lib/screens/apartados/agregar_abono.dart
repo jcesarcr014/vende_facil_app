@@ -5,7 +5,6 @@ import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/screens/screens.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class AgregarAbonoScreen extends StatefulWidget {
   const AgregarAbonoScreen({super.key});
@@ -25,7 +24,6 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
 void initState() {
   super.initState();
   
-  if (sesion.idSucursal != null) {
     setState(() {
       textLoading = 'Leyendo apartados';
       isLoading = true;
@@ -37,17 +35,8 @@ void initState() {
         isLoading = false;
       });
     });
-  } else {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      alerta();
-    });
-  }
 }
 
-void alerta() {
-    Navigator.pushReplacementNamed(context,'select-branch-office');
-    mostrarAlerta(context, "Aviso", "Favor de elegir una sucursal primero");
-}
 
   @override
   Widget build(BuildContext context) {
