@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/negocio_provider.dart';
+import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/providers/reportes_provider.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:intl/intl.dart';
@@ -14,10 +15,12 @@ class HistorialCotizacionesScreen extends StatefulWidget {
   const HistorialCotizacionesScreen({Key? key});
 
   @override
-  State<HistorialCotizacionesScreen> createState() => _HistorialCotizacionesScreenState();
+  State<HistorialCotizacionesScreen> createState() =>
+      _HistorialCotizacionesScreenState();
 }
 
-class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScreen> {
+class _HistorialCotizacionesScreenState
+    extends State<HistorialCotizacionesScreen> {
   final ventaProvider = VentasProvider();
   bool isLoading = false;
   String textLoading = '';
@@ -38,6 +41,7 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
   String? _empleadoSeleccionado = '0';
 
   NegocioProvider provider = NegocioProvider();
+  final cotizaciones = CotizarProvider();
   ReportesProvider reportesProvider = ReportesProvider();
 
   @override
@@ -48,9 +52,12 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
     formattedStartDate = dateFormatter.format(_startDate);
     formattedEndDate = dateFormatter.format(_endDate);
     _dateController.text = '$formattedStartDate - $formattedEndDate';
-    listaVentas.clear();
-    listasucursalEmpleado.clear();
+    _cargar();
     super.initState();
+  }
+
+  _cargar() async {
+    await cotizaciones.listarCotizaciones();
   }
 
   @override
@@ -234,7 +241,9 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
       final resultado = await reportesProvider.reporteSucursal(
           formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       isLoading = false;
-      setState(() {});
+      setState(() {
+        _busqueda();
+      });
       if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
@@ -322,7 +331,7 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
               isLoading = true;
               _sucursalSeleccionada = value;
               setState(() {});
-
+              _busqueda();
               if (value == '0') {
                 _allBranchOffice = null;
                 final resultado = await reportesProvider.reporteGeneral(
@@ -355,22 +364,44 @@ class _HistorialCotizacionesScreenState extends State<HistorialCotizacionesScree
     }
   }
 
+  _busqueda() {
+    int empleado = 0;
+    int sucursals = 0;
+    if (_empleadoSeleccionado == '0') {
+      empleado = sesion.idUsuario!;
+    } else {
+      empleado = int.parse(_empleadoSeleccionado!);
+    }
+    if (_sucursalSeleccionada == '0') {
+      sucursals = sesion.idNegocio!;
+    } else {
+      sucursals = int.parse(_sucursalSeleccionada!);
+    }
+    var resultado = listacotizacion
+        .where((element) =>
+            element.id_sucursal == sucursals &&
+            element.usuarioId == empleado &&
+            element.fecha_cotizacion!.isAfter(_startDate) &&
+            element.fecha_cotizacion!.isBefore(_endDate))
+        .toList();
+    return resultado;
+  }
+
   _listaVentas() {
-    if (listaVentas.isEmpty) {
+    List<Cotizacion> resultadoCotizaciones = _busqueda();
+    if (resultadoCotizaciones.isEmpty) {
       return const Center(
         child: Text(
             'No hay cotizaciones realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(
-        children: listaVentas.map((venta) {
+        children: resultadoCotizaciones.map((venta) {
           return ListTile(
-            title: Text(venta.name!),
-            subtitle: Text(venta.tipo_movimiento!),
-            trailing: Text('\$${venta.total}'),
+            title: Text(venta.folio!),
+            subtitle: Text('${venta.venta_realizada!}'),
+            trailing: Text('\$${venta.subtotal}'),
             onTap: () async {
-              await ventaProvider.consultarventa(venta.id!);// se cambiara  cuando  se tenga la ruta
-              Navigator.pushReplacementNamed(context, "ventasD");
             },
           );
         }).toList(),
