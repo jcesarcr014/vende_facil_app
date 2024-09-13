@@ -37,6 +37,7 @@ class _ventaScreenState extends State<VentaScreen> {
     TarjetaController.text = "0.00";
     CambioController.text = "0.00";
     EfectivoController.addListener(_updateCambio);
+    TarjetaController.addListener(_updateCambio);
   }
 
   void _updateCambio() {
@@ -46,7 +47,7 @@ class _ventaScreenState extends State<VentaScreen> {
       double tarjeta =
           double.tryParse(TarjetaController.text.replaceAll(',', '')) ?? 0.0;
       double total = double.tryParse(TotalConttroller.text) ?? 0.0;
-      double totalEfectivo = efectivo - tarjeta;
+      double totalEfectivo = efectivo + tarjeta;
       double cambio = totalEfectivo - total;
 
       if (cambio < 0) {
@@ -239,7 +240,7 @@ class _ventaScreenState extends State<VentaScreen> {
       tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
       cambio = double.parse(CambioController.text);
       totalEfectivo = efectivo - cambio;
-      double resultado = totalEfectivo + tarjeta;
+      double resultado = efectivo + tarjeta;
       if (tarjeta > total) {
         showDialog(
           context: context,
@@ -259,7 +260,7 @@ class _ventaScreenState extends State<VentaScreen> {
           },
         );
       } else {
-        if (resultado == total) {
+        if (resultado >= total) {
           _compra(venta);
         } else {
           showDialog(
