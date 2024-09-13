@@ -251,20 +251,21 @@ class _HistorialScreenState extends State<HistorialScreen> {
     setState(() {});
     _empleadoSeleccionado = value;
     if (value == '0') {
-      final resultado = await reportesProvider.reporteSucursal(
-          formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
-      isLoading = false;
-      setState(() {});
+      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
       }
+      totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
+      isLoading = false;
+      setState(() {});
+
       return;
     }
 
-    final resultado = await reportesProvider.reporteEmpleado(
-        formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
+    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
     isLoading = false;
+    totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
     setState(() {});
     if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
@@ -345,9 +346,9 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
               if (value == '0') {
                 _allBranchOffice = null;
-                final resultado = await reportesProvider.reporteGeneral(
-                    formattedStartDate, formattedEndDate);
+                final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
                 isLoading = false;
+                totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
                 setState(() {});
                 if (resultado.status != 1) {
                   mostrarAlerta(context, 'Error', resultado.mensaje!);
@@ -432,13 +433,19 @@ class _HistorialScreenState extends State<HistorialScreen> {
     } else {
       return Column(
         children: listaVentas.map((venta) {
+          String text;
+          if (venta.tipo_movimiento! == 'V') {
+            text = 'Venta';
+          } else if (venta.tipo_movimiento! == 'P') {
+            text = 'Apartado';
+          } else {
+            text = 'Abono';
+          }
           return ListTile(
-            title: Text(venta.name!),
-            subtitle: Text(venta.tipo_movimiento!),
+            title: Text('${venta.name} \nFecha: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
+            subtitle: Text(text),
             trailing: Text('\$${venta.total}'),
-
             onTap: () => _getDetails(venta)
-
           );
         }).toList(),
       );
