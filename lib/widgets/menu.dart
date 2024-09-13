@@ -26,7 +26,7 @@ class Menu extends StatelessWidget {
                   leading: const Icon(Icons.monetization_on_outlined),
                   title: const Text('Abonos'),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, 'nvo-abono');
+                    Navigator.pushReplacementNamed(context, 'selecionarSA');
                   },
                 )
               : Container(),

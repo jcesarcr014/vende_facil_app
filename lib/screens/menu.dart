@@ -76,7 +76,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
         menuRoutes = [
           'home',
-          'nvo-abono',
+          'selecionarSA',
           'historial',
           'productos',
           'categorias',
