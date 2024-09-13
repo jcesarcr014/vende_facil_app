@@ -101,8 +101,8 @@ class CotizarProvider {
           cotizar.total = double.parse(decodedData['cotizaciones'][x]['total']);
           cotizar.venta_realizada =
               int.parse(decodedData['cotizaciones'][x]['venta_realizada']);
-          cotizar.fecha_cotizacion =
-              decodedData['cotizaciones'][x]['fecha_cotizacion'];
+          cotizar.fecha_cotizacion = DateTime.parse(decodedData['cotizaciones'][x]['fecha_cotizacion']);
+
           cotizar.dias_vigentes =
               decodedData['cotizaciones'][x]['dias_vigencia'];
           listacotizacion.add(cotizar);

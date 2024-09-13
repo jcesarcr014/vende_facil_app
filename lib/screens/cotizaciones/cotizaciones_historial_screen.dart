@@ -378,10 +378,11 @@ class _HistorialCotizacionesScreenState
       sucursals = int.parse(_sucursalSeleccionada!);
     }
     var resultado = listacotizacion
-        .where(
-          (element) =>
-              element.id_sucursal == sucursals && element.usuarioId == empleado,
-        )
+        .where((element) =>
+            element.id_sucursal == sucursals &&
+            element.usuarioId == empleado &&
+            element.fecha_cotizacion!.isAfter(_startDate) &&
+            element.fecha_cotizacion!.isBefore(_endDate))
         .toList();
     return resultado;
   }
@@ -398,7 +399,7 @@ class _HistorialCotizacionesScreenState
         children: resultadoCotizaciones.map((venta) {
           return ListTile(
             title: Text(venta.folio!),
-            subtitle: Text(venta.folio!),
+            subtitle: Text('${venta.venta_realizada!}'),
             trailing: Text('\$${venta.subtotal}'),
             onTap: () async {
               await ventaProvider.consultarventa(

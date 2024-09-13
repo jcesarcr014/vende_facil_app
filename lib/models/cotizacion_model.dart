@@ -14,7 +14,7 @@ class Cotizacion {
   int? venta_realizada;
   double? importeTarjeta;
   int? cancelado;
-  String? fecha_cotizacion;
+  DateTime? fecha_cotizacion;
   String? fecha_cancelacion;
   String? nombreCliente;
   String? name;
