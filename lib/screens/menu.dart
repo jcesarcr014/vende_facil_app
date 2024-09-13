@@ -73,10 +73,9 @@ class _MenuScreenState extends State<MenuScreen> {
           'Mi suscripción',
           'Cerrar Sesión'
         ];
-
         menuRoutes = [
           'home',
-          'selecionarSA',
+          'menuAbonos',
           'historial',
           'productos',
           'categorias',
