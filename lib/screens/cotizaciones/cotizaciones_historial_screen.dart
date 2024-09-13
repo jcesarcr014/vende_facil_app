@@ -402,9 +402,6 @@ class _HistorialCotizacionesScreenState
             subtitle: Text('${venta.venta_realizada!}'),
             trailing: Text('\$${venta.subtotal}'),
             onTap: () async {
-              await ventaProvider.consultarventa(
-                  venta.id!); // se cambiara  cuando  se tenga la ruta
-              Navigator.pushReplacementNamed(context, "ventasD");
             },
           );
         }).toList(),
