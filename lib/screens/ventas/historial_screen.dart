@@ -442,7 +442,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
             text = 'Abono';
           }
           return ListTile(
-            title: Text('${venta.name} \nFecha: ${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
+            title: Text('${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
             subtitle: Text(text),
             trailing: Text('\$${venta.total}'),
             onTap: () => _getDetails(venta)
