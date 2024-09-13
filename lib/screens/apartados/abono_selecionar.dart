@@ -44,13 +44,7 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccionar Sucursal'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-            icon: const Icon(Icons.menu),
-          ),
-        ],
+        automaticallyImplyLeading: true,
       ),
       body: (isLoading)
           ? Center(
