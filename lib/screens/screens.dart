@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/ventas/detalles_apartado.dart';
 export 'package:vende_facil/screens/productos/detalles_producto_sucursal.dart';
 export 'package:vende_facil/screens/productos/eliminar_producto_sucursal.dart';
 export 'package:vende_facil/screens/productos/agregar_producto_sucursal.dart';
@@ -43,7 +44,9 @@ export 'package:vende_facil/screens/productos/inventario_sucursal.dart';
 export 'package:vende_facil/screens/select_branch_office.dart';
 export 'package:vende_facil/screens/empresa/agregar_sucursales.dart';
 export 'package:vende_facil/screens/empresa/lista_sucursales.dart';
+
 export 'package:vende_facil/screens/apartados/abono_pagos.dart';
 export 'package:vende_facil/screens/cotizaciones/cotizaciones_historial_screen.dart';
 export 'package:vende_facil/screens/cotizaciones/cotizaciones_screen.dart';
 export 'package:vende_facil/screens/cotizaciones/cotizaciones_detalle_screen.dart';
+
