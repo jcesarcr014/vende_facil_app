@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/abono_provider.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/negocio_provider.dart';
 import 'package:vende_facil/providers/reportes_provider.dart';
@@ -43,6 +44,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   final ventasProvider = VentasProvider();
   final apartadoProvider = ApartadoProvider();
+  final abonoProvider = AbonoProvider();
 
   final negocioProvider = NegocioProvider();
 
@@ -89,7 +91,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Espere...$textLoading'),
+                      const Text('Espere...'),
                       SizedBox(
                         height: windowHeight * 0.01,
                       ),
@@ -374,20 +376,29 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   void _getDetails(VentaCabecera venta) async {
+    isLoading = true;
+    setState(() {});
+
     await negocioProvider.getlistaSucursales();
 
     if(venta.tipo_movimiento == "V") {
       final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
+      isLoading = false;
+      setState(() {});
       if(resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
       }
       Navigator.pushNamed(context, 'ventasD');
       return;
+
+
     }
 
     if(venta.tipo_movimiento == "P") {
       final resultado = await apartadoProvider.detallesApartado(venta.idMovimiento!);
+      isLoading = false;
+      setState(() {});
       if(resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
@@ -395,6 +406,21 @@ class _HistorialScreenState extends State<HistorialScreen> {
       Navigator.pushNamed(context, 'apartadosD');
       return;
     }
+
+    if(venta.tipo_movimiento == "A") {
+      final resultado = await abonoProvider.obtenerAbono(venta.idMovimiento.toString());
+      isLoading = false;
+      setState(() {});
+      if(resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+        return;
+      }
+      Navigator.pushNamed(context, 'abonoD');
+      return;
+    }
+
+    isLoading = false;
+    setState(() {});
   }
 
   _listaVentas() {
