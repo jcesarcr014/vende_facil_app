@@ -35,7 +35,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   double windowHeight = 0.0;
   String _valueIdCategoria = '0';
   bool firstLoad = true;
-  bool _valuePieza = false;
+  bool _valuePieza = true;
   final bool _valueInventario = true;
   bool _valueApartado = false;
   bool _puedeGurdar = false;
