@@ -38,7 +38,7 @@ class MenuAbonoScreen extends StatelessWidget {
                     subtitle: const Text('Visualiza  lista de apartados'),
                     trailing: const Icon(Icons.arrow_right),
                     onTap: () {
-                      Navigator.pushNamed(context, 'nvo-abono');
+                      Navigator.pushNamed(context, 'selecionarSA');
                     }),
               ],
             )),

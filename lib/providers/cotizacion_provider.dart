@@ -101,7 +101,8 @@ class CotizarProvider {
           cotizar.total = double.parse(decodedData['cotizaciones'][x]['total']);
           cotizar.venta_realizada =
               int.parse(decodedData['cotizaciones'][x]['venta_realizada']);
-          cotizar.fecha_cotizacion = DateTime.parse(decodedData['cotizaciones'][x]['fecha_cotizacion']);
+          cotizar.fecha_cotizacion = DateTime.parse(
+              decodedData['cotizaciones'][x]['fecha_cotizacion']);
 
           cotizar.dias_vigentes =
               decodedData['cotizaciones'][x]['dias_vigencia'];
@@ -119,64 +120,70 @@ class CotizarProvider {
     }
     return respuesta;
   }
-    Future<Resultado> consultarcotizacion(int idCotizar) async {
-    listacotizacionCabecera.clear();
-    listacotizaciondetalles2.clear();
-    var url = Uri.parse('$baseUrl/cotizacion-cabeceras/$idCotizar');
-    try {
-      final resp = await http.get(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      });
-      final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
-         Cotizacion cotizar = Cotizacion();
-        cotizar.id = decodedData['cotizacion'][0]['id'];
-        cotizar.negocioId = decodedData['cotizacion'][0]['negocio_id'];
-        cotizar.usuarioId = decodedData['cotizacion'][0]['usuario_id'];
-        cotizar.idCliente = decodedData['cotizacion'][0]['cliente_id'];
-        cotizar.folio = decodedData['cotizacion'][0]['folio'];
-        cotizar.subtotal =
-            double.parse(decodedData['cotizacion'][0]['subtotal']);
-        cotizar.idDescuento = decodedData['cotizacion'][0]['descuento_id'];
-        cotizar.descuento =
-            double.parse(decodedData['cotizacion'][0]['descuento']);
-        cotizar.total = double.parse(decodedData['cotizacion'][0]['total']);
-        cotizar.venta_realizada =
-            int.parse(decodedData['cotizacion'][0]['venta_realizada']);
-        cotizar.fecha_cotizacion =
-            DateTime.parse(decodedData['cotizacion'][0]['fecha_cotizacion']);
-        cotizar.dias_vigentes = decodedData['cotizacion'][0]['dias_vigencia'];
-        listacotizacionCabecera.add(cotizar);
-        for (int x = 0; x < decodedData['detalles'].length; x++) {
-          CotizacionDetalle detalleCotizar = CotizacionDetalle();
-          detalleCotizar.id = decodedData['detalles'][x]['id'];
-          detalleCotizar.idcotizacion = decodedData['detalles'][x]['cotizacion_id'];
-          detalleCotizar.idProd = decodedData['detalles'][x]['producto_id'];
-          detalleCotizar.cantidad =
-              double.parse(decodedData['detalles'][x]['cantidad']);
-          detalleCotizar.precio =
-              double.parse(decodedData['detalles'][x]['precio']);
-          detalleCotizar.subtotal =
-              double.parse(decodedData['detalles'][x]['subtotal']);
-          detalleCotizar.cantidadDescuento =
-              double.parse(decodedData['detalles'][x]['descuento']);
-          detalleCotizar.total =
-              double.parse(decodedData['detalles'][x]['total']);
-          detalleCotizar.nombreProducto = decodedData['detalles'][x]['producto'];
-                      detalleCotizar.idDesc =
-              int.parse(decodedData['detalles'][x]['descuento_id']);
-          listacotizaciondetalles2.add(detalleCotizar);
-        }
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-      } else {
-        respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
+
+Future<Resultado> consultarcotizacion(int idCotizar) async {
+  listacotizacionCabecera.clear();
+  listacotizaciondetalles2.clear();
+  var url = Uri.parse('$baseUrl/cotizacion-detalle/$idCotizar');
+  print(url);
+  try {
+    final resp = await http.get(url, headers: {
+      'Authorization': 'Bearer ${sesion.token}',
+    });
+
+    final decodedData = jsonDecode(resp.body);
+    print(decodedData); // Verifica toda la estructura de respuesta
+    print(decodedData['status']);
+    
+    if (decodedData['status'] == 1) {
+      print("Entro");
+
+      // Accede a cotizacion como un mapa, sin índice
+      Cotizacion cotizar = Cotizacion();
+      cotizar.id = decodedData['cotizacion']['id'];
+      cotizar.negocioId = decodedData['cotizacion']['negocio_id'];
+      cotizar.id_sucursal = decodedData['cotizacion']['sucursal_id'];
+      cotizar.usuarioId = decodedData['cotizacion']['usuario_id'];
+      cotizar.idCliente = decodedData['cotizacion']['cliente_id'];
+      cotizar.folio = decodedData['cotizacion']['folio'];
+      cotizar.subtotal = double.parse(decodedData['cotizacion']['subtotal']);
+      cotizar.idDescuento = decodedData['cotizacion']['descuento_id'];
+      cotizar.descuento = double.parse(decodedData['cotizacion']['descuento']);
+      cotizar.total = double.parse(decodedData['cotizacion']['total']);
+      cotizar.venta_realizada = int.parse(decodedData['cotizacion']['venta_realizada']);
+      cotizar.fecha_cotizacion = DateTime.parse(decodedData['cotizacion']['fecha_cotizacion']);
+      cotizar.dias_vigentes = decodedData['cotizacion']['dias_vigencia'];
+      listacotizacionCabecera.add(cotizar);
+      print(listacotizacionCabecera.length);
+
+      // Procesa los detalles
+      for (int x = 0; x < decodedData['detalles'].length; x++) {
+        CotizacionDetalle detalleCotizar = CotizacionDetalle();
+        detalleCotizar.id = decodedData['detalles'][x]['id'];
+        detalleCotizar.idcotizacion = decodedData['detalles'][x]['cotizacion_id'];
+        detalleCotizar.idProd = decodedData['detalles'][x]['producto_id'];
+        detalleCotizar.cantidad = double.parse(decodedData['detalles'][x]['cantidad']);
+        detalleCotizar.precio = double.parse(decodedData['detalles'][x]['precio']);
+        detalleCotizar.subtotal = double.parse(decodedData['detalles'][x]['subtotal']);
+        detalleCotizar.cantidadDescuento = double.parse(decodedData['detalles'][x]['descuento']);
+        detalleCotizar.total = double.parse(decodedData['detalles'][x]['total']);
+        detalleCotizar.nombreProducto = decodedData['detalles'][x]['nombre'];
+        detalleCotizar.idDesc = decodedData['detalles'][x]['descuento_id'];
+        listacotizaciondetalles2.add(detalleCotizar);
       }
-    } catch (e) {
+
+      respuesta.status = 1;
+      respuesta.mensaje = decodedData['msg'];
+    } else {
       respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion: $e';
+      respuesta.mensaje = decodedData['msg'];
     }
-    return respuesta;
+  } catch (e) {
+    respuesta.status = 0;
+    respuesta.mensaje = 'Error en la petición: $e';
   }
+  print(respuesta.mensaje);
+  return respuesta;
+}
+
 }

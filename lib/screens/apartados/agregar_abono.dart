@@ -43,7 +43,7 @@ void initState() {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Abono a venta'),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         actions: [
           // ignore: sized_box_for_whitespace
           Container(
@@ -60,12 +60,6 @@ void initState() {
                 iconColor: Colors.white,
               ),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, 'menu');
-            },
-            icon: const Icon(Icons.menu),
           ),
         ],
       ),

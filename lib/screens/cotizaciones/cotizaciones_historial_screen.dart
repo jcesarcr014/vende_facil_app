@@ -63,24 +63,10 @@ class _HistorialCotizacionesScreenState
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
     return PopScope(
-      canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) {
-          Navigator.pushReplacementNamed(context, 'menu');
-        }
-      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Historial de Cotizaciones'),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu),
-            ),
-          ],
+          automaticallyImplyLeading: true,
         ),
         body: (isLoading)
             ? Center(
