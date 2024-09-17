@@ -37,7 +37,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       setState(() {});
     } else {
       resultadosFiltrados.clear();
-     
+      print(' sucursal selecinado ${sucursalSeleccionado.id}');
       resultadosFiltrados = listasucursalEmpleado
           .where((element) => element.sucursalId == sucursalSeleccionado.id)
           .toList();
@@ -378,6 +378,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             mostrarAlerta(context, "Alerta",
                                 "Debe seleccionar un empleado");
                           } else {
+                            print(sucursalSeleccionado.id);
+                            print(sucursalSeleccionado.negocioId);
                             SucursalEmpleado sucursal = SucursalEmpleado();
                             sucursal.empleadoId = int.parse(_valueIdEmpleado);
                             sucursal.sucursalId = sucursalSeleccionado.id;
@@ -417,29 +419,29 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
             ),
     );
   }
-  _editar(){
+
+  _editar() {
     Sucursal nueva = Sucursal();
-      nueva.id = sucursalSeleccionado.id;
-      nueva.negocioId = sucursalSeleccionado.negocioId;
-      nueva.nombreSucursal = controllerNombre.text;
-      nueva.direccion = controllerEmail.text;
-      nueva.telefono = controllerTelefono.text;
-      negocio.editarSUcursal(nueva).then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-          globals.actualizaSucursales = true;
-        });
-        if (value.status == 1) {
-          setState(() {
-            Navigator.pushReplacementNamed(
-                context, 'lista-sucursales');
-          });
-          mostrarAlerta(context, '', value.mensaje!);
-        } else {
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
+    nueva.id = sucursalSeleccionado.id;
+    nueva.negocioId = sucursalSeleccionado.negocioId;
+    nueva.nombreSucursal = controllerNombre.text;
+    nueva.direccion = controllerEmail.text;
+    nueva.telefono = controllerTelefono.text;
+    negocio.editarSUcursal(nueva).then((value) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+        globals.actualizaSucursales = true;
       });
+      if (value.status == 1) {
+        setState(() {
+          Navigator.pushReplacementNamed(context, 'lista-sucursales');
+        });
+        mostrarAlerta(context, '', value.mensaje!);
+      } else {
+        mostrarAlerta(context, 'ERROR', value.mensaje!);
+      }
+    });
   }
 
   _agregar(seccion, nombre, direcion, telefono) {

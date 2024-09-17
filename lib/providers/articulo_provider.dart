@@ -300,15 +300,13 @@ class ArticuloProvider {
     return respuesta;
   }
 
-  Future<Resultado> inventarioSucQuitar(String idInventario, String cantidad ) async {
+  Future<Resultado> inventarioSucQuitar(
+      String idInventario, String cantidad) async {
     var url = Uri.parse('$baseUrl/inventario-quitar');
     try {
-      final resp = await http.put(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}'
-      }, body: {
-        'inventario_id': idInventario,
-        'cantidad': cantidad
-      });
+      final resp = await http.put(url,
+          headers: {'Authorization': 'Bearer ${sesion.token}'},
+          body: {'inventario_id': idInventario, 'cantidad': cantidad});
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
