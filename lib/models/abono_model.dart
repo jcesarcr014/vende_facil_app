@@ -18,4 +18,6 @@ class Abono {
   });
 }
 
+Abono abonoSeleccionado = Abono();
+
 List<Abono> listaAbonos = [];

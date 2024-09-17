@@ -83,8 +83,11 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       return;
     }
 
+    isLoading = true;
+    setState(() {});
     Resultado resultado = await provider.inventarioSucQuitar(_producto!.idInv.toString(), controller.text);
-
+    isLoading = false;
+    setState(() {});
     if(resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;

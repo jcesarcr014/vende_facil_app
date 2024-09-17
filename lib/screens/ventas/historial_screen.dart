@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/abono_provider.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/providers/negocio_provider.dart';
 import 'package:vende_facil/providers/reportes_provider.dart';
@@ -43,6 +44,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   final ventasProvider = VentasProvider();
   final apartadoProvider = ApartadoProvider();
+  final abonoProvider = AbonoProvider();
 
   final negocioProvider = NegocioProvider();
 
@@ -89,7 +91,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Espere...$textLoading'),
+                      const Text('Espere...'),
                       SizedBox(
                         height: windowHeight * 0.01,
                       ),
@@ -249,20 +251,21 @@ class _HistorialScreenState extends State<HistorialScreen> {
     setState(() {});
     _empleadoSeleccionado = value;
     if (value == '0') {
-      final resultado = await reportesProvider.reporteSucursal(
-          formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
-      isLoading = false;
-      setState(() {});
+      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
       }
+      totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
+      isLoading = false;
+      setState(() {});
+
       return;
     }
 
-    final resultado = await reportesProvider.reporteEmpleado(
-        formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
+    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
     isLoading = false;
+    totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
     setState(() {});
     if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
@@ -343,9 +346,9 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
               if (value == '0') {
                 _allBranchOffice = null;
-                final resultado = await reportesProvider.reporteGeneral(
-                    formattedStartDate, formattedEndDate);
+                final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
                 isLoading = false;
+                totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
                 setState(() {});
                 if (resultado.status != 1) {
                   mostrarAlerta(context, 'Error', resultado.mensaje!);
@@ -374,20 +377,29 @@ class _HistorialScreenState extends State<HistorialScreen> {
   }
 
   void _getDetails(VentaCabecera venta) async {
+    isLoading = true;
+    setState(() {});
+
     await negocioProvider.getlistaSucursales();
 
     if(venta.tipo_movimiento == "V") {
       final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
+      isLoading = false;
+      setState(() {});
       if(resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
       }
       Navigator.pushNamed(context, 'ventasD');
       return;
+
+
     }
 
     if(venta.tipo_movimiento == "P") {
       final resultado = await apartadoProvider.detallesApartado(venta.idMovimiento!);
+      isLoading = false;
+      setState(() {});
       if(resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
@@ -395,6 +407,21 @@ class _HistorialScreenState extends State<HistorialScreen> {
       Navigator.pushNamed(context, 'apartadosD');
       return;
     }
+
+    if(venta.tipo_movimiento == "A") {
+      final resultado = await abonoProvider.obtenerAbono(venta.idMovimiento.toString());
+      isLoading = false;
+      setState(() {});
+      if(resultado.status != 1) {
+        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+        return;
+      }
+      Navigator.pushNamed(context, 'abonoD');
+      return;
+    }
+
+    isLoading = false;
+    setState(() {});
   }
 
   _listaVentas() {
@@ -406,13 +433,19 @@ class _HistorialScreenState extends State<HistorialScreen> {
     } else {
       return Column(
         children: listaVentas.map((venta) {
+          String text;
+          if (venta.tipo_movimiento! == 'V') {
+            text = 'Venta';
+          } else if (venta.tipo_movimiento! == 'P') {
+            text = 'Apartado';
+          } else {
+            text = 'Abono';
+          }
           return ListTile(
-            title: Text(venta.name!),
-            subtitle: Text(venta.tipo_movimiento!),
+            title: Text('${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
+            subtitle: Text(text),
             trailing: Text('\$${venta.total}'),
-
             onTap: () => _getDetails(venta)
-
           );
         }).toList(),
       );
