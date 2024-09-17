@@ -243,6 +243,8 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                                             apartadoId: listaApartados2[0].id,
                                             cantidadEfectivo: efectivo,
                                             cantidadTarjeta: tarjeta,
+                                            saldoActual: listaApartados2[0].total!-(efectivo+tarjeta),
+                                            saldoAnterior: listaApartados2[0].saldoPendiente!
                                           );
           _compra(abono);
       }
@@ -261,8 +263,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                                                   listaApartados2[0].id!, venta)
                                               .then((value) {
                                             if (value.status == 1) {
-                                              Navigator.pop(context);
-                                              showDialog(
+                                               showDialog(
                                                 context: context,
                                                 builder: (context) {
                                                   return AlertDialog(
