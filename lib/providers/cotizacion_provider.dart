@@ -182,7 +182,6 @@ Future<Resultado> consultarcotizacion(int idCotizar) async {
     respuesta.status = 0;
     respuesta.mensaje = 'Error en la petición: $e';
   }
-  print(respuesta.mensaje);
   return respuesta;
 }
 
