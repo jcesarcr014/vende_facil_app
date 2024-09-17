@@ -176,29 +176,48 @@ class ApartadoProvider {
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        
-        apartadoSeleccionado.id = decodedData['apartado'][0]['id'];
-        apartadoSeleccionado.usuarioId = decodedData['apartado'][0]['usuario_id'];
-        apartadoSeleccionado.clienteId = decodedData['apartado'][0]['cliente_id'];
-        apartadoSeleccionado.folio = decodedData['apartado'][0]['folio'];
-        apartadoSeleccionado.subtotal = double.parse(decodedData['apartado'][0]['subtotal']);
-        apartadoSeleccionado.descuentoId = decodedData['apartado'][0]['descuento_id'];
-        apartadoSeleccionado.descuento = double.parse(decodedData['apartado'][0]['descuento']);
-        apartadoSeleccionado.total = double.parse(decodedData['apartado'][0]['total']);
-        apartadoSeleccionado.anticipo = double.parse(decodedData['apartado'][0]['anticipo']);
-        apartadoSeleccionado.pagoEfectivo = double.parse(decodedData['apartado'][0]['pago_efectivo']);
-        apartadoSeleccionado.pagoTarjeta = double.parse(decodedData['apartado'][0]['pago_tarjeta']);
-        apartadoSeleccionado.saldoPendiente = double.parse(decodedData['apartado'][0]['saldo_pendiente']);
-        apartadoSeleccionado.fechaApartado = decodedData['apartado'][0]['fecha_apartado'];
-        apartadoSeleccionado.fechaVencimiento = decodedData['apartado'][0]['fecha_vencimiento'];
-        apartadoSeleccionado.fechaPagoTotal = decodedData['apartado'][0]['fecha_pago_total'];
-        apartadoSeleccionado.fechaEntrega = decodedData['apartado'][0]['fecha_entrega'];
-        apartadoSeleccionado.cancelado = int.parse(decodedData['apartado'][0]['cancelado']);
-        apartadoSeleccionado.pagado = int.parse(decodedData['apartado'][0]['pagado']);
-        apartadoSeleccionado.entregado = int.parse(decodedData['apartado'][0]['entregado']);
-        apartadoSeleccionado.fechaCancelacion = decodedData['apartado'][0]['fecha_cancelacion'];
 
-        apartadoSeleccionado.nombreCliente = decodedData['apartado'][0]['cliente_nombre'];
+        apartadoSeleccionado.id = decodedData['apartado'][0]['id'];
+        apartadoSeleccionado.usuarioId =
+            decodedData['apartado'][0]['usuario_id'];
+        apartadoSeleccionado.clienteId =
+            decodedData['apartado'][0]['cliente_id'];
+        apartadoSeleccionado.folio = decodedData['apartado'][0]['folio'];
+        apartadoSeleccionado.subtotal =
+            double.parse(decodedData['apartado'][0]['subtotal']);
+        apartadoSeleccionado.descuentoId =
+            decodedData['apartado'][0]['descuento_id'];
+        apartadoSeleccionado.descuento =
+            double.parse(decodedData['apartado'][0]['descuento']);
+        apartadoSeleccionado.total =
+            double.parse(decodedData['apartado'][0]['total']);
+        apartadoSeleccionado.anticipo =
+            double.parse(decodedData['apartado'][0]['anticipo']);
+        apartadoSeleccionado.pagoEfectivo =
+            double.parse(decodedData['apartado'][0]['pago_efectivo']);
+        apartadoSeleccionado.pagoTarjeta =
+            double.parse(decodedData['apartado'][0]['pago_tarjeta']);
+        apartadoSeleccionado.saldoPendiente =
+            double.parse(decodedData['apartado'][0]['saldo_pendiente']);
+        apartadoSeleccionado.fechaApartado =
+            decodedData['apartado'][0]['fecha_apartado'];
+        apartadoSeleccionado.fechaVencimiento =
+            decodedData['apartado'][0]['fecha_vencimiento'];
+        apartadoSeleccionado.fechaPagoTotal =
+            decodedData['apartado'][0]['fecha_pago_total'];
+        apartadoSeleccionado.fechaEntrega =
+            decodedData['apartado'][0]['fecha_entrega'];
+        apartadoSeleccionado.cancelado =
+            int.parse(decodedData['apartado'][0]['cancelado']);
+        apartadoSeleccionado.pagado =
+            int.parse(decodedData['apartado'][0]['pagado']);
+        apartadoSeleccionado.entregado =
+            int.parse(decodedData['apartado'][0]['entregado']);
+        apartadoSeleccionado.fechaCancelacion =
+            decodedData['apartado'][0]['fecha_cancelacion'];
+
+        apartadoSeleccionado.nombreCliente =
+            decodedData['apartado'][0]['cliente_nombre'];
 
         listaApartados2.add(apartadoSeleccionado);
 
@@ -298,10 +317,10 @@ class ApartadoProvider {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
-        'saldo_anterior': "100",
+        'saldo_anterior': abono.saldoAnterior?.toStringAsFixed(2),
         'cantidad_efectivo': abono.cantidadEfectivo?.toStringAsFixed(2),
         'cantidad_tarjeta': abono.cantidadTarjeta?.toStringAsFixed(2),
-        'saldo_actual': "0",
+        'saldo_actual': abono.saldoActual?.toStringAsFixed(2),
         'usuario_id': sesion.idUsuario.toString(),
         'negocio_id': sesion.idNegocio.toString(),
         'sucursal_id': sesion.idSucursal.toString(),

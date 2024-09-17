@@ -162,9 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: windowWidth * 0.4,
               child: Center(
                 child:
-                    Text(
-                      'Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'
-                    ),
+                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
               ),
             ),
           ),
@@ -188,22 +186,22 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: windowWidth * 0.05,
           ),
-            ElevatedButton(
-              onPressed: () async {
-                var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(),
-                    ));
-                setState(() {
-                  if (res is String) {}
-                });
-              },
-              child: SizedBox(
-                  width: windowWidth * 0.10,
-                  height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.qr_code_scanner))),
-            ),
+          ElevatedButton(
+            onPressed: () async {
+              var res = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SimpleBarcodeScannerPage(),
+                  ));
+              setState(() {
+                if (res is String) {}
+              });
+            },
+            child: SizedBox(
+                width: windowWidth * 0.10,
+                height: windowHeight * 0.05,
+                child: const Center(child: Icon(Icons.qr_code_scanner))),
+          ),
           SizedBox(
             width: windowWidth * 0.05,
           ),
@@ -250,31 +248,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
-                  keyboardType: TextInputType.number, // This will show the numeric keyboard
+                  keyboardType: TextInputType
+                      .number, // This will show the numeric keyboard
                 ),
               ),
-
             ],
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                  if (CantidadConttroller.text.isEmpty ||
-                      double.parse(CantidadConttroller.text) <= 0) {
-                    mostrarAlerta(context, "AVISO", "valor invalido");
+                if (CantidadConttroller.text.isEmpty ||
+                    double.parse(CantidadConttroller.text) <= 0) {
+                  mostrarAlerta(context, "AVISO", "valor invalido");
+                } else {
+                  if (double.parse(CantidadConttroller.text) >
+                      producto.disponibleInv!) {
+                    mostrarAlerta(context, "AVISO",
+                        "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
                   } else {
-                    if (double.parse(CantidadConttroller.text) >
-                        producto.disponibleInv!) {
-                      mostrarAlerta(context, "AVISO",
-                          "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
-                    } else {
-                      _agregaProductoVenta(
-                        producto,
-                        double.parse(CantidadConttroller.text),
-                      );
-                    }
+                    _agregaProductoVenta(
+                      producto,
+                      double.parse(CantidadConttroller.text),
+                    );
                   }
+                }
               },
               child: const Text('Aceptar '),
             ),
@@ -290,9 +288,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    if ( listaProductosSucursal.isNotEmpty) {
-      for (Producto producto
-          in  listaProductosSucursal) {
+    if (listaProductosSucursal.isNotEmpty) {
+      for (Producto producto in listaProductosSucursal) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {
@@ -304,44 +301,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onTap: (() {
                     if (producto.unidad == "0") {
-                        if (producto.disponibleInv! > 0) {
-                          _alertaProducto(producto);
-                        } else {
-                          mostrarAlerta(context, "AVISO",
-                              "No cuenta con productos disponibles");
-                        }
+                      if (producto.disponibleInv! > 0) {
+                        _alertaProducto(producto);
+                      } else {
+                        mostrarAlerta(context, "AVISO",
+                            "No cuenta con productos disponibles");
+                      }
                     } else {
-                        if (producto.disponibleInv! > 0) {
-                          if (ventaTemporal.isEmpty) {
-                            _agregaProductoVenta(producto, 0);
-                          } else {
-                            ItemVenta? descue = ventaTemporal.firstWhere(
-                              (descuento) =>
-                                  descuento.idArticulo == producto.id,
-                              orElse: () => ItemVenta(
-                                  idArticulo: -1,
-                                  apartado: true,
-                                  cantidad: 1,
-                                  descuento: 1,
-                                  idDescuento: 1,
-                                  precioPublico: 10,
-                                  preciodistribuidor: 10,
-                                  preciomayoreo: 10,
-                                  subTotalItem: 10,
-                                  totalItem: 10),
-                            );
-                            var catidad = descue.cantidad + 1;
-                            if (catidad > producto.disponibleInv!) {
-                              mostrarAlerta(context, "AVISO",
-                                  "Nose puede agregar mas articulos de este producto :${producto.producto}");
-                            } else {
-                              _agregaProductoVenta(producto, 0);
-                            }
-                          }
+                      if (producto.disponibleInv! > 0) {
+                        if (ventaTemporal.isEmpty) {
+                          _agregaProductoVenta(producto, 0);
                         } else {
-                          mostrarAlerta(context, "AVISO",
-                              "No cuenta con productos disponibles");
+                          ItemVenta? descue = ventaTemporal.firstWhere(
+                            (descuento) => descuento.idArticulo == producto.id,
+                            orElse: () => ItemVenta(
+                                idArticulo: -1,
+                                apartado: true,
+                                cantidad: 1,
+                                descuento: 1,
+                                idDescuento: 1,
+                                precioPublico: 10,
+                                preciodistribuidor: 10,
+                                preciomayoreo: 10,
+                                subTotalItem: 10,
+                                totalItem: 10),
+                          );
+                          var catidad = descue.cantidad + 1;
+                          if (catidad > producto.disponibleInv!) {
+                            mostrarAlerta(context, "AVISO",
+                                "Nose puede agregar mas articulos de este producto :${producto.producto}");
+                          } else {
+                            _agregaProductoVenta(producto, 0);
+                          }
                         }
+                      } else {
+                        mostrarAlerta(context, "AVISO",
+                            "No cuenta con productos disponibles");
+                      }
                     }
                   }),
                   title: Row(
@@ -395,25 +391,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
-      var aplica = listaVariables
-          .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
-      for (ItemVenta item in ventaTemporal) {
-        if (aplica.valor == "0") {
-          totalVentaTemporal += item.cantidad * item.precioPublico;
-          item.subTotalItem += item.cantidad * item.precioPublico;
-          item.totalItem += item.cantidad * item.precioPublico;
+    var aplica = listaVariables
+        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
+    for (ItemVenta item in ventaTemporal) {
+      if (aplica.valor == "0") {
+        totalVentaTemporal += item.cantidad * item.precioPublico;
+        item.subTotalItem += item.cantidad * item.precioPublico;
+        item.totalItem += item.cantidad * item.precioPublico;
+      } else {
+        if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+          totalVentaTemporal += item.cantidad * item.preciomayoreo;
+          item.subTotalItem += totalVentaTemporal;
+          item.totalItem += totalVentaTemporal;
         } else {
-          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-            totalVentaTemporal += item.cantidad * item.preciomayoreo;
-            item.subTotalItem += totalVentaTemporal;
-            item.totalItem += totalVentaTemporal;
-          } else {
-            totalVentaTemporal += item.totalItem;
-          }
+          totalVentaTemporal += item.totalItem;
         }
       }
-      setState(() {});
-    
+    }
+    setState(() {});
   }
 
   _agregaProductoVenta(Producto producto, cantidad) {
