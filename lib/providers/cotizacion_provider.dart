@@ -125,19 +125,14 @@ Future<Resultado> consultarcotizacion(int idCotizar) async {
   listacotizacionCabecera.clear();
   listacotizaciondetalles2.clear();
   var url = Uri.parse('$baseUrl/cotizacion-detalle/$idCotizar');
-  print(url);
   try {
     final resp = await http.get(url, headers: {
       'Authorization': 'Bearer ${sesion.token}',
     });
 
     final decodedData = jsonDecode(resp.body);
-    print(decodedData); // Verifica toda la estructura de respuesta
-    print(decodedData['status']);
     
     if (decodedData['status'] == 1) {
-      print("Entro");
-
       // Accede a cotizacion como un mapa, sin índice
       Cotizacion cotizar = Cotizacion();
       cotizar.id = decodedData['cotizacion']['id'];
@@ -154,7 +149,6 @@ Future<Resultado> consultarcotizacion(int idCotizar) async {
       cotizar.fecha_cotizacion = DateTime.parse(decodedData['cotizacion']['fecha_cotizacion']);
       cotizar.dias_vigentes = decodedData['cotizacion']['dias_vigencia'];
       listacotizacionCabecera.add(cotizar);
-      print(listacotizacionCabecera.length);
 
       // Procesa los detalles
       for (int x = 0; x < decodedData['detalles'].length; x++) {

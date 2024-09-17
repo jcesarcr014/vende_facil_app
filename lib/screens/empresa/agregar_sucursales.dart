@@ -37,9 +37,9 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       setState(() {});
     } else {
       resultadosFiltrados.clear();
-
+     
       resultadosFiltrados = listasucursalEmpleado
-          .where((element) => element.usuarioId == sucursalSeleccionado.id)
+          .where((element) => element.sucursalId == sucursalSeleccionado.id)
           .toList();
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
       controllerEmail.text = sucursalSeleccionado.direccion ?? "";
