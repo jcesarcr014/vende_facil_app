@@ -55,7 +55,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Cliente: ${sesion.nombreUsuario}',
+                        'Cliente: ${listaApartados2[0].nombreCliente}',
                         style: const TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
