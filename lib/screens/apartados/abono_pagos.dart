@@ -35,6 +35,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
     TarjetaController.text = "0.00";
     CambioController.text = "0.00";
     EfectivoController.addListener(_updateCambio);
+    TarjetaController.addListener(_updateCambio);
   }
 
   void _updateCambio() {
@@ -44,7 +45,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
       double tarjeta =
           double.tryParse(TarjetaController.text.replaceAll(',', '')) ?? 0.0;
       double total = double.tryParse(TotalConttroller.text) ?? 0.0;
-      double totalEfectivo = efectivo - tarjeta;
+      double totalEfectivo = efectivo + tarjeta;
       double cambio = totalEfectivo - total;
 
       if (cambio < 0) {
