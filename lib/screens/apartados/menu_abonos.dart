@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 
 class MenuAbonoScreen extends StatelessWidget {
   const MenuAbonoScreen({super.key});

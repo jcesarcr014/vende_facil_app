@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class AbonoDetallesScreen extends StatefulWidget {
   const AbonoDetallesScreen({super.key});
@@ -159,17 +160,22 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                         ),
                         Center(
                           child: ElevatedButton(
-                            onPressed: () { 
-                              
-                              VentaCabecera venta = VentaCabecera(
-                                idCliente: listaApartados2[0].id,
-                                subtotal: listaApartados2[0].saldoPendiente,
-                                idDescuento: 0,
-                                descuento: 0,
-                                total: listaApartados2[0].saldoPendiente,
-                              );
-                               Navigator.pushNamed(context, 'abonosPagos',
-                                  arguments: venta); },
+                            onPressed: () {
+                              if (listaApartados2[0].saldoPendiente == 0.0) {
+                                mostrarAlerta(context, "alerta",
+                                    "el articulo se a pagado completo");
+                              } else {
+                                VentaCabecera venta = VentaCabecera(
+                                  idCliente: listaApartados2[0].id,
+                                  subtotal: listaApartados2[0].saldoPendiente,
+                                  idDescuento: 0,
+                                  descuento: 0,
+                                  total: listaApartados2[0].saldoPendiente,
+                                );
+                                Navigator.pushNamed(context, 'abonosPagos',
+                                    arguments: venta);
+                              }
+                            },
                             child: SizedBox(
                               height: windowHeight * 0.1,
                               width: windowWidth * 0.4,

@@ -35,6 +35,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
     TarjetaController.text = "0.00";
     CambioController.text = "0.00";
     EfectivoController.addListener(_updateCambio);
+    TarjetaController.addListener(_updateCambio);
   }
 
   void _updateCambio() {
@@ -44,7 +45,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
       double tarjeta =
           double.tryParse(TarjetaController.text.replaceAll(',', '')) ?? 0.0;
       double total = double.tryParse(TotalConttroller.text) ?? 0.0;
-      double totalEfectivo = efectivo - tarjeta;
+      double totalEfectivo = efectivo + tarjeta;
       double cambio = totalEfectivo - total;
 
       if (cambio < 0) {
@@ -243,6 +244,8 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                                             apartadoId: listaApartados2[0].id,
                                             cantidadEfectivo: efectivo,
                                             cantidadTarjeta: tarjeta,
+                                            saldoActual: listaApartados2[0].total!-(efectivo+tarjeta),
+                                            saldoAnterior: listaApartados2[0].saldoPendiente!
                                           );
           _compra(abono);
       }
@@ -261,8 +264,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                                                   listaApartados2[0].id!, venta)
                                               .then((value) {
                                             if (value.status == 1) {
-                                              Navigator.pop(context);
-                                              showDialog(
+                                               showDialog(
                                                 context: context,
                                                 builder: (context) {
                                                   return AlertDialog(
