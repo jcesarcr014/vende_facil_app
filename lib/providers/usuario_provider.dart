@@ -356,7 +356,6 @@ class UsuarioProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
     }
-    print(respuesta.mensaje);
     return respuesta;
   }
 

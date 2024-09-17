@@ -244,8 +244,8 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                                             apartadoId: listaApartados2[0].id,
                                             cantidadEfectivo: efectivo,
                                             cantidadTarjeta: tarjeta,
-                                            saldoActual: listaApartados2[0].total!-(efectivo+tarjeta),
-                                            saldoAnterior: listaApartados2[0].saldoPendiente!
+                                            saldoActual: listaApartados2[0].saldoPendiente,
+                                            saldoAnterior: listaApartados2[0].saldoPendiente,
                                           );
           _compra(abono);
       }
