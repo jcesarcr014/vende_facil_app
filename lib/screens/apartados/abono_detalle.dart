@@ -186,6 +186,37 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (listaApartados2[0].saldoPendiente == 0.0) {
+                                mostrarAlerta(context, "Alerta",
+                                    "El artículo ya se ha pagado por completo.");
+                              } else {
+                                VentaCabecera venta = VentaCabecera(
+                                  idCliente: listaApartados2[0].id,
+                                  subtotal: listaApartados2[0].saldoPendiente,
+                                  idDescuento: 0,
+                                  descuento: 0,
+                                  total: listaApartados2[0].saldoPendiente,
+                                );
+                                Navigator.pushNamed(context, 'abonosPagos',
+                                    arguments: venta);
+                              }
+                            },
+                            child: SizedBox(
+                              height: windowHeight * 0.1,
+                              width: windowWidth * 0.4,
+                              child: const Center(
+                                child: Text('Cancelar Apartado',
+                                    style: TextStyle(fontSize: 16)),
+                              ),
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           height: windowHeight * 0.1,
                         ),
