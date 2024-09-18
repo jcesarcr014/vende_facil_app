@@ -32,6 +32,9 @@ class AbonosLiquidados extends StatelessWidget {
                 title: Text(apartadosPagados[index].folio!),
                 trailing: Text('\$${apartadosPagados[index].total}'),
                 subtitle: Text('Nombre Cliente: ${listaClientesApartadosLiquidados[index].nombre} \n${DateFormat('yyyy-MM-dd').format(apartadosPagados[index].fechaPagoTotal!)}'),
+                onTap: () {
+                  
+                },
               ),
             ),
       ),
