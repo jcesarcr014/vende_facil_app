@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:vende_facil/models/apartado_pagado_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
@@ -336,6 +337,60 @@ class ApartadoProvider {
     } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> listaApartadosApagados() async {
+    final Uri url = Uri.parse('$baseUrl/apartados-pagados/${sesion.idNegocio}');
+    try {
+      apartadosPagados.clear();
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}'
+      });
+
+      final responseJSON = jsonDecode(response.body);
+
+      if(responseJSON['status'] != 1) {
+        respuesta.status = 0;
+        respuesta.mensaje = responseJSON['msg'] ?? 'Algo salio mal, intentalo mas tarde.';
+        return respuesta;
+      }
+      final List<dynamic> apartados = responseJSON['apartados'];
+
+      apartadosPagados.addAll(
+        apartados.map((item) {
+          return ApartadoPagadoModel(
+            id: item['id'],
+            negocioId: item['negocio_id'],
+            sucursalId: item['sucursal_id'],
+            usuarioId: item['usuario_id'],
+            clienteId: item['cliente_id'],
+            folio: item['folio'],
+            subtotal: item['subtotal'] != null ? double.tryParse(item['subtotal']) ?? 0.0 : 0.0,
+            descuentoId: item['descuento_id'],
+            descuento: item['descuento'] != null ? double.tryParse(item['descuento']) ?? 0.0 : 0.0,
+            total: item['total'] != null ? double.tryParse(item['total']) ?? 0.0 : 0.0,
+            anticipo: item['anticipo'] != null ? double.tryParse(item['anticipo']) ?? 0.0 : 0.0,
+            pagoEfectivo: item['pago_efectivo'] != null ? double.tryParse(item['pago_efectivo']) ?? 0.0 : 0.0,
+            pagoTarjeta: item['pago_tarjeta'] != null ? double.tryParse(item['pago_tarjeta']) ?? 0.0 : 0.0,
+            saldoPendiente: item['saldo_pendiente'] != null ? double.tryParse(item['saldo_pendiente']) ?? 0.0 : 0.0,
+            fechaApartado: item['fecha_apartado'] != null ? DateTime.tryParse(item['fecha_apartado']) : null,
+            fechaVencimiento: item['fecha_vencimiento'] != null ? DateTime.tryParse(item['fecha_vencimiento']) : null,
+            fechaPagoTotal: item['fecha_pago_total'] != null ? DateTime.tryParse(item['fecha_pago_total']) : null,
+            fechaEntrega: item['fecha_entrega'] != null ? DateTime.tryParse(item['fecha_entrega']) : null,
+            cancelado: item['cancelado'],
+            pagado: item['pagado'],
+            entregado: item['entregado'],
+            fechaCancelacion: item['fecha_cancelacion'] != null ? DateTime.tryParse(item['fecha_cancelacion']) : null,
+          );
+        }).toList()
+      );
+      respuesta.status = 1;
+      respuesta.mensaje = 'Lista de Apartados Pagados';
+    } catch(e) {
+      respuesta.status = 0;
+      respuesta.mensaje = e.toString();
     }
     return respuesta;
   }

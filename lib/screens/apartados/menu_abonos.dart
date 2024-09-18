@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/apartado_pagado_model.dart';
+import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class MenuAbonoScreen extends StatelessWidget {
+  static final apartadoProvider =ApartadoProvider();
+
   const MenuAbonoScreen({super.key});
 
   @override
@@ -39,6 +44,21 @@ class MenuAbonoScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.pushNamed(context, 'selecionarSA');
                     }),
+                ListTile(
+                  leading: const Icon(Icons.check),
+                  title: const Text('Abonos Liquidados', style: TextStyle(fontWeight: FontWeight.bold),),
+                  subtitle: const Text('Visualiza una lista de tus abonos liquidados'),
+                  trailing: const Icon(Icons.arrow_right),
+                  onTap: () async {
+                    final resultado = await apartadoProvider.listaApartadosApagados();
+                    if(resultado.status != 1) {
+                      mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+                      return;
+                    }
+                    print(apartadosPagados.isEmpty);
+                    Navigator.pushNamed(context, 'abonos-liquidados');
+                  }
+                )
               ],
             )),
       ),

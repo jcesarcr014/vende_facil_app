@@ -57,6 +57,7 @@ class AppRoutes {
     'selecionarSA':(BuildContext context)=> const SucursalesAbonoScreen(),
     'menuAbonos':(BuildContext context)=> const MenuAbonoScreen(),
     'detalleCotizacions':(BuildContext context)=> const CotizacionDetallesScreen(),
+    'abonos-liquidados': (BuildContext context) => const AbonosLiquidados()
   };
 
     static Route<dynamic> onGenerateRoute(RouteSettings settings) {
