@@ -214,6 +214,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
+                    
                     _sucursales(),
                     SizedBox(
                       height: windowHeight * 0.05,

@@ -77,7 +77,7 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
                     title: Text(listaApartados[index].folio.toString()),
                     subtitle:
                         Text(listaApartados[index].fechaVencimiento.toString()),
-                    trailing: Text(listaApartados[index].total.toString()),
+                    trailing: Text('\$${listaApartados[index].total.toString()}'),
                     onTap: () {
                       apartados
                           .detallesApartado(listaApartados[index].id!)

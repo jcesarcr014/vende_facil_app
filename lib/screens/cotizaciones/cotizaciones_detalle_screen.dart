@@ -39,7 +39,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
-  bool _valuePieza = false;
 
   final TicketProvider ticketProvider = TicketProvider();
   final NegocioProvider negocioProvider = NegocioProvider();
@@ -387,20 +386,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                     ),
                     SizedBox(width: windowWidth * 0.1),
                   ]),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SwitchListTile.adaptive(
-                      title: const Text('Tipo de venta:'),
-                      subtitle: Text(_valuePieza ? 'Domicilio' : 'Tienda'),
-                      value: _valuePieza,
-                      onChanged: (value) {
-                        _valuePieza = value;
-                        setState(() {
-                          _actualizaTotalTemporal();
-                        });
-                      },
-                    ),
-                  ),
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     SizedBox(width: windowWidth * 0.1),
                     SizedBox(
@@ -635,24 +620,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
       value: _valueIdcliente,
       onChanged: (value) {
         _valueIdcliente = value!;
-        setState(() {
-          var clienteseleccionado = listaClientes.firstWhere(
-              (cliente) => cliente.id == int.parse(_valueIdcliente));
-          if (clienteseleccionado.distribuidor == 1) {
-            setState(() {
-              // totalVentaTemporal += item.totalItem;
-              // subTotalItem += item.subTotalItem;
-              // descuento += item.descuento;
-              totalCotizacionTemporal = 0.00;
-              for (ItemVenta item in cotizarTemporal) {
-                totalCotizacionTemporal =
-                    item.cantidad * item.preciodistribuidor;
-                subTotalItem = totalCotizacionTemporal;
-              }
-              _valuePieza = false;
-            });
-          }
-        });
       },
     );
   }
