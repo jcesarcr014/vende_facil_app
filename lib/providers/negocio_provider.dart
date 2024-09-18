@@ -142,7 +142,7 @@ class NegocioProvider {
   }
 
   Future<Resultado> deleteEmpleadoSUcursal(idE, idS) async {
-    var url = Uri.parse('$baseUrl/sucursales-empleados/${idS}/${idE}');
+    var url = Uri.parse('$baseUrl/sucursales-empleados/${idE}/${idS}');
     try {
       final resp = await http.delete(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -159,6 +159,7 @@ class NegocioProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion, $e';
     }
+
     return respuesta;
   }
 
@@ -278,6 +279,7 @@ class NegocioProvider {
 
   Future<Resultado> getlistaempleadosEnsucursales(String? idSucursal) async {
     idSucursal ??= sesion.idNegocio.toString();
+
     listasucursalEmpleado.clear();
     var url = Uri.parse('$baseUrl/sucursales-empleados/$idSucursal');
     try {

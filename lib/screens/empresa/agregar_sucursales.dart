@@ -36,10 +36,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       funcion.text = "Guardar";
       setState(() {});
     } else {
-      resultadosFiltrados.clear();
-      resultadosFiltrados = listasucursalEmpleado
-          .where((element) => element.sucursalId == sucursalSeleccionado.id)
-          .toList();
+      filtrarResultados();
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
       controllerEmail.text = sucursalSeleccionado.direccion ?? "";
       controllerTelefono.text = sucursalSeleccionado.telefono ?? "";
@@ -56,6 +53,20 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     controllerEmail.dispose();
     controllerTelefono.dispose();
     super.dispose();
+  }
+
+  Future<void> filtrarResultados() async {
+    resultadosFiltrados.clear();
+    // Simular un retraso si es necesario
+    await Future.delayed(Duration(milliseconds: 100));
+
+    // Realizar la operación de filtrado
+    resultadosFiltrados = listasucursalEmpleado
+        .where((element) => element.sucursalId == sucursalSeleccionado.id)
+        .toList();
+
+    // Llamar a setState si esto afecta la interfaz de usuario para actualizarla
+    setState(() {});
   }
 
 /*
