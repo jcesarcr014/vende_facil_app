@@ -28,6 +28,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   int idcliente = 0;
   int idDescuento = 0;
   bool _valuePieza = false;
+  final cantidadControllers = TextEditingController();
 
   final TicketProvider ticketProvider = TicketProvider();
   final NegocioProvider negocioProvider = NegocioProvider();
@@ -46,6 +47,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   void _fetchData() {
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
@@ -109,29 +111,29 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                     ),
                   ]),
                   const SizedBox(height: 0.5),
-                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      SizedBox(width: windowWidth * 0.1),
-                      SizedBox(
+                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
+                      width: windowWidth * 0.2,
+                      child: const Text(
+                        'Descuento ',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
+                    Expanded(
+                      child: _descuentos(),
+                    ),
+                    SizedBox(width: windowWidth * 0.1),
+                    SizedBox(
                         width: windowWidth * 0.2,
-                        child: const Text(
-                          'Descuento ',
+                        child: Text(
+                          '\$${descuento.toStringAsFixed(2)}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      SizedBox(width: windowWidth * 0.1),
-                      Expanded(
-                        child: _descuentos(),
-                      ),
-                      SizedBox(width: windowWidth * 0.1),
-                      SizedBox(
-                          width: windowWidth * 0.2,
-                          child: Text(
-                            '\$${descuento.toStringAsFixed(2)}',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          )),
-                    ]),
+                        )),
+                  ]),
                   SizedBox(
                     height: windowHeight * 0.03,
                   ),
@@ -193,67 +195,67 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       height: windowHeight * 0.1,
                     ),
                   ]),
-                    Center(
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                VentaCabecera venta = VentaCabecera(
-                                  idCliente: int.parse(_valueIdcliente),
-                                  subtotal: subTotalItem,
-                                  idDescuento: idDescuento,
-                                  descuento: descuento,
-                                  total: totalVentaTemporal,
-                                );
-                                Navigator.pushNamed(context, 'venta',
-                                    arguments: venta);
-                                setState(() {});
-                              },
-                              child: SizedBox(
-                                height: windowHeight * 0.1,
-                                width: windowWidth * 0.6,
-                                child: Center(
-                                  child: Text(
-                                    'Cobrar   \$${totalVentaTemporal.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                  Center(
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              VentaCabecera venta = VentaCabecera(
+                                idCliente: int.parse(_valueIdcliente),
+                                subtotal: subTotalItem,
+                                idDescuento: idDescuento,
+                                descuento: descuento,
+                                total: totalVentaTemporal,
+                              );
+                              Navigator.pushNamed(context, 'venta',
+                                  arguments: venta);
+                              setState(() {});
+                            },
+                            child: SizedBox(
+                              height: windowHeight * 0.1,
+                              width: windowWidth * 0.6,
+                              child: Center(
+                                child: Text(
+                                  'Cobrar   \$${totalVentaTemporal.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              )),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          ElevatedButton(
-                              onPressed: () {
-                                _validaApartado();
-                              },
-                              child: SizedBox(
-                                height: windowHeight * 0.07,
-                                width: windowWidth * 0.6,
-                                child: const Center(
-                                  child: Text(
-                                    'Apartar',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                              ),
+                            )),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              _validaApartado();
+                            },
+                            child: SizedBox(
+                              height: windowHeight * 0.07,
+                              width: windowWidth * 0.6,
+                              child: const Center(
+                                child: Text(
+                                  'Apartar',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              )),
-                        ],
-                      ),
+                              ),
+                            )),
+                      ],
                     ),
+                  ),
                 ],
               )),
     );
   }
+
   _listaTemporal() {
     List<Widget> productos = [];
     for (ItemVenta item in ventaTemporal) {
-      for (Producto prod
-          in listaProductosSucursal) {
+      for (Producto prod in listaProductosSucursal) {
         if (prod.id == item.idArticulo) {
           prod.costo = item.totalItem;
           prod.cantidad = item.cantidad;
@@ -286,48 +288,136 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                       children: [
                         SizedBox(
                           width: windowWidth * 0.1,
-                          child: IconButton(
-                            onPressed: item.totalItem > 0.00
-                                ? () {
-                                    item.cantidad--;
-                                    // item.subTotalItem =
-                                    //     item.precioPublico * item.cantidad;
-                                    // item.totalItem =
-                                    //     item.subTotalItem - item.descuento;
-                                    if (item.cantidad == 0) {
-                                      _removerItemTemporal(item);
-                                    }
-                                    _actualizaTotalTemporal();
-                                  }
-                                : null,
-                            icon: const Icon(Icons.remove_circle_outline),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                              return ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              );
+                            },
+                            child: Tooltip(
+                              message: 'Editar Cantidad',
+                              child: IconButton(
+                                key: ValueKey<double>(item.cantidad),
+                                onPressed: item.totalItem > 0.00
+                                    ? () {
+                                        setState(() {
+                                          cantidadControllers.text ='${item.cantidad}';
+                                        });
+                                        showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              content: Row(
+                                                children: [
+                                                  const Flexible(
+                                                    child: Text(
+                                                      'Cantidad :',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: windowWidth * 0.05,
+                                                  ),
+                                                  Flexible(
+                                                    child: InputField(
+                                                      textCapitalization:
+                                                          TextCapitalization
+                                                              .words,
+                                                      controller:
+                                                          cantidadControllers,
+                                                      keyboardType: TextInputType
+                                                          .number, // This will show the numeric keyboard
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    if (cantidadControllers
+                                                            .text.isEmpty ||
+                                                        double.parse(
+                                                                cantidadControllers
+                                                                    .text) <=
+                                                            0) {
+                                                      mostrarAlerta(
+                                                          context,
+                                                          "AVISO",
+                                                          "valor invalido");
+                                                    } else {
+                                                      if (double.parse(
+                                                              cantidadControllers
+                                                                  .text) >
+                                                          prod.disponibleInv!) {
+                                                            cantidadControllers
+                                                            .text = '${item.cantidad}';
+                                                        mostrarAlerta(
+                                                            context,
+                                                            "AVISO",
+                                                            "Nose puede agregar mas articulos de este producto :${prod.producto}, Productos Disponibles: ${prod.disponibleInv} ");
+                                                      } else {
+                                                        item.cantidad =
+                                                            double.parse(
+                                                                cantidadControllers
+                                                                    .text);
+                                                        _actualizaTotalTemporal();cantidadControllers.text = '${item.cantidad}';
+                                                      }
+                                                    }
+                                                  },
+                                                  child: const Text('Aceptar '),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text('Cancelar'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.edit),
+                              ),
+                            ),
                           ),
                         ),
+
                         SizedBox(
                             width: windowWidth * 0.15,
                             child: Text(
                               '  ${item.cantidad} ',
                               textAlign: TextAlign.center,
                             )),
-                        SizedBox(
-                            width: windowWidth * 0.1,
-                            child: IconButton(
-                                onPressed: () {
-                                    var catidad = item.cantidad + 1;
+                        // SizedBox(
+                        //     width: windowWidth * 0.1,
+                        //     child: IconButton(
+                        //         onPressed: () {
+                        //             var catidad = item.cantidad + 1;
 
-                                    if (catidad > prod.disponibleInv!) {
-                                      mostrarAlerta(context, "AVISO",
-                                          "Nose puede agregar mas articulos de este producto ");
-                                    } else {
-                                      item.cantidad++;
-                                      // item.subTotalItem =
-                                      //     item.precioPublico * item.cantidad;
-                                      // item.totalItem =
-                                      //     item.subTotalItem - item.descuento;
-                                      _actualizaTotalTemporal();
-                                    }
-                                },
-                                icon: const Icon(Icons.add_circle_outline))),
+                        //             if (catidad > prod.disponibleInv!) {
+                        //               mostrarAlerta(context, "AVISO",
+                        //                   "Nose puede agregar mas articulos de este producto ");
+                        //             } else {
+                        //               item.cantidad++;
+                        //               // item.subTotalItem =
+                        //               //     item.precioPublico * item.cantidad;
+                        //               // item.totalItem =
+                        //               //     item.subTotalItem - item.descuento;
+                        //               _actualizaTotalTemporal();
+                        //             }
+                        //         },
+                        //         icon: const Icon(Icons.add_circle_outline))),
                       ],
                     ),
                     Text('\$${item.totalItem.toStringAsFixed(2)}')
@@ -385,40 +475,40 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   _actualizaTotalTemporal() {
-      var aplica = listaVariables
-          .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
-      totalVentaTemporal = 0;
-      subTotalItem = 0;
-      descuento = 0;
-      if (_valuePieza == true) {
-        for (ItemVenta item in ventaTemporal) {
+    var aplica = listaVariables
+        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
+    totalVentaTemporal = 0;
+    subTotalItem = 0;
+    descuento = 0;
+    if (_valuePieza == true) {
+      for (ItemVenta item in ventaTemporal) {
+        totalVentaTemporal += item.cantidad * item.precioPublico;
+        subTotalItem += item.cantidad * item.precioPublico;
+        item.totalItem = item.cantidad * item.precioPublico;
+      }
+    } else {
+      for (ItemVenta item in ventaTemporal) {
+        if (aplica.valor == "0") {
           totalVentaTemporal += item.cantidad * item.precioPublico;
           subTotalItem += item.cantidad * item.precioPublico;
           item.totalItem = item.cantidad * item.precioPublico;
-        }
-      } else {
-        for (ItemVenta item in ventaTemporal) {
-          if (aplica.valor == "0") {
+          descuento += item.descuento;
+        } else {
+          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+            totalVentaTemporal += item.cantidad * item.preciomayoreo;
+            subTotalItem += item.cantidad * item.preciomayoreo;
+            item.totalItem = item.cantidad * item.preciomayoreo;
+            descuento += item.descuento;
+          } else {
             totalVentaTemporal += item.cantidad * item.precioPublico;
             subTotalItem += item.cantidad * item.precioPublico;
             item.totalItem = item.cantidad * item.precioPublico;
             descuento += item.descuento;
-          } else {
-            if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-              totalVentaTemporal += item.cantidad * item.preciomayoreo;
-              subTotalItem += item.cantidad * item.preciomayoreo;
-              item.totalItem = item.cantidad * item.preciomayoreo;
-              descuento += item.descuento;
-            } else {
-              totalVentaTemporal += item.cantidad * item.precioPublico;
-              subTotalItem += item.cantidad * item.precioPublico;
-              item.totalItem = item.cantidad * item.precioPublico;
-              descuento += item.descuento;
-            }
           }
         }
       }
-      setState(() {});
+    }
+    setState(() {});
   }
 
   _descuentos() {
