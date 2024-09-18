@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/apartados/abono_liquidado_detalle.dart';
 export 'package:vende_facil/screens/apartados/abonos_liquidados.dart';
 export 'package:vende_facil/screens/ventas/detalles_abono.dart';
 export 'package:vende_facil/screens/ventas/detalles_apartado.dart';

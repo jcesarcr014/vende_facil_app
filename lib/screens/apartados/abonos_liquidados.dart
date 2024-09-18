@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class AbonosLiquidados extends StatelessWidget {
+  static final apartadoProvider = ApartadoProvider();
+
   const AbonosLiquidados({super.key});
 
   @override
@@ -32,8 +36,13 @@ class AbonosLiquidados extends StatelessWidget {
                 title: Text(apartadosPagados[index].folio!),
                 trailing: Text('\$${apartadosPagados[index].total}'),
                 subtitle: Text('Nombre Cliente: ${listaClientesApartadosLiquidados[index].nombre} \n${DateFormat('yyyy-MM-dd').format(apartadosPagados[index].fechaPagoTotal!)}'),
-                onTap: () {
-                  
+                onTap: () async {
+                  Resultado resultado = await apartadoProvider.detallesApartado(apartadosPagados[index].id!);
+                  if(resultado.status != 1) {
+                    mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+                    return;
+                  }
+                  Navigator.pushNamed(context, 'abono-liquidado-detalle');
                 },
               ),
             ),
