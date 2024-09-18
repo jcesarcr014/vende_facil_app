@@ -162,8 +162,8 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (listaApartados2[0].saldoPendiente == 0.0) {
-                                mostrarAlerta(context, "alerta",
-                                    "el articulo se a pagado completo");
+                                mostrarAlerta(context, "Alerta",
+                                    "El artículo ya se ha pagado por completo.");
                               } else {
                                 VentaCabecera venta = VentaCabecera(
                                   idCliente: listaApartados2[0].id,

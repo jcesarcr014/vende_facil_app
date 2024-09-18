@@ -37,7 +37,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       setState(() {});
     } else {
       resultadosFiltrados.clear();
-      print(' sucursal selecinado ${sucursalSeleccionado.id}');
       resultadosFiltrados = listasucursalEmpleado
           .where((element) => element.sucursalId == sucursalSeleccionado.id)
           .toList();
@@ -378,8 +377,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             mostrarAlerta(context, "Alerta",
                                 "Debe seleccionar un empleado");
                           } else {
-                            print(sucursalSeleccionado.id);
-                            print(sucursalSeleccionado.negocioId);
                             SucursalEmpleado sucursal = SucursalEmpleado();
                             sucursal.empleadoId = int.parse(_valueIdEmpleado);
                             sucursal.sucursalId = sucursalSeleccionado.id;
