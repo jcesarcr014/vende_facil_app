@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 import '../../models/models.dart';
 
 class AbonoLiquidadoDetalle extends StatelessWidget {
+  static final ApartadoProvider provider = ApartadoProvider();
+
   const AbonoLiquidadoDetalle({super.key});
 
   @override
@@ -103,7 +107,14 @@ class AbonoLiquidadoDetalle extends StatelessWidget {
                 height: screenHeight * 0.1,
                 child: ElevatedButton(
                   onPressed: () async {
-                
+                    final resultado = await provider.entregarProducto(listaApartados2[0].id!);
+                    if(resultado.status != 1) {
+                      mostrarAlerta(context, 'Error', resultado.mensaje!);
+                      return;
+                    }
+
+                    mostrarAlerta(context, 'Exitoso', resultado.mensaje!);
+                    Navigator.pop(context);
                   }, 
                   child: const Text('Entregar producto(s)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)
                 ),
