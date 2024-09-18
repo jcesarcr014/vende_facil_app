@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/apartado_pagado_model.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class MenuAbonoScreen extends StatelessWidget {
-  static final apartadoProvider =ApartadoProvider();
+  static final apartadoProvider = ApartadoProvider();
+  static final clienteProvider = ClienteProvider();
 
   const MenuAbonoScreen({super.key});
 
@@ -55,7 +56,12 @@ class MenuAbonoScreen extends StatelessWidget {
                       mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
                       return;
                     }
-                    print(apartadosPagados.isEmpty);
+                    listaClientesApartadosLiquidados.clear();
+                    for (var apartadoPagado in apartadosPagados) {
+                      listaClientesApartadosLiquidados.add(listaClientes.firstWhere(
+                        (cliente) => cliente.id ==  apartadoPagado.clienteId, orElse: () => Cliente(id: 0, nombre: 'Publico en general')
+                      ));
+                    }
                     Navigator.pushNamed(context, 'abonos-liquidados');
                   }
                 )
