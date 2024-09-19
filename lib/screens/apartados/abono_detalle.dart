@@ -198,10 +198,11 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                                   });
                               await apartado.cancelarApartado(listaApartados2[0].id!).then((value) {
                                if (value.status==1) {
-                                 Navigator.pushNamed(context, 'apartados');
                                   setState(() {
                                     isLoading = false;
                                   });
+                                  Navigator.pushReplacementNamed(context, 'menuAbonos');
+                                  mostrarAlerta(context, 'Alerta', 'se cancelo apartado.', tituloColor:  Colors.green, mensajeColor: Colors.black);
                                } else {
                                   setState(() {
                                     isLoading = false;
