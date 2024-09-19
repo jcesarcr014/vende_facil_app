@@ -55,7 +55,7 @@ class _HistorialCotizacionesScreenState
   }
 
   _cargar() async {
-    await cotizaciones.listarCotizaciones();
+    await cotizaciones.listarCotizaciones(sesion.idNegocio!);
   }
 
   @override
@@ -217,32 +217,10 @@ class _HistorialCotizacionesScreenState
   }
 
   _setEmpleados(String? value) async {
-    if (value == '-1') return;
-    isLoading = true;
-    setState(() {});
     _empleadoSeleccionado = value;
-    if (value == '0') {
-      final resultado = await reportesProvider.reporteSucursal(
-          formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
-      isLoading = false;
-      setState(() {
-        _busqueda();
-      });
-      if (resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
-        return;
-      }
-      return;
-    }
-
-    final resultado = await reportesProvider.reporteEmpleado(
-        formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
-    isLoading = false;
+    if (value == '-1' || value == '0') return;
+    listacotizacion = listacotizacion.where((cotizacion) => cotizacion.usuarioId.toString() == value).toList();
     setState(() {});
-    if (resultado.status != 1) {
-      mostrarAlerta(context, 'Error', resultado.mensaje!);
-      return;
-    }
   }
 
   _empleados() {
@@ -315,11 +293,9 @@ class _HistorialCotizacionesScreenState
               isLoading = true;
               _sucursalSeleccionada = value;
               setState(() {});
-              _busqueda();
               if (value == '0') {
                 _allBranchOffice = null;
-                final resultado = await reportesProvider.reporteGeneral(
-                    formattedStartDate, formattedEndDate);
+                final resultado = await cotizaciones.listarCotizaciones(sesion.idNegocio!);
                 isLoading = false;
                 setState(() {});
                 if (resultado.status != 1) {
@@ -330,8 +306,7 @@ class _HistorialCotizacionesScreenState
               }
               isLoading = true;
               _allBranchOffice = true;
-              final resultado =
-                  await provider.getlistaempleadosEnsucursales(value!);
+              final resultado = await cotizaciones.listarCotizaciones(int.parse(value!));
               if (resultado.status == 1) {
                 isLoading = false;
                 setState(() {});
@@ -348,39 +323,16 @@ class _HistorialCotizacionesScreenState
     }
   }
 
-  _busqueda() {
-    int empleado = 0;
-    int sucursals = 0;
-    if (_empleadoSeleccionado == '0') {
-      empleado = sesion.idUsuario!;
-    } else {
-      empleado = int.parse(_empleadoSeleccionado!);
-    }
-    if (_sucursalSeleccionada == '0') {
-      sucursals = sesion.idNegocio!;
-    } else {
-      sucursals = int.parse(_sucursalSeleccionada!);
-    }
-    var resultado = listacotizacion
-        .where((element) =>
-            element.id_sucursal == sucursals &&
-            element.usuarioId == empleado &&
-            element.fecha_cotizacion!.isAfter(_startDate) &&
-            element.fecha_cotizacion!.isBefore(_endDate))
-        .toList();
-    return resultado;
-  }
 
   _listaVentas() {
-    List<Cotizacion> resultadoCotizaciones = _busqueda();
-    if (resultadoCotizaciones.isEmpty) {
+    if (listacotizacion.isEmpty) {
       return const Center(
         child: Text(
             'No hay cotizaciones realizadas en el rango de fechas seleccionado.'),
       );
     } else {
       return Column(
-        children: resultadoCotizaciones.map((cotizar) {
+        children: listacotizacion.map((cotizar) {
           return ListTile(
             title: Text(cotizar.folio!),
             subtitle: Text('${cotizar.venta_realizada!}'),
