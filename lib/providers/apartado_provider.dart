@@ -289,6 +289,7 @@ class ApartadoProvider {
     }
     return respuesta;
   }
+  
 
   Future<Resultado> cancelarApartado(int idApartado) async {
     var url = Uri.parse('$baseUrl/apartado-cancelar/$idApartado');

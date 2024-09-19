@@ -191,21 +191,24 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                         ),
                         Center(
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (listaApartados2[0].saldoPendiente == 0.0) {
-                                mostrarAlerta(context, "Alerta",
-                                    "El artículo ya se ha pagado por completo.");
-                              } else {
-                                VentaCabecera venta = VentaCabecera(
-                                  idCliente: listaApartados2[0].id,
-                                  subtotal: listaApartados2[0].saldoPendiente,
-                                  idDescuento: 0,
-                                  descuento: 0,
-                                  total: listaApartados2[0].saldoPendiente,
-                                );
-                                Navigator.pushNamed(context, 'abonosPagos',
-                                    arguments: venta);
-                              }
+                            onPressed: () async {
+                                 setState(() {
+                                    textLoading = 'Actualizando apartado...';
+                                    isLoading = true;
+                                  });
+                              await apartado.cancelarApartado(listaApartados2[0].id!).then((value) {
+                               if (value.status==1) {
+                                 Navigator.pushNamed(context, 'apartados');
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                               } else {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                 mostrarAlerta(context, "Error", "No se pudo cancelar el apartado.");
+                               }
+                              });
                             },
                             child: SizedBox(
                               height: windowHeight * 0.1,
