@@ -28,3 +28,5 @@ class Cliente {
 }
 
 List<Cliente> listaClientes = [];
+
+List<Cliente> listaClientesApartadosLiquidados = [];
