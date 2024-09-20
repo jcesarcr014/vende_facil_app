@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -87,6 +88,18 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaArticulos = true;
           }
         });
+        if (sesion.tipoUsuario == 'D') {
+          print("${sesion.tipoUsuario},${sesion.idSucursal}");
+          await articulosProvider
+              .listarProductosSucursal(sesion.idSucursal!)
+              .then((value) {
+            if (value.status == 1) {
+              globals.actualizaArticulos = false;
+            } else {
+              globals.actualizaArticulos = true;
+            }
+          });
+        }
         setState(() {
           textLoading = 'Leyendo información adicional';
         });

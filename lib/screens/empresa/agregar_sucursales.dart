@@ -36,10 +36,9 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       funcion.text = "Guardar";
       setState(() {});
     } else {
-      resultadosFiltrados.clear();
-      resultadosFiltrados = listasucursalEmpleado
-          .where((element) => element.sucursalId == sucursalSeleccionado.id)
-          .toList();
+
+      filtrarResultados();
+
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
       controllerEmail.text = sucursalSeleccionado.direccion ?? "";
       controllerTelefono.text = sucursalSeleccionado.telefono ?? "";
@@ -56,6 +55,20 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     controllerEmail.dispose();
     controllerTelefono.dispose();
     super.dispose();
+  }
+
+  Future<void> filtrarResultados() async {
+    resultadosFiltrados.clear();
+    // Simular un retraso si es necesario
+    await Future.delayed(Duration(milliseconds: 100));
+
+    // Realizar la operación de filtrado
+    resultadosFiltrados = listasucursalEmpleado
+        .where((element) => element.sucursalId == sucursalSeleccionado.id)
+        .toList();
+
+    // Llamar a setState si esto afecta la interfaz de usuario para actualizarla
+    setState(() {});
   }
 
 /*
@@ -372,7 +385,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                       height: windowHeight * 0.05,
                     ),
                     ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_valueIdEmpleado == "0") {
                             mostrarAlerta(context, "Alerta",
                                 "Debe seleccionar un empleado");
@@ -382,19 +395,26 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             sucursal.sucursalId = sucursalSeleccionado.id;
                             sucursal.negocioId = sesion.idNegocio;
                             sucursal.propietarioId = sesion.idUsuario;
-                            negocio.addSucursalEmpleado(sucursal).then((value) {
+                           await negocio.addSucursalEmpleado(sucursal).then((value) {
                               setState(() {
-                                textLoading = '';
-                                isLoading = false;
-                                globals.actualizarEmpleadoSucursales = true;
+                                textLoading = 'Empleado asignado a la sucursal';
+                                isLoading = true;
                               });
                               if (value.status == 1) {
+                                  setState(() {
+                                  isLoading = false;
+                                  globals.actualizarEmpleadoSucursales = true;
+                                });
                                 setState(() {
                                   Navigator.pushReplacementNamed(
                                       context, 'lista-sucursales');
                                 });
                                 mostrarAlerta(context, '', value.mensaje!);
                               } else {
+                                setState(() {
+                                  isLoading = false;
+                                  globals.actualizarEmpleadoSucursales = true;
+                                });
                                 mostrarAlerta(context, 'ERROR', value.mensaje!);
                               }
                             });

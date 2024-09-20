@@ -30,6 +30,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
+  final cantidadControllers = TextEditingController();
   String _valueIdcliente = listaClientes
       .firstWhere((cliente) => cliente.nombre == 'Público en general')
       .id
@@ -525,19 +526,100 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
+SizedBox(
                           width: windowWidth * 0.1,
-                          child: IconButton(
-                            onPressed: item.totalItem > 0.00
-                                ? () {
-                                    item.cantidad--;
-                                    if (item.cantidad == 0) {
-                                      _removerItemTemporal(item);
-                                    }
-                                    _actualizaTotalTemporal();
-                                  }
-                                : null,
-                            icon: const Icon(Icons.remove_circle_outline),
+
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                              return ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              );
+                            },
+                            child: Tooltip(
+                              message: 'Editar Cantidad',
+                              child: IconButton(
+                                key: ValueKey<double>(item.cantidad),
+                                onPressed: item.totalItem > 0.00
+                                    ? () {
+                                        setState(() {
+                                          cantidadControllers.text ='${item.cantidad}';
+                                        });
+                                        showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              content: Row(
+                                                children: [
+                                                  const Flexible(
+                                                    child: Text(
+                                                      'Cantidad :',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: windowWidth * 0.05,
+                                                  ),
+                                                  Flexible(
+                                                    child: InputField(
+                                                      textCapitalization:
+                                                          TextCapitalization
+                                                              .words,
+                                                      controller:
+                                                          cantidadControllers,
+                                                      keyboardType: TextInputType
+                                                          .number, // This will show the numeric keyboard
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    if (cantidadControllers
+                                                            .text.isEmpty ||
+                                                        double.parse(
+                                                                cantidadControllers
+                                                                    .text) <=
+                                                            0) {
+                                                      mostrarAlerta(
+                                                          context,
+                                                          "AVISO",
+                                                          "valor invalido");
+                                                    } else {
+                                                        item.cantidad =
+                                                            double.parse(
+                                                                cantidadControllers
+                                                                    .text);
+                                                        _actualizaTotalTemporal();cantidadControllers.text = '${item.cantidad}';
+                                                    }
+                                                  },
+                                                  child: const Text('Aceptar '),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text('Cancelar'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    : null,
+                                icon: const Icon(Icons.edit),
+                              ),
+                            ),
+
                           ),
                         ),
                         SizedBox(
@@ -546,14 +628,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                               '  ${item.cantidad} ',
                               textAlign: TextAlign.center,
                             )),
-                        SizedBox(
-                            width: windowWidth * 0.1,
-                            child: IconButton(
-                                onPressed: () {
-                                  item.cantidad++;
-                                  _actualizaTotalTemporal();
-                                },
-                                icon: const Icon(Icons.add_circle_outline))),
                       ],
                     ),
                     Text('\$${item.totalItem.toStringAsFixed(2)}')
@@ -613,6 +687,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
       value: _valueIdcliente,
       onChanged: (value) {
         _valueIdcliente = value!;
+
         setState(() {
           var clienteseleccionado = listaClientes.firstWhere(
               (cliente) => cliente.id == int.parse(_valueIdcliente));
@@ -627,6 +702,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
             });
           }
         });
+
       },
     );
   }

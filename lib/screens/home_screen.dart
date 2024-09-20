@@ -32,6 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    if(sesion.tipoUsuario=='E'){
+    setState(() {
+      globals.actualizaArticulos = true;
+    });
+    }
     _actualizaTotalTemporal();
     if (globals.actualizaArticulos) {
       setState(() {

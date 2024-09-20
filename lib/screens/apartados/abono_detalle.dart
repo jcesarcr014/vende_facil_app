@@ -55,7 +55,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Cliente: ${sesion.nombreUsuario}',
+                        'Cliente: ${listaApartados2[0].nombreCliente}',
                         style: const TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -162,8 +162,8 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (listaApartados2[0].saldoPendiente == 0.0) {
-                                mostrarAlerta(context, "alerta",
-                                    "el articulo se a pagado completo");
+                                mostrarAlerta(context, "Alerta",
+                                    "El artículo ya se ha pagado por completo.");
                               } else {
                                 VentaCabecera venta = VentaCabecera(
                                   idCliente: listaApartados2[0].id,
@@ -181,6 +181,41 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                               width: windowWidth * 0.4,
                               child: const Center(
                                 child: Text('Agregar Abono',
+                                    style: TextStyle(fontSize: 16)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                                 setState(() {
+                                    textLoading = 'Actualizando apartado...';
+                                    isLoading = true;
+                                  });
+                              await apartado.cancelarApartado(listaApartados2[0].id!).then((value) {
+                               if (value.status==1) {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  Navigator.pushReplacementNamed(context, 'menuAbonos');
+                                  mostrarAlerta(context, 'Alerta', 'se cancelo apartado.', tituloColor:  Colors.green, mensajeColor: Colors.black);
+                               } else {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                 mostrarAlerta(context, "Error", "No se pudo cancelar el apartado.");
+                               }
+                              });
+                            },
+                            child: SizedBox(
+                              height: windowHeight * 0.1,
+                              width: windowWidth * 0.4,
+                              child: const Center(
+                                child: Text('Cancelar Apartado',
                                     style: TextStyle(fontSize: 16)),
                               ),
                             ),
