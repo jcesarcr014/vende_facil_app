@@ -36,7 +36,9 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       funcion.text = "Guardar";
       setState(() {});
     } else {
+
       filtrarResultados();
+
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
       controllerEmail.text = sucursalSeleccionado.direccion ?? "";
       controllerTelefono.text = sucursalSeleccionado.telefono ?? "";

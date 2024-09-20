@@ -71,13 +71,10 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   }
 
   Future<void> _generatePDF() async {
-    // Crear un documento PDF
     final PdfDocument document = PdfDocument();
 
-    // Agregar una página
     final PdfPage page = document.pages.add();
 
-    // Crear fuentes
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
     final PdfFont boldFont =
         PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
@@ -531,6 +528,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                       children: [
 SizedBox(
                           width: windowWidth * 0.1,
+
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             transitionBuilder:
@@ -621,6 +619,7 @@ SizedBox(
                                 icon: const Icon(Icons.edit),
                               ),
                             ),
+
                           ),
                         ),
                         SizedBox(
@@ -688,6 +687,22 @@ SizedBox(
       value: _valueIdcliente,
       onChanged: (value) {
         _valueIdcliente = value!;
+
+        setState(() {
+          var clienteseleccionado = listaClientes.firstWhere(
+              (cliente) => cliente.id == int.parse(_valueIdcliente));
+          if (clienteseleccionado.distribuidor == 1) {
+            setState(() {
+              totalCotizacionTemporal = 0.00;
+              for (ItemVenta item in cotizarTemporal) {
+                totalCotizacionTemporal =
+                    item.cantidad * item.preciodistribuidor;
+                subTotalItem = totalCotizacionTemporal;
+              }
+            });
+          }
+        });
+
       },
     );
   }

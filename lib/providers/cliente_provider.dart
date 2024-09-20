@@ -87,20 +87,19 @@ class ClienteProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
-        cliente.id = decodedData['data'][0]['id'];
-        cliente.nombre = decodedData['data'][0]['nombre'];
-        cliente.correo = decodedData['data'][0]['correo'];
-        cliente.telefono = decodedData['data'][0]['telefono'];
-        cliente.direccion = decodedData['data'][0]['direccion'];
-        cliente.ciudad = decodedData['data'][0]['ciudad'];
-        cliente.estado = decodedData['data'][0]['estado'];
-        cliente.cp = decodedData['data'][0]['cp'];
-        cliente.pais = decodedData['data'][0]['pais'];
-        cliente.codigoCliente = decodedData['data'][0]['codigo_cliente'];
-        cliente.nota = decodedData['data'][0]['nota'];
-        cliente.distribuidor=  int.parse(decodedData['data'][0]['distribuidor']);
+        cliente.id = decodedData['data']['id'];
+        cliente.nombre = decodedData['data']['nombre'];
+        cliente.correo = decodedData['data']['correo'];
+        cliente.telefono = decodedData['data']['telefono'];
+        cliente.direccion = decodedData['data']['direccion'];
+        cliente.ciudad = decodedData['data']['ciudad'];
+        cliente.estado = decodedData['data']['estado'];
+        cliente.cp = decodedData['data']['cp'];
+        cliente.pais = decodedData['data']['pais'];
+        cliente.codigoCliente = decodedData['data']['codigo_cliente'];
+        cliente.nota = decodedData['data']['nota'];
+        cliente.distribuidor=  int.parse(decodedData['data']['distribuidor']);
       } else {
         cliente.id = 0;
         cliente.nombre = decodedData['msg'];

@@ -76,9 +76,9 @@ class CotizarProvider {
     return respuesta;
   }
 
-  Future<Resultado> listarCotizaciones() async {
+  Future<Resultado> listarCotizaciones(int idSucursal) async {
     listacotizacion.clear();
-    var url = Uri.parse('$baseUrl/cotizacion-cabeceras/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/cotizacion-cabeceras/$idSucursal');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
