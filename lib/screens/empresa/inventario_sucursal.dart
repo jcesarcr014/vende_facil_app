@@ -45,7 +45,7 @@ class InventoryPage extends StatelessWidget {
             const Divider(),
             DropdownButtonFormField<String>(
             decoration: const InputDecoration(
-              labelText: 'Select con sucursales',
+              labelText: 'Selecciona una sucursal',
               border: OutlineInputBorder(),
             ),
             items: listaSucursales

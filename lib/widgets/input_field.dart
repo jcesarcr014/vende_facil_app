@@ -1,13 +1,14 @@
 // ignore_for_file: use_super_parameters
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Necesario para inputFormatters
 
 class InputField extends StatelessWidget {
   final String? hintText;
   final String? labelText;
   final String? helperText;
   final IconData? icon;
-  final Widget? suffixIcon; // corregido el nombre sufixIcon a suffixIcon
+  final Widget? suffixIcon; 
   final TextInputType? keyboardType;
   final Function(String)? onChanged;
   final TextCapitalization textCapitalization;
@@ -18,6 +19,7 @@ class InputField extends StatelessWidget {
   final Map<String, String>? formValues;
   final String? Function(String?)? validator;
   final String? errorText;
+  final List<TextInputFormatter>? inputFormatters; // Nuevo parámetro
 
   const InputField({
     Key? key,
@@ -36,6 +38,7 @@ class InputField extends StatelessWidget {
     this.validator,
     this.errorText,
     this.formValues,
+    this.inputFormatters, // Agregar inputFormatters como parámetro
   }) : super(key: key);
 
   @override
@@ -50,6 +53,7 @@ class InputField extends StatelessWidget {
       keyboardType: keyboardType ?? TextInputType.text,
       obscureText: obscureText,
       onChanged: onChanged,
+      inputFormatters: inputFormatters, // Agregar inputFormatters al TextFormField
       decoration: InputDecoration(
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -64,3 +68,4 @@ class InputField extends StatelessWidget {
     );
   }
 }
+

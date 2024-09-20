@@ -316,7 +316,6 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       totalCotizacionTemporal += item.cantidad * item.precioPublico;
       item.subTotalItem += item.cantidad * item.precioPublico;
       item.totalItem = item.cantidad * item.precioPublico;
-      totalCotizacionTemporal = item.subTotalItem;
     }
     setState(() {});
   }

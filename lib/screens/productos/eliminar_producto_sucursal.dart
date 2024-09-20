@@ -132,7 +132,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                 children: [
                   DropdownButtonFormField<int>(
                     decoration: const InputDecoration(
-                      labelText: 'Select con Sucursales',
+                      labelText: 'Selecciona una sucursal',
                       border: OutlineInputBorder(),
                     ),
                     value: _selectedSucursal,

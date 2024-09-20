@@ -5,6 +5,7 @@ import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
+import 'package:flutter/services.dart';
 
 class AgregaProductoScreen extends StatefulWidget {
   const AgregaProductoScreen({super.key});
@@ -291,7 +292,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       _valueApartado = (args.apartado == 0) ? false : true;
       if (_valueInventario) {
         controllerCantidad.text = (args.cantidad != null)
-            ? args.cantidad!.toStringAsFixed(2)
+            ? args.cantidad!.toStringAsFixed(3)
             : '0.00';
       }
     } else {
@@ -427,8 +428,14 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       ),
                       InputField(
                         labelText: 'Cantidad:',
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: _valuePieza),
                         controller: controllerCantidad,
+                        inputFormatters: [
+                          if (_valuePieza==false)
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
+                          else
+                            FilteringTextInputFormatter.digitsOnly, // Solo números enteros
+                        ],
                       ),
                       SizedBox(
                         height: windowHeight * 0.03,

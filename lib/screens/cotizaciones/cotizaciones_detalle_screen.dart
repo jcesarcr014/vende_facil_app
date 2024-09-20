@@ -297,7 +297,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
             IconButton(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.pushNamed(context, 'home');
+                Navigator.pushNamed(context, 'HomerCotizar');
               },
               icon: const Icon(Icons.arrow_back),
             ),
@@ -411,7 +411,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                               width: windowWidth * 0.6,
                               child: const Center(
                                 child: Text(
-                                  'General',
+                                  'Generar Cotización',
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w600,
@@ -650,11 +650,13 @@ SizedBox(
   }
 
   _actualizaTotalTemporal() {
+    totalCotizacionTemporal = 0;
+    subTotalItem = 0;
+    descuento = 0;
     for (ItemVenta item in cotizarTemporal) {
       totalCotizacionTemporal += item.cantidad * item.precioPublico;
       subTotalItem += item.cantidad * item.precioPublico;
       item.totalItem = item.cantidad * item.precioPublico;
-      descuento += item.descuento;
     }
     setState(() {});
   }

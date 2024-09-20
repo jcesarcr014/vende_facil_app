@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vende_facil/formatters/double_input_formatter.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
@@ -25,7 +24,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   String? _cantidadSucursal;
   ArticuloProvider provider = ArticuloProvider();
   bool isLoading = false;
-
+  bool _valuePieza = true;
   bool? existe;
 
   TextEditingController controller = TextEditingController();
@@ -100,6 +99,26 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       mostrarAlerta(context, 'Error', e.toString());
     }
   }
+  void _validarYGuardarProductoSucursal() {
+  if (_productoSeleccionado == null) {
+    mostrarAlerta(context, 'Error', 'Selecciona un producto');
+    return;
+  }
+
+  if (_selectedSucursal == null) {
+    mostrarAlerta(context, 'Error', 'Selecciona una sucursal',tituloColor: Colors.red);
+    return;
+  }
+  if (controller.text.isEmpty || double.tryParse(controller.text) == null) {
+    mostrarAlerta(context, 'Error', 'Ingresa una cantidad válida');
+    return;
+  }
+  if (double.parse(controller.text) <= 0) {
+    mostrarAlerta(context, 'Error', 'La cantidad debe ser mayor a 0');
+    return;
+  }
+  _guardarProductoSucursal();
+}
 
   void _updateCantidadSucursal() async {
     if (_selectedSucursal == null || _productoSeleccionado == null) {
@@ -219,6 +238,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     onChanged: (String? newValue) {
                       if (newValue != null) {
                         _productoSeleccionado = listaProductos.firstWhere((producto) => producto.producto == newValue);
+                         _valuePieza = _productoSeleccionado!.unidad == "0" ? true : false;
                         setState(() {
                           _selectedProduct = newValue;
                         });
@@ -242,7 +262,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   const Divider(),
                   DropdownButtonFormField<int>(
                     decoration: const InputDecoration(
-                      labelText: 'Select con sucursales',
+                      labelText: 'Selecciona una sucursal',
                       border: OutlineInputBorder(),
                     ),
                     value: _selectedSucursal,
@@ -266,25 +286,23 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   const Divider(),
-                  TextField(
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^[0-9]*\.?[0-9]*$')),
-                      DoubleInputFormatter(),
-                    ],
-                    controller: controller,
-                    decoration: const InputDecoration(
-                      labelText: 'Cantidad a mover',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
+                  InputField(
+                        labelText: 'Cantidad:',
+                        keyboardType: TextInputType.numberWithOptions(decimal: _valuePieza),
+                        controller: controller,
+                        inputFormatters: [
+                          if (_valuePieza)
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
+                          else
+                            FilteringTextInputFormatter.digitsOnly, // Solo números enteros
+                        ],
+                      ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        onPressed: _guardarProductoSucursal,
+                        onPressed: _validarYGuardarProductoSucursal,
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
