@@ -58,9 +58,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
               if (varTemp.nombre == "empleado_cantidades") {
                 if (varTemp.valor == null) {
                 } else {
-                  print(varTemp.valor);
                   _valueInformacion = (varTemp.valor == "1") ? true : false;
-                  print(_valueInformacion);
 
                 }
           }
