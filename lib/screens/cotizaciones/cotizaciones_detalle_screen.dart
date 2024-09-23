@@ -31,6 +31,10 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
   final cantidadControllers = TextEditingController();
+
+  List<DropdownMenuItem> listaClien = [];
+
+
   String _valueIdcliente = listaClientes
       .firstWhere((cliente) => cliente.nombre == 'Público en general')
       .id
@@ -46,6 +50,9 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   List<Producto> listaProductosCotizaciones = [];
 
   final cantidadConttroller = TextEditingController();
+
+  String? nombreCliente;
+
 
   @override
   void initState() {
@@ -92,6 +99,8 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     String nombreNegocio = negocio.nombreNegocio ?? 'PENDIENTE';
     String telefono = "Teléfono: ${negocio.telefono}";
     String direccion = "Dirección: ${negocio.direccion}";
+    String cliente = nombreCliente ?? 'Público en general';
+    cliente = "Nombre Cliente: $cliente";
 
     // Calcular posición del logo y el nombre del negocio
     double pageWidth = page.getClientSize().width;
@@ -137,10 +146,14 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
         brush: brush,
         bounds: Rect.fromLTWH(
             nombreXPosition, 30, pageWidth - nombreXPosition, 20));
+
     page.graphics.drawString(direccion, italicFont,
         brush: brush,
         bounds: Rect.fromLTWH(
             nombreXPosition, 50, pageWidth - nombreXPosition, 20));
+
+    page.graphics.drawString(cliente, italicFont,  brush: brush, bounds: Rect.fromLTWH(
+            nombreXPosition, 70, pageWidth - nombreXPosition, 20));
 
     // Ajustar el mensaje del ticketModel debajo del logo
     if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
@@ -691,10 +704,10 @@ SizedBox(
       value: _valueIdcliente,
       onChanged: (value) {
         _valueIdcliente = value!;
-
         setState(() {
           var clienteseleccionado = listaClientes.firstWhere(
               (cliente) => cliente.id == int.parse(_valueIdcliente));
+          nombreCliente = clienteseleccionado.nombre!;
           if (clienteseleccionado.distribuidor == 1) {
             setState(() {
               totalCotizacionTemporal = 0.00;
