@@ -60,7 +60,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   Future<void> filtrarResultados() async {
     resultadosFiltrados.clear();
     // Simular un retraso si es necesario
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
 
     // Realizar la operación de filtrado
     resultadosFiltrados = listasucursalEmpleado

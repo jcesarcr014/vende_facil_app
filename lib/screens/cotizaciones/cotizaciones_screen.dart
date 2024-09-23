@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/search_screen.dart';
@@ -214,6 +215,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
                   keyboardType: TextInputType.number, // This will show the numeric keyboard
+                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}'))], // Solo números
                 ),
               ),
             ],
@@ -316,7 +318,6 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       totalCotizacionTemporal += item.cantidad * item.precioPublico;
       item.subTotalItem += item.cantidad * item.precioPublico;
       item.totalItem = item.cantidad * item.precioPublico;
-      totalCotizacionTemporal = item.subTotalItem;
     }
     setState(() {});
   }

@@ -89,7 +89,6 @@ class _SplashScreenState extends State<SplashScreen> {
           }
         });
         if (sesion.tipoUsuario == 'D') {
-          print("${sesion.tipoUsuario},${sesion.idSucursal}");
           await articulosProvider
               .listarProductosSucursal(sesion.idSucursal!)
               .then((value) {
