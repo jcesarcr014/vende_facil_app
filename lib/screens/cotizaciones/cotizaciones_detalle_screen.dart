@@ -152,27 +152,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     page.graphics.drawString(cliente, italicFont,  brush: brush, bounds: Rect.fromLTWH(
             nombreXPosition, 70, pageWidth - nombreXPosition, 20));
 
-    // Ajustar el mensaje del ticketModel debajo del logo
-    if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
-      double yPosition =
-          100; // Justo debajo de la imagen y el encabezado del negocio
-
-      // Si el texto es más largo que el ancho de la página, dividir en varias líneas
-      final List<String> messageLines =
-          _wrapText(ticketModel.message!, pageWidth, italicFont);
-
-      for (var line in messageLines) {
-        page.graphics.drawString(
-          line,
-          italicFont,
-          brush: brush,
-          bounds: Rect.fromLTWH(
-              0, yPosition, pageWidth, 30), // Alinear a la izquierda
-        );
-        yPosition += 20; // Espacio entre líneas
-      }
-    }
-
     // Reducir el espacio antes de la cotización de productos
     double yPosAfterMessage = 120; // Ajusta esta variable según sea necesario
 
@@ -250,26 +229,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     // Abrir el PDF generado en el dispositivo
     OpenFile.open(
         '$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
-  }
-
-  List<String> _wrapText(String text, double maxWidth, PdfFont font) {
-    final List<String> lines = [];
-    String currentLine = '';
-
-    for (var word in text.split(' ')) {
-      final testLine = currentLine.isEmpty ? word : '$currentLine $word';
-      if (font.measureString(testLine).width < maxWidth) {
-        currentLine = testLine;
-      } else {
-        lines.add(currentLine);
-        currentLine = word;
-      }
-    }
-    if (currentLine.isNotEmpty) {
-      lines.add(currentLine);
-    }
-
-    return lines;
   }
 
   Future<Uint8List?> _downloadImage(String url) async {

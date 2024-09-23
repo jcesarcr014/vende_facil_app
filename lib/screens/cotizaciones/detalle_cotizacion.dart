@@ -101,25 +101,15 @@ Future<void> _generatePDF() async {
   page.graphics.drawString(direccion, italicFont, bounds: Rect.fromLTWH(nombreXPosition, 50, pageWidth - nombreXPosition, 20));
   page.graphics.drawString(cliente, italicFont, bounds: Rect.fromLTWH(nombreXPosition, 70, pageWidth - nombreXPosition, 20));
 
-  // Agregar mensaje del ticket debajo de la imagen
-  if (ticketModel.message != null && ticketModel.message!.isNotEmpty) {
-    double messageYPosition = 100; // Justo debajo de la imagen
-    final List<String> messageLines = _wrapText(ticketModel.message!, pageWidth, italicFont);
 
-    for (var line in messageLines) {
-        page.graphics.drawString(line, italicFont, bounds: Rect.fromLTWH(0, messageYPosition, pageWidth, 20),);
-        messageYPosition += 20;
-      }
-    }
-
-    page.graphics.drawString('Cotización de Productos', boldFont, brush: brush, bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30));
+  page.graphics.drawString('Cotización de Productos', boldFont, brush: brush, bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30));
 
     // Agregar el folio
-    page.graphics.drawString('Folio: ${listacotizacionCabecera.first.folio}', italicFont, bounds: Rect.fromLTWH(0, 140, pageWidth, 20));
+  page.graphics.drawString('Folio: ${listacotizacionCabecera.first.folio}', italicFont, bounds: Rect.fromLTWH(0, 140, pageWidth, 20));
 
     // Crear la tabla
-    final PdfGrid grid = PdfGrid();
-    grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
+  final PdfGrid grid = PdfGrid();
+  grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
 
     // Estilo para la tabla
     grid.style = PdfGridStyle(
@@ -186,27 +176,6 @@ Future<void> _generatePDF() async {
 
     await file.writeAsBytes(bytes, flush: true);
     OpenFile.open('$path/Cotizacion-Vende Facil-${listacotizacionCabecera.first.folio}.pdf');
-  }
-
-
-  List<String> _wrapText(String text, double maxWidth, PdfFont font) {
-    final List<String> lines = [];
-    String currentLine = '';
-
-    for (var word in text.split(' ')) {
-      final testLine = currentLine.isEmpty ? word : '$currentLine $word';
-      if (font.measureString(testLine).width < maxWidth) {
-        currentLine = testLine;
-      } else {
-        lines.add(currentLine);
-        currentLine = word;
-      }
-    }
-    if (currentLine.isNotEmpty) {
-      lines.add(currentLine);
-    }
-
-    return lines;
   }
 
   Future<Uint8List?> _downloadImage(String url) async {
@@ -317,7 +286,9 @@ Future<void> _generatePDF() async {
                             width: windowWidth * 0.5,
                             child: ElevatedButton(
                               child: const Text('Generar PDF', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              onPressed: () => _generatePDF,
+                              onPressed: () {
+                                _generatePDF();
+                              },
                             ),
                           ),
                         )
