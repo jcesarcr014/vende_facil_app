@@ -75,7 +75,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Historial de Ventas del dia'),
+          title: const Text('Ventas del dia'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
