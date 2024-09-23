@@ -62,18 +62,7 @@ void _applyFilter() {
       // Ordenar los productos de Z-A por su nombre
       _filteredProductos.sort((a, b) => b.producto!.compareTo(a.producto!));
     } else if (selectedFilter == Filtros.categories) {
-      // Ordenar las categorías por nombre de A-Z
-      listaCategorias.sort((a, b) => a.categoria!.toLowerCase().compareTo(b.categoria!.toLowerCase()));
-
-      // Reordenar los productos en base al orden de las categorías
-      List<Producto> sortedProductos = [];
-      
-      for (var categoria in listaCategorias) {
-        List<Producto> productosEnCategoria = _filteredProductos.where((producto) => producto.idCategoria == categoria.id).toList();
-        sortedProductos.addAll(productosEnCategoria);
-      }
-
-      _filteredProductos = sortedProductos;
+      _filteredProductos.sort((a, b) => a.idCategoria!.compareTo(b.idCategoria!));
     }
   });
 }
