@@ -14,6 +14,7 @@ class AjustesApartadoScreen extends StatefulWidget {
 class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   final apartadoProvider = ApartadoProvider();
   bool _valuePieza = false;
+   bool _valueInformacion = false;
   final variablesprovider = VariablesProvider();
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
@@ -24,6 +25,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   bool isLoading = false;
   int idVarArticulos = 0;
   int idaplicamayoreo = 0;
+  int idempleadoCatidades = 0;
   int idcatidadVarArticulos = 0;
   int idVarPorcentaje = 0;
   String textLoading = '';
@@ -70,6 +72,14 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
             if (varTemp.valor == null) {
             } else {
               _valuePieza = (varTemp.valor == "1") ? true : false;
+            }
+          }
+                   
+           if (varTemp.nombre == "empleado_cantidades") {
+            idempleadoCatidades = varTemp.id!;
+            if (varTemp.valor == null) {
+            } else {
+              _valueInformacion = (varTemp.valor == "1") ? true : false;
             }
           }
         }
@@ -282,6 +292,31 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
+                Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Tooltip(
+                    message: 'Esta opción permite controlar la privacidad de la información que ve  el vendedor .',
+                    child: SwitchListTile.adaptive(
+                      title: const Text(
+                        'Privacidad de Información:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      subtitle: Text(_valueInformacion ? 'Permitir' : 'Negar'),
+                      value: _valueInformacion,
+                      onChanged: (value) {
+                        setState(() {
+                          _valueInformacion = value;
+                        });
+                      },
+                    ),
+                  ),
+                ),          
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         if (_formApartadoConf.currentState!.validate()) {
@@ -320,13 +355,26 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                         idaplicamayoreo, (_valuePieza) ? '1' : '0')
                     .then((aplicamayoreo) {
                   if (aplicamayoreo.status == 1) {
-                    setState(() {
-                      textLoading = '';
-                      isLoading = false;
+                    variablesprovider
+                        .modificarVariables(
+                            idempleadoCatidades, (_valueInformacion) ? '1' : '0')
+                        .then((aplicamayoreo) {
+                      if (aplicamayoreo.status == 1) {
+                        setState(() {
+                          textLoading = '';
+                          isLoading = false;
+                        });
+                        mostrarAlerta(context, 'Correcto',tituloColor: Colors.green,
+                            'Valores guardados correctamente');
+                      } else {
+                        setState(() {
+                          textLoading = '';
+                          isLoading = false;
+                        });
+                        mostrarAlerta(context, 'Error',
+                            'Error al guardar los valores: ${respArticulos.mensaje}');
+                      }
                     });
-                    // Navigator.pop(context);
-                    mostrarAlerta(
-                        context, 'Guardado', 'Ajustes guardados correctamente');
                   } else {
                     setState(() {
                       textLoading = '';
