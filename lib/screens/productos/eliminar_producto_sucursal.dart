@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vende_facil/formatters/double_input_formatter.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
@@ -10,7 +9,6 @@ import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 import '../../widgets/custom_dropdown_search.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
-
 
 class EliminarProductoSucursal extends StatefulWidget {
   const EliminarProductoSucursal({super.key});
@@ -22,12 +20,11 @@ class EliminarProductoSucursal extends StatefulWidget {
 class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
   String? _selectedProduct;
   int? _selectedSucursal;
-
   String? cantidad;
   Producto? _producto;
 
   bool isLoading = false;
-
+  bool _valuePieza = true;  // Variable para determinar si es pieza o no
   ArticuloProvider provider = ArticuloProvider();
 
   TextEditingController controller = TextEditingController();
@@ -44,12 +41,12 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       orElse: () => Sucursal(id: null),
     );
 
-    if(sucursalSeleccionado.id == null) return;
+    if (sucursalSeleccionado.id == null) return;
 
     isLoading = true;
     setState(() {});
     Resultado resultado = await provider.listarProductosSucursal(sucursalSeleccionado.id!);
-    if(resultado.status != 1) {
+    if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
     }
@@ -60,7 +57,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
   }
 
   void _seleccionarProducto(String? value) async {
-    if(_selectedSucursal == null) {
+    if (_selectedSucursal == null) {
       mostrarAlerta(context, 'Error', 'Selecciona una sucursal primero');
       return;
     }
@@ -70,15 +67,16 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       orElse: () => Producto(id: null),
     );
 
-    if(producto.id == null) return;
+    if (producto.id == null) return;
 
     _producto = producto;
     cantidad = producto.disponibleInv.toString();
+    _valuePieza = _producto?.unidad == "0" ? true : false; // Determinar si es pieza o fracción
     setState(() {});
   }
 
   void _quitar() async {
-    if(_producto == null) {
+    if (_producto == null) {
       mostrarAlerta(context, 'Error', 'Primero seleccione una sucursal y producto de la sucursal seleccionada');
       return;
     }
@@ -88,7 +86,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
     Resultado resultado = await provider.inventarioSucQuitar(_producto!.idInv.toString(), controller.text);
     isLoading = false;
     setState(() {});
-    if(resultado.status != 1) {
+    if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
     }
@@ -111,21 +109,20 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
               icon: const Icon(Icons.search)),
         ],
       ),
-      body:
-        isLoading
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Espere...'),
-                      SizedBox(
-                        height: screenHeight * 0.01,
-                      ),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            :
-            Padding(
+      body: isLoading
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Espere...'),
+                  SizedBox(
+                    height: screenHeight * 0.01,
+                  ),
+                  const CircularProgressIndicator(),
+                ],
+              ),
+            )
+          : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -165,11 +162,12 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.numberWithOptions(decimal: _valuePieza),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                      RegExp(r'^[0-9]*\.?[0-9]*$')),
-                      DoubleInputFormatter(),
+                      if (_valuePieza)
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
+                      else
+                        FilteringTextInputFormatter.digitsOnly, // Solo números enteros
                     ],
                     controller: controller,
                     decoration: const InputDecoration(
