@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_import
+// ignore_for_file: unnecessary_import, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
@@ -28,6 +28,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   double windowHeight = 0.0;
   String formattedEndDate = "";
   String formattedStartDate = "";
+  bool _valueInformacion = false;
   DateTime now = DateTime.now();
 
   late DateTime _startDate;
@@ -53,6 +54,15 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
     formattedStartDate = dateFormatter.format(_startDate);
     formattedEndDate = dateFormatter.format(_endDate);
     _dateController.text = '$formattedStartDate - $formattedEndDate';
+            for (VariableConf varTemp in listaVariables) {                   
+              if (varTemp.nombre == "empleado_cantidades") {
+                if (varTemp.valor == null) {
+                } else {
+                  _valueInformacion = (varTemp.valor == "1") ? true : false;
+
+                }
+          }
+        }
     _cargar();
     super.initState();
   }
@@ -199,7 +209,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
               title: Text(
                   '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
               subtitle: Text(text),
-              trailing: Text('\$${venta.total}'),
+               trailing: _valueInformacion  ? Text('\$${venta.total}') : null, // ignore: avoid_returning_null
               onTap: () => _getDetails(venta));
         }).toList(),
       );
