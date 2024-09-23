@@ -53,6 +53,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
     dateFormatter = DateFormat('yyyy-MM-dd');
     formattedStartDate = dateFormatter.format(_startDate);
     formattedEndDate = dateFormatter.format(_endDate);
+        _cargar();
     _dateController.text = '$formattedStartDate - $formattedEndDate';
             for (VariableConf varTemp in listaVariables) {                   
               if (varTemp.nombre == "empleado_cantidades") {
@@ -63,7 +64,6 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                 }
           }
         }
-    _cargar();
     super.initState();
   }
 
@@ -210,7 +210,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                   '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
               subtitle: Text(text),
                trailing: _valueInformacion  ? Text('\$${venta.total}') : null, // ignore: avoid_returning_null
-              onTap: () => _getDetails(venta));
+              onTap: () => _getDetails(venta)
+              );
         }).toList(),
       );
     }

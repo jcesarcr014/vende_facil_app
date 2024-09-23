@@ -122,6 +122,7 @@ class ApartadoProvider {
           apartado.idnegocio = decodedData['apartados'][x]['negocio_id'];
           apartado.usuarioId = decodedData['apartados'][x]['usuario_id'];
           apartado.clienteId = decodedData['apartados'][x]['cliente_id'];
+          apartado.nombreCliente = decodedData['apartados'][x]['cliente_nombre'];
           apartado.folio = decodedData['apartados'][x]['folio'];
           apartado.subtotal =
               double.parse(decodedData['apartados'][x]['subtotal']);
