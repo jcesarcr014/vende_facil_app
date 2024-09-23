@@ -293,8 +293,8 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                                                 builder: (context) {
                                                   return AlertDialog(
                                                     title: const Text('Error'),
-                                                    content: const Text(
-                                                        'No se pudo agregar el abono'),
+                                                    content:  Text(
+                                                        '${value.mensaje}'),
                                                     actions: [
                                                       ElevatedButton(
                                                         onPressed: () {
