@@ -197,19 +197,21 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     headerRow.cells[2].value = 'Total';
 
     // Rellenar filas dinámicamente desde listaProductosCotizaciones
+    double total = 0;
     for (var producto in listaProductosCotizaciones) {
       final PdfGridRow row = grid.rows.add();
       row.cells[0].value =
           producto.producto; // Asume que tienes un campo nombre
       row.cells[1].value = producto.cantidad.toString(); // Campo cantidad
       row.cells[2].value = producto.costo!.toStringAsFixed(2); // Total
+      total += producto.costo!;
     }
 
     // Añadir fila de subtotal
     final PdfGridRow subtotalRow = grid.rows.add();
     subtotalRow.cells[0].value = 'Subtotal';
     subtotalRow.cells[1].value = ''; // Celda vacía para alineación
-    subtotalRow.cells[2].value = cotizacionDetalle.total!.toStringAsFixed(2);
+    subtotalRow.cells[2].value = total.toStringAsFixed(2);
     subtotalRow.style = PdfGridRowStyle(
       font: boldFont,
       textBrush: PdfBrushes.black,
@@ -219,7 +221,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     final PdfGridRow totalRow = grid.rows.add();
     totalRow.cells[0].value = 'Total';
     totalRow.cells[1].value = ''; // Celda vacía para alineación
-    totalRow.cells[2].value = cotizacionDetalle.total!.toStringAsFixed(2);
+    totalRow.cells[2].value = total.toStringAsFixed(2);
     totalRow.style = PdfGridRowStyle(
       font: boldFont,
       textBrush: PdfBrushes.black,
