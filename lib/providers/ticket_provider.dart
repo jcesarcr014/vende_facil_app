@@ -73,7 +73,7 @@ class TicketProvider {
     return respuesta;
   }
 
-  Future<TicketModel> getData(String negocioId) async {
+  Future<TicketModel?> getData(String negocioId, bool? aux) async {
     final url = Uri.parse('$baseUrl/datos-ticket/$negocioId');
 
     try {
@@ -84,7 +84,7 @@ class TicketProvider {
       final responseJson = jsonDecode(response.body);
       final data = responseJson["datos"];
 
-      if (responseJson["status"] != 1) {
+      if (responseJson["status"] != 1 && aux == null) {
         throw 'Verifica tus datos.';
       }
       return TicketModel(
@@ -94,8 +94,11 @@ class TicketProvider {
         logo: data["logo"],
       );
     } catch (e) {
-      throw 'Inténtalo más tarde';
+      if(aux == null) {
+        throw 'Inténtalo más tarde';
+      }
     }
+    return null;
   }
 
 }
