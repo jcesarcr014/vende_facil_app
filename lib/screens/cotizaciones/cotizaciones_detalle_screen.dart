@@ -1,4 +1,4 @@
-// ignore_for_file: dead_code, prefer_final_fields, depend_on_referenced_packages
+// ignore_for_file: dead_code, prefer_final_fields, depend_on_referenced_packages, unnecessary_nullable_for_final_variable_declarations
 
 import 'dart:typed_data';
 
@@ -61,12 +61,12 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   }
 
   void _loadData() async {
-    final TicketModel model = await ticketProvider.getData(sesion.idNegocio.toString());
+    final TicketModel? model = await ticketProvider.getData(sesion.idNegocio.toString(), true);
     setState(() {
-      ticketModel.id = model.id;
-      ticketModel.negocioId = model.negocioId;
-      ticketModel.logo = model.logo;
-      ticketModel.message = model.message;
+      ticketModel.id = model?.id;
+      ticketModel.negocioId = model?.negocioId;
+      ticketModel.logo = model?.logo;
+      ticketModel.message = model?.message;
     });
   }
 

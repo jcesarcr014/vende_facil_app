@@ -31,9 +31,9 @@ class _TicketScreenState extends State<TicketScreen> {
 
   void _loadData() async {
     try {
-      final TicketModel model = await ticketProvider.getData(sesion.idNegocio.toString());
+      final TicketModel? model = await ticketProvider.getData(sesion.idNegocio.toString(), null);
       setState(() {
-        ticketModel.id = model.id;
+        ticketModel.id = model!.id;
         ticketModel.negocioId = model.negocioId;
         ticketModel.logo = model.logo;
         ticketModel.message = model.message;
