@@ -83,12 +83,9 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     final PdfPage page = document.pages.add();
 
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-    final PdfFont boldFont =
-        PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
-    final PdfFont titleFont =
-        PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
-    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14,
-        style: PdfFontStyle.italic);
+    final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
+    final PdfFont titleFont =PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
+    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14, style: PdfFontStyle.italic);
 
     // Definir color para la tabla
     final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
@@ -180,22 +177,15 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     double yPosAfterMessage = 120; // Ajusta esta variable según sea necesario
 
     // Dibujar encabezado de la cotización
-    page.graphics.drawString('Cotización de Productos', boldFont,
-        brush: brush,
-        bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
-    page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
-        bounds: Rect.fromLTWH(
-            0, yPosAfterMessage + 30, 500, 30)); // Número de folio
+    page.graphics.drawString('Cotización de Productos', boldFont, brush: brush, bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
+    page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font, bounds: Rect.fromLTWH(0, yPosAfterMessage + 30, 500, 30)); // Número de folio
 
     // Crear la tabla
     final PdfGrid grid = PdfGrid();
     grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
 
     // Estilo para la tabla
-    grid.style = PdfGridStyle(
-      font: font,
-      cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
-    );
+    grid.style = PdfGridStyle(font: font, cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),);
 
     // Añadir encabezados a la tabla
     final PdfGridRow headerRow = grid.headers.add(1)[0];
@@ -241,11 +231,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     );
 
     // Dibujar la tabla en el PDF
-    grid.draw(
-      page: page,
-      bounds: Rect.fromLTWH(
-          0, yPosAfterMessage + 60, 0, 0), // Reducir espacio antes de la tabla
-    );
+    grid.draw(page: page, bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0));
 
     // Guardar el PDF en bytes
     List<int> bytes = document.saveSync();
