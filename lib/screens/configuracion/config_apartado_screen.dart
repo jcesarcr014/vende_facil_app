@@ -304,7 +304,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                           fontSize: 18,
                         ),
                       ),
-                      subtitle: Text(_valueInformacion ? 'Permitir' : 'Negar'),
+                      subtitle: Text(_valueInformacion ? 'Permitir ver' : 'Negar ver'),
                       value: _valueInformacion,
                       onChanged: (value) {
                         setState(() {
