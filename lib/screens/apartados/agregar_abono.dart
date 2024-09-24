@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -33,6 +34,54 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
         isLoading = false;
       });
     });
+  }
+
+  Widget getStatusIcon(ApartadoCabecera apartado) {
+    if (apartado.cancelado == 1) {
+      return const SizedBox(
+        width: 150, // Ajusta el tamaño según sea necesario
+        child: Row(
+          children: [
+            Icon(Icons.cancel, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Cancelado', style: TextStyle(color: Colors.red)),
+          ],
+        ),
+      );
+    } else if (apartado.pagado == 1) {
+      return const SizedBox(
+        width: 150,
+        child: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.amber),
+            SizedBox(width: 8),
+            Text('Pagado', style: TextStyle(color: Colors.amber)),
+          ],
+        ),
+      );
+    } else if (apartado.entregado == 1) {
+      return const SizedBox(
+        width: 150,
+        child: Row(
+          children: [
+            Icon(Icons.local_shipping, color: Colors.green),
+            SizedBox(width: 8),
+            Text('Entregado', style: TextStyle(color: Colors.green)),
+          ],
+        ),
+      );
+    } else {
+      return const SizedBox(
+        width: 150,
+        child: Row(
+          children: [
+            Icon(Icons.info, color: Colors.grey),
+            SizedBox(width: 8),
+            Text('En proceso', style: TextStyle(color: Colors.grey)),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -74,10 +123,10 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
                 itemCount: listaApartados.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    title: Text(listaApartados[index].folio.toString()),
-                    subtitle:
-                        Text(listaApartados[index].fechaVencimiento.toString()),
-                    trailing: Text('\$${listaApartados[index].total.toString()}'),
+                    title: Text(listaApartados[index].nombreCliente!),
+                    subtitle: Text(
+                        '${listaApartados[index].folio} - ${DateFormat('yyyy-MM-dd').format(DateFormat('yyyy-MM-dd HH:mm:ss').parse(listaApartados[index].fechaVencimiento!))}'),
+                    trailing: getStatusIcon(listaApartados[index]),
                     onTap: () {
                       apartados
                           .detallesApartado(listaApartados[index].id!)
