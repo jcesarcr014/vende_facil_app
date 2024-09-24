@@ -5,6 +5,8 @@ import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
+enum Filtros { sortAZ, sortZA, categories }
+
 class ProductosScreen extends StatefulWidget {
   const ProductosScreen({super.key});
 
@@ -20,8 +22,15 @@ class _ProductosScreenState extends State<ProductosScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
+  Filtros selectedFilter = Filtros.categories;
+  List<Producto> _filteredProductos = [];
+  bool isExpanded = false;
+
   @override
   void initState() {
+    setState(() {
+      _filteredProductos = listaProductos;
+    });
     if (globals.actualizaArticulos) {
       setState(() {
         textLoading = 'Leyendo articulos';
@@ -34,11 +43,29 @@ class _ProductosScreenState extends State<ProductosScreen> {
         setState(() {
           textLoading = '';
           isLoading = false;
+          _filteredProductos = listaProductos;
         });
       });
     }
     super.initState();
   }
+
+void _applyFilter() {
+  setState(() {
+    _filteredProductos = List.from(listaProductos);
+    isExpanded = false;
+
+    if (selectedFilter == Filtros.sortAZ) {
+      // Ordenar los productos de A-Z por su nombre
+      _filteredProductos.sort((a, b) => a.producto!.compareTo(b.producto!));
+    } else if (selectedFilter == Filtros.sortZA) {
+      // Ordenar los productos de Z-A por su nombre
+      _filteredProductos.sort((a, b) => b.producto!.compareTo(a.producto!));
+    } else if (selectedFilter == Filtros.categories) {
+      _filteredProductos.sort((a, b) => a.idCategoria!.compareTo(b.idCategoria!));
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +107,50 @@ class _ProductosScreenState extends State<ProductosScreen> {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
+
+                    ExpansionTile(
+                      key: UniqueKey(),
+                      title: const Text('Ordenar'),
+                      initiallyExpanded: isExpanded,
+                      subtitle: const Text('Selecciona una forma para ordenar tus productos'),
+                      children: [
+                        RadioListTile(
+                          title: const Text('Nombre de A-Z'),
+                          subtitle: const Text('Ordenara tus productos desde la letra "A" hasta la letra "Z"'),
+                          value: Filtros.sortAZ, 
+                          groupValue: selectedFilter, 
+                          onChanged: (value) => setState(() {
+                            selectedFilter = Filtros.sortAZ;
+                            _applyFilter();
+                          }),
+                        ),
+
+                        RadioListTile(
+                          title: const Text('Nombre de Z-A'),
+                          subtitle: const Text('Ordenara tus productos desde la letra "Z" hasta la letra "A"'),
+                          value: Filtros.sortZA, 
+                          groupValue: selectedFilter, 
+                          onChanged: (value) => setState(() {
+                            selectedFilter = Filtros.sortZA;
+                            _applyFilter();
+                          }),
+                        ),
+
+                        RadioListTile(
+                          title: const Text('Categorias'),
+                          subtitle: const Text('Ordenara tus productos de acuerdo a tus categorias'),
+                          value: Filtros.categories, 
+                          groupValue: selectedFilter, 
+                          onChanged: (value) => setState(() {
+                            selectedFilter = Filtros.categories;
+                            _applyFilter();
+                          }),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 25,),
+
                     Column(children: _productos())
                   ],
                 ),
@@ -90,59 +161,58 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    if (listaProductos.isNotEmpty) {
-      for (Producto producto in listaProductos) {
+    if (_filteredProductos.isNotEmpty) {
+      for (Producto producto in _filteredProductos) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
-            for (ColorCategoria color in listaColores) {
-              if (color.id == categoria.idColor) {
-                listaProd.add(ListTile(
-                  leading: Icon(
-                    Icons.category,
-                    color: color.color,
-                  ),
-                  onTap: (() {
-                    setState(() {
-                      textLoading = 'Leyendo producto';
-                      isLoading = true;
-                    });
+            final ColorCategoria color = listaColores.firstWhere(
+              (color) => color.id == categoria.idColor, 
+              orElse: () => ColorCategoria(id: categoria.idColor, color: Colors.grey) // Color por defecto
+            );
 
-                    articulosProvider
-                        .consultaProducto(producto.id!)
-                        .then((value) {
-                      setState(() {
-                        textLoading = '';
-                        isLoading = false;
-                      });
-                      if (value.id != 0) {
-                        Navigator.pushNamed(context, 'nvo-producto',
-                            arguments: value);
-                      } else {
-                        mostrarAlerta(context, 'ERROR',
-                            'Error en la consulta: ${value.producto}');
-                      }
-                    });
-                  }),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: windowWidth * 0.45,
-                        child: Text(
-                          producto.producto!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+            listaProd.add(ListTile(
+              leading: Icon(
+                Icons.category,
+                color: color.color, // Asegúrate de que este valor siempre tenga un color válido
+              ),
+              onTap: (() {
+                setState(() {
+                  textLoading = 'Leyendo producto';
+                  isLoading = true;
+                });
+
+                articulosProvider.consultaProducto(producto.id!).then((value) {
+                  setState(() {
+                    textLoading = '';
+                    isLoading = false;
+                  });
+                  if (value.id != 0) {
+                    Navigator.pushNamed(context, 'nvo-producto',
+                        arguments: value);
+                  } else {
+                    mostrarAlerta(context, 'ERROR',
+                        'Error en la consulta: ${value.producto}');
+                  }
+                });
+              }),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: windowWidth * 0.45,
+                    child: Text(
+                      producto.producto!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  subtitle: Text(categoria.categoria!),
-                ));
-              }
-            }
+                ],
+              ),
+              subtitle: Text(categoria.categoria!),
+            ));
           }
         }
       }
