@@ -108,13 +108,13 @@ class AbonoLiquidadoDetalle extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     final resultado = await provider.entregarProducto(listaApartados2[0].id!);
-                    if(resultado.status != 1) {
+                    if(resultado.status == 0) {
                       mostrarAlerta(context, 'Error', resultado.mensaje!);
                       return;
                     }
-
-                    mostrarAlerta(context, 'Exitoso', resultado.mensaje!);
                     Navigator.pop(context);
+                    Navigator.pop(context);
+                    mostrarAlerta(context, 'Exitoso', resultado.mensaje ?? 'Producto Entregado Correctamente');
                   }, 
                   child: const Text('Entregar producto(s)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)
                 ),
