@@ -29,26 +29,28 @@ class ProductsScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.0),
             child: Column(
               children: [
-                ListTile(
-                    leading: const Icon(Icons.list_alt),
-                    title: const Text('Listado de Productos',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    subtitle: const Text('Visualiza tus productos'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () {
-                      Navigator.pushNamed(context, 'productos');
-                    }),
-                ListTile(
-                    leading: const Icon(Icons.add_box),
-                    title: const Text('Agregar Producto',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    subtitle: const Text('Crea un nuevo producto'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () => Navigator.pushNamed(context, 'nvo-producto')),
+                if(sesion.tipoUsuario == 'P')
+                    ListTile(
+                        leading: const Icon(Icons.list_alt),
+                        title: const Text('Listado de Productos',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis),
+                        subtitle: const Text('Visualiza tus productos'),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () {
+                          Navigator.pushNamed(context, 'productos');
+                        }),
+                if(sesion.tipoUsuario == 'P')
+                    ListTile(
+                        leading: const Icon(Icons.add_box),
+                        title: const Text('Agregar Producto',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis),
+                        subtitle: const Text('Crea un nuevo producto'),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () => Navigator.pushNamed(context, 'nvo-producto')),
                 ListTile(
                     leading: const Icon(Icons.warehouse),
                     title: const Text(
@@ -65,34 +67,36 @@ class ProductsScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.pushNamed(context, 'InventoryPage');
                     }),
-                ListTile(
-                    leading: const Icon(Icons.add),
-                    title: const Text(
-                      'Agregar Producto Sucursal',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: const Text('Agrega un producto a tu sucursal'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () => Navigator.pushNamed(
-                        context, 'agregar-producto-sucursal')),
-                ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: const Text(
-                      'Quitar Producto Sucursal',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: const Text('Elimina un producto de una sucursal'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () => Navigator.pushNamed(
-                        context, 'eliminar-producto-sucursal')),
+                if(sesion.tipoUsuario == 'P')
+                    ListTile(
+                        leading: const Icon(Icons.add),
+                        title: const Text(
+                          'Agregar Producto Sucursal',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: const Text('Agrega un producto a tu sucursal'),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () => Navigator.pushNamed(
+                            context, 'agregar-producto-sucursal')),
+                if(sesion.tipoUsuario == 'P')
+                    ListTile(
+                        leading: const Icon(Icons.delete),
+                        title: const Text(
+                          'Quitar Producto Sucursal',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: const Text('Elimina un producto de una sucursal'),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () => Navigator.pushNamed(
+                            context, 'eliminar-producto-sucursal')),
                 ListTile(
                     leading: const Icon(Icons.request_quote),
                     title: const Text(

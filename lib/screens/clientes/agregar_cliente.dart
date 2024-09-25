@@ -307,15 +307,16 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    SwitchListTile.adaptive(
-                        title: const Text('Tipo de cliente: '),
-                        subtitle:
-                            Text((_valuecliente) ? 'Distribuidor' : 'Normal'),
-                        value: _valuecliente,
-                        onChanged: (value) {
-                          _valuecliente = value;
-                          setState(() {});
-                        }),
+                    if(sesion.tipoUsuario == 'P')
+                        SwitchListTile.adaptive(
+                            title: const Text('Tipo de cliente: '),
+                            subtitle:
+                                Text((_valuecliente) ? 'Distribuidor' : 'Normal'),
+                            value: _valuecliente,
+                            onChanged: (value) {
+                              _valuecliente = value;
+                              setState(() {});
+                            }),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),

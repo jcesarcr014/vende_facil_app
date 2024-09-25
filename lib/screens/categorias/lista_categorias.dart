@@ -20,22 +20,22 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
 
   @override
   void initState() {
-    if(globals.actualizaCategorias){
-        setState(() {
-      textLoading = 'Leyendo categorias';
-      isLoading = true;
-    });
-    categoriasProvider.listarCategorias().then((value) {
+    if (globals.actualizaCategorias) {
       setState(() {
-        textLoading = '';
-        isLoading = false;
-        globals.actualizaCategorias = false;
+        textLoading = 'Leyendo categorias';
+        isLoading = true;
       });
-      if (value.status != 1) {
-        Navigator.pop(context);
-        mostrarAlerta(context, 'ERROR', value.mensaje!);
-      }
-    });
+      categoriasProvider.listarCategorias().then((value) {
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+          globals.actualizaCategorias = false;
+        });
+        if (value.status != 1) {
+          Navigator.pop(context);
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
     }
     super.initState();
   }
@@ -80,24 +80,25 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'nva-categoria');
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text('Nueva categoria'),
-                          ],
+                    if (sesion.tipoUsuario == 'P')
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, 'nva-categoria');
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Nueva categoria'),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
@@ -122,8 +123,12 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
             listaCat.add(Column(
               children: [
                 ListTile(
-                  onTap: () => Navigator.pushNamed(context, 'nva-categoria',
-                      arguments: cat),
+                  onTap: () {
+                    if(sesion.tipoUsuario == 'P'){
+                      Navigator.pushNamed(context, 'nva-categoria',
+                          arguments: cat);
+                    }
+                  },
                   leading: Icon(
                     Icons.square,
                     color: color.color,
