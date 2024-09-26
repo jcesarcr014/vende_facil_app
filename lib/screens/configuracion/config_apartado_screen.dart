@@ -297,14 +297,8 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                   child: Tooltip(
                     message: 'Esta opción permite controlar la privacidad de la información que ve  el vendedor .',
                     child: SwitchListTile.adaptive(
-                      title: const Text(
-                        'Privacidad de Información:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      subtitle: Text(_valueInformacion ? 'Permitir ver' : 'Negar ver'),
+                      title: const Text('Privacidad de historial', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,),),
+                      subtitle: Text(_valueInformacion ? 'Permitir ver' : 'Empleados puede ver totales de ventas'),
                       value: _valueInformacion,
                       onChanged: (value) {
                         setState(() {
