@@ -9,7 +9,7 @@ class ColorCategoria {
 }
 
 List<ColorCategoria> listaColores = [
-  ColorCategoria(id: 1, nombreColor: 'Blanco', color: Colors.white),
+  ColorCategoria(id: 1, nombreColor: 'Blanco', color: const Color.fromARGB(255, 205, 194, 194)),
   ColorCategoria(id: 2, nombreColor: 'Rojo', color: Colors.red),
   ColorCategoria(id: 3, nombreColor: 'Amarillo', color: Colors.yellow),
   ColorCategoria(id: 4, nombreColor: 'Azul', color: Colors.blue),
