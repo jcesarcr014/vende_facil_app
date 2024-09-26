@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/ticket_provider.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class TicketScreen extends StatefulWidget {
   const TicketScreen({super.key});
@@ -93,7 +94,8 @@ class _TicketScreenState extends State<TicketScreen> {
       );
       return;
     }
-
+    isLoading = true;
+    setState(() {});
     if (_image != null || _webImage != null) {
       final respuesta = await ticketProvider.saveLogo(_image!);
       message += '${respuesta.mensaje}\n';
@@ -103,24 +105,9 @@ class _TicketScreenState extends State<TicketScreen> {
       final respuesta = await ticketProvider.saveMessage(sesion.idNegocio!, _ticketFooterController.text);
       message += '${respuesta.mensaje}\n';
     }
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Estatus'),
-          content: Text(message),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    isLoading = false;
+    setState(() {});
+    mostrarAlerta(context, 'Estatus', message);
   }
 
   @override
