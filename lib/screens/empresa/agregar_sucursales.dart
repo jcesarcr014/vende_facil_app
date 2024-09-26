@@ -36,7 +36,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       funcion.text = "Guardar";
       setState(() {});
     } else {
-
       filtrarResultados();
 
       controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
@@ -70,56 +69,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     // Llamar a setState si esto afecta la interfaz de usuario para actualizarla
     setState(() {});
   }
-
-/*
-  _guardarSucursal() {
-    if (estatus) {
-      Sucursal nueva = Sucursal();
-      nueva.negocioId = sesion.idNegocio;
-      nueva.nombreSucursal = controllerNombre.text;
-      nueva.direccion = controllerEmail.text;
-      nueva.telefono = controllerTelefono.text;
-      negocio.addSucursal(nueva).then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-          globals.actualizaSucursales = true;
-        });
-        if (value.status == 1) {
-          setState(() {
-            Navigator.pushReplacementNamed(context, 'lista-sucursales');
-          });
-          mostrarAlerta(context, '', value.mensaje!);
-        } else {
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    } else {
-      Sucursal nueva = Sucursal();
-      nueva.id = sucursalSeleccionado.id;
-      nueva.negocioId = sucursalSeleccionado.negocioId;
-      nueva.nombreSucursal = controllerNombre.text;
-      nueva.direccion = controllerEmail.text;
-      nueva.telefono = controllerTelefono.text;
-      negocio.editarSUcursal(nueva).then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-          globals.actualizaSucursales = true;
-        });
-        if (value.status == 1) {
-          setState(() {
-            Navigator.pushReplacementNamed(context, 'lista-sucursales');
-          });
-          mostrarAlerta(context, '', value.mensaje!);
-        } else {
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    }
-  }
-*/
-
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
@@ -202,10 +151,9 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                     ElevatedButton(
                         onPressed: () {
                           if (estatus) {
-                            _agregar(sesion.idNegocio, controllerNombre.text,
-                                controllerEmail.text, controllerTelefono.text);
+                            _validarAntesDeAgregar();
                           } else {
-                            _editar();
+                            _validarAntesDeEditar();
                           }
                         },
                         child: Row(
@@ -218,222 +166,255 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                             Text(funcion.text),
                           ],
                         )),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    const Divider(),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    const Text(
-                      'Empleados asiganados:',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    Container(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final screenWidth =
-                                MediaQuery.of(context).size.width;
-                            final columnSpacing = screenWidth * 0.30;
-                            return DataTable(
-                              columnSpacing: columnSpacing,
-                              columns: const [
-                                DataColumn(label: Text('Nombre')),
-                                DataColumn(label: Text('Acciones')),
-                              ],
-                              rows: resultadosFiltrados.map((user) {
-                                return DataRow(
-                                  cells: [
-                                    DataCell(
-                                      Text("${user.name}"),
-                                    ),
-                                    DataCell(
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(Icons.delete),
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        'Eliminar Usuario'),
-                                                    content: const Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                            "Quieres eliminar este usuario")
-                                                      ],
-                                                    ),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        child: const Text(
-                                                            'Cancelar'),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      ),
-                                                      TextButton(
-                                                        child: const Text(
-                                                            'Confirmar'),
-                                                        onPressed: () async {
-                                                          showDialog(
-                                                            context: context,
-                                                            barrierDismissible:
-                                                                false,
-                                                            builder:
-                                                                (BuildContext
-                                                                    context) {
-                                                              return const Center(
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              );
-                                                            },
-                                                          );
-                                                          await negocio
-                                                              .deleteEmpleadoSUcursal(
-                                                                  user.usuarioId,
-                                                                  user.sucursalId)
-                                                              .then(
-                                                            (value) {
-                                                              setState(() {
-                                                                textLoading =
-                                                                    '';
-                                                                isLoading =
-                                                                    false;
-                                                                globals.actualizarEmpleadoSucursales =
-                                                                    true;
-                                                              });
-                                                              if (value
-                                                                      .status ==
-                                                                  1) {
-                                                                setState(() {
-                                                                  Navigator.pushReplacementNamed(
-                                                                      context,
-                                                                      'lista-sucursales');
-                                                                });
-                                                                mostrarAlerta(
-                                                                    context,
-                                                                    '',
-                                                                    value
-                                                                        .mensaje!);
-                                                              } else {
-                                                                Navigator.pop(
-                                                                    context);
-                                                                Navigator.pop(
-                                                                    context);
-                                                                mostrarAlerta(
-                                                                    context,
-                                                                    'ERROR',
-                                                                    value
-                                                                        .mensaje!);
-                                                              }
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                            );
-                          },
-                        ),
+                    if (estatus == false)
+                      SizedBox(
+                        height: windowHeight * 0.05,
                       ),
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.1,
-                    ),
-                    const Text(
-                      'Asignar empleado:',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.2,
-                          child: const Text(
-                            'Seleccione Empleado',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                    if (estatus == false) const Divider(),
+                    if (estatus == false)
+                      SizedBox(
+                        height: windowHeight * 0.01,
+                      ),
+                    if (estatus == false)
+                      const Text(
+                        'Empleados asiganados:',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    if (estatus == false)
+                      SizedBox(
+                        height: windowHeight * 0.01,
+                      ),
+                    if (estatus == false)
+                      Container(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final screenWidth =
+                                  MediaQuery.of(context).size.width;
+                              final columnSpacing = screenWidth * 0.30;
+                              return DataTable(
+                                columnSpacing: columnSpacing,
+                                columns: const [
+                                  DataColumn(label: Text('Nombre')),
+                                  DataColumn(label: Text('Acciones')),
+                                ],
+                                rows: resultadosFiltrados.map((user) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text("${user.name}"),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.delete),
+                                              onPressed: () {
+                                                _eliminarUsuario(context, user);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              );
+                            },
                           ),
                         ),
-                        SizedBox(width: windowWidth * 0.1),
-                        Expanded(
-                          child: _empleado(),
-                        ),
-                      ],
-                    ),
+                      ),
+                    if (estatus == false)
+                      SizedBox(
+                        height: windowHeight * 0.1,
+                      ),
+                    if (estatus == false)
+                      const Text(
+                        'Asignar empleado:',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    if (estatus == false)
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: windowWidth * 0.2,
+                            child: const Text(
+                              'Seleccione Empleado',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: windowWidth * 0.1),
+                          Expanded(
+                            child: _empleado(),
+                          ),
+                        ],
+                      ),
+                    if (estatus == false)
+                      SizedBox(
+                        height: windowHeight * 0.05,
+                      ),
+                    if (estatus == false)
+                      ElevatedButton(
+                          onPressed: () async {
+                            setState(() {
+                              textLoading = 'Empleado asignado a la sucursal';
+                              isLoading = true;
+                            });
+                            if (_valueIdEmpleado == "0") {
+                              mostrarAlerta(context, "Alerta",
+                                  "Debe seleccionar un empleado");
+                              setState(() {
+                                isLoading = false;
+                              });
+                            } else {
+                              SucursalEmpleado sucursal = SucursalEmpleado();
+                              sucursal.empleadoId = int.parse(_valueIdEmpleado);
+                              sucursal.sucursalId = sucursalSeleccionado.id;
+                              sucursal.negocioId = sesion.idNegocio;
+                              sucursal.propietarioId = sesion.idUsuario;
+                              await negocio
+                                  .addSucursalEmpleado(sucursal)
+                                  .then((value) {
+                                setState(() {
+                                  textLoading =
+                                      'Empleado asignado a la sucursal';
+                                  isLoading = false;
+                                });
+                                if (value.status == 1) {
+                                  setState(() {
+                                    isLoading = false;
+                                    globals.actualizarEmpleadoSucursales = true;
+                                  });
+                                  setState(() {
+                                    Navigator.pushReplacementNamed(
+                                        context, 'lista-sucursales');
+                                  });
+                                  mostrarAlerta(context, '', value.mensaje!);
+                                } else {
+                                  setState(() {
+                                    isLoading = false;
+                                    globals.actualizarEmpleadoSucursales = true;
+                                  });
+                                  mostrarAlerta(
+                                      context, 'ERROR', value.mensaje!);
+                                }
+                              });
+                            }
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text("Agregar"),
+                            ],
+                          )),
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
-                    ElevatedButton(
-                        onPressed: () async {
-                          if (_valueIdEmpleado == "0") {
-                            mostrarAlerta(context, "Alerta",
-                                "Debe seleccionar un empleado");
-                          } else {
-                            SucursalEmpleado sucursal = SucursalEmpleado();
-                            sucursal.empleadoId = int.parse(_valueIdEmpleado);
-                            sucursal.sucursalId = sucursalSeleccionado.id;
-                            sucursal.negocioId = sesion.idNegocio;
-                            sucursal.propietarioId = sesion.idUsuario;
-                           await negocio.addSucursalEmpleado(sucursal).then((value) {
-                              setState(() {
-                                textLoading = 'Empleado asignado a la sucursal';
-                                isLoading = true;
-                              });
-                              if (value.status == 1) {
-                                  setState(() {
-                                  isLoading = false;
-                                  globals.actualizarEmpleadoSucursales = true;
-                                });
-                                setState(() {
-                                  Navigator.pushReplacementNamed(
-                                      context, 'lista-sucursales');
-                                });
-                                mostrarAlerta(context, '', value.mensaje!);
-                              } else {
-                                setState(() {
-                                  isLoading = false;
-                                  globals.actualizarEmpleadoSucursales = true;
-                                });
-                                mostrarAlerta(context, 'ERROR', value.mensaje!);
-                              }
-                            });
-                          }
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text("Agregar"),
-                          ],
-                        )),
                   ],
                 ),
               ),
             ),
+    );
+  }
+  void _validarAntesDeEditar() {
+  if (controllerNombre.text.isEmpty) {
+    mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
+    return;
+  }
+  if (controllerEmail.text.isEmpty) {
+    mostrarAlerta(context, 'Error', 'La dirección es requerida.');
+    return;
+  }
+  if (controllerTelefono.text.isEmpty) {
+    mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
+    return;
+  }
+  // Si pasa las validaciones, procedemos a editar
+  _editar();
+}
+
+  void _validarAntesDeAgregar() {
+  if (controllerNombre.text.isEmpty) {
+    mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
+    return;
+  }
+  if (controllerEmail.text.isEmpty) {
+    mostrarAlerta(context, 'Error', 'La dirección es requerida.');
+    return;
+  }
+  if (controllerTelefono.text.isEmpty) {
+    mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
+    return;
+  }
+  // Si pasa las validaciones, procedemos a agregar
+  _agregar(sesion.idNegocio, controllerNombre.text, controllerEmail.text, controllerTelefono.text);
+}
+
+  void _eliminarUsuario(BuildContext parentContext, SucursalEmpleado user) {
+    showDialog(
+      context: parentContext, // Asegúrate de pasar un contexto superior
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Eliminar Usuario'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [Text("¿Quieres eliminar este usuario?")],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Usa dialogContext aquí
+              },
+            ),
+            TextButton(
+              child: const Text('Confirmar'),
+              onPressed: () async {
+                Navigator.of(dialogContext).pop(); // Usa dialogContext aquí
+
+                // Usa el parentContext para operaciones asíncronas.
+                setState(() {
+                  textLoading = 'Eliminando usuario';
+                  isLoading = true;
+                });
+
+                try {
+                  await negocio
+                      .deleteEmpleadoSUcursal(user.usuarioId, user.sucursalId)
+                      .then((value) {
+                    if (value.status == 1) {
+                      setState(() {
+                        textLoading = '';
+                        isLoading = false;
+                        globals.actualizarEmpleadoSucursales = true;
+                      });
+                      Navigator.pushReplacementNamed(
+                          context, 'lista-sucursales');
+                      mostrarAlerta(context, '', value.mensaje!);
+                    } else {
+                      mostrarAlerta(context, 'ERROR', value.mensaje!);
+                    }
+                  });
+                } catch (e) {
+                  if (mounted) {
+                    setState(() {
+                      textLoading = '';
+                      isLoading = false;
+                    });
+                  }
+                  mostrarAlerta(parentContext, 'ERROR', 'Ocurrió un error');
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
