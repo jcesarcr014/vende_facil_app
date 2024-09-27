@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final EfectivoConttroller = TextEditingController();
   final TarjetaConttroller = TextEditingController();
   final CambioConttroller = TextEditingController();
+  final variablesprovider = VariablesProvider();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -49,9 +50,23 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           globals.actualizaArticulos = false;
           textLoading = '';
-          isLoading = false;
+          isLoading = true;
         });
       });
+    }
+    if (globals.actualizaVariables) {
+      variablesprovider.variablesApartado().then((value) {
+          if (value.status == 1) {
+            globals.actualizaVariables = false;
+            textLoading = '';
+            isLoading = false; 
+          } else {
+            globals.actualizaVariables = true;
+            textLoading = '';
+            isLoading = false;
+          }
+        });
+      
     }
 
     super.initState();
