@@ -323,6 +323,8 @@ class _HistorialCotizacionesScreenState
           ),
         ],
       );
+    } else {
+      return const SizedBox(child: Text(''),);
     }
   }
 
