@@ -396,8 +396,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
-    var aplica = listaVariables
-        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
+    if(listaVariables.isEmpty) return;
+    var aplica = listaVariables.firstWhere(
+      (variables) => variables.nombre == "aplica_mayoreo",
+    );
     for (ItemVenta item in ventaTemporal) {
       if (aplica.valor == "0") {
         totalVentaTemporal += item.cantidad * item.precioPublico;
@@ -419,8 +421,6 @@ class _HomeScreenState extends State<HomeScreen> {
   _agregaProductoVenta(Producto producto, cantidad) {
     bool existe = false;
     if (producto.unidad == "1") {
-      //print("Entro aca 2");
-      //print("Seleccionaron el Producto: ${producto.descripcion} y con un total de productos: $cantidad y cantidad es del ${cantidad.runtimeType}");
       for (ItemVenta item in ventaTemporal) {
         if (item.idArticulo == producto.id) {
           existe = true;
