@@ -56,59 +56,64 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Sucursales'),
-          automaticallyImplyLeading: true,
-        ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Espere...$textLoading'),
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didpop) {
+          if (!didpop) Navigator.pushReplacementNamed(context, 'menu-negocio');
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Sucursales'),
+            ),
+            body: (isLoading)
+                ? Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Espere...$textLoading'),
+                          SizedBox(
+                            height: windowHeight * 0.01,
+                          ),
+                          const CircularProgressIndicator(),
+                        ]),
+                  )
+                : SingleChildScrollView(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
+                    child: Column(children: [
+                      SizedBox(
+                        height: windowHeight * 0.02,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: windowWidth * 0.05),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            sucursalSeleccionado.limpiar();
+                            Navigator.pushNamed(context, 'nva-sucursal');
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Nueva sucursal'),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: windowHeight * 0.02,
+                      ),
+                      const Divider(),
                       SizedBox(
                         height: windowHeight * 0.01,
                       ),
-                      const CircularProgressIndicator(),
+                      Column(children: _sucursales())
                     ]),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.01),
-                child: Column(children: [
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        sucursalSeleccionado.limpiar();
-                        Navigator.pushNamed(context, 'nva-sucursal');
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text('Nueva sucursal'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  const Divider(),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  Column(children: _sucursales())
-                ]),
-              ));
+                  )));
   }
 
   _sucursales() {
