@@ -48,17 +48,6 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
           ],
         ),
       );
-    } else if (apartado.pagado == 1) {
-      return const SizedBox(
-        width: 150,
-        child: Row(
-          children: [
-            Icon(Icons.check_circle, color: Colors.amber),
-            SizedBox(width: 8),
-            Text('Pagado', style: TextStyle(color: Colors.amber)),
-          ],
-        ),
-      );
     } else if (apartado.entregado == 1) {
       return const SizedBox(
         width: 150,
@@ -67,6 +56,17 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
             Icon(Icons.local_shipping, color: Colors.green),
             SizedBox(width: 8),
             Text('Entregado', style: TextStyle(color: Colors.green)),
+          ],
+        ),
+      );
+    } else if (apartado.pagado == 1) {
+      return const SizedBox(
+        width: 150,
+        child: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.amber),
+            SizedBox(width: 8),
+            Text('Pagado', style: TextStyle(color: Colors.amber)),
           ],
         ),
       );
