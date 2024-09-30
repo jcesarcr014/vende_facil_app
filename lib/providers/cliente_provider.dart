@@ -63,7 +63,8 @@ class ClienteProvider {
           clienteTemp.pais = decodedData['data'][x]['pais'];
           clienteTemp.codigoCliente = decodedData['data'][x]['codigo_cliente'];
           clienteTemp.nota = decodedData['data'][x]['nota'];
-          clienteTemp.distribuidor=  int.parse(decodedData['data'][x]['distribuidor']);
+          clienteTemp.distribuidor =
+              int.parse(decodedData['data'][x]['distribuidor']);
           listaClientes.add(clienteTemp);
         }
         respuesta.status = 1;
@@ -76,6 +77,7 @@ class ClienteProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion: $e';
     }
+    print(listaClientes.length);
     return respuesta;
   }
 
@@ -99,7 +101,7 @@ class ClienteProvider {
         cliente.pais = decodedData['data']['pais'];
         cliente.codigoCliente = decodedData['data']['codigo_cliente'];
         cliente.nota = decodedData['data']['nota'];
-        cliente.distribuidor=  int.parse(decodedData['data']['distribuidor']);
+        cliente.distribuidor = int.parse(decodedData['data']['distribuidor']);
       } else {
         cliente.id = 0;
         cliente.nombre = decodedData['msg'];

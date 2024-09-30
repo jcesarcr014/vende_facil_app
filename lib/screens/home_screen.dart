@@ -50,25 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           globals.actualizaArticulos = false;
           textLoading = '';
-          isLoading = true;
+          isLoading = false;
         });
       });
     }
-    if (globals.actualizaVariables) {
-      variablesprovider.variablesApartado().then((value) {
-          if (value.status == 1) {
-            globals.actualizaVariables = false;
-            textLoading = '';
-            isLoading = false; 
-          } else {
-            globals.actualizaVariables = true;
-            textLoading = '';
-            isLoading = false;
-          }
-        });
-      
-    }
-
     super.initState();
   }
 
