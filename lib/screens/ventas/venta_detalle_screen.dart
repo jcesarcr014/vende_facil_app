@@ -1,4 +1,4 @@
-// ignore_for_file: dead_code, prefer_final_fields, depend_on_referenced_packages
+// ignore_for_file: dead_code, prefer_final_fields, depend_on_referenced_packages, null_check_always_fails
 
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
@@ -29,6 +29,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   int idDescuento = 0;
   bool _valuePieza = false;
   final cantidadControllers = TextEditingController();
+  Descuento descuentoSeleccionado = Descuento();
 
   final TicketProvider ticketProvider = TicketProvider();
   final NegocioProvider negocioProvider = NegocioProvider();
@@ -535,8 +536,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           setState(() {});
           descuento = 0.00;
           totalVentaTemporal = subTotalItem;
+          descuentoSeleccionado = Descuento(id: -1, valor: 0.00, nombre: '',
+              tipoValor: 0, valorPred: 0);
         } else {
-          Descuento descuentoSeleccionado = listaDescuentos
+           descuentoSeleccionado = listaDescuentos
               .firstWhere((descuento) => descuento.id.toString() == value);
           if (descuentoSeleccionado.valorPred == 0) {
             if (descuentoSeleccionado.tipoValor == 1) {
@@ -601,15 +604,71 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
               (cliente) => cliente.id == int.parse(_valueIdcliente));
           if (clienteseleccionado.distribuidor == 1) {
             setState(() {
-              // totalVentaTemporal += item.totalItem;
-              // subTotalItem += item.subTotalItem;
-              // descuento += item.descuento;
               totalVentaTemporal = 0.00;
               for (ItemVenta item in ventaTemporal) {
                 totalVentaTemporal = item.cantidad * item.preciodistribuidor;
                 subTotalItem = totalVentaTemporal;
               }
               _valuePieza = false;
+                       if (descuentoSeleccionado.valorPred == 0) {
+            if (descuentoSeleccionado.tipoValor == 1) {
+              setState(() {
+                idDescuento = descuentoSeleccionado.id!;
+                descuento = 0.00;
+                descuento = descuentoSeleccionado.valor!;
+                totalVentaTemporal = subTotalItem;
+                descuento = (totalVentaTemporal * descuento) / 100;
+                totalVentaTemporal = totalVentaTemporal - descuento;
+                _valuePieza = false;
+              });
+            } else {
+              setState(() {
+                idDescuento = descuentoSeleccionado.id!;
+                descuento = 0.00;
+                descuento = descuentoSeleccionado.valor!;
+                totalVentaTemporal = subTotalItem;
+                totalVentaTemporal =
+                    totalVentaTemporal - descuentoSeleccionado.valor!;
+                _valuePieza = false;
+              });
+            }
+          } else {
+            _alertadescuento(descuentoSeleccionado);
+          }
+            });
+          }else{
+            setState(() {
+              totalVentaTemporal = 0.00;
+              for (ItemVenta item in ventaTemporal) {
+                totalVentaTemporal = item.cantidad * item.precioPublico;
+                subTotalItem = totalVentaTemporal;
+              }
+              _valuePieza = false;
+                        if (descuentoSeleccionado.valorPred == 0) {
+            if (descuentoSeleccionado.tipoValor == 1) {
+              setState(() {
+                idDescuento = descuentoSeleccionado.id!;
+                descuento = 0.00;
+                descuento = descuentoSeleccionado.valor!;
+                totalVentaTemporal = subTotalItem;
+                descuento = (totalVentaTemporal * descuento) / 100;
+                totalVentaTemporal = totalVentaTemporal - descuento;
+                _valuePieza = false;
+              });
+            } else {
+              setState(() {
+                idDescuento = descuentoSeleccionado.id!;
+                descuento = 0.00;
+                descuento = descuentoSeleccionado.valor!;
+                totalVentaTemporal = subTotalItem;
+                totalVentaTemporal =
+                    totalVentaTemporal - descuentoSeleccionado.valor!;
+                _valuePieza = false;
+              });
+            }
+          } else {
+            _alertadescuento(descuentoSeleccionado);
+          }
             });
           }
         });
