@@ -164,77 +164,82 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                               height: windowHeight * 0.1,
                             ),
                             Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (listaApartados2[0].saldoPendiente ==
-                                      0.0) {
-                                    mostrarAlerta(context, "Alerta",
-                                        "El artículo ya se ha pagado por completo.");
-                                  } else {
-                                    VentaCabecera venta = VentaCabecera(
-                                      idCliente: listaApartados2[0].id,
-                                      subtotal:
-                                          listaApartados2[0].saldoPendiente,
-                                      idDescuento: 0,
-                                      descuento: 0,
-                                      total: listaApartados2[0].saldoPendiente,
-                                    );
-                                    Navigator.pushNamed(context, 'abonosPagos',
-                                        arguments: venta);
-                                  }
-                                },
-                                child: SizedBox(
-                                  height: windowHeight * 0.1,
-                                  width: windowWidth * 0.4,
-                                  child: const Center(
-                                    child: Text('Agregar Abono',
-                                        style: TextStyle(fontSize: 16)),
-                                  ),
-                                ),
-                              ),
+                              child: 
+                                listaApartados2.first.cancelado != 1 ?
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          if (listaApartados2[0].saldoPendiente ==
+                                              0.0) {
+                                            mostrarAlerta(context, "Alerta",
+                                                "El artículo ya se ha pagado por completo.");
+                                          } else {
+                                            VentaCabecera venta = VentaCabecera(
+                                              idCliente: listaApartados2[0].id,
+                                              subtotal:
+                                                  listaApartados2[0].saldoPendiente,
+                                              idDescuento: 0,
+                                              descuento: 0,
+                                              total: listaApartados2[0].saldoPendiente,
+                                            );
+                                            Navigator.pushNamed(context, 'abonosPagos',
+                                                arguments: venta);
+                                          }
+                                        },
+                                        child: SizedBox(
+                                          height: windowHeight * 0.1,
+                                          width: windowWidth * 0.4,
+                                          child: const Center(
+                                            child: Text('Agregar Abono',
+                                                style: TextStyle(fontSize: 16)),
+                                          ),
+                                        ),
+                                      ): const Text(''),
                             ),
                             const SizedBox(
                               height: 10,
                             ),
                             Center(
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  setState(() {
-                                    textLoading = 'Actualizando apartado...';
-                                    isLoading = true;
-                                  });
-                                  await apartado
-                                      .cancelarApartado(listaApartados2[0].id!)
-                                      .then((value) {
-                                    if (value.status == 1) {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      Navigator.pushReplacementNamed(
-                                          context, 'menuAbonos');
-                                      mostrarAlerta(context, 'Alerta',
-                                          'Se canceló el apartado.',
-                                          tituloColor: Colors.red,
-                                          mensajeColor: Colors.black);
-                                    } else {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      mostrarAlerta(context, "Error",
-                                          "No se pudo cancelar el apartado.");
-                                    }
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: windowHeight * 0.1,
-                                  width: windowWidth * 0.4,
-                                  child: const Center(
-                                    child: Text('Cancelar Apartado',
-                                        style: TextStyle(fontSize: 16)),
+                              child:
+                                listaApartados2.first.cancelado != 1 ?
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        setState(() {
+                                          textLoading = 'Actualizando apartado...';
+                                          isLoading = true;
+                                        });
+                                        await apartado
+                                            .cancelarApartado(listaApartados2[0].id!)
+                                            .then((value) {
+                                          if (value.status == 1) {
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                            Navigator.pushReplacementNamed(
+                                                context, 'menuAbonos');
+                                            mostrarAlerta(context, 'Alerta',
+                                                'Se canceló el apartado.',
+                                                tituloColor: Colors.red,
+                                                mensajeColor: Colors.black);
+                                          } else {
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                            mostrarAlerta(context, "Error",
+                                                "No se pudo cancelar el apartado.");
+                                          }
+                                        }
+                                      );
+                                      },
+                                      child: SizedBox(
+                                        height: windowHeight * 0.1,
+                                        width: windowWidth * 0.4,
+                                        child: const Center(
+                                          child: Text('Cancelar Apartado',
+                                              style: TextStyle(fontSize: 16)),
+                                        ),
+                                      ),
+                                    ) : const Text(''),
                                   ),
-                                ),
-                              ),
-                            ),
                             SizedBox(
                               height: windowHeight * 0.1,
                             ),
