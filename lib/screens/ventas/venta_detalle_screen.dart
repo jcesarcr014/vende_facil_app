@@ -30,7 +30,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   bool _valuePieza = false;
   final cantidadControllers = TextEditingController();
   Descuento descuentoSeleccionado =
-      Descuento(id: -1, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
+      Descuento(id: 0, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
 
   final TicketProvider ticketProvider = TicketProvider();
   final NegocioProvider negocioProvider = NegocioProvider();
@@ -427,7 +427,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                         //         icon: const Icon(Icons.add_circle_outline))),
                       ],
                     ),
-                    Text('\$${item.totalItem.toStringAsFixed(2)}')
+                    Text('\$${_calcularPrecio(item).toStringAsFixed(2)}')
                   ],
                 ),
                 subtitle: const Divider(),
@@ -486,15 +486,25 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
     totalVentaTemporal = 0;
     subTotalItem = 0;
-    descuento = 0;
     if (_valuePieza == true) {
       for (ItemVenta item in ventaTemporal) {
         totalVentaTemporal += item.cantidad * item.precioPublico;
         subTotalItem += item.cantidad * item.precioPublico;
         item.totalItem = item.cantidad * item.precioPublico;
+        descuento += item.descuento;
       }
     } else {
-      for (ItemVenta item in ventaTemporal) {
+      var clienteseleccionado = listaClientes
+        .firstWhere((cliente) => cliente.id.toString() == _valueIdcliente);
+      if (clienteseleccionado.distribuidor == 1) {
+        for (ItemVenta item in ventaTemporal) {
+          totalVentaTemporal += item.cantidad * item.preciodistribuidor;
+          subTotalItem += item.cantidad * item.preciodistribuidor;
+          item.totalItem = item.cantidad * item.preciodistribuidor;
+          descuento += item.descuento;
+        }
+      } else {
+              for (ItemVenta item in ventaTemporal) {
         if (aplica.valor == "0") {
           totalVentaTemporal += item.cantidad * item.precioPublico;
           subTotalItem += item.cantidad * item.precioPublico;
@@ -513,6 +523,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
             descuento += item.descuento;
           }
         }
+      }
       }
     }
     setState(() {});
@@ -543,7 +554,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           descuento = 0.00;
           totalVentaTemporal = subTotalItem;
           descuentoSeleccionado = Descuento(
-              id: -1, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
+              id: 0, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
         } else {
           descuentoSeleccionado = listaDescuentos
               .firstWhere((descuento) => descuento.id.toString() == value);
@@ -721,8 +732,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                   mostrarAlerta(
                       context, "error", 'La cantidad no puede ser menor a 0');
                 } else if (cantidad > totalVentaTemporal) {
-                  mostrarAlerta(
-                      context,"error",'La cantidad no puede ser mayor al total de la venta');
+                  mostrarAlerta(context, "error",
+                      'La cantidad no puede ser mayor al total de la venta');
                 } else {
                   Navigator.pop(context);
 
@@ -754,5 +765,17 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         );
       },
     );
+  }
+
+  double _calcularPrecio(ItemVenta item) {
+    var clienteseleccionado = listaClientes
+        .firstWhere((cliente) => cliente.id.toString() == _valueIdcliente);
+
+    if (clienteseleccionado.distribuidor == 1) {
+      return item.preciodistribuidor *
+          item.cantidad; // Precio para distribuidores
+    } else {
+      return item.precioPublico * item.cantidad; // Precio para público
+    }
   }
 }
