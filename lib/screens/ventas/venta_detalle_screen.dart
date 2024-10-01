@@ -30,7 +30,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   bool _valuePieza = false;
   final cantidadControllers = TextEditingController();
   Descuento descuentoSeleccionado =
-      Descuento(id: -1, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
+      Descuento(id: 0, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
 
   final TicketProvider ticketProvider = TicketProvider();
   final NegocioProvider negocioProvider = NegocioProvider();
@@ -543,7 +543,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           descuento = 0.00;
           totalVentaTemporal = subTotalItem;
           descuentoSeleccionado = Descuento(
-              id: -1, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
+              id: 0, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
         } else {
           descuentoSeleccionado = listaDescuentos
               .firstWhere((descuento) => descuento.id.toString() == value);
