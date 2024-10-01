@@ -77,7 +77,6 @@ class ClienteProvider {
       respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion: $e';
     }
-    print(listaClientes.length);
     return respuesta;
   }
 

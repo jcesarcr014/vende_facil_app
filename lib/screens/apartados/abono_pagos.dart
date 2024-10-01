@@ -155,7 +155,8 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                         ),
                         Flexible(
                             child: InputFieldMoney(
-                          controller: TarjetaController,
+                              maxValue: venta.total,
+                              controller: TarjetaController,
                         ))
                       ],
                     ),

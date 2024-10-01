@@ -26,6 +26,12 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   String title = 'Agregar descuento';
 
   _guardaDescuento() {
+    if(!_tipoValorS) {
+      if(controllerValor.text.isEmpty) {
+        mostrarAlerta(context, 'Error', 'Si el descuento es tipo: "Fijo" es obligatorio introducir una cantidad');
+        return;
+      }
+    }
     if (controllerNombre.text.isNotEmpty) {
       setState(() {
         textLoading = (args.id == 0)
@@ -215,7 +221,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                           title: Row(
                             children: [
                               const Text('Tipo de descuento: '),
-                              Text((_tipoValorS) ? 'Variable' : 'Fijo')
+                              Text(_tipoValorS ? 'Variable' : 'Fijo')
                             ],
                           ),
                           value: _tipoValorS,
@@ -229,14 +235,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                             keyboardType: TextInputType.number,
                             textCapitalization: TextCapitalization.none,
                             controller: controllerValor),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      const Text(
-                        'Si el valor queda en blanco, se considera descuento variable.',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      
                       SizedBox(
                         height: windowHeight * 0.05,
                       ),

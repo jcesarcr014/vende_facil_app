@@ -251,20 +251,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, 'HomerCotizar');
-              },
-              icon: const Icon(Icons.arrow_back),
-            ),
-            const SizedBox(width: 8),
-            const Text('Detalle de Cotización'),
-          ],
-        ),
+        title:  const Text('Detalle de Cotización'),
       ),
       body: (isLoading)
           ? Center(

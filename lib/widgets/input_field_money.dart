@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable, library_private_types_in_public_api, use_super_parameters
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,22 +14,24 @@ class InputFieldMoney extends StatefulWidget {
   final String? Function(String?)? validator;
   final String? errorText;
   final double? fontSize;
+  final double? maxValue; // Nuevo parámetro opcional para el valor máximo
 
-  const InputFieldMoney(
-      {Key? key,
-      this.hintText,
-      this.labelText,
-      this.helperText,
-      this.icon,
-      this.suffixIcon,
-      this.textCapitalization = TextCapitalization.none,
-      this.readOnly = false,
-      this.enabled = true,
-      required this.controller,
-      this.validator,
-      this.errorText,
-      this.fontSize})
-      : super(key: key);
+  const InputFieldMoney({
+    Key? key,
+    this.hintText,
+    this.labelText,
+    this.helperText,
+    this.icon,
+    this.suffixIcon,
+    this.textCapitalization = TextCapitalization.none,
+    this.readOnly = false,
+    this.enabled = true,
+    required this.controller,
+    this.validator,
+    this.errorText,
+    this.fontSize,
+    this.maxValue, // Inicialización del nuevo parámetro
+  }) : super(key: key);
 
   @override
   _InputFieldMoneyState createState() => _InputFieldMoneyState();
@@ -52,12 +52,23 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
     super.dispose();
   }
 
+  // Formateo del dinero y validación del valor máximo
   void _formatMoney() {
     final text = widget.controller.text;
     if (text.isNotEmpty) {
-      // Reemplazamos cualquier carácter no numérico y punto decimal
-      final value =
-          double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+      // Reemplazar caracteres no numéricos y punto decimal
+      final value = double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+
+      // Si el valor es mayor que el máximo permitido, mostrar mensaje de error
+      if (widget.maxValue != null && value > widget.maxValue!) {
+        setState(() {
+          errorText = "El valor no puede ser mayor a ${widget.maxValue}";
+        });
+      } else {
+        setState(() {
+          errorText = null;
+        });
+      }
     }
   }
 
@@ -71,6 +82,19 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+        // Formateador adicional para evitar valores mayores que maxValue
+        if (widget.maxValue != null)
+          TextInputFormatter.withFunction((oldValue, newValue) {
+            try {
+              final value = double.tryParse(newValue.text) ?? 0.0;
+              if (value > widget.maxValue!) {
+                return oldValue; // Rechazar cambios si el valor es mayor a maxValue
+              }
+            } catch (e) {
+              return oldValue;
+            }
+            return newValue;
+          }),
       ],
       style: TextStyle(fontSize: widget.fontSize),
       decoration: InputDecoration(
@@ -91,7 +115,10 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
 
   void validate() {
     setState(() {
-      errorText = widget.validator?.call(widget.controller.text);
+      errorText = widget.validator?.call(widget.controller.text) ??
+          (widget.maxValue != null && (double.tryParse(widget.controller.text) ?? 0.0) > widget.maxValue!
+              ? "El valor no puede ser mayor a ${widget.maxValue}"
+              : null);
     });
   }
 }
