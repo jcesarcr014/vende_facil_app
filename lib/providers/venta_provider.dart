@@ -43,7 +43,6 @@ class VentasProvider {
   }
 
   Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
-    print(venta.idDesc);
     if (venta.idDesc != 0) {
       var descue = listaDescuentos
           .firstWhere((descuento) => descuento.id == venta.idDesc)
