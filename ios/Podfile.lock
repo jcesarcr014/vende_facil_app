@@ -1,0 +1,81 @@
+PODS:
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - Flutter (1.0.0)
+  - flutter_barcode_scanner (2.0.0):
+    - Flutter
+  - image_picker_ios (0.0.1):
+    - Flutter
+  - open_file_ios (0.0.1):
+    - Flutter
+  - openpay_bbva (1.0.0):
+    - Flutter
+    - Openpaykit
+  - Openpaykit (0.0.1)
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - sqflite (0.0.3):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
+  - Flutter (from `Flutter`)
+  - flutter_barcode_scanner (from `.symlinks/plugins/flutter_barcode_scanner/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - open_file_ios (from `.symlinks/plugins/open_file_ios/ios`)
+  - openpay_bbva (from `.symlinks/plugins/openpay_bbva/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sqflite (from `.symlinks/plugins/sqflite/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - Openpaykit
+
+EXTERNAL SOURCES:
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/darwin"
+  Flutter:
+    :path: Flutter
+  flutter_barcode_scanner:
+    :path: ".symlinks/plugins/flutter_barcode_scanner/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
+  open_file_ios:
+    :path: ".symlinks/plugins/open_file_ios/ios"
+  openpay_bbva:
+    :path: ".symlinks/plugins/openpay_bbva/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/darwin"
+
+SPEC CHECKSUMS:
+  connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_barcode_scanner: 7a1144744c28dc0c57a8de7218ffe5ec59a9e4bf
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
+  open_file_ios: 461db5853723763573e140de3193656f91990d9e
+  openpay_bbva: 8b2bd9ae997915ade25e518e23323cd67ea6ef59
+  Openpaykit: 10bed6d67b2b8f204dfff94a7e50d9b2d7076d86
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
+
+PODFILE CHECKSUM: c4c93c5f6502fe2754f48404d3594bf779584011
+
+COCOAPODS: 1.15.2
