@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -33,10 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    if(sesion.tipoUsuario=='E'){
-    setState(() {
-      globals.actualizaArticulos = true;
-    });
+    if (sesion.tipoUsuario == 'E') {
+      setState(() {
+        globals.actualizaArticulos = true;
+      });
     }
     _actualizaTotalTemporal();
     if (globals.actualizaArticulos) {
@@ -193,14 +192,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              var res = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SimpleBarcodeScannerPage(),
-                  ));
-              setState(() {
-                if (res is String) {}
-              });
+              // var res = await Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => const SimpleBarcodeScannerPage(),
+              //     ));
+              // setState(() {
+              //   if (res is String) {}
+              // });
             },
             child: SizedBox(
                 width: windowWidth * 0.10,
@@ -396,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
-    if(listaVariables.isEmpty) return;
+    if (listaVariables.isEmpty) return;
     var aplica = listaVariables.firstWhere(
       (variables) => variables.nombre == "aplica_mayoreo",
     );

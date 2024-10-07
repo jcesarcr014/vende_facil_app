@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:flutter/services.dart';
 
@@ -304,7 +304,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        if(args.id != 0 && !didpop) {
+        if (args.id != 0 && !didpop) {
           Navigator.pop(context);
           Navigator.popAndPushNamed(context, 'productos');
           return;
@@ -409,17 +409,17 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.qr_code_scanner),
                             onPressed: () async {
-                              var res = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SimpleBarcodeScannerPage(),
-                                  ));
-                              setState(() {
-                                if (res is String) {
-                                  controllerCodigoB.text = res;
-                                }
-                              });
+                              // var res = await Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (context) =>
+                              //           const SimpleBarcodeScannerPage(),
+                              //     ));
+                              // setState(() {
+                              //   if (res is String) {
+                              //     controllerCodigoB.text = res;
+                              //   }
+                              // });
                             },
                           ),
                           controller: controllerCodigoB),
@@ -428,13 +428,16 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       ),
                       InputField(
                         labelText: 'Cantidad:',
-                        keyboardType: TextInputType.numberWithOptions(decimal: _valuePieza),
+                        keyboardType: TextInputType.numberWithOptions(
+                            decimal: _valuePieza),
                         controller: controllerCantidad,
                         inputFormatters: [
-                          if (_valuePieza==false)
-                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
+                          if (_valuePieza == false)
+                            FilteringTextInputFormatter.allow(RegExp(
+                                r'^\d+\.?\d{0,3}')) // Permitir fracciones
                           else
-                            FilteringTextInputFormatter.digitsOnly, // Solo números enteros
+                            FilteringTextInputFormatter
+                                .digitsOnly, // Solo números enteros
                         ],
                       ),
                       SizedBox(
