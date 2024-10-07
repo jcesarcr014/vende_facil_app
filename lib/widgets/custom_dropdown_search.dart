@@ -22,7 +22,6 @@ class CustomDropdownSearch extends StatefulWidget {
 }
 
 class _CustomDropdownSearchState extends State<CustomDropdownSearch> {
-
   double getDropDownSize() {
     if (widget.items.isEmpty) return 100;
     return 225;
@@ -65,7 +64,7 @@ class _CustomDropdownSearchState extends State<CustomDropdownSearch> {
           ),
         ),
         showSearchBox: true,
-        isFilterOnline: true, 
+        isFilterOnline: true,
       ),
     );
   }
