@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 
 
 android {
-    namespace 'com.vendo_facil'
+    namespace 'com.example.vende_facil'
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 

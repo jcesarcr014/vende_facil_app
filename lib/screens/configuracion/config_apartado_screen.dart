@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:print_bluetooth_thermal/print_bluetooth_thermal_windows.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AjustesApartadoScreen extends StatefulWidget {
   // ignore: use_super_parameters
@@ -14,7 +18,9 @@ class AjustesApartadoScreen extends StatefulWidget {
 class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   final apartadoProvider = ApartadoProvider();
   bool _valuePieza = false;
-   bool _valueInformacion = false;
+  bool _valueInformacion = false;
+  bool _valueImpresion = false;
+  bool _puedeImprimir = false;
   final variablesprovider = VariablesProvider();
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
@@ -31,6 +37,10 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+  String macImpresora = '00:00:00:00:00:00';
+  String msjProgreso = '';
+  bool progress = false;
+  List<BluetoothInfo> items = [];
 
   @override
   void dispose() {
@@ -74,13 +84,18 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
               _valuePieza = (varTemp.valor == "1") ? true : false;
             }
           }
-                   
-           if (varTemp.nombre == "empleado_cantidades") {
+
+          if (varTemp.nombre == "empleado_cantidades") {
             idempleadoCatidades = varTemp.id!;
             if (varTemp.valor == null) {
             } else {
               _valueInformacion = (varTemp.valor == "1") ? true : false;
             }
+          }
+          if (varTemp.nombre == "impresion_ticket" && varTemp.valor == '1') {
+            _valueImpresion = true;
+            SharedPreferences.getInstance().then((value) =>
+                value.getString('macImpresora') ?? '00:00:00:00:00:00');
           }
         }
       } else {
@@ -227,20 +242,22 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     Padding(
                       padding: const EdgeInsets.all(1.0),
                       child: SwitchListTile.adaptive(
-                        title: const Text('Se permite mayoreo:',
-                        style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),),
+                        title: const Text(
+                          'Se permite mayoreo:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
                         subtitle: Text(_valuePieza ? 'Permirtir ' : 'Negar'),
                         value: _valuePieza,
                         onChanged: (value) {
                           _valuePieza = value;
                           setState(() {
                             if (_valuePieza == false) {
-                              controllerArticulosMayoreo.text ="0";
-                            }else{
-                               controllerArticulosMayoreo.text ="10";
+                              controllerArticulosMayoreo.text = "0";
+                            } else {
+                              controllerArticulosMayoreo.text = "10";
                             }
                           });
                         },
@@ -292,25 +309,115 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Tooltip(
-                    message: 'Esta opción permite controlar la privacidad de la información que ve  el vendedor .',
-                    child: SwitchListTile.adaptive(
-                      title: const Text('Privacidad de historial', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,),),
-                      subtitle: Text(_valueInformacion ? 'Permitir ver' : 'Empleados puede ver totales de ventas'),
-                      value: _valueInformacion,
-                      onChanged: (value) {
-                        setState(() {
-                          _valueInformacion = value;
-                        });
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Tooltip(
+                        message:
+                            'Esta opción permite controlar la privacidad de la información que ve  el vendedor .',
+                        child: SwitchListTile.adaptive(
+                          title: const Text(
+                            'Privacidad de historial',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          subtitle: Text(_valueInformacion
+                              ? 'Empleados puede SI ver totales de ventas'
+                              : 'Empleados puede NO ver totales de ventas'),
+                          value: _valueInformacion,
+                          onChanged: (value) {
+                            setState(() {
+                              _valueInformacion = value;
+                            });
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ),          
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Tooltip(
+                        message: 'Esta opcion activa la impresión de tickets.',
+                        child: SwitchListTile.adaptive(
+                          title: const Text(
+                            'Imprimir ticket',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          subtitle: Text(_valueImpresion
+                              ? 'Seleccione la impresora'
+                              : 'No se imprime ticket'),
+                          value: _valueImpresion,
+                          onChanged: (value) async {
+                            setState(() {
+                              isLoading = true;
+                              textLoading = 'Validando permisos para imprimir';
+                            });
+                            await _validaPermisos();
+
+                            setState(() {
+                              isLoading = false;
+                              textLoading = '';
+                            });
+                            if (_puedeImprimir == false && value == true) {
+                              mostrarAlerta(context, 'Error',
+                                  'No se puede imprimir, no se han concedido los permisos necesarios');
+                              return;
+                            } else {
+                              setState(() {
+                                _valueImpresion = value;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: windowHeight * 0.03,
+                    ),
+                    (_valueImpresion)
+                        ? Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {}, //_buscarBluetooth(),
+                                      child: Row(
+                                        children: [
+                                          Visibility(
+                                            visible: progress,
+                                            child: SizedBox(
+                                              width: 25,
+                                              height: 25,
+                                              child: CircularProgressIndicator
+                                                  .adaptive(
+                                                      strokeWidth: 1,
+                                                      backgroundColor:
+                                                          Colors.white),
+                                            ),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(progress
+                                              ? msjProgreso
+                                              : "Buscando"),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          )
+                        : Container(),
                     ElevatedButton(
                       onPressed: () {
                         if (_formApartadoConf.currentState!.validate()) {
@@ -350,15 +457,18 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     .then((aplicamayoreo) {
                   if (aplicamayoreo.status == 1) {
                     variablesprovider
-                        .modificarVariables(
-                            idempleadoCatidades, (_valueInformacion) ? '1' : '0')
+                        .modificarVariables(idempleadoCatidades,
+                            (_valueInformacion) ? '1' : '0')
                         .then((aplicamayoreo) {
                       if (aplicamayoreo.status == 1) {
                         setState(() {
                           textLoading = '';
                           isLoading = false;
                         });
-                        mostrarAlerta(context, 'Correcto',tituloColor: Colors.green,
+                        mostrarAlerta(
+                            context,
+                            'Correcto',
+                            tituloColor: Colors.green,
                             'Valores guardados correctamente');
                       } else {
                         setState(() {
@@ -404,6 +514,68 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
         mostrarAlerta(context, 'Error',
             'Error al guardar los valores: ${respPorcentaje.mensaje}');
       }
+    });
+  }
+
+  _validaPermisos() async {
+    var statusNearbyDevices = await Permission.nearbyWifiDevices.status;
+    var statusBluetoothConnect = await Permission.bluetoothConnect.status;
+    var statusBluetoothScan = await Permission.bluetoothScan.status;
+    var statusLocation = await Permission.location.status;
+
+    if (!statusNearbyDevices.isGranted) {
+      statusNearbyDevices = await Permission.nearbyWifiDevices.request();
+    }
+
+    if (!statusBluetoothConnect.isGranted) {
+      statusBluetoothConnect = await Permission.bluetoothConnect.request();
+    }
+
+    if (!statusBluetoothScan.isGranted) {
+      statusBluetoothScan = await Permission.bluetoothScan.request();
+    }
+
+    if (!statusLocation.isGranted) {
+      statusLocation = await Permission.location.request();
+    }
+
+    if (statusNearbyDevices.isGranted &&
+        statusBluetoothConnect.isGranted &&
+        statusBluetoothScan.isGranted &&
+        statusLocation.isGranted) {
+      _puedeImprimir = true;
+    } else {
+      _puedeImprimir = false;
+    }
+  }
+
+  Future<void> _buscarBluetooth() async {
+    setState(() {
+      progress = true;
+      msjProgreso = "Espere";
+      items = [];
+    });
+    final List<BluetoothInfo> listResult =
+        await PrintBluetoothThermal.pairedBluetooths;
+
+    /*await Future.forEach(listResult, (BluetoothInfo bluetooth) {
+      String name = bluetooth.name;
+      String mac = bluetooth.macAdress;
+    });*/
+
+    setState(() {
+      progress = false;
+    });
+
+    if (listResult.length == 0) {
+      // _msj =
+      //     "There are no bluetoohs linked, go to settings and link the printer";
+    } else {
+      // _msj = "Touch an item in the list to connect";
+    }
+
+    setState(() {
+      items = listResult;
     });
   }
 }
