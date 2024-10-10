@@ -34,14 +34,14 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   void initState() {
     listacotizacion.clear();
     _actualizaTotalTemporal();
-    if (globals.actualizaArticulos) {
+    if (globals.actualizaArticulosCotizaciones) {
       setState(() {
         textLoading = 'Actualizando lista de articulos';
         isLoading = true;
       });
-      articulosProvider.listarProductos().then((value) {
+      articulosProvider.listarProductosCotizaciones().then((value) {
         setState(() {
-          globals.actualizaArticulos = false;
+          globals.actualizaArticulosCotizaciones = false;
           textLoading = '';
           isLoading = false;
         });
@@ -57,7 +57,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vende Fácil Cotizaciones'),
+        title: const Text('Cotizaciones'),
         automaticallyImplyLeading: true,
       ),
       body: (isLoading)
@@ -146,8 +146,8 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
               height: windowHeight * 0.1,
               width: windowWidth * 0.4,
               child: Center(
-                child:
-                    Text('Cotizar \$${totalCotizacionTemporal.toStringAsFixed(2)}'),
+                child: Text(
+                    'Cotizar \$${totalCotizacionTemporal.toStringAsFixed(2)}'),
               ),
             ),
           ),
@@ -214,8 +214,11 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
-                  keyboardType: TextInputType.number, // This will show the numeric keyboard
-                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}'))], // Solo números
+                  keyboardType: TextInputType
+                      .number, // This will show the numeric keyboard
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}'))
+                  ], // Solo números
                 ),
               ),
             ],
@@ -243,8 +246,8 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    if (listaProductos.isNotEmpty) {
-      for (Producto producto in listaProductos) {
+    if (listaProductosCotizaciones.isNotEmpty) {
+      for (Producto producto in listaProductosCotizaciones) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {

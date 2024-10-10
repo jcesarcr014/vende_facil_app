@@ -1,10 +1,11 @@
 library vende_facil.globals;
 
-String baseUrl = "http://84.247.163.28/api"; //test interno
-// String baseUrl = "http://38.242.216.214/api"; // PRODUCCION
+// String baseUrl = "http://84.247.163.28/api"; //test interno
+String baseUrl = "http://38.242.216.214/api"; // PRODUCCION
 
 bool actualizaCategorias = false;
 bool actualizaArticulos = false;
+bool actualizaArticulosCotizaciones = false;
 bool actualizaClientes = false;
 bool actualizaUsuarios = false;
 bool actualizaEmpleados = false;

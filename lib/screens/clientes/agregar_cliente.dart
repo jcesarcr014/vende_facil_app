@@ -189,8 +189,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       controllerPais.text = args.pais ?? '';
       controllerCodigo.text = args.codigoCliente ?? '';
       controllerNota.text = args.nota ?? '';
-      _valuecliente  = (args.distribuidor == 1) ? true : false;
-
+      _valuecliente = (args.distribuidor == 1) ? true : false;
     }
     final title = (args.id == 0) ? 'Nuevo cliente' : 'Editar cliente';
     windowWidth = MediaQuery.of(context).size.width;
@@ -307,16 +306,16 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                    if(sesion.tipoUsuario == 'P')
-                        SwitchListTile.adaptive(
-                            title: const Text('Tipo de cliente: '),
-                            subtitle:
-                                Text((_valuecliente) ? 'Distribuidor' : 'Normal'),
-                            value: _valuecliente,
-                            onChanged: (value) {
-                              _valuecliente = value;
-                              setState(() {});
-                            }),
+                    if (sesion.tipoUsuario == 'P')
+                      SwitchListTile.adaptive(
+                          title: const Text('Tipo de cliente: '),
+                          subtitle:
+                              Text((_valuecliente) ? 'Distribuidor' : 'Normal'),
+                          value: _valuecliente,
+                          onChanged: (value) {
+                            _valuecliente = value;
+                            setState(() {});
+                          }),
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -343,6 +342,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                         ElevatedButton(
                             onPressed: () {
                               globals.actualizaArticulos = true;
+                              globals.actualizaArticulosCotizaciones = true;
                               Navigator.pushReplacementNamed(
                                   context, 'clientes');
                             },

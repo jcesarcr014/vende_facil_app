@@ -146,6 +146,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
           Navigator.pushReplacementNamed(context, 'products-menu');
           globals.actualizaArticulos = true;
+          globals.actualizaArticulosCotizaciones = true;
           mostrarAlerta(context, '', 'Producto Guardado Correctamente');
         });
       } else {
@@ -167,6 +168,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             });
             if (value.status == 1) {
               globals.actualizaArticulos = true;
+              globals.actualizaArticulosCotizaciones = true;
               Navigator.pop(context);
               Navigator.popAndPushNamed(context, 'productos');
               mostrarAlerta(context, 'Exito', value.mensaje!);
@@ -227,6 +229,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       });
       if (value.status == 1) {
         globals.actualizaArticulos = true;
+        globals.actualizaArticulosCotizaciones = true;
         Navigator.pushReplacementNamed(context, 'productos');
         mostrarAlerta(context, '', value.mensaje!);
       } else {

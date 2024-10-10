@@ -61,6 +61,51 @@ class ArticuloProvider {
           productoTemp.producto = decodedData['data'][x]['nombre'];
           productoTemp.idNegocio = decodedData['data'][x]['negocio_id'];
           productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
+          // productoTemp.unidad = decodedData['data'][x]['unidad'];
+          // productoTemp.precioPublico =
+          //     double.parse(decodedData['data'][x]['precio_publico']);
+          // productoTemp.precioMayoreo =
+          //     double.parse(decodedData['data'][x]['precio_mayoreo']);
+
+          // productoTemp.precioDist =
+          //     double.parse(decodedData['data'][x]['precio_dist']);
+          // productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
+          // productoTemp.clave = decodedData['data'][x]['clave'];
+          // productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+          // productoTemp.cantidad =
+          //     double.parse(decodedData['data'][x]['cantidad']);
+          // productoTemp.apartado =
+          //     int.parse(decodedData['data'][x]['aplica_apartado']);
+          listaProductos.add(productoTemp);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion. $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> listarProductosCotizaciones() async {
+    listaProductosCotizaciones.clear();
+    var url = Uri.parse('$baseUrl/productos/${sesion.idNegocio}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          Producto productoTemp = Producto();
+          productoTemp.id = decodedData['data'][x]['id'];
+          productoTemp.producto = decodedData['data'][x]['nombre'];
+          productoTemp.idNegocio = decodedData['data'][x]['negocio_id'];
+          productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
           productoTemp.unidad = decodedData['data'][x]['unidad'];
           productoTemp.precioPublico =
               double.parse(decodedData['data'][x]['precio_publico']);
@@ -76,7 +121,7 @@ class ArticuloProvider {
               double.parse(decodedData['data'][x]['cantidad']);
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
-          listaProductos.add(productoTemp);
+          listaProductosCotizaciones.add(productoTemp);
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

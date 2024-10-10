@@ -88,14 +88,23 @@ class _SplashScreenState extends State<SplashScreen> {
             globals.actualizaArticulos = true;
           }
         });
-        if (sesion.tipoUsuario == 'D') {
+        await articulosProvider.listarProductosCotizaciones().then((value) {
+          if (value.status == 1) {
+            globals.actualizaArticulosCotizaciones = false;
+          } else {
+            globals.actualizaArticulosCotizaciones = true;
+          }
+        });
+        if (sesion.tipoUsuario == 'E') {
           await articulosProvider
               .listarProductosSucursal(sesion.idSucursal!)
               .then((value) {
             if (value.status == 1) {
               globals.actualizaArticulos = false;
+              globals.actualizaArticulosCotizaciones = false;
             } else {
               globals.actualizaArticulos = true;
+              globals.actualizaArticulosCotizaciones = true;
             }
           });
         }

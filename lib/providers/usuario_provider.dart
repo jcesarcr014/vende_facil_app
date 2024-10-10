@@ -134,6 +134,7 @@ class UsuarioProvider {
           listaSucursales.addAll(sucursales);
         } else {
           globals.actualizaArticulos = true;
+          globals.actualizaArticulosCotizaciones = true;
           sesion.idSucursal = decodedData["sucursales"];
         }
       } else {

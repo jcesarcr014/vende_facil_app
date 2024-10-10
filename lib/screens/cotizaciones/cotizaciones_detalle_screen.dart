@@ -17,7 +17,6 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/services.dart' show rootBundle;
 
-
 class CotizacionDetalleScreen extends StatefulWidget {
   const CotizacionDetalleScreen({super.key});
   @override
@@ -33,7 +32,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   final cantidadControllers = TextEditingController();
 
   List<DropdownMenuItem> listaClien = [];
-
 
   String _valueIdcliente = listaClientes
       .firstWhere((cliente) => cliente.nombre == 'Público en general')
@@ -53,7 +51,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
 
   String? nombreCliente;
 
-
   @override
   void initState() {
     _actualizaTotalTemporal();
@@ -68,7 +65,8 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   }
 
   void _loadData() async {
-    final TicketModel? model = await ticketProvider.getData(sesion.idNegocio.toString(), true);
+    final TicketModel? model =
+        await ticketProvider.getData(sesion.idNegocio.toString(), true);
     setState(() {
       ticketModel.id = model?.id;
       ticketModel.negocioId = model?.negocioId;
@@ -83,9 +81,12 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     final PdfPage page = document.pages.add();
 
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-    final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
-    final PdfFont titleFont =PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
-    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14, style: PdfFontStyle.italic);
+    final PdfFont boldFont =
+        PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
+    final PdfFont titleFont =
+        PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
+    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14,
+        style: PdfFontStyle.italic);
 
     // Definir color para la tabla
     final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
@@ -103,11 +104,12 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     double pageWidth = page.getClientSize().width;
     double logoWidth = 100;
     double logoXPosition = 0;
-    double nombreXPosition = logoWidth + 20; // Espacio entre el logo y el nombre
+    double nombreXPosition =
+        logoWidth + 20; // Espacio entre el logo y el nombre
 
     // Cargar la imagen del logo si está disponible, o cargar la imagen de los assets si está vacío o nulo
     PdfBitmap? logoBitmap;
-  
+
     // Dibujar el logo y el nombre de la empresa juntos en la parte superior
     if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
       final logoImage = await _downloadImage(ticketModel.logo!);
@@ -118,7 +120,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
             Rect.fromLTWH(logoXPosition, 0, logoWidth,
                 100)); // Ajustar el tamaño del logo
       }
-      } else {
+    } else {
       // Cargar la imagen desde los assets
       final ByteData imageData = await rootBundle.load('assets/logo.png');
       final List<int> imageBytes = imageData.buffer.asUint8List();
@@ -129,7 +131,8 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     if (logoBitmap != null) {
       page.graphics.drawImage(
         logoBitmap,
-        Rect.fromLTWH(logoXPosition, 0, logoWidth, 100), // Ajustar el tamaño del logo
+        Rect.fromLTWH(
+            logoXPosition, 0, logoWidth, 100), // Ajustar el tamaño del logo
       );
     }
     // Dibujar el nombre de la empresa al lado del logo
@@ -149,22 +152,31 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
         bounds: Rect.fromLTWH(
             nombreXPosition, 50, pageWidth - nombreXPosition, 20));
 
-    page.graphics.drawString(cliente, italicFont,  brush: brush, bounds: Rect.fromLTWH(
+    page.graphics.drawString(cliente, italicFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(
             nombreXPosition, 70, pageWidth - nombreXPosition, 20));
 
     // Reducir el espacio antes de la cotización de productos
     double yPosAfterMessage = 120; // Ajusta esta variable según sea necesario
 
     // Dibujar encabezado de la cotización
-    page.graphics.drawString('Cotización de Productos', boldFont, brush: brush, bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
-    page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font, bounds: Rect.fromLTWH(0, yPosAfterMessage + 30, 500, 30)); // Número de folio
+    page.graphics.drawString('Cotización de Productos', boldFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
+    page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
+        bounds: Rect.fromLTWH(
+            0, yPosAfterMessage + 30, 500, 30)); // Número de folio
 
     // Crear la tabla
     final PdfGrid grid = PdfGrid();
     grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
 
     // Estilo para la tabla
-    grid.style = PdfGridStyle(font: font, cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),);
+    grid.style = PdfGridStyle(
+      font: font,
+      cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
+    );
 
     // Añadir encabezados a la tabla
     final PdfGridRow headerRow = grid.headers.add(1)[0];
@@ -210,7 +222,8 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     );
 
     // Dibujar la tabla en el PDF
-    grid.draw(page: page, bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0));
+    grid.draw(
+        page: page, bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0));
 
     // Guardar el PDF en bytes
     List<int> bytes = document.saveSync();
@@ -251,7 +264,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title:  const Text('Detalle de Cotización'),
+        title: const Text('Detalle de Cotización'),
       ),
       body: (isLoading)
           ? Center(
@@ -421,7 +434,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
           cotizarTemporal.clear();
           setState(() {});
           totalCotizacionTemporal = 0.0;
-          globals.actualizaArticulos = true;
+          globals.actualizaArticulosCotizaciones = true;
           listacotizacion.add(cotiz);
           mostrarAlerta(context, '', 'cotizacion realizada');
           _generatePDF();
@@ -473,9 +486,8 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-SizedBox(
+                        SizedBox(
                           width: windowWidth * 0.1,
-
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             transitionBuilder:
@@ -492,7 +504,8 @@ SizedBox(
                                 onPressed: item.totalItem > 0.00
                                     ? () {
                                         setState(() {
-                                          cantidadControllers.text ='${item.cantidad}';
+                                          cantidadControllers.text =
+                                              '${item.cantidad}';
                                         });
                                         showDialog(
                                           context: context,
@@ -543,11 +556,13 @@ SizedBox(
                                                           "AVISO",
                                                           "valor invalido");
                                                     } else {
-                                                        item.cantidad =
-                                                            double.parse(
-                                                                cantidadControllers
-                                                                    .text);
-                                                        _actualizaTotalTemporal();cantidadControllers.text = '${item.cantidad}';
+                                                      item.cantidad =
+                                                          double.parse(
+                                                              cantidadControllers
+                                                                  .text);
+                                                      _actualizaTotalTemporal();
+                                                      cantidadControllers.text =
+                                                          '${item.cantidad}';
                                                     }
                                                   },
                                                   child: const Text('Aceptar '),
@@ -566,7 +581,6 @@ SizedBox(
                                 icon: const Icon(Icons.edit),
                               ),
                             ),
-
                           ),
                         ),
                         SizedBox(
@@ -651,7 +665,6 @@ SizedBox(
             });
           }
         });
-
       },
     );
   }

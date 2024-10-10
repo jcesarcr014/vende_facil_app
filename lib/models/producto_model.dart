@@ -43,4 +43,5 @@ class Producto {
 }
 
 List<Producto> listaProductos = [];
+List<Producto> listaProductosCotizaciones = [];
 List<Producto> listaProductosSucursal = [];

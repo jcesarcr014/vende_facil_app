@@ -79,6 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
               globals.actualizaArticulos = true;
             }
           });
+          await articulosProvider.listarProductosCotizaciones().then((value) {
+            if (value.status == 1) {
+              globals.actualizaArticulosCotizaciones = false;
+            } else {
+              globals.actualizaArticulosCotizaciones = true;
+            }
+          });
           setState(() {
             textLoading = 'Leyendo información adicional';
           });
