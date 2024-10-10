@@ -51,12 +51,12 @@ class Search extends SearchDelegate {
                 id: categoria.idColor, nombreColor: "", color: Colors.grey));
         return ListTile(
           leading: Icon(Icons.category, color: color.color),
-          onTap: (() {
-            if (resultados[index].unidad == "0") {
-            } else {
+          onTap: (() async {
               if (resultados[index].disponibleInv! > 0) {
+                final cantidad = await obtenerCantidad(context, producto.producto ?? '');
+                if(cantidad == -1) return;
                 if (ventaTemporal.isEmpty) {
-                  _agregaProductoVenta(resultados[index], 1, context);
+                  _agregaProductoVenta(resultados[index], cantidad, context);
                 } else {
                   ItemVenta? descue = ventaTemporal.firstWhere(
                     (descuento) => descuento.idArticulo == resultados[index].id,
@@ -77,11 +77,11 @@ class Search extends SearchDelegate {
                     mostrarAlerta(context, "AVISO",
                         "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
                   } else {
-                    _agregaProductoVenta(resultados[index], 1, context);
+                    _agregaProductoVenta(resultados[index], cantidad, context);
                   }
                 }
               }
-            }
+            
           }),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,7 +152,7 @@ class Search extends SearchDelegate {
         if (!existe) {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
-              cantidad: cantidad,
+              cantidad: cantidad.toDouble(),
               precioPublico: producto.precioPublico!,
               preciodistribuidor: producto.precioDist!,
               preciomayoreo: producto.precioMayoreo!,
@@ -176,4 +176,45 @@ class Search extends SearchDelegate {
       totalVentaTemporal += item.totalItem;
     }
   }
+
+  Future<double> obtenerCantidad(BuildContext context, String nombreProducto) async {
+    final TextEditingController cantidadController = TextEditingController()..text = '1';
+    double cantidad = -1;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text('Cantidad para $nombreProducto'),
+          content: TextField(
+            controller: cantidadController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Ingrese la cantidad'),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (cantidadController.text.isNotEmpty && double.parse(cantidadController.text) > 0) {
+                  cantidad = double.parse(cantidadController.text);
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return cantidad;
+  }
+
 }
