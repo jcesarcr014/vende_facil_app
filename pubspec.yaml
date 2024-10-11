@@ -51,6 +51,7 @@ dependencies:
   dropdown_search: ^5.0.6
   syncfusion_flutter_pdf: ^27.1.51
   open_file: ^3.5.3
+  qr_mobile_vision: ^5.0.1
   
   
 
