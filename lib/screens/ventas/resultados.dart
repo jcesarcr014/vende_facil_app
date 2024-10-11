@@ -101,7 +101,7 @@ class Resultados extends StatelessWidget {
       if (!existe) {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
-            cantidad: cantidadg,
+            cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciodistribuidor: producto.precioDist!,
             preciomayoreo: producto.precioMayoreo!,
