@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final descuentoProvider = DescuentoProvider();
   final clienteProvider = ClienteProvider();
   final apartadoProvider = ApartadoProvider();
-  final CantidadConttroller = TextEditingController();
+  final CantidadConttroller = TextEditingController()..text = '1';
   final TotalConttroller = TextEditingController();
   final EfectivoConttroller = TextEditingController();
   final TarjetaConttroller = TextEditingController();
@@ -303,47 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Icons.category,
                     color: color.color,
                   ),
-                  onTap: (() {
-                    if (producto.unidad == "0") {
-                      if (producto.disponibleInv! > 0) {
-                        _alertaProducto(producto);
-                      } else {
-                        mostrarAlerta(context, "AVISO",
-                            "No cuenta con productos disponibles");
-                      }
-                    } else {
-                      if (producto.disponibleInv! > 0) {
-                        if (ventaTemporal.isEmpty) {
-                          _agregaProductoVenta(producto, 0);
-                        } else {
-                          ItemVenta? descue = ventaTemporal.firstWhere(
-                            (descuento) => descuento.idArticulo == producto.id,
-                            orElse: () => ItemVenta(
-                                idArticulo: -1,
-                                apartado: true,
-                                cantidad: 1,
-                                descuento: 1,
-                                idDescuento: 1,
-                                precioPublico: 10,
-                                preciodistribuidor: 10,
-                                preciomayoreo: 10,
-                                subTotalItem: 10,
-                                totalItem: 10),
-                          );
-                          var catidad = descue.cantidad + 1;
-                          if (catidad > producto.disponibleInv!) {
-                            mostrarAlerta(context, "AVISO",
-                                "Nose puede agregar mas articulos de este producto :${producto.producto}");
-                          } else {
-                            _agregaProductoVenta(producto, 0);
-                          }
-                        }
-                      } else {
-                        mostrarAlerta(context, "AVISO",
-                            "No cuenta con productos disponibles");
-                      }
-                    }
-                  }),
+                  onTap: () => producto.disponibleInv! > 0 ? _alertaProducto(producto) : mostrarAlerta(context, "AVISO", "No cuenta con productos disponibles"),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
