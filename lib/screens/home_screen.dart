@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/screens/productos/qr_scanner_screen.dart';
 import 'package:vende_facil/screens/search_screen.dart';
+import 'package:vende_facil/screens/ventas/resultados.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final TarjetaConttroller = TextEditingController();
   final CambioConttroller = TextEditingController();
   final variablesprovider = VariablesProvider();
+
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -192,14 +195,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              // var res = await Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => const SimpleBarcodeScannerPage(),
-              //     ));
-              // setState(() {
-              //   if (res is String) {}
-              // });
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QRScannerScreen(),
+                ),
+              );
+              if(result == null ) return;
+              List<Producto> resultados = listaProductosSucursal.where((producto) => producto.producto?.toLowerCase().contains(result.toLowerCase()) ?? false).toList();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Resultados(resultados: resultados,),),);
             },
             child: SizedBox(
                 width: windowWidth * 0.10,

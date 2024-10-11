@@ -126,7 +126,7 @@ class Search extends SearchDelegate {
       if (!existe) {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
-            cantidad: 1,
+            cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciodistribuidor: producto.precioDist!,
             preciomayoreo: producto.precioMayoreo!,

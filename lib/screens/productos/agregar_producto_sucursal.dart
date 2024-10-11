@@ -252,8 +252,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     readOnly: true,
                     controller: TextEditingController()
                       ..text =
-                          _productoSeleccionado?.cantidad!.toString() ??
-                              '0',
+                          (_productoSeleccionado?.cantidad.toString() != 'null' ? _productoSeleccionado?.cantidad.toString() : '0') ?? '0',
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
