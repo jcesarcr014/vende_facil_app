@@ -333,7 +333,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       if (!existe) {
         cotizarTemporal.add(ItemVenta(
             idArticulo: producto.id!,
-            cantidad: 1,
+            cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciomayoreo: producto.precioMayoreo!,
             preciodistribuidor: producto.precioDist!,
