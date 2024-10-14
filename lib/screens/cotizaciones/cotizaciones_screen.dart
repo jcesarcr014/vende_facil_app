@@ -257,13 +257,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                     Icons.category,
                     color: color.color,
                   ),
-                  onTap: (() {
-                    if (producto.unidad == "0") {
-                      _alertaProducto(producto);
-                    } else {
-                      _agregaProductoVenta(producto, 0);
-                    }
-                  }),
+                  onTap: (() => _alertaProducto(producto)),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
