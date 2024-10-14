@@ -395,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!existe) {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
-            cantidad: 1,
+            cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciomayoreo: producto.precioMayoreo!,
             preciodistribuidor: producto.precioDist!,
