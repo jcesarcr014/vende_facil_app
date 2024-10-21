@@ -61,21 +61,21 @@ class ArticuloProvider {
           productoTemp.producto = decodedData['data'][x]['nombre'];
           productoTemp.idNegocio = decodedData['data'][x]['negocio_id'];
           productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
-          // productoTemp.unidad = decodedData['data'][x]['unidad'];
-          // productoTemp.precioPublico =
-          //     double.parse(decodedData['data'][x]['precio_publico']);
-          // productoTemp.precioMayoreo =
-          //     double.parse(decodedData['data'][x]['precio_mayoreo']);
+          productoTemp.unidad = decodedData['data'][x]['unidad'];
+          productoTemp.precioPublico =
+              double.parse(decodedData['data'][x]['precio_publico']);
+          productoTemp.precioMayoreo =
+              double.parse(decodedData['data'][x]['precio_mayoreo']);
 
-          // productoTemp.precioDist =
-          //     double.parse(decodedData['data'][x]['precio_dist']);
-          // productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
-          // productoTemp.clave = decodedData['data'][x]['clave'];
-          // productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
-          // productoTemp.cantidad =
-          //     double.parse(decodedData['data'][x]['cantidad']);
-          // productoTemp.apartado =
-          //     int.parse(decodedData['data'][x]['aplica_apartado']);
+          productoTemp.precioDist =
+              double.parse(decodedData['data'][x]['precio_dist']);
+          productoTemp.costo = double.parse(decodedData['data'][x]['costo']);
+          productoTemp.clave = decodedData['data'][x]['clave'];
+          productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+          productoTemp.cantidad =
+              double.parse(decodedData['data'][x]['cantidad']);
+          productoTemp.apartado =
+              int.parse(decodedData['data'][x]['aplica_apartado']);
           listaProductos.add(productoTemp);
         }
         respuesta.status = 1;

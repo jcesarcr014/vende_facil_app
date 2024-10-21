@@ -105,6 +105,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  device_info_plus:
+    dependency: transitive
+    description:
+      name: device_info_plus
+      sha256: a7fd703482b391a87d60b6061d04dfdeab07826b96f9abd8f5ed98068acc0074
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.2"
+  device_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_plus_platform_interface
+      sha256: "282d3cf731045a2feb66abfe61bbc40870ae50a3ed10a4d3d217556c35c8c2ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
   dropdown_search:
     dependency: "direct main"
     description:
@@ -392,6 +408,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  native_device_orientation:
+    dependency: transitive
+    description:
+      name: native_device_orientation
+      sha256: "0c330c068575e4be72cce5968ca479a3f8d5d1e5dfce7d89d5c13a1e943b338c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   open_file:
     dependency: "direct main"
     description:
@@ -544,6 +568,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  qr_mobile_vision:
+    dependency: "direct main"
+    description:
+      name: qr_mobile_vision
+      sha256: "69981ecd8c482c3f9a51e45a1871d08108558fcaef73be618800b1f8a18e528a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -733,6 +765,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  win32:
+    dependency: transitive
+    description:
+      name: win32
+      sha256: e5c39a90447e7c81cfec14b041cdbd0d0916bd9ebbc7fe02ab69568be703b9bd
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.6.0"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "21ec76dfc731550fd3e2ce7a33a9ea90b828fdf19a5c3bcf556fa992cfa99852"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.5"
   xdg_directories:
     dependency: transitive
     description:
