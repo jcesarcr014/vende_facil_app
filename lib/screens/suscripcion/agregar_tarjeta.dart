@@ -96,8 +96,23 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                   child: Column(
                     children: [
                       SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
+
+                      Column(children: [
+                        Text('Aceptamos todas las tarjetas de Crédito y Debito', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                        Row(children: [
+                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/visa_logo.jpg'))),
+                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/Mastercard.png'))),
+                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/american.png'))),
+                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/Carnet.png'))),
+                        ],)
+                      ],),
+
+                      SizedBox(
                         height: windowHeight * 0.05,
                       ),
+
                       InputField(
                         labelText: 'Titular',
                         icon: Icons.person,
@@ -189,24 +204,41 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
-                      InputField(
-                        icon: Icons.lock,
-                        labelText: 'CCV:',
-                        keyboardType: TextInputType.number,
-                        controller: controllerCCV,
-                        validator: (ccv) {
-                          if (ccv == null || ccv.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          final RegExp numeric = RegExp(r'^[0-9]+$');
-                          if (!numeric.hasMatch(ccv) ||
-                              ccv.length < 3 ||
-                              ccv.length > 3) {
-                            return 'CCV invalido';
-                          }
-                          return null;
-                        },
-                        errorText: _ccvError,
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: InputField(
+                              icon: Icons.lock,
+                              labelText: 'CCV:',
+                              keyboardType: TextInputType.number,
+                              controller: controllerCCV,
+                              validator: (ccv) {
+                                if (ccv == null || ccv.isEmpty) {
+                                  return 'Este campo es obligatorio';
+                                }
+                                final RegExp numeric = RegExp(r'^[0-9]+$');
+                                if (!numeric.hasMatch(ccv) ||
+                                    ccv.length < 3 ||
+                                    ccv.length > 3) {
+                                  return 'CCV invalido';
+                                }
+                                return null;
+                              },
+                              errorText: _ccvError,
+                            ),
+                          ),
+
+                          SizedBox(width: 20,),
+
+                          Expanded(
+                            flex: 2,
+                            child: SizedBox(
+                              height: windowHeight * 0.1,
+                              child: Image.asset('assets/Component.png')
+                            )
+                          )
+                        ],
                       ),
                       SizedBox(
                         height: windowHeight * 0.03,
