@@ -243,6 +243,38 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                Text('Transacciones realizadas via', style: TextStyle(fontSize: 12),),
+                                Image.asset('assets/OpenPay.jpeg')
+                              ],
+                            )
+                          ),
+                          SizedBox(width: 20,),
+                          Expanded(
+                            flex: 1,
+                            child: Row(
+                              children: [
+                                  Icon(
+                                    Icons.verified, // O también puedes usar Icons.security
+                                    color: Colors.green,
+                                    size: 30.0,
+                                  ),
+                                  Text('Tus pagos se realizan \n de forma segura con \n encriptación de 256 bits', style: TextStyle(fontSize: 12),)
+                              ],
+                            )
+                          )
+                        ]
+                      ),
+
+                      SizedBox(
+                        height: windowHeight * 0.03,
+                      ),
                       ElevatedButton(
                           onPressed: () {
                             _guardarTarjeta();
