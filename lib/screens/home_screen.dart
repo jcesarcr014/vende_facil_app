@@ -201,9 +201,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context) => QRScannerScreen(),
                 ),
               );
-              if(result == null ) return;
-              List<Producto> resultados = listaProductosSucursal.where((producto) => producto.producto?.toLowerCase().contains(result.toLowerCase()) ?? false).toList();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Resultados(resultados: resultados,),),);
+              if (result == null) return;
+              List<Producto> resultados = listaProductosSucursal
+                  .where((producto) =>
+                      producto.producto
+                          ?.toLowerCase()
+                          .contains(result.toLowerCase()) ??
+                      false)
+                  .toList();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Resultados(
+                    resultados: resultados,
+                  ),
+                ),
+              );
             },
             child: SizedBox(
                 width: windowWidth * 0.10,
@@ -268,12 +281,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pop(context);
                 if (CantidadConttroller.text.isEmpty ||
                     double.parse(CantidadConttroller.text) <= 0) {
-                  mostrarAlerta(context, "AVISO", "valor invalido");
+                  mostrarAlerta(context, "AVISO", "Valor invalido");
                 } else {
                   if (double.parse(CantidadConttroller.text) >
                       producto.disponibleInv!) {
                     mostrarAlerta(context, "AVISO",
-                        "Nose puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
+                        "No se puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
                   } else {
                     _agregaProductoVenta(
                       producto,
@@ -307,7 +320,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Icons.category,
                     color: color.color,
                   ),
-                  onTap: () => producto.disponibleInv! > 0 ? _alertaProducto(producto) : mostrarAlerta(context, "AVISO", "No cuenta con productos disponibles"),
+                  onTap: () => producto.disponibleInv! > 0
+                      ? _alertaProducto(producto)
+                      : mostrarAlerta(context, "AVISO",
+                          "No cuenta con productos disponibles"),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

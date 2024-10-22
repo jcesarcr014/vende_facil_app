@@ -166,12 +166,12 @@ class _MenuScreenState extends State<MenuScreen> {
                   prefs.setString('token', '');
                 }
 
-                if( menuRoutes[index] == 'home' && sesion.tipoUsuario == "P" ) {
+                if (menuRoutes[index] == 'home' && sesion.tipoUsuario == "P") {
                   Navigator.pushNamed(context, 'select-branch-office');
                   return;
                 }
 
-                if( menuRoutes[index] == 'productos') {
+                if (menuRoutes[index] == 'productos') {
                   Navigator.pushNamed(context, 'products-menu');
                   return;
                 }
