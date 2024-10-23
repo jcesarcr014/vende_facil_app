@@ -227,6 +227,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                if(CantidadConttroller.text.isEmpty) return;
                 _agregaProductoVenta(
                   producto,
                   double.parse(CantidadConttroller.text),
