@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:vende_facil/models/categoria_model.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
+import 'package:vende_facil/providers/categoria_provider.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final categoriasProvider = CategoriaProvider();
     final double screenWidth = MediaQuery.of(context).size.width;
+
+    void addProduct() async {
+      await categoriasProvider.listarCategorias();
+      listaCategorias.clear();
+      if(listaCategorias.isEmpty) {
+        mostrarAlerta(context, 'Error', 'Primero crea una categoria');
+        return;
+      }
+      Navigator.pushNamed(context, 'nvo-producto');
+    }
 
     return PopScope(
       canPop: false,
@@ -50,7 +64,7 @@ class ProductsScreen extends StatelessWidget {
                             overflow: TextOverflow.ellipsis),
                         subtitle: const Text('Crea un nuevo producto'),
                         trailing: const Icon(Icons.arrow_right),
-                        onTap: () => Navigator.pushNamed(context, 'nvo-producto')),
+                        onTap: addProduct),
                 ListTile(
                     leading: const Icon(Icons.warehouse),
                     title: const Text(
