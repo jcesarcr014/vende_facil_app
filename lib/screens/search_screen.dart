@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
@@ -53,7 +54,7 @@ class Search extends SearchDelegate {
           leading: Icon(Icons.category, color: color.color),
           onTap: (() async {
               if (resultados[index].disponibleInv! > 0) {
-                final cantidad = await obtenerCantidad(context, producto.producto ?? '');
+                final cantidad = await obtenerCantidad(context, producto);
                 if(cantidad == -1) return;
                 if (ventaTemporal.isEmpty) {
                   _agregaProductoVenta(resultados[index], cantidad, context);
@@ -177,9 +178,10 @@ class Search extends SearchDelegate {
     }
   }
 
-  Future<double> obtenerCantidad(BuildContext context, String nombreProducto) async {
+  Future<double> obtenerCantidad(BuildContext context, Producto producto) async {
     final TextEditingController cantidadController = TextEditingController()..text = '1';
     double cantidad = -1;
+    bool isInt = producto.unidad == '1' ? true : false;
 
     await showDialog(
       context: context,
@@ -187,11 +189,14 @@ class Search extends SearchDelegate {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Cantidad para $nombreProducto'),
+          title: Text('Cantidad para ${producto.producto}'),
           content: TextField(
             controller: cantidadController,
-            keyboardType: TextInputType.number,
+            keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true),
             decoration: const InputDecoration(labelText: 'Ingrese la cantidad'),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
+            ],
           ),
           actions: [
             ElevatedButton(

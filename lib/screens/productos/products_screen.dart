@@ -14,7 +14,6 @@ class ProductsScreen extends StatelessWidget {
 
     void addProduct() async {
       await categoriasProvider.listarCategorias();
-      listaCategorias.clear();
       if(listaCategorias.isEmpty) {
         mostrarAlerta(context, 'Error', 'Primero crea una categoria');
         return;
