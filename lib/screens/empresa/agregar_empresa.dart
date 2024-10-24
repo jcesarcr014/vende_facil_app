@@ -32,6 +32,16 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
   Negocio args = Negocio(id: 0, nombreNegocio: '');
   bool firstLoad = false;
 
+  void loadClientes() async {
+    await clientesProvider.listarClientes().then((value) {
+      if (value.status == 1) {
+        globals.actualizaClientes = false;
+      } else {
+        globals.actualizaClientes = true;
+      }
+    });
+  }
+
   _guardaNegocio() {
     if (controllerNombre.text.isNotEmpty && controllerDireccion.text.isNotEmpty) {
       Negocio nuevoNegocio = Negocio();
@@ -57,11 +67,13 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
               isLoading = false;
             });
           }
-          if (value.status == 1) {
+          if (value.status == 1) { 
+            loadClientes();
             if (mounted) {
               setState(() {
                 globals.actualizaSucursales = true;
                 _cargar();
+                
                 Navigator.pushReplacementNamed(context, 'menu');
               });
             }
