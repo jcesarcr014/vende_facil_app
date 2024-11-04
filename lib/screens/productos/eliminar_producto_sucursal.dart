@@ -56,8 +56,8 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
     setState(() {});
   }
 
-  void _seleccionarProducto(String? value) async {
-    if (_selectedSucursal == null) {
+  void _seleccionarProducto(String? value, {bool show = true}) async {
+    if (_selectedSucursal == null && show) {
       mostrarAlerta(context, 'Error', 'Selecciona una sucursal primero');
       return;
     }
@@ -90,7 +90,14 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
     }
-    Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
+    //Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
+    _selectedSucursal = null;
+    _selectedProduct = null;
+    _seleccionarProducto(null, show: false);
+    controller.clear();
+    cantidad = '0';
+    _producto = null;
+    setState(() {});
     globals.actualizaArticulos = true;
     mostrarAlerta(context, 'Exito', resultado.mensaje!);
   }

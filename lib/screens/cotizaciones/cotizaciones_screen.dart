@@ -192,6 +192,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   }
 
   _alertaProducto(Producto producto) {
+    bool isInt = producto.unidad == '1' ? true : false;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -214,10 +215,9 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
-                  keyboardType: TextInputType
-                      .number, // This will show the numeric keyboard
+                  keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}'))
+                    FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
                   ], // Solo números
                 ),
               ),
@@ -227,6 +227,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                if(CantidadConttroller.text.isEmpty) return;
                 _agregaProductoVenta(
                   producto,
                   double.parse(CantidadConttroller.text),

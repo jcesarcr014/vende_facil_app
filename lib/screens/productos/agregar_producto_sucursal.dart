@@ -165,7 +165,11 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     // Asigna la cantidad ingresada al producto seleccionado
     _productoSeleccionado?.cantidadInv = double.parse(controller.text);
 
+    _selectedProduct = null;
+    _selectedSucursal = null;
+    _updateCantidadSucursal();
     globals.actualizaArticulos = true;
+    controller.clear();
     // Si el producto no existe en la sucursal, crea un nuevo inventario
     if (existe == false) {
       Resultado resultado = await provider.nvoInventarioSuc(_productoSeleccionado!);
@@ -178,8 +182,9 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
       // Añade el producto a la lista de productos de la sucursal
       listaProductosSucursal.add(_productoSeleccionado!);
+      _productoSeleccionado = null;
       
-      Navigator.pushReplacementNamed(context, 'products-menu');
+      //Navigator.pushReplacementNamed(context, 'products-menu');
       mostrarAlerta(context, 'Exitoso',
           'Se agrego correctamente el producto a la sucursal.');
       return;
@@ -197,7 +202,9 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
     // Actualiza la lista de productos de la sucursal y navega a la pantalla de productos
     listaProductosSucursal.add(_productoSeleccionado!);
-    Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
+    _productoSeleccionado = null;
+
+    //Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
     mostrarAlerta(context, 'Exitoso','Se agrego correctamente el producto a la sucursal.');
   }
 

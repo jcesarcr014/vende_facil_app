@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/productos/qr_scanner_screen.dart';
@@ -247,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _alertaProducto(Producto producto) {
+    bool isInt = producto.unidad == '1' ? true : false;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -269,8 +271,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
-                  keyboardType: TextInputType
-                      .number, // This will show the numeric keyboard
+                  keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true), // This will show the numeric keyboard
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
+                  ],
                 ),
               ),
             ],
