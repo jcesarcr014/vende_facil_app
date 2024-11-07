@@ -43,6 +43,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   final abonoProvider = AbonoProvider();
 
   final negocioProvider = NegocioProvider();
+  double efectivo = 0;
+  double tarjeta = 0;
 
   @override
   void initState() {
@@ -66,6 +68,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
     await reportesProvider.reporteEmpleado(formattedStartDate, formattedStartDate, sesion.idSucursal.toString(), sesion.idUsuario.toString());
     for (final venta in listaVentas) {
       totalVentas += venta.total!;
+      efectivo += venta.importeEfectivo!;
+      tarjeta += venta.importeTarjeta!;
     }
     setState(() {});
   }
@@ -88,7 +92,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Ventas del dia1'),
+          title: const Text('Ventas del dia'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -123,25 +127,47 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                         child: _listaVentas(),
                       ),
                     ),
+                    const Divider(),
+                    const SizedBox(height: 25,),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Efectivo: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                              Text('\$ ${efectivo.toStringAsFixed(2)}')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Tarjeta: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('\$ ${tarjeta.toStringAsFixed(2)}')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Total de ventas: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('\$ ${totalVentas.toStringAsFixed(2)}')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Diferencia: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('\$ ${diferencia.toStringAsFixed(2)}')
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25,),
                   ],
                 ),
-              ),
-        persistentFooterButtons: [
-          BottomAppBar(
-            child: SizedBox(
-              height: 50,
-              child: Center(
-                child: Column(
-                  children: [
-                    Text('Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
-
-                    Text('Diferencia: : \$ ${diferencia.toStringAsFixed(2)}')
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+              )
       ),
     );
   }
