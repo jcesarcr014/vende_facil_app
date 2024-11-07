@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -173,6 +174,17 @@ class _MenuScreenState extends State<MenuScreen> {
 
                 if (menuRoutes[index] == 'productos') {
                   Navigator.pushNamed(context, 'products-menu');
+                  return;
+                }
+
+                if(sesion.tipoUsuario == 'E' && menuRoutes[index] == 'historial_empleado') {
+                  var result = await mostrarAlertaConInput(context, 'Ingrese una cantidad');
+                  if(result != null && result.isNotEmpty) {
+                    Navigator.pushReplacementNamed(context, menuRoutes[index], arguments: double.parse(result));
+                    return;
+                  }
+
+                  mostrarAlerta(context, 'Error', 'Di la cantidad');
                   return;
                 }
 

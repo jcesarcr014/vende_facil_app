@@ -32,10 +32,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   DateTime now = DateTime.now();
 
   late DateTime _startDate;
-  late DateTime _endDate;
   double totalVentas = 0.0;
   late DateFormat dateFormatter;
-  final _dateController = TextEditingController();
 
   final provider = NegocioProvider();
   final reportesProvider = ReportesProvider();
@@ -49,12 +47,9 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   @override
   void initState() {
     _startDate = DateTime(now.year, now.month, now.day);
-    _endDate = _startDate.add(const Duration(days: 1));
     dateFormatter = DateFormat('yyyy-MM-dd');
     formattedStartDate = dateFormatter.format(_startDate);
-    formattedEndDate = dateFormatter.format(_endDate);
         _cargar();
-    _dateController.text = '$formattedStartDate - $formattedEndDate';
             for (VariableConf varTemp in listaVariables) {                   
               if (varTemp.nombre == "empleado_cantidades") {
                 if (varTemp.valor == null) {
@@ -68,14 +63,22 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   }
 
   _cargar() async {
-    await reportesProvider.reporteEmpleado(
-        formattedStartDate, formattedEndDate, '${sesion.idSucursal}', sesion.idUsuario.toString());
+    await reportesProvider.reporteEmpleado(formattedStartDate, formattedStartDate, sesion.idSucursal.toString(), sesion.idUsuario.toString());
+    for (final venta in listaVentas) {
+      totalVentas += venta.total!;
+    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
+
+    final double? valorIngresado = ModalRoute.of(context)?.settings.arguments as double?;
+    final diferencia = valorIngresado! - totalVentas;
+
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
@@ -85,7 +88,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Ventas del dia'),
+          title: const Text('Ventas del dia1'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -128,8 +131,13 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
             child: SizedBox(
               height: 50,
               child: Center(
-                child: Text(
-                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
+                child: Column(
+                  children: [
+                    Text('Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
+
+                    Text('Diferencia: : \$ ${diferencia.toStringAsFixed(2)}')
+                  ],
+                ),
               ),
             ),
           ),

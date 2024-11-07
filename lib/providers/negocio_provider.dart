@@ -286,6 +286,9 @@ class NegocioProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
+      if(sesion.tipoUsuario == 'E') {
+        sesion.idSucursal = decodedData['data'][0]['sucursal_id'];
+      }
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

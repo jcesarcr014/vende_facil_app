@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void mostrarAlerta(BuildContext context, String titulo, String mensaje, {Color? tituloColor, Color? mensajeColor}) {
   showDialog(
@@ -25,6 +26,45 @@ void mostrarAlerta(BuildContext context, String titulo, String mensaje, {Color? 
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<String?> mostrarAlertaConInput(BuildContext context, String titulo) async {
+  final TextEditingController inputController = TextEditingController();
+
+  return showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(titulo),
+        content: TextField(
+          controller: inputController,
+          decoration: const InputDecoration(
+            labelText: 'Ingrese el valor',
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,4}')), // Permite solo números positivos y hasta 4 decimales
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(null);
+            },
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(inputController.text);
+            },
+            child: const Text('Aceptar'),
           ),
         ],
       );
