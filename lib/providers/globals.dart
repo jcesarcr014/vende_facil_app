@@ -16,5 +16,7 @@ bool actualizarEmpleadoSucursales = false;
 
 bool actualizaArticulosSucursal = false;
 
+bool cargarArticulosPropietarios = false;
+
 String opMerchantId = 'mrfxnb2cytmppzzly7oi';
 String opPublicKey = 'pk_d5c9b0e23f5945cf821f36a5b9a8011f';

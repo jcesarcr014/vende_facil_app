@@ -30,11 +30,15 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
+  late bool isEmployee;
+
   @override
   void initState() {
     listacotizacion.clear();
     _actualizaTotalTemporal();
+    /*
     if (globals.actualizaArticulosCotizaciones) {
+      isEmployee = true;
       setState(() {
         textLoading = 'Actualizando lista de articulos';
         isLoading = true;
@@ -47,7 +51,21 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
         });
       });
     }
-
+    */
+    
+    if(globals.cargarArticulosPropietarios) {
+      setState(() {
+        textLoading = 'Actualizando lista de articulos de esta Sucursal';
+        isLoading = true;
+      });
+      articulosProvider.listarProductosSucursal(sesion.idSucursal!).then((value) {
+        setState(() {
+          globals.cargarArticulosPropietarios = false;
+          textLoading = '';
+          isLoading = false;
+        });
+      });
+    }
     super.initState();
   }
 
@@ -79,7 +97,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                 children: [
                   ..._listaWidgets(),
                   const Divider(),
-                  ..._productos(),
+                  Column(children:  _productosSucursal())
                 ],
               ),
             ),
@@ -214,7 +232,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
               Flexible(
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
-                  controller: CantidadConttroller,
+                  controller: CantidadConttroller..text = '1',
                   keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
@@ -245,6 +263,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
     );
   }
 
+/*
   _productos() {
     List<Widget> listaProd = [];
     if (listaProductosCotizaciones.isNotEmpty) {
@@ -307,11 +326,72 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
 
     return listaProd;
   }
+*/
+  _productosSucursal() {
+    List<Widget> listaProd = [];
+    if (listaProductosSucursal.isNotEmpty) {
+      for (Producto producto in listaProductosSucursal) {
+        for (Categoria categoria in listaCategorias) {
+          if (producto.idCategoria == categoria.id) {
+            for (ColorCategoria color in listaColores) {
+              if (color.id == categoria.idColor) {
+                listaProd.add(ListTile(
+                  leading: Icon(
+                    Icons.category,
+                    color: color.color,
+                  ),
+                  onTap: (() => _alertaProducto(producto)),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: windowWidth * 0.45,
+                        child: Text(
+                          producto.producto!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  subtitle: Text(categoria.categoria!),
+                ));
+              }
+            }
+          }
+        }
+      }
+    } else {
+      final TextTheme textTheme = Theme.of(context).textTheme;
+
+      listaProd.add(Column(
+        children: [
+          const Opacity(
+            opacity: 0.2,
+            child: Icon(
+              Icons.filter_alt_off,
+              size: 130,
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Text(
+            'No hay productos guardados.',
+            style: textTheme.titleMedium,
+          )
+        ],
+      ));
+    }
+
+    return listaProd;
+  }
 
   _actualizaTotalTemporal() {
     totalCotizacionTemporal = 0;
-
-    //print("Entro aca 3");
     for (ItemVenta item in cotizarTemporal) {
       totalCotizacionTemporal += item.cantidad * item.precioPublico;
       item.subTotalItem += item.cantidad * item.precioPublico;
