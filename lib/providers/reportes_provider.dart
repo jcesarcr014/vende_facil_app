@@ -110,8 +110,7 @@ class ReportesProvider {
         respuesta.mensaje = decodedData["msg"];
         return respuesta;
       }
-
-            List<dynamic> dataList = decodedData['data'];
+      List<dynamic> dataList = decodedData['data'];
       listaVentas.clear();
 
       for (dynamic venta in dataList) {
@@ -130,7 +129,6 @@ class ReportesProvider {
           );
           listaVentas.add(nuevaVenta);
       }
-
       respuesta.mensaje = decodedData["msg"];
       respuesta.status = 1;
 

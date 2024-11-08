@@ -53,7 +53,6 @@ class UsuarioProvider {
     var url = Uri.parse('$baseUrl/usuario-info');
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('token');
-
     if (token == null || token.isEmpty) {
       respuesta.status = 0;
       respuesta.mensaje = 'No hay token';

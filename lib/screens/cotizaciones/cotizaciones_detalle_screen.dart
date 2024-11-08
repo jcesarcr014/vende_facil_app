@@ -93,10 +93,13 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
 
     Negocio negocio = await negocioProvider.consultaNegocio();
 
+    final String telefonoData = negocio.telefono ?? '';
+    final String direccionData = negocio.direccion ?? '';
+
     // Información estática del negocio
     String nombreNegocio = negocio.nombreNegocio ?? 'PENDIENTE';
-    String telefono = "Teléfono: ${negocio.telefono}";
-    String direccion = "Dirección: ${negocio.direccion}";
+    String telefono = "Teléfono: $telefonoData";
+    String direccion = "Dirección: $direccionData";
     String cliente = nombreCliente ?? 'Público en general';
     cliente = "Nombre Cliente: $cliente";
 
@@ -356,6 +359,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
+                              print(_valueIdcliente);
                               Cotizacion cotiz = Cotizacion(
                                 idCliente: int.parse(_valueIdcliente),
                                 subtotal: subTotalItem,

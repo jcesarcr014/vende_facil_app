@@ -32,10 +32,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   DateTime now = DateTime.now();
 
   late DateTime _startDate;
-  late DateTime _endDate;
   double totalVentas = 0.0;
   late DateFormat dateFormatter;
-  final _dateController = TextEditingController();
 
   final provider = NegocioProvider();
   final reportesProvider = ReportesProvider();
@@ -45,16 +43,15 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   final abonoProvider = AbonoProvider();
 
   final negocioProvider = NegocioProvider();
+  double efectivo = 0;
+  double tarjeta = 0;
 
   @override
   void initState() {
     _startDate = DateTime(now.year, now.month, now.day);
-    _endDate = _startDate.add(const Duration(days: 1));
     dateFormatter = DateFormat('yyyy-MM-dd');
     formattedStartDate = dateFormatter.format(_startDate);
-    formattedEndDate = dateFormatter.format(_endDate);
         _cargar();
-    _dateController.text = '$formattedStartDate - $formattedEndDate';
             for (VariableConf varTemp in listaVariables) {                   
               if (varTemp.nombre == "empleado_cantidades") {
                 if (varTemp.valor == null) {
@@ -68,14 +65,24 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   }
 
   _cargar() async {
-    await reportesProvider.reporteEmpleado(
-        formattedStartDate, formattedEndDate, '${sesion.idSucursal}', sesion.idUsuario.toString());
+    await reportesProvider.reporteEmpleado(formattedStartDate, formattedStartDate, sesion.idSucursal.toString(), sesion.idUsuario.toString());
+    for (final venta in listaVentas) {
+      totalVentas += venta.total!;
+      efectivo += venta.importeEfectivo!;
+      tarjeta += venta.importeTarjeta!;
+    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
+
+    final double? valorIngresado = ModalRoute.of(context)?.settings.arguments as double?;
+    final diferencia = valorIngresado! - totalVentas;
+
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
@@ -120,20 +127,47 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                         child: _listaVentas(),
                       ),
                     ),
+                    const Divider(),
+                    const SizedBox(height: 25,),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Efectivo: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                              Text('\$ ${efectivo.toStringAsFixed(2)}')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Tarjeta: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('\$ ${tarjeta.toStringAsFixed(2)}')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Total de ventas: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('\$ ${totalVentas.toStringAsFixed(2)}')
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('Diferencia: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('\$ ${diferencia.toStringAsFixed(2)}')
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 25,),
                   ],
                 ),
-              ),
-        persistentFooterButtons: [
-          BottomAppBar(
-            child: SizedBox(
-              height: 50,
-              child: Center(
-                child: Text(
-                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
-              ),
-            ),
-          ),
-        ],
+              )
       ),
     );
   }
