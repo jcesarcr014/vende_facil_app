@@ -50,18 +50,31 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   final cantidadConttroller = TextEditingController();
 
   String? nombreCliente;
+  String? idSucursal;
 
   @override
   void initState() {
+    isLoading = true;
     _actualizaTotalTemporal();
     listaDescuentos;
     _loadData();
     super.initState();
-    _fetchData();
-  }
-
-  void _fetchData() {
-    setState(() {});
+    if(sesion.tipoUsuario == 'P') {
+      idSucursal = sesion.idSucursal.toString();
+      isLoading = false;
+      setState(() {});
+    } else {
+      negocioProvider.getlistaempleadosEnsucursales(null).then((value) {
+        if (value.status == 1) {
+          globals.actualizarEmpleadoSucursales = false;
+        } else {
+          globals.actualizarEmpleadoSucursales = true;
+        }
+        idSucursal = sesion.idSucursal.toString();
+        isLoading = false;
+        setState(() {});
+      });
+    }
   }
 
   void _loadData() async {
@@ -90,8 +103,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
 
     // Definir color para la tabla
     final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
-
-    Negocio negocio = await negocioProvider.consultaNegocio();
+    Negocio negocio = await negocioProvider.consultaSucursal(idSucursal!);
 
     final String telefonoData = negocio.telefono ?? '';
     final String direccionData = negocio.direccion ?? '';
@@ -359,7 +371,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              print(_valueIdcliente);
                               Cotizacion cotiz = Cotizacion(
                                 idCliente: int.parse(_valueIdcliente),
                                 subtotal: subTotalItem,
@@ -623,7 +634,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
       subTotalItem += item.cantidad * item.precioPublico;
       item.totalItem = item.cantidad * item.precioPublico;
     }
-    setState(() {});
   }
 
   _clientes() {

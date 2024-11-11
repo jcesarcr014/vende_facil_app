@@ -124,7 +124,10 @@ class ProductsScreen extends StatelessWidget {
                     trailing: const Icon(Icons.arrow_right),
                     onTap: () {
                       sesion.cotizar = true;
-                      
+                      if(sesion.tipoUsuario == 'P') {
+                        Navigator.pushNamed(context, 'seleccionar-sucursal-cotizacion');
+                        return;
+                      }
                       Navigator.pushNamed(context, 'HomerCotizar');
                     }),
                                     ListTile(

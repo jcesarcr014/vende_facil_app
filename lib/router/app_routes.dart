@@ -60,7 +60,7 @@ class AppRoutes {
     'abonos-liquidados': (BuildContext context) => const AbonosLiquidados(),
     'abono-liquidado-detalle': (BuildContext context) => const AbonoLiquidadoDetalle(),
     'historial_empleado': (BuildContext context) => const HistorialEmpleadoScreen(),
-
+    'seleccionar-sucursal-cotizacion': (BuildContext context) => const SeleccionarSucursal(),
   };
 
     static Route<dynamic> onGenerateRoute(RouteSettings settings) {
