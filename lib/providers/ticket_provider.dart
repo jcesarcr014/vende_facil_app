@@ -17,13 +17,14 @@ class TicketProvider {
     final imageUploadRequest = http.MultipartRequest('POST', url);
     bool result = await InternetConnectionChecker().hasConnection;
 
-    if(!result) {
+    if (!result) {
       respuesta.status = 0;
       respuesta.mensaje = 'Verifique su conexión a internter';
       return respuesta;
     }
 
-    final file = await http.MultipartFile.fromPath('file', imagen.path, contentType: MediaType(mimeType![0], mimeType[1]));
+    final file = await http.MultipartFile.fromPath('file', imagen.path,
+        contentType: MediaType(mimeType![0], mimeType[1]));
     imageUploadRequest.files.add(file);
     imageUploadRequest.fields['negocio_id'] = sesion.idNegocio.toString();
     imageUploadRequest.headers['Authorization'] = 'Bearer ${sesion.token}';
@@ -39,26 +40,22 @@ class TicketProvider {
       respuesta.status = 0;
       respuesta.mensaje = json['msg'];
     }
-    
+
     return respuesta;
   }
 
   Future<Resultado> saveMessage(int negocioId, String mensaje) async {
     try {
       final url = Uri.parse('$baseUrl/mensaje-ticket');
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${sesion.token}',
-        },
-        body: {
-          'negocio_id': negocioId.toString(),
-          'mensaje': mensaje,
-        }
-      );
+      final response = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'negocio_id': negocioId.toString(),
+        'mensaje': mensaje,
+      });
       final responseJson = jsonDecode(response.body);
 
-      if(responseJson["status"] != 1) {
+      if (responseJson["status"] != 1) {
         respuesta.status = 0;
         respuesta.mensaje = responseJson["msg"];
         return respuesta;
@@ -66,7 +63,7 @@ class TicketProvider {
 
       respuesta.status = 1;
       respuesta.mensaje = responseJson["msg"];
-    } catch(e) {
+    } catch (e) {
       respuesta.status = 0;
       respuesta.mensaje = e.toString();
     }
@@ -90,15 +87,14 @@ class TicketProvider {
       return TicketModel(
         id: data["id"],
         negocioId: data["negocio_id"],
-        message: data["mensaje"],
+        message: data["mensaje"] ?? 'Gracias por su compra',
         logo: data["logo"],
       );
     } catch (e) {
-      if(aux == null) {
+      if (aux == null) {
         throw 'Inténtalo más tarde';
       }
     }
     return null;
   }
-
 }

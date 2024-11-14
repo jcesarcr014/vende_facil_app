@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/configuracion/configuracion_impresora_screen.dart';
 export 'package:vende_facil/screens/apartados/abono_liquidado_detalle.dart';
 export 'package:vende_facil/screens/apartados/abonos_liquidados.dart';
 export 'package:vende_facil/screens/ventas/detalles_abono.dart';
@@ -55,4 +56,3 @@ export 'package:vende_facil/screens/cotizaciones/detalle_cotizacion.dart';
 export 'package:vende_facil/screens/apartados/abono_selecionar.dart';
 export 'package:vende_facil/screens/apartados/menu_abonos.dart';
 export 'package:vende_facil/screens/ventas/historial_empleados_screen.dart';
-export 'package:vende_facil/screens/cotizaciones/seleccionar_sucursal.dart';
