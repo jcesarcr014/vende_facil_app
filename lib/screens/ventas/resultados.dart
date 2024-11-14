@@ -20,12 +20,12 @@ class Resultados extends StatelessWidget {
         itemCount: resultados.length,
         itemBuilder: (context, index) {
           Producto producto = resultados[index]; // Obtén el producto actual
-      
+
           Categoria categoria = listaCategorias.firstWhere(
               (categoria) => categoria.id == producto.idCategoria,
               orElse: () =>
                   Categoria(id: resultados[index].idCategoria, categoria: ""));
-      
+
           ColorCategoria color = listaColores.firstWhere(
               (color) => color.id == categoria.idColor,
               orElse: () => ColorCategoria(
@@ -33,36 +33,37 @@ class Resultados extends StatelessWidget {
           return ListTile(
             leading: Icon(Icons.category, color: color.color),
             onTap: (() async {
-                if (resultados[index].disponibleInv! > 0) {
-                  final cantidad = await obtenerCantidad(context, producto.producto ?? '');
-                  if(cantidad == -1) return;
-                  if (ventaTemporal.isEmpty) {
-                    _agregaProductoVenta(resultados[index], cantidad, context);
+              if (resultados[index].disponibleInv! > 0) {
+                final cantidad =
+                    await obtenerCantidad(context, producto.producto ?? '');
+                if (cantidad == -1) return;
+                if (ventaTemporal.isEmpty) {
+                  _agregaProductoVenta(resultados[index], cantidad, context);
+                } else {
+                  ItemVenta? descue = ventaTemporal.firstWhere(
+                    (descuento) => descuento.idArticulo == resultados[index].id,
+                    orElse: () => ItemVenta(
+                        idArticulo: -1,
+                        articulo: "",
+                        apartado: true,
+                        cantidad: 1,
+                        descuento: 1,
+                        idDescuento: 1,
+                        precioPublico: 10,
+                        preciodistribuidor: 10,
+                        preciomayoreo: 10,
+                        subTotalItem: 10,
+                        totalItem: 10),
+                  );
+                  var catidad = descue.cantidad + 1;
+                  if (catidad > resultados[index].disponibleInv!) {
+                    mostrarAlerta(context, "AVISO",
+                        "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
                   } else {
-                    ItemVenta? descue = ventaTemporal.firstWhere(
-                      (descuento) => descuento.idArticulo == resultados[index].id,
-                      orElse: () => ItemVenta(
-                          idArticulo: -1,
-                          apartado: true,
-                          cantidad: 1,
-                          descuento: 1,
-                          idDescuento: 1,
-                          precioPublico: 10,
-                          preciodistribuidor: 10,
-                          preciomayoreo: 10,
-                          subTotalItem: 10,
-                          totalItem: 10),
-                    );
-                    var catidad = descue.cantidad + 1;
-                    if (catidad > resultados[index].disponibleInv!) {
-                      mostrarAlerta(context, "AVISO",
-                          "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
-                    } else {
-                      _agregaProductoVenta(resultados[index], cantidad, context);
-                    }
+                    _agregaProductoVenta(resultados[index], cantidad, context);
                   }
                 }
-              
+              }
             }),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,6 +102,7 @@ class Resultados extends StatelessWidget {
       if (!existe) {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
+            articulo: producto.producto!,
             cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciodistribuidor: producto.precioDist!,
@@ -127,6 +129,7 @@ class Resultados extends StatelessWidget {
         if (!existe) {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
+              articulo: producto.producto!,
               cantidad: cantidad.toDouble(),
               precioPublico: producto.precioPublico!,
               preciodistribuidor: producto.precioDist!,
@@ -145,15 +148,17 @@ class Resultados extends StatelessWidget {
     }
   }
 
-    _actualizaTotalTemporal() {
+  _actualizaTotalTemporal() {
     totalVentaTemporal = 0;
     for (ItemVenta item in ventaTemporal) {
       totalVentaTemporal += item.totalItem;
     }
   }
 
-    Future<double> obtenerCantidad(BuildContext context, String nombreProducto) async {
-    final TextEditingController cantidadController = TextEditingController()..text = '1';
+  Future<double> obtenerCantidad(
+      BuildContext context, String nombreProducto) async {
+    final TextEditingController cantidadController = TextEditingController()
+      ..text = '1';
     double cantidad = -1;
 
     await showDialog(
@@ -161,7 +166,8 @@ class Resultados extends StatelessWidget {
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text('Cantidad para $nombreProducto'),
           content: TextField(
             controller: cantidadController,
@@ -177,7 +183,8 @@ class Resultados extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                if (cantidadController.text.isNotEmpty && double.parse(cantidadController.text) > 0) {
+                if (cantidadController.text.isNotEmpty &&
+                    double.parse(cantidadController.text) > 0) {
                   cantidad = double.parse(cantidadController.text);
                 }
                 Navigator.of(context).pop();
@@ -191,6 +198,4 @@ class Resultados extends StatelessWidget {
 
     return cantidad;
   }
-
-
 }

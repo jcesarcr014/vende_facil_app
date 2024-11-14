@@ -271,9 +271,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller,
-                  keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true), // This will show the numeric keyboard
+                  keyboardType: isInt
+                      ? TextInputType.number
+                      : TextInputType.numberWithOptions(
+                          decimal: true), // This will show the numeric keyboard
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
+                    FilteringTextInputFormatter.allow(
+                        RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
                   ],
                 ),
               ),
@@ -415,6 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!existe) {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
+            articulo: producto.producto!,
             cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciomayoreo: producto.precioMayoreo!,
@@ -439,6 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (!existe) {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
+              articulo: producto.producto!,
               cantidad: cantidad,
               precioPublico: producto.precioPublico!,
               preciodistribuidor: producto.precioDist!,

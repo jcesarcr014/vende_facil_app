@@ -53,36 +53,36 @@ class Search extends SearchDelegate {
         return ListTile(
           leading: Icon(Icons.category, color: color.color),
           onTap: (() async {
-              if (resultados[index].disponibleInv! > 0) {
-                final cantidad = await obtenerCantidad(context, producto);
-                if(cantidad == -1) return;
-                if (ventaTemporal.isEmpty) {
-                  _agregaProductoVenta(resultados[index], cantidad, context);
+            if (resultados[index].disponibleInv! > 0) {
+              final cantidad = await obtenerCantidad(context, producto);
+              if (cantidad == -1) return;
+              if (ventaTemporal.isEmpty) {
+                _agregaProductoVenta(resultados[index], cantidad, context);
+              } else {
+                ItemVenta? descue = ventaTemporal.firstWhere(
+                  (descuento) => descuento.idArticulo == resultados[index].id,
+                  orElse: () => ItemVenta(
+                      idArticulo: -1,
+                      articulo: 'No disponible',
+                      apartado: true,
+                      cantidad: 1,
+                      descuento: 1,
+                      idDescuento: 1,
+                      precioPublico: 10,
+                      preciodistribuidor: 10,
+                      preciomayoreo: 10,
+                      subTotalItem: 10,
+                      totalItem: 10),
+                );
+                var catidad = descue.cantidad + 1;
+                if (catidad > resultados[index].disponibleInv!) {
+                  mostrarAlerta(context, "AVISO",
+                      "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
                 } else {
-                  ItemVenta? descue = ventaTemporal.firstWhere(
-                    (descuento) => descuento.idArticulo == resultados[index].id,
-                    orElse: () => ItemVenta(
-                        idArticulo: -1,
-                        apartado: true,
-                        cantidad: 1,
-                        descuento: 1,
-                        idDescuento: 1,
-                        precioPublico: 10,
-                        preciodistribuidor: 10,
-                        preciomayoreo: 10,
-                        subTotalItem: 10,
-                        totalItem: 10),
-                  );
-                  var catidad = descue.cantidad + 1;
-                  if (catidad > resultados[index].disponibleInv!) {
-                    mostrarAlerta(context, "AVISO",
-                        "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
-                  } else {
-                    _agregaProductoVenta(resultados[index], cantidad, context);
-                  }
+                  _agregaProductoVenta(resultados[index], cantidad, context);
                 }
               }
-            
+            }
           }),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,6 +127,7 @@ class Search extends SearchDelegate {
       if (!existe) {
         ventaTemporal.add(ItemVenta(
             idArticulo: producto.id!,
+            articulo: producto.producto!,
             cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciodistribuidor: producto.precioDist!,
@@ -153,6 +154,7 @@ class Search extends SearchDelegate {
         if (!existe) {
           ventaTemporal.add(ItemVenta(
               idArticulo: producto.id!,
+              articulo: producto.producto!,
               cantidad: cantidad.toDouble(),
               precioPublico: producto.precioPublico!,
               preciodistribuidor: producto.precioDist!,
@@ -178,8 +180,10 @@ class Search extends SearchDelegate {
     }
   }
 
-  Future<double> obtenerCantidad(BuildContext context, Producto producto) async {
-    final TextEditingController cantidadController = TextEditingController()..text = '1';
+  Future<double> obtenerCantidad(
+      BuildContext context, Producto producto) async {
+    final TextEditingController cantidadController = TextEditingController()
+      ..text = '1';
     double cantidad = -1;
     bool isInt = producto.unidad == '1' ? true : false;
 
@@ -188,14 +192,18 @@ class Search extends SearchDelegate {
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text('Cantidad para ${producto.producto}'),
           content: TextField(
             controller: cantidadController,
-            keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true),
+            keyboardType: isInt
+                ? TextInputType.number
+                : TextInputType.numberWithOptions(decimal: true),
             decoration: const InputDecoration(labelText: 'Ingrese la cantidad'),
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
+              FilteringTextInputFormatter.allow(
+                  RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
             ],
           ),
           actions: [
@@ -207,7 +215,8 @@ class Search extends SearchDelegate {
             ),
             ElevatedButton(
               onPressed: () {
-                if (cantidadController.text.isNotEmpty && double.parse(cantidadController.text) > 0) {
+                if (cantidadController.text.isNotEmpty &&
+                    double.parse(cantidadController.text) > 0) {
                   cantidad = double.parse(cantidadController.text);
                 }
                 Navigator.of(context).pop();
@@ -221,5 +230,4 @@ class Search extends SearchDelegate {
 
     return cantidad;
   }
-
 }

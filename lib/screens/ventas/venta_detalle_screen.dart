@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/providers/ticket_provider.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class VentaDetalleScreen extends StatefulWidget {
@@ -495,7 +494,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       }
     } else {
       var clienteseleccionado = listaClientes
-        .firstWhere((cliente) => cliente.id.toString() == _valueIdcliente);
+          .firstWhere((cliente) => cliente.id.toString() == _valueIdcliente);
       if (clienteseleccionado.distribuidor == 1) {
         for (ItemVenta item in ventaTemporal) {
           totalVentaTemporal += item.cantidad * item.preciodistribuidor;
@@ -504,26 +503,26 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           descuento += item.descuento;
         }
       } else {
-              for (ItemVenta item in ventaTemporal) {
-        if (aplica.valor == "0") {
-          totalVentaTemporal += item.cantidad * item.precioPublico;
-          subTotalItem += item.cantidad * item.precioPublico;
-          item.totalItem = item.cantidad * item.precioPublico;
-          descuento += item.descuento;
-        } else {
-          if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-            totalVentaTemporal += item.cantidad * item.preciomayoreo;
-            subTotalItem += item.cantidad * item.preciomayoreo;
-            item.totalItem = item.cantidad * item.preciomayoreo;
-            descuento += item.descuento;
-          } else {
+        for (ItemVenta item in ventaTemporal) {
+          if (aplica.valor == "0") {
             totalVentaTemporal += item.cantidad * item.precioPublico;
             subTotalItem += item.cantidad * item.precioPublico;
             item.totalItem = item.cantidad * item.precioPublico;
             descuento += item.descuento;
+          } else {
+            if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
+              totalVentaTemporal += item.cantidad * item.preciomayoreo;
+              subTotalItem += item.cantidad * item.preciomayoreo;
+              item.totalItem = item.cantidad * item.preciomayoreo;
+              descuento += item.descuento;
+            } else {
+              totalVentaTemporal += item.cantidad * item.precioPublico;
+              subTotalItem += item.cantidad * item.precioPublico;
+              item.totalItem = item.cantidad * item.precioPublico;
+              descuento += item.descuento;
+            }
           }
         }
-      }
       }
     }
     setState(() {});
