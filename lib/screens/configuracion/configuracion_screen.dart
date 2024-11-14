@@ -83,6 +83,22 @@ class ConfigScreen extends StatelessWidget {
                         },
                       )
                     : Container(),
+                ListTile(
+                  leading: const Icon(CupertinoIcons.printer),
+                  title: const Text(
+                    'Impresora',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: const Text('Configura tuimpresora de tickets'),
+                  trailing: const Icon(Icons.arrow_right),
+                  onTap: () {
+                    Navigator.pushNamed(context, 'config-impresora');
+                  },
+                )
               ],
             )),
       ),

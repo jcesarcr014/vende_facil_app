@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
+import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/input_field_money.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -19,6 +20,7 @@ class _ventaScreenState extends State<VentaScreen> {
   final CambioController = TextEditingController();
   final TarjetaController = TextEditingController();
   final ventaCabecera = VentasProvider();
+  final impresionesTickets = ImpresionesTickets();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -324,6 +326,12 @@ class _ventaScreenState extends State<VentaScreen> {
         }
 
         if (detallesGuardadosCorrectamente == ventaTemporal.length) {
+          Resultado respuestaImp =
+              await impresionesTickets.imprimirVenta(venta);
+          if (respuestaImp.status != 1) {
+            mostrarAlerta(context, 'ERROR',
+                'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
+          }
           setState(() {
             textLoading = '';
             isLoading = false;

@@ -52,13 +52,15 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       });
     }
     */
-    
-    if(globals.cargarArticulosPropietarios) {
+
+    if (globals.cargarArticulosPropietarios) {
       setState(() {
         textLoading = 'Actualizando lista de articulos de esta Sucursal';
         isLoading = true;
       });
-      articulosProvider.listarProductosSucursal(sesion.idSucursal!).then((value) {
+      articulosProvider
+          .listarProductosSucursal(sesion.idSucursal!)
+          .then((value) {
         setState(() {
           globals.cargarArticulosPropietarios = false;
           textLoading = '';
@@ -97,7 +99,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                 children: [
                   ..._listaWidgets(),
                   const Divider(),
-                  Column(children:  _productosSucursal())
+                  Column(children: _productosSucursal())
                 ],
               ),
             ),
@@ -233,9 +235,12 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
                   controller: CantidadConttroller..text = '1',
-                  keyboardType: isInt ? TextInputType.number : TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: isInt
+                      ? TextInputType.number
+                      : TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
+                    FilteringTextInputFormatter.allow(
+                        RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
                   ], // Solo números
                 ),
               ),
@@ -245,7 +250,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                if(CantidadConttroller.text.isEmpty) return;
+                if (CantidadConttroller.text.isEmpty) return;
                 _agregaProductoVenta(
                   producto,
                   double.parse(CantidadConttroller.text),
@@ -414,6 +419,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       if (!existe) {
         cotizarTemporal.add(ItemVenta(
             idArticulo: producto.id!,
+            articulo: producto.producto!,
             cantidad: cantidad,
             precioPublico: producto.precioPublico!,
             preciomayoreo: producto.precioMayoreo!,
@@ -438,6 +444,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
         if (!existe) {
           cotizarTemporal.add(ItemVenta(
               idArticulo: producto.id!,
+              articulo: producto.producto!,
               cantidad: cantidad,
               precioPublico: producto.precioPublico!,
               preciodistribuidor: producto.precioDist!,

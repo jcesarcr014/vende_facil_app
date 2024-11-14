@@ -1,5 +1,6 @@
 class ItemVenta {
   int idArticulo;
+  String articulo;
   double cantidad;
   double precioPublico;
   int idDescuento;
@@ -10,9 +11,9 @@ class ItemVenta {
   double preciomayoreo;
   double preciodistribuidor;
 
-
   ItemVenta(
       {required this.idArticulo,
+      required this.articulo,
       required this.cantidad,
       required this.precioPublico,
       required this.idDescuento,
@@ -21,9 +22,7 @@ class ItemVenta {
       required this.totalItem,
       required this.apartado,
       required this.preciomayoreo,
-      required this.preciodistribuidor
-      
-      });
+      required this.preciodistribuidor});
 }
 
 List<ItemVenta> ventaTemporal = [];

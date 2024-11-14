@@ -9,8 +9,10 @@ class AppRoutes {
   static Map<String, Widget Function(BuildContext)> routes = {
     'abonoD': (BuildContext context) => const DetallesAbonoScreen(),
     'apartadosD': (BuildContext context) => const DetallesApartadoScreen(),
-    'eliminar-producto-sucursal': (BuildContext context) => const EliminarProductoSucursal(),
-    'agregar-producto-sucursal': (BuildContext context) => const AgregarProductoSucursal(),
+    'eliminar-producto-sucursal': (BuildContext context) =>
+        const EliminarProductoSucursal(),
+    'agregar-producto-sucursal': (BuildContext context) =>
+        const AgregarProductoSucursal(),
     'products-menu': (BuildContext context) => const ProductsScreen(),
     'splash': (BuildContext context) => const SplashScreen(),
     'select-branch-office': (BuildContext context) => const SucursalesScreen(),
@@ -28,6 +30,7 @@ class AppRoutes {
     'nvo-abono': (BuildContext context) => const AgregarAbonoScreen(),
     'historial': (BuildContext context) => const HistorialScreen(),
     'config': (BuildContext context) => const ConfigScreen(),
+    'config-impresora': (BuildContext context) => const ImpresoraScreen(),
     'detalle-venta': (BuildContext context) => const VentaDetalleScreen(),
     'menu-negocio': (BuildContext context) => const MenuEmpresaScreen(),
     'negocio': (BuildContext context) => const AgregarEmpresa(),
@@ -50,29 +53,32 @@ class AppRoutes {
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage(),
-    'abonosPagos':(BuildContext context)=> const AbonoScreenpago(),
-    'listaCotizaciones':(BuildContext context)=> const HistorialCotizacionesScreen(),
-    'HomerCotizar':(BuildContext context)=>const HomeCotizarScreen(),
-    'DetalleCotizar':(BuildContext context)=> const CotizacionDetalleScreen(),
-    'selecionarSA':(BuildContext context)=> const SucursalesAbonoScreen(),
-    'menuAbonos':(BuildContext context)=> const MenuAbonoScreen(),
-    'detalleCotizacions':(BuildContext context)=> const CotizacionDetallesScreen(),
+    'abonosPagos': (BuildContext context) => const AbonoScreenpago(),
+    'listaCotizaciones': (BuildContext context) =>
+        const HistorialCotizacionesScreen(),
+    'HomerCotizar': (BuildContext context) => const HomeCotizarScreen(),
+    'DetalleCotizar': (BuildContext context) => const CotizacionDetalleScreen(),
+    'selecionarSA': (BuildContext context) => const SucursalesAbonoScreen(),
+    'menuAbonos': (BuildContext context) => const MenuAbonoScreen(),
+    'detalleCotizacions': (BuildContext context) =>
+        const CotizacionDetallesScreen(),
     'abonos-liquidados': (BuildContext context) => const AbonosLiquidados(),
-    'abono-liquidado-detalle': (BuildContext context) => const AbonoLiquidadoDetalle(),
-    'historial_empleado': (BuildContext context) => const HistorialEmpleadoScreen(),
-    'seleccionar-sucursal-cotizacion': (BuildContext context) => const SeleccionarSucursal(),
+    'abono-liquidado-detalle': (BuildContext context) =>
+        const AbonoLiquidadoDetalle(),
+    'historial_empleado': (BuildContext context) =>
+        const HistorialEmpleadoScreen(),
+    // 'seleccionar-sucursal-cotizacion': (BuildContext context) => const SeleccionarSucursal(),
   };
 
-    static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-      switch (settings.name) {
-        case 'detalles-producto-sucursal':
-          final producto = settings.arguments as Producto;
-          return MaterialPageRoute(
-            builder: (context) => DetallesProductoSucursal(producto: producto),
-          );
-        default:
-          return MaterialPageRoute(builder: (context) => const ErrorScreen());
-      }
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case 'detalles-producto-sucursal':
+        final producto = settings.arguments as Producto;
+        return MaterialPageRoute(
+          builder: (context) => DetallesProductoSucursal(producto: producto),
+        );
+      default:
+        return MaterialPageRoute(builder: (context) => const ErrorScreen());
     }
-
+  }
 }
