@@ -136,7 +136,7 @@ class ImpresionesTickets {
     return respuesta;
   }
 
-  Future<Resultado> imprimirApartado(VentaCabecera venta) async {
+  Future<Resultado> imprimirApartado(ApartadoDetalle apartado, double totalAnticipo, double totalFaltante ) async {
     await obtieneDatosTicket();
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
@@ -195,12 +195,12 @@ class ImpresionesTickets {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Subtoal',
+        text: 'Subtotal',
         width: 8,
         styles: PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '\$${venta.subtotal!.toStringAsFixed(2)}',
+        text: '\$${apartado.subtotal!.toStringAsFixed(2)}',
         width: 4,
         styles: PosStyles(align: PosAlign.right),
       ),
@@ -213,7 +213,7 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '\$${venta.descuento!.toStringAsFixed(2)}',
+        text: '\$${apartado.descuento!.toStringAsFixed(2)}',
         width: 4,
         styles: PosStyles(align: PosAlign.right),
       ),
@@ -226,11 +226,39 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '\$${venta.total!.toStringAsFixed(2)}',
+        text: '\$${apartado.total!.toStringAsFixed(2)}',
         width: 4,
         styles: PosStyles(align: PosAlign.right),
       ),
     ]);
+    bytes += generator.feed(2);
+
+    bytes += generator.row([
+      PosColumn(
+        text: 'Anticipo',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${apartado.total!.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
+    bytes += generator.row([
+      PosColumn(
+        text: 'Faltante',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${totalFaltante.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
     bytes += generator.feed(1);
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
