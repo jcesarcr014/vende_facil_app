@@ -105,7 +105,7 @@ class ApartadoProvider {
   }
 
   Future<Resultado> listarApartados() async {
-    var url = Uri.parse('$baseUrl/apartado/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/apartado/${sesion.idSucursal}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

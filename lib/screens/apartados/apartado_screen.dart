@@ -208,7 +208,15 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                     labelText: 'Tarjeta',
                   ),
                   SizedBox(height: windowHeight * 0.025),
-                  CheckboxListTile(title: Text('¿Deseas imprimir el ticket?'), value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      children: [
+                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                        Text('Imprimir ticket')
+                      ],
+                    ),
+                  ),
                   SizedBox(height: windowHeight * 0.025),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

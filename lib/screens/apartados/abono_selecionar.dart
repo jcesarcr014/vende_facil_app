@@ -12,7 +12,7 @@ class SucursalesAbonoScreen extends StatefulWidget {
 
 class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
   String? _valueIdSucursal = '0'; 
-  final articulosProvider = ArticuloProvider();
+  final apartadoProvider = ApartadoProvider();
   final sucursal = NegocioProvider();
   bool isLoading = false;
   double windowHeight = 0.0;
@@ -69,16 +69,12 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
                   Center(
                     child: SizedBox(
                       width: 300,
-                      height: 70, // Aumentar la altura del botón
+                      height: 70,
                       child: ElevatedButton(
                         onPressed: () async {
-                          final sucursalSeleccionada =
-                              listaSucursales.firstWhere((sucursal) =>
-                                  sucursal.id.toString() == _valueIdSucursal);
+                          final sucursalSeleccionada = listaSucursales.firstWhere((sucursal) => sucursal.id.toString() == _valueIdSucursal);
                           sesion.idSucursal = sucursalSeleccionada.id;
-                          await articulosProvider
-                              .listarProductosSucursal(sucursalSeleccionada.id!)
-                              .then((value) {
+                          await apartadoProvider.listarApartados().then((value) {
                             if (value.status == 1) {
                               sesion.cotizar = false;
                               Navigator.pushReplacementNamed(context,'nvo-abono');

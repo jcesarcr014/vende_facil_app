@@ -190,8 +190,16 @@ class _ventaScreenState extends State<VentaScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: windowHeight * 0.05),
-                  CheckboxListTile(title: Text('Imprimir ticket'), value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                  SizedBox(height: windowHeight * 0.025),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      children: [
+                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                        Text('Imprimir ticket')
+                      ],
+                    ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [

@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/input_field_money.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 import '../../providers/apartado_provider.dart';
 
 class AbonoScreenpago extends StatefulWidget {
@@ -12,7 +14,7 @@ class AbonoScreenpago extends StatefulWidget {
 }
 
 class _AbonoScreenState extends State<AbonoScreenpago> {
-  final TotalConttroller = TextEditingController();
+  final TotalController = TextEditingController();
   final EfectivoController = TextEditingController();
   final CambioController = TextEditingController();
   final TarjetaController = TextEditingController();
@@ -27,10 +29,13 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
   double totalEfectivo = 0.0;
   double total = 0.0;
 
+  bool isPrinted = false;
+  final ticket = ImpresionesTickets();
+
   @override
   void initState() {
     super.initState();
-    TotalConttroller.text = totalVentaTemporal.toStringAsFixed(2);
+    TotalController.text = totalVentaTemporal.toStringAsFixed(2);
     EfectivoController.text = "0.00";
     TarjetaController.text = "0.00";
     CambioController.text = "0.00";
@@ -44,7 +49,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
           double.tryParse(EfectivoController.text.replaceAll(',', '')) ?? 0.0;
       double tarjeta =
           double.tryParse(TarjetaController.text.replaceAll(',', '')) ?? 0.0;
-      double total = double.tryParse(TotalConttroller.text) ?? 0.0;
+      double total = double.tryParse(TotalController.text) ?? 0.0;
       double totalEfectivo = efectivo + tarjeta;
       double cambio = totalEfectivo - total;
 
@@ -62,7 +67,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
     windowHeight = MediaQuery.of(context).size.height;
     final VentaCabecera venta =
         ModalRoute.of(context)?.settings.arguments as VentaCabecera;
-     TotalConttroller.text= "${venta.total}";
+     TotalController.text= "${venta.total}";
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de cobro abonos'),
@@ -111,7 +116,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                         ),
                         Flexible(
                             child: TextField(
-                          controller: TotalConttroller,
+                          controller: TotalController,
                           enabled: false,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
@@ -185,28 +190,33 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  // ignore: avoid_unnecessary_containers
-                  Container(
+                  SizedBox(height: windowHeight * 0.025),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            _checkVenta(venta);
-                          },
-                          child: const Text('Aceptar'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Cancelar'),
-                        ),
+                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                        Text('Imprimir ticket')
                       ],
                     ),
+                  ),
+                  SizedBox(height: windowHeight * 0.025),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          _checkVenta(venta);
+                        },
+                        child: const Text('Aceptar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancelar'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -216,7 +226,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
 
   void _checkVenta(VentaCabecera venta) {
       efectivo = double.parse(EfectivoController.text.replaceAll(',', ''));
-      total = double.parse(TotalConttroller.text);
+      total = double.parse(TotalController.text);
       tarjeta = double.parse(TarjetaController.text.replaceAll(',', ''));
       cambio = double.parse(CambioController.text);
       totalEfectivo = efectivo - cambio;
@@ -241,13 +251,13 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
         );
       } else {
           final abono = Abono(
-                                            id: 0,
-                                            apartadoId: listaApartados2[0].id,
-                                            cantidadEfectivo: efectivo,
-                                            cantidadTarjeta: tarjeta,
-                                            saldoActual: listaApartados2[0].saldoPendiente,
-                                            saldoAnterior: listaApartados2[0].saldoPendiente,
-                                          );
+            id: 0,
+            apartadoId: listaApartados2[0].id,
+            cantidadEfectivo: efectivo,
+            cantidadTarjeta: tarjeta,
+            saldoActual: listaApartados2[0].saldoPendiente,
+            saldoAnterior: listaApartados2[0].saldoPendiente,
+          );
           _compra(abono);
       }
     
@@ -260,55 +270,38 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
     });
     venta.cantidadTarjeta = tarjeta;
     venta.cantidadEfectivo = totalEfectivo;
-                                              apartado
-                                              .abono(
-                                                  listaApartados2[0].id!, venta)
-                                              .then((value) {
-                                            if (value.status == 1) {
-                                               showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text(
-                                                        'Abono Agregado'),
-                                                    content: const Text(
-                                                        'El abono se ha agregado correctamente'),
-                                                    actions: [
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              'nvo-abono',
-                                                              arguments: value);
-                                                        },
-                                                        child: const Text(
-                                                            'Aceptar'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            } else {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text('Error'),
-                                                    content:  Text(
-                                                        '${value.mensaje}'),
-                                                    actions: [
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: const Text(
-                                                            'Aceptar'),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            }
-                                          });
-                                        }}
+    apartado.abono(listaApartados2[0].id!, venta).then((value) async {
+      double abono = double.parse(EfectivoController.text) + double.parse(TarjetaController.text);
+      if (value.status == 1) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Abono Agregado'),
+            content: const Text('El abono se ha agregado correctamente'),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pushNamed(context, 'nvo-abono', arguments: value),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          )
+        );
+        value = await ticket.imprimirAbono(venta, abono, tarjeta, efectivo, double.parse(TotalController.text));
+        if(value.status != 1) mostrarAlerta(context, 'Error', value.mensaje ?? 'Error al imprimir el ticket');
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: Text('${value.mensaje}'),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            )
+          );
+        }
+      });
+    }}
