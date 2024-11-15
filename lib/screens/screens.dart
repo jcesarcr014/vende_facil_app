@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/cotizaciones/seleccionar_sucursal.dart';
 export 'package:vende_facil/screens/configuracion/configuracion_impresora_screen.dart';
 export 'package:vende_facil/screens/apartados/abono_liquidado_detalle.dart';
 export 'package:vende_facil/screens/apartados/abonos_liquidados.dart';

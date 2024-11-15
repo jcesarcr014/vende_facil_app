@@ -326,8 +326,8 @@ class _ventaScreenState extends State<VentaScreen> {
         }
 
         if (detallesGuardadosCorrectamente == ventaTemporal.length) {
-          Resultado respuestaImp =
-              await impresionesTickets.imprimirVenta(venta);
+          Resultado respuestaImp = await impresionesTickets
+              .imprimirVenta(venta); // AQUI ESTOY MANDANDO A IPRIMIR EL TICKET
           if (respuestaImp.status != 1) {
             mostrarAlerta(context, 'ERROR',
                 'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
