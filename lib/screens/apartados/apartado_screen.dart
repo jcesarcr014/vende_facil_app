@@ -290,7 +290,6 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
               total: item.totalItem,
 
             );
-            print(apartado.total);
             await apartadosCabecera.guardaApartadoDetalle(apartadoDetalle).then((respDetalle) async {
               if (respDetalle.status == 1) {
                 contador--;
@@ -302,7 +301,9 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                   });
                   
                   if(isPrinted) {
-                    final result = await impresionesTicket.imprimirApartado(apartadoDetalle, totalAnticipo, double.parse(totalCompra) - totalAnticipo);
+                    final result = 
+                      await impresionesTicket.
+                      imprimirApartado(apartadoDetalle, totalAnticipo, double.parse(totalCompra) - totalAnticipo, double.parse(tarjetaController.text), double.parse(efectivoController.text));
                     if(result.status == 1) {
                       Navigator.pushReplacementNamed(context, 'home');
                       ventaTemporal.clear();

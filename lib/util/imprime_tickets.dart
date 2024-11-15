@@ -16,7 +16,7 @@ class ImpresionesTickets {
   String telefonoSucursal = '';
   int cantidadArticulos = 0;
 
-  Future<Resultado> imprimirVenta(VentaCabecera venta) async {
+  Future<Resultado> imprimirVenta(VentaCabecera venta, double tarjeta, double efectivo, double cambio) async {
     await obtieneDatosTicket();
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
@@ -75,7 +75,7 @@ class ImpresionesTickets {
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Subtoal',
+        text: 'Subtotal',
         width: 8,
         styles: PosStyles(align: PosAlign.left),
       ),
@@ -111,6 +111,45 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.right),
       ),
     ]);
+
+    bytes += generator.feed(2);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Tarjeta',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${tarjeta.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Efectivo',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${efectivo.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Cambio',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${cambio.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
     bytes += generator.feed(1);
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
@@ -136,7 +175,7 @@ class ImpresionesTickets {
     return respuesta;
   }
 
-  Future<Resultado> imprimirApartado(ApartadoDetalle apartado, double totalAnticipo, double totalFaltante ) async {
+  Future<Resultado> imprimirApartado(ApartadoDetalle apartado, double totalAnticipo, double totalFaltante, double tarjeta, double efectivo) async {
     await obtieneDatosTicket();
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
@@ -254,6 +293,32 @@ class ImpresionesTickets {
       ),
       PosColumn(
         text: '\$${totalFaltante.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
+    bytes += generator.feed(2);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Tarjeta',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${tarjeta.toStringAsFixed(2)}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Efectivo',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${efectivo.toStringAsFixed(2)}',
         width: 4,
         styles: PosStyles(align: PosAlign.right),
       ),

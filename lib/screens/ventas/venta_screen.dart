@@ -322,10 +322,9 @@ class _ventaScreenState extends State<VentaScreen> {
             }
           });
         }
-
         if (detallesGuardadosCorrectamente == ventaTemporal.length) {
           if(isPrinted) {
-            Resultado respuestaImp = await impresionesTickets.imprimirVenta(venta);
+            Resultado respuestaImp = await impresionesTickets.imprimirVenta(venta, double.parse(CambioController.text), double.parse(EfectivoController.text), double.parse(CambioController.text));
             if (respuestaImp.status != 1) {
               mostrarAlerta(context, 'ERROR', 'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
             }
