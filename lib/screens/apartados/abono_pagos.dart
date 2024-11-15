@@ -286,22 +286,19 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
             ],
           )
         );
-        value = await ticket.imprimirAbono(venta, abono, tarjeta, efectivo, double.parse(TotalController.text));
-        if(value.status != 1) mostrarAlerta(context, 'Error', value.mensaje ?? 'Error al imprimir el ticket');
-        } else {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Error'),
-              content: Text('${value.mensaje}'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Aceptar'),
-                ),
-              ],
-            )
-          );
+        if(isPrinted) {
+          value = await ticket.imprimirAbono(venta, abono, tarjeta, efectivo, double.parse(TotalController.text));
+          if(value.status != 1) mostrarAlerta(context, 'Error', value.mensaje ?? 'Error al imprimir el ticket');
         }
-      });
-    }}
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text('${value.mensaje}'),
+            actions: [ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Aceptar'))],
+          )
+        );
+      }
+    });
+  }}
