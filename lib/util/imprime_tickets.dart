@@ -193,6 +193,9 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.right),
       ),
     ]);
+
+    // a partir de aqui cambia por que debe mostrar los que ya tiene mas el anticipo y el faltannte
+    
     bytes += generator.row([
       PosColumn(
         text: 'Subtoal',
