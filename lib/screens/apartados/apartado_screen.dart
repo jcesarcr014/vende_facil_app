@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
+import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class ApartadoDetalleScreen extends StatefulWidget {
@@ -22,11 +23,13 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
   double tarjeta = 0.0;
   double total = 0.0;
   int cantidad = 0;
+  bool isPrinted = false;
 
   final efectivoController = TextEditingController();
   final tarjetaController = TextEditingController();
   final fechaController = TextEditingController();
   final apartadosCabecera = ApartadoProvider();
+  final impresionesTicket = ImpresionesTickets();
   String formattedEndDate = "";
   DateTime now = DateTime.now();
   late DateTime _fechaVencimiento;
@@ -204,9 +207,17 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                     controller: tarjetaController,
                     labelText: 'Tarjeta',
                   ),
-                  SizedBox(
-                    height: windowHeight * 0.05,
+                  SizedBox(height: windowHeight * 0.025),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Row(
+                      children: [
+                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                        Text('Imprimir ticket')
+                      ],
+                    ),
                   ),
+                  SizedBox(height: windowHeight * 0.025),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -272,9 +283,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
       apartado.fechaApartado = fechaFormateada.format(fechaActual);
       apartado.fechaVencimiento = fechaController.text;
 
-      apartadosCabecera
-          .guardaApartadoSucursal(apartado)
-          .then((respCabecera) async {
+      apartadosCabecera.guardaApartadoSucursal(apartado).then((respCabecera) async {
         if (respCabecera.status == 1) {
           int contador = ventaTemporal.length;
           for (ItemVenta item in ventaTemporal) {
@@ -287,11 +296,9 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
               descuentoId: apartado.descuentoId,
               descuento: item.descuento,
               total: item.totalItem,
-            );
 
-            await apartadosCabecera
-                .guardaApartadoDetalle(apartadoDetalle)
-                .then((respDetalle) {
+            );
+            await apartadosCabecera.guardaApartadoDetalle(apartadoDetalle).then((respDetalle) async {
               if (respDetalle.status == 1) {
                 contador--;
                 if (contador == 0) {
@@ -300,9 +307,22 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                     isLoading = false;
                     totalVentaTemporal = 0.0;
                   });
-
+                  
+                  if(isPrinted) {
+                    final result = 
+                      await impresionesTicket.
+                      imprimirApartado(apartadoDetalle, totalAnticipo, double.parse(totalCompra) - totalAnticipo, double.parse(tarjetaController.text), double.parse(efectivoController.text));
+                    if(result.status == 1) {
+                      Navigator.pushReplacementNamed(context, 'home');
+                      ventaTemporal.clear();
+                      return;
+                    }
+                    isLoading = false;
+                    setState(() {});
+                    mostrarAlerta(context, 'Error', result.mensaje ?? 'Algo salio mal');
+                    return;
+                  }
                   Navigator.pushReplacementNamed(context, 'home');
-
                   mostrarAlerta(context, '', 'Apartado realizada');
                 }
               } else {
@@ -316,6 +336,8 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
               return;
             });
           }
+
+
           ventaTemporal.clear();
         } else {
           setState(() {

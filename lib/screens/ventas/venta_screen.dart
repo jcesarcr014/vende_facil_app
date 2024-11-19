@@ -31,6 +31,8 @@ class _ventaScreenState extends State<VentaScreen> {
   double totalEfectivo = 0.0;
   double total = 0.0;
 
+  bool isPrinted = false;
+
   @override
   void initState() {
     super.initState();
@@ -188,28 +190,32 @@ class _ventaScreenState extends State<VentaScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  // ignore: avoid_unnecessary_containers
-                  Container(
+                  SizedBox(height: windowHeight * 0.025),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            _checkVenta(venta);
-                          },
-                          child: const Text('Aceptar'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Cancelar'),
-                        ),
+                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                        Text('Imprimir ticket')
                       ],
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          _checkVenta(venta);
+                        },
+                        child: const Text('Aceptar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancelar'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -324,14 +330,14 @@ class _ventaScreenState extends State<VentaScreen> {
             }
           });
         }
-
         if (detallesGuardadosCorrectamente == ventaTemporal.length) {
-          Resultado respuestaImp = await impresionesTickets
-              .imprimirVenta(venta); // AQUI ESTOY MANDANDO A IPRIMIR EL TICKET
-          if (respuestaImp.status != 1) {
-            mostrarAlerta(context, 'ERROR',
-                'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
+          if(isPrinted) {
+            Resultado respuestaImp = await impresionesTickets.imprimirVenta(venta, double.parse(CambioController.text), double.parse(EfectivoController.text), double.parse(CambioController.text));
+            if (respuestaImp.status != 1) {
+              mostrarAlerta(context, 'ERROR', 'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
+            }
           }
+
           setState(() {
             textLoading = '';
             isLoading = false;
