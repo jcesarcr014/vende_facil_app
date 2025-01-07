@@ -195,7 +195,11 @@ class _ventaScreenState extends State<VentaScreen> {
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(
                       children: [
-                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
+                        Checkbox(
+                            value: isPrinted,
+                            onChanged: (value) => setState(() {
+                                  isPrinted = value!;
+                                })),
                         Text('Imprimir ticket')
                       ],
                     ),
@@ -249,6 +253,7 @@ class _ventaScreenState extends State<VentaScreen> {
       cambio = double.parse(CambioController.text);
       totalEfectivo = efectivo - cambio;
       double resultado = efectivo + tarjeta;
+
       if (tarjeta > total) {
         showDialog(
           context: context,
@@ -331,10 +336,12 @@ class _ventaScreenState extends State<VentaScreen> {
           });
         }
         if (detallesGuardadosCorrectamente == ventaTemporal.length) {
-          if(isPrinted) {
-            Resultado respuestaImp = await impresionesTickets.imprimirVenta(venta, double.parse(CambioController.text), double.parse(EfectivoController.text), double.parse(CambioController.text));
+          if (isPrinted) {
+            Resultado respuestaImp = await impresionesTickets.imprimirVenta(
+                venta, tarjeta, efectivo, cambio);
             if (respuestaImp.status != 1) {
-              mostrarAlerta(context, 'ERROR', 'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
+              mostrarAlerta(context, 'ERROR',
+                  'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
             }
           }
 

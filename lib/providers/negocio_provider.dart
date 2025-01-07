@@ -71,11 +71,11 @@ class NegocioProvider {
     Negocio negocio = Negocio();
     final url = Uri.parse('$baseUrl/sucursal-info/$id');
     try {
-            final resp = await http.get(url, headers: {
+      final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-
+      print(decodedData);
       if (decodedData['status'] == 1) {
         negocio.id = decodedData['data']['negocio_id'];
         negocio.nombreNegocio = decodedData['data']['nombre_sucursal'];
@@ -85,7 +85,6 @@ class NegocioProvider {
         negocio.id = 0;
         negocio.nombreNegocio = decodedData['msg'];
       }
-
     } catch (e) {
       negocio.id = 0;
       negocio.nombreNegocio = 'Error en la petición. $e';
@@ -312,7 +311,7 @@ class NegocioProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      if(sesion.tipoUsuario == 'E') {
+      if (sesion.tipoUsuario == 'E') {
         sesion.idSucursal = decodedData['data'][0]['sucursal_id'];
       }
       if (decodedData['status'] == 1) {
