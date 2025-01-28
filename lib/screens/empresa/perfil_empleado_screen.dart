@@ -123,7 +123,7 @@ class _PerfilEmpleadosScreenState extends State<PerfilEmpleadosScreen> {
       } else {
         globals.actualizaEmpleados = true;
 
-        Navigator.pushReplacementNamed(context, 'config');
+        Navigator.pushReplacementNamed(context, 'menu-negocio');
       }
     });
   }
