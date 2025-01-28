@@ -5,6 +5,7 @@ import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:vende_facil/models/models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ImpresoraScreen extends StatefulWidget {
   const ImpresoraScreen({super.key});
@@ -125,6 +126,9 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
     if (result) {
       connected = true;
       connectedDeviceMac = mac;
+      await SharedPreferences.getInstance().then((prefs) {
+        prefs.setString('macPrinter', mac);
+      });
     } else {
       connected = false;
       connectedDeviceMac = '';
@@ -138,6 +142,9 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
 
   Future<void> disconnect() async {
     final bool status = await PrintBluetoothThermal.disconnect;
+    await SharedPreferences.getInstance().then((prefs) {
+      prefs.remove('macPrinter');
+    });
     setState(() {
       connected = false;
     });

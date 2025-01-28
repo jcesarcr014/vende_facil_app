@@ -3,6 +3,8 @@ import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class ImpresionesTickets {
   final respuesta = Resultado();
@@ -16,7 +18,25 @@ class ImpresionesTickets {
   String telefonoSucursal = '';
   int cantidadArticulos = 0;
 
-  Future<Resultado> imprimirVenta(VentaCabecera venta, double tarjeta, double efectivo, double cambio) async {
+  Future<Resultado> imprimirVenta(VentaCabecera venta, double tarjeta,
+      double efectivo, double cambio) async {
+    await SharedPreferences.getInstance().then((prefs) async {
+      String mac = prefs.getString('macPrinter') ?? '';
+      if (mac.isEmpty) {
+        respuesta.status = 0;
+        respuesta.mensaje = 'No se pudo conectar a la impresora';
+        return respuesta;
+      } else {
+        try {
+          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+        } catch (e) {
+          respuesta.status = 0;
+          respuesta.mensaje = 'No se pudo conectar a la impresora';
+          return respuesta;
+        }
+      }
+    });
+
     await obtieneDatosTicket();
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
@@ -175,7 +195,28 @@ class ImpresionesTickets {
     return respuesta;
   }
 
-  Future<Resultado> imprimirApartado(ApartadoDetalle apartado, double totalAnticipo, double totalFaltante, double tarjeta, double efectivo) async {
+  Future<Resultado> imprimirApartado(
+      ApartadoDetalle apartado,
+      double totalAnticipo,
+      double totalFaltante,
+      double tarjeta,
+      double efectivo) async {
+    await SharedPreferences.getInstance().then((prefs) async {
+      String mac = prefs.getString('macPrinter') ?? '';
+      if (mac.isEmpty) {
+        respuesta.status = 0;
+        respuesta.mensaje = 'No se pudo conectar a la impresora';
+        return respuesta;
+      } else {
+        try {
+          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+        } catch (e) {
+          respuesta.status = 0;
+          respuesta.mensaje = 'No se pudo conectar a la impresora';
+          return respuesta;
+        }
+      }
+    });
     cantidadArticulos = 0;
     await obtieneDatosTicket();
     List<int> bytes = [];
@@ -235,7 +276,7 @@ class ImpresionesTickets {
     ]);
 
     // a partir de aqui cambia por que debe mostrar los que ya tiene mas el anticipo y el faltannte
-    
+
     bytes += generator.row([
       PosColumn(
         text: 'Subtotal',
@@ -353,21 +394,44 @@ class ImpresionesTickets {
     return respuesta;
   }
 
-  Future<Resultado> imprimirAbono(Abono venta, double abono, double tarjeta, double efectivo, double total) async {
+  Future<Resultado> imprimirAbono(Abono venta, double abono, double tarjeta,
+      double efectivo, double total) async {
+    await SharedPreferences.getInstance().then((prefs) async {
+      String mac = prefs.getString('macPrinter') ?? '';
+      if (mac.isEmpty) {
+        respuesta.status = 0;
+        respuesta.mensaje = 'No se pudo conectar a la impresora';
+        return respuesta;
+      } else {
+        try {
+          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+        } catch (e) {
+          respuesta.status = 0;
+          respuesta.mensaje = 'No se pudo conectar a la impresora';
+          return respuesta;
+        }
+      }
+    });
     double pendiente = total - abono;
     await obtieneDatosTicket();
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
     bytes += generator.reset();
-    bytes += generator.text(' $nombreSucursal \n', styles: PosStyles(align: PosAlign.center, bold: true));
+    bytes += generator.text(' $nombreSucursal \n',
+        styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('Direccion: $direccionSucursal ');
     bytes += generator.text('Telefono: $telefonoSucursal ');
-    bytes += generator.text('Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
-    bytes += generator.text('Hora compra: ${DateFormat('HH-mm-ss').format(DateTime.now())} \n');
+    bytes += generator.text(
+        'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
+    bytes += generator.text(
+        'Hora compra: ${DateFormat('HH-mm-ss').format(DateTime.now())} \n');
 
     bytes += generator.row([
-      PosColumn(text: 'Saldo Anterior', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: 'Saldo Anterior',
+          width: 8,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
         text: '\$${total.toStringAsFixed(2)}',
         width: 4,
@@ -376,7 +440,8 @@ class ImpresionesTickets {
     ]);
 
     bytes += generator.row([
-      PosColumn(text: 'Abono', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: 'Abono', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
         text: '\$${abono.toStringAsFixed(2)}',
         width: 4,
@@ -386,7 +451,11 @@ class ImpresionesTickets {
     bytes += generator.feed(2);
 
     bytes += generator.row([
-      PosColumn(text: 'Pendiente', width: 8, styles: PosStyles(align: PosAlign.left),),
+      PosColumn(
+        text: 'Pendiente',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
       PosColumn(
         text: '\$${pendiente.toStringAsFixed(2)}',
         width: 4,
@@ -396,7 +465,8 @@ class ImpresionesTickets {
 
     bytes += generator.feed(2);
     bytes += generator.row([
-      PosColumn(text: 'Tarjeta', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: 'Tarjeta', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
         text: '\$${tarjeta.toStringAsFixed(2)}',
         width: 4,
@@ -404,7 +474,8 @@ class ImpresionesTickets {
       ),
     ]);
     bytes += generator.row([
-      PosColumn(text: 'Efectivo', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: 'Efectivo', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
         text: '\$${efectivo.toStringAsFixed(2)}',
         width: 4,
@@ -413,7 +484,8 @@ class ImpresionesTickets {
     ]);
 
     bytes += generator.feed(1);
-    bytes += generator.text('$mensajeTicket ', styles: PosStyles(align: PosAlign.center, bold: true));
+    bytes += generator.text('$mensajeTicket ',
+        styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
 
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
