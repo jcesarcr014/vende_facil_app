@@ -81,12 +81,8 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
         statusBluetoothScan.isGranted &&
         statusLocation.isGranted) {
     } else {
-      print('statusNearbyDevices: $statusNearbyDevices');
-      print('statusBluetoothConnect: $statusBluetoothConnect');
-      print('statusBluetoothScan: $statusBluetoothScan');
-      print('statusLocation: $statusLocation');
       mostrarAlerta(context, 'Atención',
-          'Debes otrogar los permisos necesarios para poder imprimir');
+          'Debes otrogar los permisos necesarios para poder imprimir. Vendo Facil es compatible con impresoras de 58 mm ');
     }
   }
 
