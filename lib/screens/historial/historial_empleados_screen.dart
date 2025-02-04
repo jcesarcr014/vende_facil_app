@@ -239,7 +239,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
         ),
         ElevatedButton(
           onPressed: () async {
-            await impresionesTickets.imprimirCorte();
+            await impresionesTickets.imprimirCorte(1);
           },
           child: Text('Imprimir Corte'),
         ),

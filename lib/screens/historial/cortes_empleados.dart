@@ -161,6 +161,24 @@ class _CortesEmpleadosScreenState extends State<CortesEmpleadosScreen> {
       return Column(
         children: listaCortes.map((corte) {
           return ListTile(
+            onTap: () {
+              setState(() {
+                isLoading = true;
+                textLoading = 'Cargando detalle.';
+              });
+              corteProvider.corteDetalle(corte.id!).then((value) {
+                setState(() {
+                  isLoading = false;
+                  textLoading = '';
+                });
+                if (value.status != 1) {
+                  mostrarAlerta(context, 'ERROR',
+                      'Ocurrio un error al consultar el detalle del corte: ${value.mensaje}');
+                } else {
+                  Navigator.pushNamed(context, 'corte-detalle');
+                }
+              });
+            },
             title: Text('Corte del ${corte.fecha}'),
             subtitle: Text('Ventas en efectivo: ${corte.ventasEfectivo}'),
             trailing: Text('Total ingresos: ${corte.totalIngresos}'),

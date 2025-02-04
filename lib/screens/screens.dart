@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/historial/corte_detalle.dart';
 export 'package:vende_facil/screens/historial/cortes_empleados.dart';
 export 'package:vende_facil/screens/historial/menu_historial.dart';
 export 'package:vende_facil/screens/cotizaciones/seleccionar_sucursal.dart';

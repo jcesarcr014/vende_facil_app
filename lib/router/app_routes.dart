@@ -71,6 +71,7 @@ class AppRoutes {
         const SeleccionarSucursal(),
     'menu-historial': (BuildContext context) => const MenuHistorialScreen(),
     'cortes-empleados': (BuildContext context) => const CortesEmpleadosScreen(),
+    'corte-detalle': (BuildContext context) => const CorteDetalleScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

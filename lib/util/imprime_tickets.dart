@@ -17,7 +17,7 @@ class ImpresionesTickets {
   String telefonoSucursal = '';
   int cantidadArticulos = 0;
 
-  Future<Resultado> imprimirCorte() async {
+  Future<Resultado> imprimirCorte(int bandera) async {
     await SharedPreferences.getInstance().then((prefs) async {
       String mac = prefs.getString('macPrinter') ?? '';
       if (mac.isEmpty) {
@@ -35,13 +35,15 @@ class ImpresionesTickets {
       }
     });
 
-    await obtieneDatosTicket();
+    (bandera == 1) ? await obtieneDatosTicket() : null;
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
     bytes += generator.reset();
-    bytes += generator.text(' $nombreSucursal \n',
-        styles: PosStyles(align: PosAlign.center, bold: true));
+    (bandera == 1)
+        ? bytes += generator.text(' $nombreSucursal \n',
+            styles: PosStyles(align: PosAlign.center, bold: true))
+        : null;
     bytes += generator.text(' ${sesion.nombreUsuario} \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text(
@@ -140,7 +142,7 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '\$${corteActual.diferencia}  - ${corteActual.tipoDiferencia}',
+        text: '\$${corteActual.diferencia}-${corteActual.tipoDiferencia}',
         width: 6,
         styles: PosStyles(align: PosAlign.right),
       ),
