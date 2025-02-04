@@ -9,11 +9,6 @@ class CorteProvider {
 
   Future<Resultado> solicitarCorte(String efectivo, String comentarios) async {
     var url = Uri.parse('$baseUrl/corte-nuevo');
-    print('id_negocio: ${sesion.idNegocio}');
-    print('id_usuario: ${sesion.idUsuario}');
-    print('id_sucursal: ${sesion.idSucursal}');
-    print('efectivo: $efectivo');
-    print('observaciones: $comentarios');
 
     try {
       final response = await http.post(url, headers: {
@@ -26,15 +21,14 @@ class CorteProvider {
         'observaciones': comentarios,
       });
       final decodedData = json.decode(response.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
-        listaCortes.clear();
+        listaMovimientosCorte.clear();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         corteActual.id = decodedData['corte']['id'];
-        corteActual.idNegocio = decodedData['corte']['id_negocio'];
-        corteActual.idUsuario = decodedData['corte']['id_usuario'];
-        corteActual.idSucursal = decodedData['corte']['id_sucursal'];
+        corteActual.idNegocio = int.parse(decodedData['corte']['id_negocio']);
+        corteActual.idUsuario = int.parse(decodedData['corte']['id_usuario']);
+        corteActual.idSucursal = int.parse(decodedData['corte']['id_sucursal']);
         corteActual.fecha = decodedData['corte']['fecha'];
         corteActual.efectivoInicial =
             decodedData['corte']['efectivo_inicial'].toString();
@@ -60,6 +54,7 @@ class CorteProvider {
           mov.montoTarjeta = decodedData['movimientos'][x]['monto_tarjeta'];
           mov.total = decodedData['movimientos'][x]['total'];
           mov.idCorte = decodedData['movimientos'][x]['corte_id'];
+          mov.folio = decodedData['movimientos'][x]['folio'] ?? 'N/A';
           listaMovimientosCorte.add(mov);
         }
       } else {

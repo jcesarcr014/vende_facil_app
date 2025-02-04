@@ -4,7 +4,6 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class ImpresionesTickets {
   final respuesta = Resultado();
@@ -17,6 +16,157 @@ class ImpresionesTickets {
   String direccionSucursal = '';
   String telefonoSucursal = '';
   int cantidadArticulos = 0;
+
+  Future<Resultado> imprimirCorte() async {
+    await SharedPreferences.getInstance().then((prefs) async {
+      String mac = prefs.getString('macPrinter') ?? '';
+      if (mac.isEmpty) {
+        respuesta.status = 0;
+        respuesta.mensaje = 'No se pudo conectar a la impresora';
+        return respuesta;
+      } else {
+        try {
+          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
+        } catch (e) {
+          respuesta.status = 0;
+          respuesta.mensaje = 'No se pudo conectar a la impresora';
+          return respuesta;
+        }
+      }
+    });
+
+    await obtieneDatosTicket();
+    List<int> bytes = [];
+    final profile = await CapabilityProfile.load();
+    final generator = Generator(PaperSize.mm58, profile);
+    bytes += generator.reset();
+    bytes += generator.text(' $nombreSucursal \n',
+        styles: PosStyles(align: PosAlign.center, bold: true));
+    bytes += generator.text(' ${sesion.nombreUsuario} \n',
+        styles: PosStyles(align: PosAlign.center, bold: true));
+    bytes += generator.text(
+        'Fecha corte: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(corteActual.fecha!))}');
+    bytes += generator.text(
+        'Hora corte: ${DateFormat('HH-mm-ss').format(DateTime.parse(corteActual.fecha!))} \n');
+
+    bytes += generator.text('Detalles de corte \n',
+        styles: PosStyles(align: PosAlign.left, bold: true));
+
+    for (MovimientoCorte item in listaMovimientosCorte) {
+      bytes += generator.row([
+        PosColumn(
+          text: '${item.folio}',
+          width: 12,
+          styles: PosStyles(align: PosAlign.left),
+        ),
+      ]);
+
+      bytes += generator.row([
+        PosColumn(
+          text: 'E: \$${item.montoEfectivo}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.left),
+        ),
+        PosColumn(
+          text: 'T: \$${item.montoTarjeta}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.left),
+        ),
+        PosColumn(
+          text: '\$${item.total}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right),
+        ),
+      ]);
+      bytes += generator.feed(1);
+    }
+
+    bytes += generator.feed(2);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Total de movimientos: ',
+        width: 10,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: corteActual.numVentas.toString(),
+        width: 2,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Ventas en Efectivo',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${corteActual.ventasEfectivo}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
+    bytes += generator.row([
+      PosColumn(
+        text: 'Ventas en Tarjeta',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${corteActual.ventasTarjeta}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
+    bytes += generator.row([
+      PosColumn(
+        text: 'Total',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${corteActual.totalIngresos}',
+        width: 4,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
+    bytes += generator.row([
+      PosColumn(
+        text: 'Diferencia',
+        width: 6,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '\$${corteActual.diferencia}  - ${corteActual.tipoDiferencia}',
+        width: 6,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+
+    bytes += generator.feed(3);
+
+    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+
+    if (conexionStatus) {
+      bool result = false;
+
+      result = await PrintBluetoothThermal.writeBytes(bytes);
+      if (result) {
+        respuesta.status = 1;
+        respuesta.mensaje = 'Ticket impreso correctamente';
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = 'No se pudo imprimir el ticket';
+      }
+    } else {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+    }
+    return respuesta;
+  }
 
   Future<Resultado> imprimirVenta(VentaCabecera venta, double tarjeta,
       double efectivo, double cambio) async {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
+import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class HistorialEmpleadoScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
   final corteProvider = CorteProvider();
   final efectivoController = TextEditingController();
   final comentariosController = TextEditingController();
+  final impresionesTickets = ImpresionesTickets();
   int body = 1;
   bool isLoading = false;
   String textLoading = '';
@@ -54,7 +56,6 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
         setState(() {
           body = 2;
         });
-        //_imprimirCorte();
       } else {
         mostrarAlerta(context, 'ERROR',
             'Ocurrio un error al solicitar el corte ${value.mensaje}');
@@ -75,7 +76,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Ventas del dia'),
+          title: const Text('Corte de Caja'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -108,56 +109,69 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
 
   _body1() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           height: windowHeight * 0.02,
         ),
-        Text('Ingresa el efectivo de las ventas:'),
+        Text('Ingresa el efectivo de caja:'),
         SizedBox(
-          height: windowHeight * 0.02,
+          height: windowHeight * 0.03,
         ),
-        InputFieldMoney(controller: efectivoController, hintText: 'Efectivo'),
+        InputFieldMoney(controller: efectivoController, labelText: 'Efectivo'),
         SizedBox(
-          height: windowHeight * 0.02,
+          height: windowHeight * 0.03,
         ),
         InputField(
+          maxLines: 4,
+          icon: Icons.comment,
           controller: comentariosController,
           labelText: 'Comentarios',
         ),
-        ElevatedButton(
-          onPressed: () {
-            if (efectivoController.text.isEmpty) {
-              mostrarAlerta(context, 'ERROR', 'Ingrese el efectivo');
-              return;
-            }
+        SizedBox(
+          height: windowHeight * 0.03,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                if (efectivoController.text.isEmpty) {
+                  mostrarAlerta(context, 'ERROR', 'Ingrese el efectivo');
+                  return;
+                }
 
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: ((context) {
-                  return AlertDialog(
-                    title: const Text('Confirmar'),
-                    content: Text('¿Desea confirmar el efectivo ingresado?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          'Cancelar',
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _solicitaCorte();
-                        },
-                        child: const Text('Generar Corte'),
-                      ),
-                    ],
-                  );
-                }));
-          },
-          child: const Text('Guardar'),
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: ((context) {
+                      return AlertDialog(
+                        title: const Text('Confirmar'),
+                        content:
+                            Text('¿Desea confirmar el efectivo ingresado?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Cancelar',
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _solicitaCorte();
+                            },
+                            child: const Text('Generar Corte'),
+                          ),
+                        ],
+                      );
+                    }));
+              },
+              child: const Text('Guardar'),
+            ),
+          ],
         ),
       ],
     );
@@ -190,7 +204,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
               }
               return ListTile(
                 title: Text(
-                  tipoMovimiento,
+                  '$tipoMovimiento - Folio: ${movimiento.folio}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
@@ -224,10 +238,10 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, 'menu');
+          onPressed: () async {
+            await impresionesTickets.imprimirCorte();
           },
-          child: Text('Volver al Menú'),
+          child: Text('Imprimir Corte'),
         ),
         SizedBox(height: windowHeight * 0.02),
       ],

@@ -9,6 +9,7 @@ class MovimientoCorte {
   String? montoTarjeta;
   String? total;
   int? idCorte;
+  String? folio;
 
   MovimientoCorte(
       {this.id,
@@ -20,7 +21,8 @@ class MovimientoCorte {
       this.montoEfectivo,
       this.montoTarjeta,
       this.total,
-      this.idCorte});
+      this.idCorte,
+      this.folio});
 }
 
 List<MovimientoCorte> listaMovimientosCorte = [];
