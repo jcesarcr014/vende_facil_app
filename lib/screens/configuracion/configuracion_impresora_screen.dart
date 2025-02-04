@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -69,7 +71,7 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
 
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
     connected = conexionStatus;
-    print('Conectado a la impresora:  - $conexionStatus');
+
     setState(() {
       isLoading = false;
       textLoading = '';

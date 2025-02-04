@@ -177,15 +177,9 @@ class _MenuScreenState extends State<MenuScreen> {
                   return;
                 }
 
-                if(sesion.tipoUsuario == 'E' && menuRoutes[index] == 'historial_empleado') {
-                  var result = await mostrarAlertaConInput(context, 'Ingrese una cantidad');
-                  if(result != null && result.isNotEmpty) {
-                    Navigator.pushReplacementNamed(context, menuRoutes[index], arguments: double.parse(result));
-                    return;
-                  }
-
-                  mostrarAlerta(context, 'Error', 'Di la cantidad');
-                  return;
+                if (sesion.tipoUsuario == 'E' &&
+                    menuRoutes[index] == 'historial_empleado') {
+                  Navigator.pushReplacementNamed(context, menuRoutes[index]);
                 }
 
                 Navigator.pushReplacementNamed(context, menuRoutes[index]);

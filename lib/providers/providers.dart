@@ -11,3 +11,5 @@ export 'package:vende_facil/providers/apartado_provider.dart';
 export 'package:vende_facil/providers/variables_provider.dart';
 export 'package:vende_facil/providers/cotizacion_provider.dart';
 export 'package:vende_facil/providers/ticket_provider.dart';
+export 'package:vende_facil/providers/abono_provider.dart';
+export 'package:vende_facil/providers/corte_provider.dart';

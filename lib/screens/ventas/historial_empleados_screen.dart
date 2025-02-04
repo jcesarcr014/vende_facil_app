@@ -1,19 +1,10 @@
-// ignore_for_file: unnecessary_import, unused_field
-
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/abono_provider.dart';
-import 'package:vende_facil/providers/apartado_provider.dart';
-import 'package:vende_facil/providers/negocio_provider.dart';
-import 'package:vende_facil/providers/reportes_provider.dart';
-import 'package:vende_facil/providers/venta_provider.dart';
-import 'package:intl/intl.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:vende_facil/providers/providers.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class HistorialEmpleadoScreen extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
-  const HistorialEmpleadoScreen({Key? key});
+  const HistorialEmpleadoScreen({super.key});
 
   @override
   State<HistorialEmpleadoScreen> createState() =>
@@ -21,68 +12,60 @@ class HistorialEmpleadoScreen extends StatefulWidget {
 }
 
 class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
-  final ventaProvider = VentasProvider();
+  final corteProvider = CorteProvider();
+  final efectivoController = TextEditingController();
+  final comentariosController = TextEditingController();
+  int body = 1;
   bool isLoading = false;
   String textLoading = '';
+  String comentarios = 'Sin comentarios';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
-  String formattedEndDate = "";
-  String formattedStartDate = "";
-  bool _valueInformacion = false;
-  DateTime now = DateTime.now();
-
-  late DateTime _startDate;
-  double totalVentas = 0.0;
-  late DateFormat dateFormatter;
-
-  final provider = NegocioProvider();
-  final reportesProvider = ReportesProvider();
-
-  final ventasProvider = VentasProvider();
-  final apartadoProvider = ApartadoProvider();
-  final abonoProvider = AbonoProvider();
-
-  final negocioProvider = NegocioProvider();
-  double efectivo = 0;
-  double tarjeta = 0;
 
   @override
   void initState() {
-    _startDate = DateTime(now.year, now.month, now.day);
-    dateFormatter = DateFormat('yyyy-MM-dd');
-    formattedStartDate = dateFormatter.format(_startDate);
-        _cargar();
-            for (VariableConf varTemp in listaVariables) {                   
-              if (varTemp.nombre == "empleado_cantidades") {
-                if (varTemp.valor == null) {
-                } else {
-                  _valueInformacion = (varTemp.valor == "1") ? true : false;
-
-                }
-          }
-        }
+    body = 1;
     super.initState();
   }
 
-  _cargar() async {
-    await reportesProvider.reporteEmpleado(formattedStartDate, formattedStartDate, sesion.idSucursal.toString(), sesion.idUsuario.toString());
-    for (final venta in listaVentas) {
-      totalVentas += venta.total!;
-      efectivo += venta.importeEfectivo!;
-      tarjeta += venta.importeTarjeta!;
+  @override
+  void dispose() {
+    efectivoController.dispose();
+    comentariosController.dispose();
+    super.dispose();
+  }
+
+  _solicitaCorte() {
+    setState(() {
+      isLoading = true;
+      textLoading = 'Solicitando corte...';
+    });
+    if (comentariosController.text.isNotEmpty) {
+      comentarios = comentariosController.text;
     }
-    setState(() {});
+    corteProvider
+        .solicitarCorte(efectivoController.text, comentarios)
+        .then((value) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      if (value.status == 1) {
+        setState(() {
+          body = 2;
+        });
+        //_imprimirCorte();
+      } else {
+        mostrarAlerta(context, 'ERROR',
+            'Ocurrio un error al solicitar el corte ${value.mensaje}');
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
-
-    final double? valorIngresado = ModalRoute.of(context)?.settings.arguments as double?;
-    final diferencia = valorIngresado! - totalVentas;
-
-
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
@@ -117,137 +100,177 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
               )
             : Padding(
                 padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.04),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: windowHeight * 0.02,
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: _listaVentas(),
-                      ),
-                    ),
-                    const Divider(),
-                    const SizedBox(height: 25,),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('Efectivo: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                              Text('\$ ${efectivo.toStringAsFixed(2)}')
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('Tarjeta: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              Text('\$ ${tarjeta.toStringAsFixed(2)}')
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('Total de ventas: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              Text('\$ ${totalVentas.toStringAsFixed(2)}')
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('Diferencia: ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              Text('\$ ${diferencia.toStringAsFixed(2)}')
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 25,),
-                  ],
-                ),
-              )
+                child: (body == 1) ? _body1() : _body2(),
+              ),
       ),
     );
   }
-  void _getDetails(VentaCabecera venta) async {
-    isLoading = true;
-    setState(() {});
 
-    await negocioProvider.getlistaSucursales();
+  _body1() {
+    return Column(
+      children: [
+        SizedBox(
+          height: windowHeight * 0.02,
+        ),
+        Text('Ingresa el efectivo de las ventas:'),
+        SizedBox(
+          height: windowHeight * 0.02,
+        ),
+        InputFieldMoney(controller: efectivoController, hintText: 'Efectivo'),
+        SizedBox(
+          height: windowHeight * 0.02,
+        ),
+        InputField(
+          controller: comentariosController,
+          labelText: 'Comentarios',
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (efectivoController.text.isEmpty) {
+              mostrarAlerta(context, 'ERROR', 'Ingrese el efectivo');
+              return;
+            }
 
-    if (venta.tipo_movimiento == "V") {
-      final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
-      isLoading = false;
-      setState(() {});
-      if (resultado.status != 1) {
-        mostrarAlerta(
-            context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
-        return;
-      }
-      Navigator.pushNamed(context, 'ventasD');
-      return;
-    }
-
-    if (venta.tipo_movimiento == "P") {
-      final resultado =
-          await apartadoProvider.detallesApartado(venta.idMovimiento!);
-      isLoading = false;
-      setState(() {});
-      if (resultado.status != 1) {
-        mostrarAlerta(
-            context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
-        return;
-      }
-      Navigator.pushNamed(context, 'apartadosD');
-      return;
-    }
-
-    if (venta.tipo_movimiento == "A") {
-      final resultado =
-          await abonoProvider.obtenerAbono(venta.idMovimiento.toString());
-      isLoading = false;
-      setState(() {});
-      if (resultado.status != 1) {
-        mostrarAlerta(
-            context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
-        return;
-      }
-      Navigator.pushNamed(context, 'abonoD');
-      return;
-    }
-
-    isLoading = false;
-    setState(() {});
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: ((context) {
+                  return AlertDialog(
+                    title: const Text('Confirmar'),
+                    content: Text('¿Desea confirmar el efectivo ingresado?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'Cancelar',
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _solicitaCorte();
+                        },
+                        child: const Text('Generar Corte'),
+                      ),
+                    ],
+                  );
+                }));
+          },
+          child: const Text('Guardar'),
+        ),
+      ],
+    );
   }
 
-  _listaVentas() {
-    if (listaVentas.isEmpty) {
-      return const Center(
-        child: Text(
-            'No hay ventas realizadas en el rango de fechas seleccionado.'),
-      );
-    } else {
-      return Column(
-        children: listaVentas.map((venta) {
-          String text;
-          if (venta.tipo_movimiento! == 'V') {
-            text = 'Venta';
-          } else if (venta.tipo_movimiento! == 'P') {
-            text = 'Apartado';
-          } else {
-            text = 'Abono';
-          }
-          return ListTile(
-              title: Text(
-                  '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
-              subtitle: Text(text),
-               trailing: _valueInformacion  ? Text('\$${venta.total}') : null, // ignore: avoid_returning_null
-              onTap: () => _getDetails(venta)
+  _body2() {
+    return Column(
+      children: [
+        SizedBox(height: windowHeight * 0.02),
+        Text(
+          'Corte Generado',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: windowHeight * 0.02),
+        Expanded(
+          child: ListView.builder(
+            itemCount: listaMovimientosCorte.length,
+            itemBuilder: (context, index) {
+              final movimiento = listaMovimientosCorte[index];
+              String tipoMovimiento = '';
+              if (movimiento.tipoMovimiento == 'V') {
+                tipoMovimiento = 'Venta';
+              } else if (movimiento.tipoMovimiento == 'P') {
+                tipoMovimiento = 'Apartado';
+              } else if (movimiento.tipoMovimiento == 'A') {
+                tipoMovimiento = 'Abono';
+              }
+              return ListTile(
+                title: Text(
+                  tipoMovimiento,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Efectivo: \$${movimiento.montoEfectivo ?? '0.00'} | '
+                  'Tarjeta: \$${movimiento.montoTarjeta ?? '0.00'}',
+                ),
+                trailing: Text(
+                  '\$${movimiento.total ?? '0.00'}',
+                  style: TextStyle(color: Colors.green),
+                ),
               );
-        }).toList(),
-      );
-    }
+            },
+          ),
+        ),
+        Divider(),
+        Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: windowWidth * 0.04, vertical: 10),
+          child: Column(
+            children: [
+              _buildTotalRow(
+                  'Ventas en Efectivo', corteActual.ventasEfectivo ?? '0.0'),
+              _buildTotalRow(
+                  'Ventas con Tarjeta', corteActual.ventasTarjeta ?? '0.0'),
+              _buildTotalRow(
+                  'Total Ingresos', corteActual.totalIngresos ?? '0.0'),
+              if (corteActual.diferencia != null && corteActual.diferencia != 0)
+                _buildDiferenciaRow(corteActual.diferencia ?? '0.0',
+                    corteActual.tipoDiferencia ?? ''),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, 'menu');
+          },
+          child: Text('Volver al Menú'),
+        ),
+        SizedBox(height: windowHeight * 0.02),
+      ],
+    );
+  }
+
+  _buildTotalRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            '\$$value',
+            style: TextStyle(color: Colors.green),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildDiferenciaRow(String diferencia, String tipoDiferencia) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Diferencia ($tipoDiferencia)',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            '\$$diferencia',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
   }
 }
