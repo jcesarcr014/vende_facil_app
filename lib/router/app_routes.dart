@@ -69,6 +69,8 @@ class AppRoutes {
         const HistorialEmpleadoScreen(),
     'seleccionar-sucursal-cotizacion': (BuildContext context) =>
         const SeleccionarSucursal(),
+    'menu-historial': (BuildContext context) => const MenuHistorialScreen(),
+    'cortes-empleados': (BuildContext context) => const CortesEmpleadosScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

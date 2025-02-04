@@ -1,3 +1,5 @@
+export 'package:vende_facil/screens/historial/cortes_empleados.dart';
+export 'package:vende_facil/screens/historial/menu_historial.dart';
 export 'package:vende_facil/screens/cotizaciones/seleccionar_sucursal.dart';
 export 'package:vende_facil/screens/configuracion/configuracion_impresora_screen.dart';
 export 'package:vende_facil/screens/apartados/abono_liquidado_detalle.dart';
@@ -23,7 +25,7 @@ export 'package:vende_facil/screens/empresa/agregar_empresa.dart';
 export 'package:vende_facil/screens/productos/agregar_producto.dart';
 export 'package:vende_facil/screens/configuracion/configuracion_screen.dart';
 export 'package:vende_facil/screens/error_screen.dart';
-export 'package:vende_facil/screens/ventas/historial_screen.dart';
+export 'package:vende_facil/screens/historial/historial_screen.dart';
 export 'package:vende_facil/screens/home_screen.dart';
 export 'package:vende_facil/screens/categorias/lista_categorias.dart';
 export 'package:vende_facil/screens/clientes/lista_clientes.dart';
@@ -56,4 +58,4 @@ export 'package:vende_facil/screens/cotizaciones/cotizaciones_detalle_screen.dar
 export 'package:vende_facil/screens/cotizaciones/detalle_cotizacion.dart';
 export 'package:vende_facil/screens/apartados/abono_selecionar.dart';
 export 'package:vende_facil/screens/apartados/menu_abonos.dart';
-export 'package:vende_facil/screens/ventas/historial_empleados_screen.dart';
+export 'package:vende_facil/screens/historial/historial_empleados_screen.dart';

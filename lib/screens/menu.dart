@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -71,20 +70,20 @@ class _MenuScreenState extends State<MenuScreen> {
           'Clientes',
           'Empresa',
           'Configuracion',
-          'Mi suscripción',
+          // 'Mi suscripción',
           'Cerrar Sesión'
         ];
         menuRoutes = [
           'home',
           'menuAbonos',
-          'historial',
+          'menu-historial',
           'productos',
           'categorias',
           'descuentos',
           'clientes',
           'menu-negocio',
           'config',
-          'suscripcion',
+          // 'suscripcion',
           'login'
         ];
 
@@ -98,7 +97,7 @@ class _MenuScreenState extends State<MenuScreen> {
           'assets/i_clientes.png',
           'assets/i_empresa.png',
           'assets/i_ajustes.png',
-          'assets/i_suscripcion.png',
+          // 'assets/i_suscripcion.png',
           'assets/i_salir.png',
         ];
       }
@@ -106,16 +105,21 @@ class _MenuScreenState extends State<MenuScreen> {
       menuItems = [
         'Empresa',
         'Configuracion',
-        'Mi suscripción',
+        // 'Mi suscripción',
         'Cerrar Sesión'
       ];
 
-      menuRoutes = ['menu-negocio', 'config', 'suscripcion', 'login'];
+      menuRoutes = [
+        'menu-negocio',
+        'config',
+        //  'suscripcion',
+        'login'
+      ];
 
       menuIcons = [
         'assets/i_empresa.png',
         'assets/i_ajustes.png',
-        'assets/i_suscripcion.png',
+        // 'assets/i_suscripcion.png',
         'assets/i_salir.png',
       ];
     }

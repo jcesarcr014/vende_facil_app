@@ -67,4 +67,47 @@ class CorteProvider {
     }
     return respuesta;
   }
+
+  Future<Resultado> cortesFecha(String fecha) async {
+    var url = Uri.parse('$baseUrl/cortes-fecha/$fecha');
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = json.decode(response.body);
+      if (decodedData['status'] == 1) {
+        listaCortes.clear();
+        for (int x = 0; x < decodedData['cortes'].length; x++) {
+          Corte corte = Corte();
+          corte.id = decodedData['cortes'][x]['id'];
+          corte.idNegocio = decodedData['cortes'][x]['negocio_id'];
+          corte.idUsuario = decodedData['cortes'][x]['usuario_id'];
+          corte.idSucursal = decodedData['cortes'][x]['sucursal_id'];
+          corte.fecha = decodedData['cortes'][x]['fecha'];
+          corte.efectivoInicial =
+              decodedData['cortes'][x]['efectivo_inicial'].toString();
+          corte.ventasEfectivo =
+              decodedData['cortes'][x]['ventas_efectivo'].toString();
+          corte.ventasTarjeta =
+              decodedData['cortes'][x]['ventas_tarjeta'].toString();
+          corte.totalIngresos =
+              decodedData['cortes'][x]['total_ingresos'].toString();
+          corte.observaciones = decodedData['cortes'][x]['observaciones'];
+          corte.numVentas = decodedData['cortes'][x]['numero_ventas'];
+          corte.diferencia = decodedData['cortes'][x]['diferencia'].toString();
+          corte.tipoDiferencia = decodedData['cortes'][x]['tipo_diferencia'];
+          listaCortes.add(corte);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error al solicitar corte $e';
+    }
+    return respuesta;
+  }
 }
