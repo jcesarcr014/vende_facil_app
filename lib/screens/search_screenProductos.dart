@@ -54,20 +54,16 @@ class Searchproductos extends SearchDelegate {
         return ListTile(
           leading: Icon(Icons.category, color: color.color),
           onTap: (() {
-            if (resultados[index].unidad == "0") {
-            } else {
-              articulosProvider
-                  .consultaProducto(resultados[index].id!)
-                  .then((value) {
-                if (value.id != 0) {
-                  Navigator.pushNamed(context, 'nvo-producto',
-                      arguments: value);
-                } else {
-                  mostrarAlerta(context, 'ERROR',
-                      'Error en la consulta: ${value.producto}');
-                }
-              });
-            }
+            articulosProvider
+                .consultaProducto(resultados[index].id!)
+                .then((value) {
+              if (value.id != 0) {
+                Navigator.pushNamed(context, 'nvo-producto', arguments: value);
+              } else {
+                mostrarAlerta(context, 'ERROR',
+                    'Error en la consulta: ${value.producto}');
+              }
+            });
           }),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

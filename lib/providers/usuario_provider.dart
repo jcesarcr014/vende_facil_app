@@ -76,19 +76,20 @@ class UsuarioProvider {
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.cotizar = false;
+        listaSucursales.clear();
+        List<dynamic> sucursalesJson = decodedData['sucursales'];
+        List<Sucursal> sucursales = sucursalesJson
+            .map((json) => SucursalMapper.dataToSucursalModel(json))
+            .toList();
+        listaSucursales.addAll(sucursales);
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-          listaSucursales.clear();
-          List<dynamic> sucursalesJson = decodedData['sucursales'];
-          List<Sucursal> sucursales = sucursalesJson
-              .map((json) => SucursalMapper.dataToSucursalModel(json))
-              .toList();
-          listaSucursales.addAll(sucursales);
+
           globals.actualizaSucursales = false;
         } else {
           globals.actualizaSucursales = false;
-          sesion.idSucursal = decodedData["sucursales"];
+          sesion.idSucursal = decodedData["sucursales"][0]['i'];
         }
       } else {
         respuesta.status = 0;
@@ -122,19 +123,19 @@ class UsuarioProvider {
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.cotizar = false;
+        listaSucursales.clear();
+        List<dynamic> sucursalesJson = decodedData['sucursales'];
+        List<Sucursal> sucursales = sucursalesJson
+            .map((json) => SucursalMapper.dataToSucursalModel(json))
+            .toList();
+        listaSucursales.addAll(sucursales);
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-          listaSucursales.clear();
-          List<dynamic> sucursalesJson = decodedData['sucursales'];
-          List<Sucursal> sucursales = sucursalesJson
-              .map((json) => SucursalMapper.dataToSucursalModel(json))
-              .toList();
-          listaSucursales.addAll(sucursales);
         } else {
           globals.actualizaArticulos = true;
           globals.actualizaArticulosCotizaciones = true;
-          sesion.idSucursal = decodedData["sucursales"];
+          sesion.idSucursal = decodedData["sucursales"][0]['id'];
         }
       } else {
         respuesta.status = 0;
