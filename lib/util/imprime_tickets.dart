@@ -196,14 +196,19 @@ class ImpresionesTickets {
     bytes += generator.reset();
     bytes += generator.text(' $nombreSucursal \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
-    bytes += generator.text('Direccion: $direccionSucursal ');
-    bytes += generator.text('Telefono: $telefonoSucursal ');
+    bytes += generator.text('$direccionSucursal \n',
+        styles: PosStyles(align: PosAlign.left, bold: false));
+    bytes += generator.text('$telefonoSucursal \n',
+        styles: PosStyles(align: PosAlign.left, bold: false));
+    bytes += generator.text('CLIENTE: ${venta.nombreCliente} \n',
+        styles: PosStyles(align: PosAlign.left, bold: false));
+
     bytes += generator.text(
         'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
     bytes += generator.text(
-        'Hora compra: ${DateFormat('HH-mm-ss').format(DateTime.now())} \n');
+        'Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
 
-    bytes += generator.text('Detalles de venta \n',
+    bytes += generator.text('Detalles de la venta \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
     for (ItemVenta item in ventaTemporal) {
@@ -235,7 +240,7 @@ class ImpresionesTickets {
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Total de articulos: ',
+        text: 'Artículos vendidos: ',
         width: 10,
         styles: PosStyles(align: PosAlign.left),
       ),
@@ -323,6 +328,19 @@ class ImpresionesTickets {
     ]);
 
     bytes += generator.feed(1);
+    bytes += generator.row([
+      PosColumn(
+        text: 'Atendio: ',
+        width: 4,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '${sesion.nombreUsuario}',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+    ]);
+    bytes += generator.feed(1);
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
@@ -332,6 +350,7 @@ class ImpresionesTickets {
     if (conexionStatus) {
       bool result = false;
 
+      result = await PrintBluetoothThermal.writeBytes(bytes);
       result = await PrintBluetoothThermal.writeBytes(bytes);
       if (result) {
         respuesta.status = 1;
@@ -382,7 +401,7 @@ class ImpresionesTickets {
     bytes += generator.text(
         'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
     bytes += generator.text(
-        'Hora compra: ${DateFormat('HH-mm-ss').format(DateTime.now())} \n');
+        'Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
 
     bytes += generator.text('Detalles de Apartado \n',
         styles: PosStyles(align: PosAlign.left, bold: true));

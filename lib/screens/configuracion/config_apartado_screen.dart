@@ -14,7 +14,7 @@ class AjustesApartadoScreen extends StatefulWidget {
 class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   final apartadoProvider = ApartadoProvider();
   bool _valuePieza = false;
-   bool _valueInformacion = false;
+  bool _valueInformacion = false;
   final variablesprovider = VariablesProvider();
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
@@ -74,8 +74,8 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
               _valuePieza = (varTemp.valor == "1") ? true : false;
             }
           }
-                   
-           if (varTemp.nombre == "empleado_cantidades") {
+
+          if (varTemp.nombre == "empleado_cantidades") {
             idempleadoCatidades = varTemp.id!;
             if (varTemp.valor == null) {
             } else {
@@ -124,7 +124,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                       height: windowHeight * 0.02,
                     ),
                     const Text(
-                      'Si su negocio no maneja sistema de apartado, deje en 0 la cantidad máxima de articulos permitidos.',
+                      'Si su negocio no maneja sistema de apartado, deje en 0 los artículos permitidos apartar.',
                       textAlign: TextAlign.justify,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -227,20 +227,22 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     Padding(
                       padding: const EdgeInsets.all(1.0),
                       child: SwitchListTile.adaptive(
-                        title: const Text('Se permite mayoreo:',
-                        style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),),
+                        title: const Text(
+                          'Se permite mayoreo:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
                         subtitle: Text(_valuePieza ? 'Permirtir ' : 'Negar'),
                         value: _valuePieza,
                         onChanged: (value) {
                           _valuePieza = value;
                           setState(() {
                             if (_valuePieza == false) {
-                              controllerArticulosMayoreo.text ="0";
-                            }else{
-                               controllerArticulosMayoreo.text ="10";
+                              controllerArticulosMayoreo.text = "0";
+                            } else {
+                              controllerArticulosMayoreo.text = "10";
                             }
                           });
                         },
@@ -292,22 +294,31 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
-                Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Tooltip(
-                    message: 'Esta opción permite controlar la privacidad de la información que ve  el vendedor .',
-                    child: SwitchListTile.adaptive(
-                      title: const Text('Privacidad de historial', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18,),),
-                      subtitle: Text(_valueInformacion ? 'Permitir ver' : 'Empleados puede ver totales de ventas'),
-                      value: _valueInformacion,
-                      onChanged: (value) {
-                        setState(() {
-                          _valueInformacion = value;
-                        });
-                      },
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Tooltip(
+                        message:
+                            'Permitir al empleado ver inventario de su sucursal.',
+                        child: SwitchListTile.adaptive(
+                          title: const Text(
+                            'Inventario de sucursal',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          subtitle: Text(_valueInformacion
+                              ? 'Empleados SI ven inventario.'
+                              : 'Empleados NO ven inventario.'),
+                          value: _valueInformacion,
+                          onChanged: (value) {
+                            setState(() {
+                              _valueInformacion = value;
+                            });
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ),          
                     SizedBox(
                       height: windowHeight * 0.03,
                     ),
@@ -350,15 +361,18 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                     .then((aplicamayoreo) {
                   if (aplicamayoreo.status == 1) {
                     variablesprovider
-                        .modificarVariables(
-                            idempleadoCatidades, (_valueInformacion) ? '1' : '0')
+                        .modificarVariables(idempleadoCatidades,
+                            (_valueInformacion) ? '1' : '0')
                         .then((aplicamayoreo) {
                       if (aplicamayoreo.status == 1) {
                         setState(() {
                           textLoading = '';
                           isLoading = false;
                         });
-                        mostrarAlerta(context, 'Correcto',tituloColor: Colors.green,
+                        mostrarAlerta(
+                            context,
+                            'Correcto',
+                            tituloColor: Colors.green,
                             'Valores guardados correctamente');
                       } else {
                         setState(() {

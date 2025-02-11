@@ -307,7 +307,60 @@ class _ventaScreenState extends State<VentaScreen> {
     });
     venta.importeTarjeta = tarjeta;
     venta.importeEfectivo = totalEfectivo;
+    //AQUI EMPIEZ NUEVO CODIGO
+    List<VentaDetalle> detalles = ventaTemporal
+        .map((item) => VentaDetalle(
+              idVenta: 0, // Este ID se asignará en el backend
+              idProd: item.idArticulo,
+              cantidad: item.cantidad,
+              precio: item.precioPublico,
+              idDesc: venta.idDescuento,
+              cantidadDescuento: venta.descuento,
+              total: item.totalItem,
+              subtotal: item.subTotalItem,
+              id_sucursal: sesion.idSucursal,
+            ))
+        .toList();
 
+    final respuesta = await ventaCabecera.guardarVentaCompleta(venta, detalles);
+    if (respuesta.status == 1) {
+      // Imprimir ticket si es necesario
+      if (isPrinted) {
+        setState(() {
+          textLoading = 'Imprimiendo ticket';
+        });
+        final respuestaImp = await impresionesTickets.imprimirVenta(
+            venta, tarjeta, efectivo, cambio);
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+        if (respuestaImp.status != 1) {
+          mostrarAlerta(context, 'ERROR',
+              'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
+        }
+      }
+      setState(() {
+        ventaTemporal.clear();
+        totalVentaTemporal = 0.0;
+        globals.actualizaArticulos = true;
+        isLoading = false;
+        textLoading = '';
+      });
+
+      // Navegar a home y mostrar mensaje de éxito
+      Navigator.pushReplacementNamed(context, 'home');
+      mostrarAlerta(context, '', 'Venta realizada');
+    } else {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      mostrarAlerta(context, 'ERROR', respuesta.mensaje!);
+    }
+    //AQUI TERMINA NUEVO CODIGO
+
+    /*
     await ventaCabecera.guardarVenta(venta).then((respCab) async {
       if (respCab.status == 1) {
         idCabecera = respCab.id!;
@@ -364,6 +417,6 @@ class _ventaScreenState extends State<VentaScreen> {
         });
         mostrarAlerta(context, 'ERROR', respCab.mensaje!);
       }
-    });
+    }); */
   }
 }

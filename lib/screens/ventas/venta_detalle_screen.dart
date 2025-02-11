@@ -18,6 +18,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
   String _valueIdDescuento = '0';
+  String nombreClienteTemp = 'Público en general';
   String _valueIdcliente = listaClientes
       .firstWhere((cliente) => cliente.nombre == 'Público en general')
       .id
@@ -207,6 +208,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                                 idDescuento: idDescuento,
                                 descuento: descuento,
                                 total: totalVentaTemporal,
+                                tipoVenta: _valuePieza ? 1 : 0,
+                                nombreCliente: nombreClienteTemp,
                               );
                               Navigator.pushNamed(context, 'venta',
                                   arguments: venta);
@@ -398,32 +401,12 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                             ),
                           ),
                         ),
-
                         SizedBox(
                             width: windowWidth * 0.15,
                             child: Text(
                               '  ${item.cantidad} ',
                               textAlign: TextAlign.center,
                             )),
-                        // SizedBox(
-                        //     width: windowWidth * 0.1,
-                        //     child: IconButton(
-                        //         onPressed: () {
-                        //             var catidad = item.cantidad + 1;
-
-                        //             if (catidad > prod.disponibleInv!) {
-                        //               mostrarAlerta(context, "AVISO",
-                        //                   "Nose puede agregar mas articulos de este producto ");
-                        //             } else {
-                        //               item.cantidad++;
-                        //               // item.subTotalItem =
-                        //               //     item.precioPublico * item.cantidad;
-                        //               // item.totalItem =
-                        //               //     item.subTotalItem - item.descuento;
-                        //               _actualizaTotalTemporal();
-                        //             }
-                        //         },
-                        //         icon: const Icon(Icons.add_circle_outline))),
                       ],
                     ),
                     Text('\$${_calcularPrecio(item).toStringAsFixed(2)}')
@@ -618,6 +601,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         setState(() {
           var clienteseleccionado = listaClientes.firstWhere(
               (cliente) => cliente.id == int.parse(_valueIdcliente));
+          nombreClienteTemp = clienteseleccionado.nombre!;
           if (clienteseleccionado.distribuidor == 1) {
             setState(() {
               totalVentaTemporal = 0.00;

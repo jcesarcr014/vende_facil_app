@@ -11,6 +11,7 @@ class VentaCabecera {
   double? total;
   double? importeEfectivo;
   double? importeTarjeta;
+  int? tipoVenta;
   int? cancelado;
   String? fecha_venta;
   String? fecha_cancelacion;
@@ -19,27 +20,27 @@ class VentaCabecera {
   String? tipo_movimiento;
   int? id_sucursal;
   int? idMovimiento;
-  VentaCabecera({
-    this.id,
-    this.negocioId,
-    this.usuarioId,
-    this.idCliente,
-    this.folio,
-    this.subtotal,
-    this.idDescuento,
-    this.descuento,
-    this.total,
-    this.importeEfectivo,
-    this.importeTarjeta,
-    this.cancelado,
-    this.fecha_venta,
-    this.fecha_cancelacion,
-    this.nombreCliente,
-    this.name,
-    this.tipo_movimiento,
-    this.id_sucursal,
-    this.idMovimiento
-  });
+  VentaCabecera(
+      {this.id,
+      this.negocioId,
+      this.usuarioId,
+      this.idCliente,
+      this.folio,
+      this.subtotal,
+      this.idDescuento,
+      this.descuento,
+      this.total,
+      this.importeEfectivo,
+      this.importeTarjeta,
+      this.tipoVenta,
+      this.cancelado,
+      this.fecha_venta,
+      this.fecha_cancelacion,
+      this.nombreCliente,
+      this.name,
+      this.tipo_movimiento,
+      this.id_sucursal,
+      this.idMovimiento});
 }
 
 List<VentaCabecera> listaVentaCabecera = [];

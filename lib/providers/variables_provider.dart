@@ -18,12 +18,16 @@ class VariablesProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         listaVariables.clear();
+
         for (int x = 0; x < decodedData['data'].length; x++) {
           VariableConf variable = VariableConf(
             id: decodedData['data'][x]['id'],
             nombre: decodedData['data'][x]['nombre'],
             valor: decodedData['data'][x]['valor'],
           );
+          if (variable.nombre == 'empleado_cantidades') {
+            globals.empleadoInvetario = variable.valor == '1' ? true : false;
+          }
           listaVariables.add(variable);
         }
       } else {

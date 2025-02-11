@@ -1,7 +1,7 @@
 library vende_facil.globals;
 
-//String baseUrl = "http://84.247.163.28/api"; //test interno
-String baseUrl = "http://38.242.216.214/api"; // PRODUCCION
+String baseUrl = "http://62.84.190.222/vf/api"; //test interno
+//String baseUrl = "http://38.242.216.214/api"; // PRODUCCION
 
 bool actualizaCategorias = false;
 bool actualizaArticulos = false;
@@ -13,6 +13,7 @@ bool actualizaDescuentos = false;
 bool actualizaVariables = false;
 bool actualizaSucursales = false;
 bool actualizarEmpleadoSucursales = false;
+bool empleadoInvetario = false;
 
 bool actualizaArticulosSucursal = false;
 
