@@ -84,6 +84,7 @@ class CorteProvider {
         corteActual.idNegocio = (decodedData['corte']['id_negocio']);
         corteActual.idUsuario = (decodedData['corte']['id_usuario']);
         corteActual.idSucursal = (decodedData['corte']['id_sucursal']);
+        corteActual.empleado = decodedData['corte']['name'];
         corteActual.fecha = decodedData['corte']['fecha'];
         corteActual.efectivoInicial =
             decodedData['corte']['efectivo_inicial'].toString();
@@ -138,6 +139,7 @@ class CorteProvider {
           corte.idNegocio = decodedData['cortes'][x]['negocio_id'];
           corte.idUsuario = decodedData['cortes'][x]['usuario_id'];
           corte.idSucursal = decodedData['cortes'][x]['sucursal_id'];
+          corte.empleado = decodedData['cortes'][x]['name'];
           corte.fecha = decodedData['cortes'][x]['fecha'];
           corte.efectivoInicial =
               decodedData['cortes'][x]['efectivo_inicial'].toString();

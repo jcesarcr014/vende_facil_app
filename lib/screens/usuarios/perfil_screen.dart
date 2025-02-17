@@ -110,8 +110,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   _clear() {
     listaAbonos.clear();
-    listaApartados.clear();
-    listaApartados2.clear();
+    listaApartadosPendientes.clear();
+    listaApartadosPagados.clear();
+    listaApartadosEntregados.clear();
+    listaApartadosCancelados.clear();
     listaCategorias.clear();
     listaClientes.clear();
     listaColores.clear();

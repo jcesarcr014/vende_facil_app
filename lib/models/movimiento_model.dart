@@ -4,7 +4,8 @@ class MovimientoCorte {
   int? idSucursal;
   int? idUsario;
   int? idMovimiento;
-  String? tipoMovimiento; // V = Venta, P = Apartado, A = Abono
+  String?
+      tipoMovimiento; // VT = Venta tienda,  VD = Venta domicilio, P = Apartado, A = Abono, E = Entrega
   String? montoEfectivo;
   String? montoTarjeta;
   String? total;

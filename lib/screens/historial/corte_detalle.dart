@@ -49,9 +49,16 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
                   children: [
                     SizedBox(height: windowHeight * 0.02),
                     Text(
-                      'Corte Generado',
+                      'Corte de ${corteActual.empleado}',
                       style: TextStyle(
                         fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Efectivo en caja: \$${corteActual.efectivoInicial}',
+                      style: TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -62,8 +69,10 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
                         itemBuilder: (context, index) {
                           final movimiento = listaMovimientosCorte[index];
                           String tipoMovimiento = '';
-                          if (movimiento.tipoMovimiento == 'V') {
-                            tipoMovimiento = 'Venta';
+                          if (movimiento.tipoMovimiento == 'VD') {
+                            tipoMovimiento = 'Venta domicilio';
+                          } else if (movimiento.tipoMovimiento == 'VT') {
+                            tipoMovimiento = 'Venta tienda';
                           } else if (movimiento.tipoMovimiento == 'P') {
                             tipoMovimiento = 'Apartado';
                           } else if (movimiento.tipoMovimiento == 'A') {
@@ -156,7 +165,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
             ),
           ),
           Text(
-            '\$$diferencia',
+            '\$${double.parse(diferencia).abs().toStringAsFixed(2)}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ],

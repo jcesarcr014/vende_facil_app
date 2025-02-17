@@ -63,8 +63,6 @@ class AppRoutes {
     'detalleCotizacions': (BuildContext context) =>
         const CotizacionDetallesScreen(),
     'abonos-liquidados': (BuildContext context) => const AbonosLiquidados(),
-    'abono-liquidado-detalle': (BuildContext context) =>
-        const AbonoLiquidadoDetalle(),
     'historial_empleado': (BuildContext context) =>
         const HistorialEmpleadoScreen(),
     'seleccionar-sucursal-cotizacion': (BuildContext context) =>

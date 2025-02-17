@@ -44,17 +44,51 @@ class ImpresionesTickets {
         ? bytes += generator.text(' $nombreSucursal \n',
             styles: PosStyles(align: PosAlign.center, bold: true))
         : null;
-    bytes += generator.text(' ${sesion.nombreUsuario} \n',
-        styles: PosStyles(align: PosAlign.center, bold: true));
+    (bandera == 1)
+        ? bytes += generator.text(' ${sesion.nombreUsuario} \n',
+            styles: PosStyles(align: PosAlign.center, bold: true))
+        : bytes += generator.text(' ${corteActual.empleado} \n',
+            styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text(
         'Fecha corte: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(corteActual.fecha!))}');
     bytes += generator.text(
         'Hora corte: ${DateFormat('HH-mm-ss').format(DateTime.parse(corteActual.fecha!))} \n');
+    bytes +=
+        generator.text('Efectivo en caja: ${corteActual.efectivoInicial!} \n');
 
     bytes += generator.text('Detalles de corte \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
     for (MovimientoCorte item in listaMovimientosCorte) {
+      String tipoMov = '';
+      switch (item.tipoMovimiento) {
+        case 'VT':
+          tipoMov = 'Venta tienda';
+          break;
+        case 'VD':
+          tipoMov = 'Venta domicilio';
+          break;
+        case 'P':
+          tipoMov = 'Apartado';
+          break;
+        case 'A':
+          tipoMov = 'Abono';
+          break;
+        case 'E':
+          tipoMov = 'Entraga apartado';
+          break;
+        default:
+          tipoMov = 'Desconocido';
+          break;
+      }
+      bytes += generator.row([
+        PosColumn(
+          text: tipoMov,
+          width: 12,
+          styles: PosStyles(align: PosAlign.left),
+        ),
+      ]);
+
       bytes += generator.row([
         PosColumn(
           text: '${item.folio}',
@@ -129,7 +163,7 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '\$${corteActual.totalIngresos}',
+        text: '\$${corteActual.totalIngresos} \n',
         width: 4,
         styles: PosStyles(align: PosAlign.right),
       ),
@@ -137,13 +171,14 @@ class ImpresionesTickets {
 
     bytes += generator.row([
       PosColumn(
-        text: 'Diferencia',
-        width: 6,
+        text: 'Diferencia(${corteActual.tipoDiferencia})',
+        width: 8,
         styles: PosStyles(align: PosAlign.left),
       ),
       PosColumn(
-        text: '\$${corteActual.diferencia}-${corteActual.tipoDiferencia}',
-        width: 6,
+        text:
+            '\$${double.parse(corteActual.diferencia!).abs().toStringAsFixed(2)}',
+        width: 4,
         styles: PosStyles(align: PosAlign.right),
       ),
     ]);
@@ -196,17 +231,32 @@ class ImpresionesTickets {
     bytes += generator.reset();
     bytes += generator.text(' $nombreSucursal \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
-    bytes += generator.text('$direccionSucursal \n',
+    bytes += generator.text('$direccionSucursal ',
         styles: PosStyles(align: PosAlign.left, bold: false));
-    bytes += generator.text('$telefonoSucursal \n',
+    bytes += generator.text('$telefonoSucursal ',
         styles: PosStyles(align: PosAlign.left, bold: false));
+    bytes += generator.row([
+      PosColumn(
+        text: 'Atendio: ',
+        width: 4,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '${sesion.nombreUsuario}',
+        width: 8,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+    ]);
+    bytes += generator.feed(1);
     bytes += generator.text('CLIENTE: ${venta.nombreCliente} \n',
         styles: PosStyles(align: PosAlign.left, bold: false));
 
     bytes += generator.text(
         'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
+    bytes += generator
+        .text('Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())}');
     bytes += generator.text(
-        'Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
+        'Tipo compra: ${(venta.tipoVenta == 0) ? 'Tienda' : 'Domicilio'} \n');
 
     bytes += generator.text('Detalles de la venta \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
@@ -328,19 +378,7 @@ class ImpresionesTickets {
     ]);
 
     bytes += generator.feed(1);
-    bytes += generator.row([
-      PosColumn(
-        text: 'Atendio: ',
-        width: 4,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: '${sesion.nombreUsuario}',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-    ]);
-    bytes += generator.feed(1);
+
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
@@ -367,7 +405,7 @@ class ImpresionesTickets {
   }
 
   Future<Resultado> imprimirApartado(
-      ApartadoDetalle apartado,
+      ApartadoCabecera apartado,
       double totalAnticipo,
       double totalFaltante,
       double tarjeta,
@@ -445,8 +483,6 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.right),
       ),
     ]);
-
-    // a partir de aqui cambia por que debe mostrar los que ya tiene mas el anticipo y el faltannte
 
     bytes += generator.row([
       PosColumn(

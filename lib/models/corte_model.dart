@@ -3,6 +3,7 @@ class Corte {
   int? idNegocio;
   int? idUsuario;
   int? idSucursal;
+  String? empleado;
   String? fecha;
   String? efectivoInicial;
   String? ventasEfectivo;
@@ -18,6 +19,7 @@ class Corte {
       this.idNegocio,
       this.idUsuario,
       this.idSucursal,
+      this.empleado,
       this.fecha,
       this.efectivoInicial,
       this.ventasEfectivo,

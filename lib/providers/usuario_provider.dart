@@ -135,7 +135,7 @@ class UsuarioProvider {
         } else {
           globals.actualizaArticulos = true;
           globals.actualizaArticulosCotizaciones = true;
-          sesion.idSucursal = decodedData["sucursales"][0]['i'];
+          sesion.idSucursal = decodedData["sucursales"][0]['id'];
         }
       } else {
         respuesta.status = 0;

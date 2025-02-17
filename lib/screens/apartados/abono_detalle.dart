@@ -21,7 +21,7 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
   final efectivoConttroller = TextEditingController();
   final tarjetaConttroller = TextEditingController();
   final cambioConttroller = TextEditingController();
-  final apartado = ApartadoProvider();
+  final apartadoProvider = ApartadoProvider();
 
   @override
   void initState() {
@@ -41,72 +41,86 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
         },
         child: Scaffold(
             appBar: AppBar(
-              title: const Text('Detalles de Abono'),
+              title: const Text('Detalles de apartado'),
             ),
-            body: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            body: (isLoading)
+                ? Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Folio: ${listaApartados2[0].folio}',
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
+                          Text('Espere...$textLoading'),
+                          const SizedBox(
+                            height: 10,
                           ),
-                          Text(
-                            'Cliente: ${listaApartados2[0].nombreCliente}',
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Fecha de Abono: ${listaApartados2[0].fechaApartado}',
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Saldo Pediente: ${listaApartados2[0].saldoPendiente}',
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Descuento: ${listaApartados2[0].descuento}',
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Total: \$${listaApartados2[0].total}',
-                            style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Center(
-                    child: Text(
-                      'Productos',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  (isLoading)
-                      ? Center(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          const CircularProgressIndicator(),
+                        ]),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Espere...$textLoading'),
-                                const SizedBox(
-                                  height: 10,
+                                Text(
+                                  'Folio: ${apartadoSeleccionado.folio}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                const CircularProgressIndicator(),
-                              ]),
-                        )
-                      : Column(
+                                Text(
+                                  'Cliente: ${apartadoSeleccionado.nombreCliente}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Fecha de apartado: ${apartadoSeleccionado.fechaApartado}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Saldo Pediente: ${apartadoSeleccionado.saldoPendiente}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Descuento: ${apartadoSeleccionado.descuento}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Total: \$${apartadoSeleccionado.total}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                (apartadoSeleccionado.pagado == 1)
+                                    ? Text(
+                                        'Pagado: ${apartadoSeleccionado.fechaPagoTotal}')
+                                    : Container(),
+                                (apartadoSeleccionado.entregado == 1)
+                                    ? Text(
+                                        'Pagado: ${apartadoSeleccionado.fechaEntrega}')
+                                    : Container(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const Center(
+                          child: Text(
+                            'Productos',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Column(
                           children: [
                             Container(
                               width: MediaQuery.of(context).size.width,
@@ -163,90 +177,88 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                             SizedBox(
                               height: windowHeight * 0.1,
                             ),
-                            Center(
-                              child: 
-                                listaApartados2.first.cancelado != 1 ?
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          if (listaApartados2[0].saldoPendiente ==
-                                              0.0) {
-                                            mostrarAlerta(context, "Alerta",
-                                                "El artículo ya se ha pagado por completo.");
-                                          } else {
-                                            VentaCabecera venta = VentaCabecera(
-                                              idCliente: listaApartados2[0].id,
-                                              subtotal:
-                                                  listaApartados2[0].saldoPendiente,
-                                              idDescuento: 0,
-                                              descuento: 0,
-                                              total: listaApartados2[0].saldoPendiente,
-                                            );
-                                            Navigator.pushNamed(context, 'abonosPagos',
-                                                arguments: venta);
-                                          }
-                                        },
-                                        child: SizedBox(
-                                          height: windowHeight * 0.1,
-                                          width: windowWidth * 0.4,
-                                          child: const Center(
-                                            child: Text('Agregar Abono',
-                                                style: TextStyle(fontSize: 16)),
-                                          ),
-                                        ),
-                                      ): const Text(''),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Center(
-                              child:
-                                listaApartados2.first.cancelado != 1 ?
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        setState(() {
-                                          textLoading = 'Actualizando apartado...';
-                                          isLoading = true;
-                                        });
-                                        await apartado
-                                            .cancelarApartado(listaApartados2[0].id!)
-                                            .then((value) {
-                                          if (value.status == 1) {
-                                            setState(() {
-                                              isLoading = false;
-                                            });
-                                            Navigator.pushReplacementNamed(
-                                                context, 'menuAbonos');
-                                            mostrarAlerta(context, 'Alerta',
-                                                'Se canceló el apartado.',
-                                                tituloColor: Colors.red,
-                                                mensajeColor: Colors.black);
-                                          } else {
-                                            setState(() {
-                                              isLoading = false;
-                                            });
-                                            mostrarAlerta(context, "Error",
-                                                "No se pudo cancelar el apartado.");
-                                          }
-                                        }
-                                      );
-                                      },
-                                      child: SizedBox(
-                                        height: windowHeight * 0.1,
-                                        width: windowWidth * 0.4,
-                                        child: const Center(
-                                          child: Text('Cancelar Apartado',
-                                              style: TextStyle(fontSize: 16)),
-                                        ),
-                                      ),
-                                    ) : const Text(''),
-                                  ),
-                            SizedBox(
-                              height: windowHeight * 0.1,
-                            ),
                           ],
-                        )
-                ],
-              ),
-            )));
+                        ),
+                        _botonesAbono(),
+                      ],
+                    ),
+                  )));
+  }
+
+  _botonesAbono() {
+    List<Widget> botones = [];
+    if (apartadoSeleccionado.cancelado == 0 &&
+        apartadoSeleccionado.pagado == 0) {
+      botones.add(ElevatedButton(
+          onPressed: () {
+            VentaCabecera venta = VentaCabecera(
+              idCliente: apartadoSeleccionado.id,
+              subtotal: apartadoSeleccionado.saldoPendiente,
+              idDescuento: 0,
+              descuento: 0,
+              total: apartadoSeleccionado.saldoPendiente,
+            );
+            Navigator.pushNamed(context, 'abonosPagos', arguments: venta);
+          },
+          child: Text('Abonar')));
+      botones.add(SizedBox(
+        height: windowHeight * 0.02,
+      ));
+      botones.add(ElevatedButton(
+          onPressed: () {
+            _cancelarApartado();
+          },
+          child: Text('Cancelar apartado')));
+    }
+    if (apartadoSeleccionado.pagado == 1 &&
+        apartadoSeleccionado.entregado == 0) {
+      botones.add(ElevatedButton(
+          onPressed: _entregarProductos(), child: Text('Entregar productos')));
+    }
+    return botones;
+  }
+
+  _entregarProductos() async {
+    setState(() {
+      textLoading = 'Actualizando pedido';
+      isLoading = false;
+    });
+    apartadoProvider.entregarProducto(apartadoSeleccionado.id!).then((resp) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+      });
+      if (resp.status == 0) {
+        mostrarAlerta(context, 'Error', resp.mensaje!);
+        return;
+      }
+      Navigator.pop(context);
+      Navigator.pop(context);
+      mostrarAlerta(context, 'Exitoso',
+          resp.mensaje ?? 'Producto Entregado Correctamente');
+    });
+  }
+
+  _cancelarApartado() async {
+    setState(() {
+      textLoading = 'Cancelando...';
+      isLoading = true;
+    });
+    apartadoProvider.cancelarApartado(apartadoSeleccionado.id!).then((resp) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+      });
+      if (resp.status == 1) {
+        Navigator.pushReplacementNamed(context, 'menuAbonos');
+        mostrarAlerta(context, 'Alerta', 'Se canceló el apartado.',
+            tituloColor: Colors.red, mensajeColor: Colors.black);
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        mostrarAlerta(context, "Error", "No se pudo cancelar el apartado.");
+      }
+    });
   }
 }

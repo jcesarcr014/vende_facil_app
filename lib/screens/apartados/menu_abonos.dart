@@ -36,38 +36,47 @@ class MenuAbonoScreen extends StatelessWidget {
               children: [
                 ListTile(
                     leading: const Icon(Icons.list_alt),
-                    title: const Text('Agregar abonos',
+                    title: const Text('Abonar',
                         style: TextStyle(fontWeight: FontWeight.bold),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
-                    subtitle: const Text('Visualiza  lista de apartados'),
+                    subtitle: const Text(
+                        'Visualiza  lista de apartados pendientes de liquidar'),
                     trailing: const Icon(Icons.arrow_right),
                     onTap: () {
                       sesion.tipoUsuario == 'P'
                           ? Navigator.pushNamed(context, 'selecionarSA')
                           : Navigator.pushNamed(context, 'nvo-abono');
                     }),
-                if(sesion.tipoUsuario == 'P')
+                if (sesion.tipoUsuario == 'P')
                   ListTile(
-                    leading: const Icon(Icons.check),
-                    title: const Text('Abonos Liquidados', style: TextStyle(fontWeight: FontWeight.bold),),
-                    subtitle: const Text('Visualiza una lista de tus abonos liquidados'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () async {
-                      final resultado = await apartadoProvider.listaApartadosApagados();
-                      if(resultado.status != 1) {
-                        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
-                        return;
-                      }
-                      listaClientesApartadosLiquidados.clear();
-                      for (var apartadoPagado in apartadosPagados) {
-                        listaClientesApartadosLiquidados.add(listaClientes.firstWhere(
-                          (cliente) => cliente.id ==  apartadoPagado.clienteId, orElse: () => Cliente(id: 0, nombre: 'Publico en general')
-                        ));
-                      }
-                      Navigator.pushNamed(context, 'abonos-liquidados');
-                    }
-                  ),
+                      leading: const Icon(Icons.check),
+                      title: const Text(
+                        'Abonos Liquidados',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                          'Visualiza una lista de tus abonos liquidados'),
+                      trailing: const Icon(Icons.arrow_right),
+                      onTap: () async {
+                        final resultado =
+                            await apartadoProvider.apartadosPagadosNegocio();
+                        if (resultado.status != 1) {
+                          mostrarAlerta(context, 'Error',
+                              resultado.mensaje ?? 'Intentalo mas tarde');
+                          return;
+                        }
+                        listaClientesApartadosLiquidados.clear();
+                        for (var apartadoPagado in apartadosPagados) {
+                          listaClientesApartadosLiquidados.add(
+                              listaClientes.firstWhere(
+                                  (cliente) =>
+                                      cliente.id == apartadoPagado.clienteId,
+                                  orElse: () => Cliente(
+                                      id: 0, nombre: 'Publico en general')));
+                        }
+                        Navigator.pushNamed(context, 'abonos-liquidados');
+                      }),
               ],
             )),
       ),

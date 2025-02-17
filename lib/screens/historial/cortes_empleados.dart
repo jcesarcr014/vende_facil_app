@@ -179,8 +179,8 @@ class _CortesEmpleadosScreenState extends State<CortesEmpleadosScreen> {
                 }
               });
             },
-            title: Text('Corte del ${corte.fecha}'),
-            subtitle: Text('Ventas en efectivo: ${corte.ventasEfectivo}'),
+            title: Text('${corte.empleado}'),
+            subtitle: Text('Fecha: ${corte.fecha}'),
             trailing: Text('Total ingresos: ${corte.totalIngresos}'),
           );
         }).toList(),

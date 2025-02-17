@@ -18,7 +18,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
   String _valueIdDescuento = '0';
-  String nombreClienteTemp = 'Público en general';
+  String nombreClienteTemp = 'Publico en general';
   String _valueIdcliente = listaClientes
       .firstWhere((cliente) => cliente.nombre == 'Público en general')
       .id
@@ -541,6 +541,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           descuentoSeleccionado = listaDescuentos
               .firstWhere((descuento) => descuento.id.toString() == value);
           if (descuentoSeleccionado.valorPred == 0) {
+            _actualizaTotalTemporal();
             if (descuentoSeleccionado.tipoValor == 1) {
               setState(() {
                 idDescuento = descuentoSeleccionado.id!;
@@ -602,74 +603,76 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           var clienteseleccionado = listaClientes.firstWhere(
               (cliente) => cliente.id == int.parse(_valueIdcliente));
           nombreClienteTemp = clienteseleccionado.nombre!;
-          if (clienteseleccionado.distribuidor == 1) {
+          if (clienteseleccionado.distribuidor == 1 && !_valuePieza) {
             setState(() {
-              totalVentaTemporal = 0.00;
-              for (ItemVenta item in ventaTemporal) {
-                totalVentaTemporal = item.cantidad * item.preciodistribuidor;
-                subTotalItem = totalVentaTemporal;
-              }
-              _valuePieza = false;
-              if (descuentoSeleccionado.valorPred == 0) {
-                if (descuentoSeleccionado.tipoValor == 1) {
-                  setState(() {
-                    idDescuento = descuentoSeleccionado.id!;
-                    descuento = 0.00;
-                    descuento = descuentoSeleccionado.valor!;
-                    totalVentaTemporal = subTotalItem;
-                    descuento = (totalVentaTemporal * descuento) / 100;
-                    totalVentaTemporal = totalVentaTemporal - descuento;
-                    _valuePieza = false;
-                  });
-                } else {
-                  setState(() {
-                    idDescuento = descuentoSeleccionado.id!;
-                    descuento = 0.00;
-                    descuento = descuentoSeleccionado.valor!;
-                    totalVentaTemporal = subTotalItem;
-                    totalVentaTemporal =
-                        totalVentaTemporal - descuentoSeleccionado.valor!;
-                    _valuePieza = false;
-                  });
-                }
-              } else {
-                _alertadescuento(descuentoSeleccionado);
-              }
+              _actualizaTotalTemporal();
+              // totalVentaTemporal = 0.00;
+              // for (ItemVenta item in ventaTemporal) {
+              //   totalVentaTemporal = item.cantidad * item.preciodistribuidor;
+              //   subTotalItem = totalVentaTemporal;
+              // }
+              // _valuePieza = false;
+              // if (descuentoSeleccionado.valorPred == 0) {
+              //   if (descuentoSeleccionado.tipoValor == 1) {
+              //     setState(() {
+              //       idDescuento = descuentoSeleccionado.id!;
+              //       descuento = 0.00;
+              //       descuento = descuentoSeleccionado.valor!;
+              //       totalVentaTemporal = subTotalItem;
+              //       descuento = (totalVentaTemporal * descuento) / 100;
+              //       totalVentaTemporal = totalVentaTemporal - descuento;
+              //       _valuePieza = false;
+              //     });
+              //   } else {
+              //     setState(() {
+              //       idDescuento = descuentoSeleccionado.id!;
+              //       descuento = 0.00;
+              //       descuento = descuentoSeleccionado.valor!;
+              //       totalVentaTemporal = subTotalItem;
+              //       totalVentaTemporal =
+              //           totalVentaTemporal - descuentoSeleccionado.valor!;
+              //       _valuePieza = false;
+              //     });
+              //   }
+              // } else {
+              //   _alertadescuento(descuentoSeleccionado);
+              // }
             });
           } else {
-            setState(() {
-              totalVentaTemporal = 0.00;
-              for (ItemVenta item in ventaTemporal) {
-                totalVentaTemporal = item.cantidad * item.precioPublico;
-                subTotalItem = totalVentaTemporal;
-              }
-              _valuePieza = false;
-              if (descuentoSeleccionado.valorPred == 0) {
-                if (descuentoSeleccionado.tipoValor == 1) {
-                  setState(() {
-                    idDescuento = descuentoSeleccionado.id!;
-                    descuento = 0.00;
-                    descuento = descuentoSeleccionado.valor!;
-                    totalVentaTemporal = subTotalItem;
-                    descuento = (totalVentaTemporal * descuento) / 100;
-                    totalVentaTemporal = totalVentaTemporal - descuento;
-                    _valuePieza = false;
-                  });
-                } else {
-                  setState(() {
-                    idDescuento = descuentoSeleccionado.id!;
-                    descuento = 0.00;
-                    descuento = descuentoSeleccionado.valor!;
-                    totalVentaTemporal = subTotalItem;
-                    totalVentaTemporal =
-                        totalVentaTemporal - descuentoSeleccionado.valor!;
-                    _valuePieza = false;
-                  });
-                }
-              } else {
-                _alertadescuento(descuentoSeleccionado);
-              }
-            });
+            _actualizaTotalTemporal();
+            // setState(() {
+            //   totalVentaTemporal = 0.00;
+            //   for (ItemVenta item in ventaTemporal) {
+            //     totalVentaTemporal = item.cantidad * item.precioPublico;
+            //     subTotalItem = totalVentaTemporal;
+            //   }
+            //   _valuePieza = false;
+            //   if (descuentoSeleccionado.valorPred == 0) {
+            //     if (descuentoSeleccionado.tipoValor == 1) {
+            //       setState(() {
+            //         idDescuento = descuentoSeleccionado.id!;
+            //         descuento = 0.00;
+            //         descuento = descuentoSeleccionado.valor!;
+            //         totalVentaTemporal = subTotalItem;
+            //         descuento = (totalVentaTemporal * descuento) / 100;
+            //         totalVentaTemporal = totalVentaTemporal - descuento;
+            //         _valuePieza = false;
+            //       });
+            //     } else {
+            //       setState(() {
+            //         idDescuento = descuentoSeleccionado.id!;
+            //         descuento = 0.00;
+            //         descuento = descuentoSeleccionado.valor!;
+            //         totalVentaTemporal = subTotalItem;
+            //         totalVentaTemporal =
+            //             totalVentaTemporal - descuentoSeleccionado.valor!;
+            //         _valuePieza = false;
+            //       });
+            //     }
+            //   } else {
+            //     _alertadescuento(descuentoSeleccionado);
+            //   }
+            // });
           }
         });
       },
@@ -714,9 +717,14 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
                 if (cantidad < 0) {
                   mostrarAlerta(
                       context, "error", 'La cantidad no puede ser menor a 0');
-                } else if (cantidad > totalVentaTemporal) {
+                } else if (cantidad > totalVentaTemporal &&
+                    descuentos.tipoValor == 0) {
+                  Navigator.pop(context);
                   mostrarAlerta(context, "error",
                       'La cantidad no puede ser mayor al total de la venta');
+                } else if (cantidad >= 100) {
+                  Navigator.pop(context);
+                  mostrarAlerta(context, "error", 'No se puede descontar 100%');
                 } else {
                   Navigator.pop(context);
 

@@ -182,7 +182,15 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
       children: [
         SizedBox(height: windowHeight * 0.02),
         Text(
-          'Corte Generado',
+          'Corte Generado ',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: windowHeight * 0.02),
+        Text(
+          'Efectivo en caja:  \$${corteActual.efectivoInicial}',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -280,7 +288,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
             ),
           ),
           Text(
-            '\$$diferencia',
+            '\$${double.parse(diferencia).toStringAsFixed(2)}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ],

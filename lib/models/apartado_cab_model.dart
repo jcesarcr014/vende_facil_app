@@ -24,33 +24,34 @@ class ApartadoCabecera {
 
   String? nombreCliente;
 
-  ApartadoCabecera({
-    this.id,
-    this.usuarioId,
-    this.clienteId,
-    this.folio,
-    this.subtotal,
-    this.descuentoId,
-    this.descuento,
-    this.total,
-    this.anticipo,
-    this.pagoEfectivo,
-    this.pagoTarjeta,
-    this.saldoPendiente,
-    this.fechaApartado,
-    this.fechaVencimiento,
-    this.fechaPagoTotal,
-    this.fechaEntrega,
-    this.cancelado,
-    this.pagado,
-    this.entregado,
-    this.fechaCancelacion,
-    this.idnegocio,
-    this.idsucursal,
-    this.nombreCliente
-  });
+  ApartadoCabecera(
+      {this.id,
+      this.usuarioId,
+      this.clienteId,
+      this.folio,
+      this.subtotal,
+      this.descuentoId,
+      this.descuento,
+      this.total,
+      this.anticipo,
+      this.pagoEfectivo,
+      this.pagoTarjeta,
+      this.saldoPendiente,
+      this.fechaApartado,
+      this.fechaVencimiento,
+      this.fechaPagoTotal,
+      this.fechaEntrega,
+      this.cancelado,
+      this.pagado,
+      this.entregado,
+      this.fechaCancelacion,
+      this.idnegocio,
+      this.idsucursal,
+      this.nombreCliente});
 }
 
 ApartadoCabecera apartadoSeleccionado = ApartadoCabecera();
-List<ApartadoCabecera> listaApartados = [];
-List<ApartadoCabecera> listaApartados2 = [];
+List<ApartadoCabecera> listaApartadosPendientes = [];
+List<ApartadoCabecera> listaApartadosPagados = [];
+List<ApartadoCabecera> listaApartadosEntregados = [];
+List<ApartadoCabecera> listaApartadosCancelados = [];

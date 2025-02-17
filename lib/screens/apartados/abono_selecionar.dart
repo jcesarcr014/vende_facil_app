@@ -11,7 +11,7 @@ class SucursalesAbonoScreen extends StatefulWidget {
 }
 
 class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
-  String? _valueIdSucursal = '0'; 
+  String? _valueIdSucursal = '0';
   final apartadoProvider = ApartadoProvider();
   final sucursal = NegocioProvider();
   bool isLoading = false;
@@ -72,12 +72,17 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
                       height: 70,
                       child: ElevatedButton(
                         onPressed: () async {
-                          final sucursalSeleccionada = listaSucursales.firstWhere((sucursal) => sucursal.id.toString() == _valueIdSucursal);
+                          final sucursalSeleccionada =
+                              listaSucursales.firstWhere((sucursal) =>
+                                  sucursal.id.toString() == _valueIdSucursal);
                           sesion.idSucursal = sucursalSeleccionada.id;
-                          await apartadoProvider.listarApartados().then((value) {
+                          await apartadoProvider
+                              .apartadosPendientesSucursal()
+                              .then((value) {
                             if (value.status == 1) {
                               sesion.cotizar = false;
-                              Navigator.pushReplacementNamed(context,'nvo-abono');
+                              Navigator.pushReplacementNamed(
+                                  context, 'nvo-abono');
                             } else {
                               mostrarAlerta(context, "Error ",
                                   "Nose pudo cargar  los productos");
