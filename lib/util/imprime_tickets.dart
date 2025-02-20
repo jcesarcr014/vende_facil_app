@@ -206,7 +206,7 @@ class ImpresionesTickets {
   }
 
   Future<Resultado> imprimirVenta(VentaCabecera venta, double tarjeta,
-      double efectivo, double cambio) async {
+      double efectivo, double cambio, bool copia) async {
     await SharedPreferences.getInstance().then((prefs) async {
       String mac = prefs.getString('macPrinter') ?? '';
       if (mac.isEmpty) {
@@ -389,7 +389,7 @@ class ImpresionesTickets {
       bool result = false;
 
       result = await PrintBluetoothThermal.writeBytes(bytes);
-      result = await PrintBluetoothThermal.writeBytes(bytes);
+      if (copia) result = await PrintBluetoothThermal.writeBytes(bytes);
       if (result) {
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';
@@ -409,7 +409,8 @@ class ImpresionesTickets {
       double totalAnticipo,
       double totalFaltante,
       double tarjeta,
-      double efectivo) async {
+      double efectivo,
+      bool copia) async {
     await SharedPreferences.getInstance().then((prefs) async {
       String mac = prefs.getString('macPrinter') ?? '';
       if (mac.isEmpty) {
@@ -582,7 +583,9 @@ class ImpresionesTickets {
     bytes += generator.feed(2);
 
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
-
+    if (copia) {
+      conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    }
     if (conexionStatus) {
       bool result = false;
 
@@ -602,7 +605,7 @@ class ImpresionesTickets {
   }
 
   Future<Resultado> imprimirAbono(Abono venta, double abono, double tarjeta,
-      double efectivo, double total) async {
+      double efectivo, double total, bool copia) async {
     await SharedPreferences.getInstance().then((prefs) async {
       String mac = prefs.getString('macPrinter') ?? '';
       if (mac.isEmpty) {
@@ -701,6 +704,7 @@ class ImpresionesTickets {
       bool result = false;
 
       result = await PrintBluetoothThermal.writeBytes(bytes);
+      if (copia) result = await PrintBluetoothThermal.writeBytes(bytes);
       if (result) {
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';

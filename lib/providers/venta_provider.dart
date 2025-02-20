@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -7,80 +6,6 @@ import 'package:http/http.dart' as http;
 class VentasProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
-
-  // Future<Resultado> guardarVenta(VentaCabecera venta) async {
-  //   var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
-  //   try {
-  //     final resp = await http.post(url, headers: {
-  //       'Authorization': 'Bearer ${sesion.token}',
-  //     }, body: {
-  //       'usuario_id': sesion.idUsuario.toString(),
-  //       'cliente_id': venta.idCliente.toString(),
-  //       'subtotal': venta.subtotal!.toStringAsFixed(2),
-  //       'descuento_id': venta.idDescuento.toString(),
-  //       'descuento': venta.descuento!.toStringAsFixed(2),
-  //       'total': venta.total!.toStringAsFixed(2),
-  //       'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
-  //       'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
-  //       'sucursal_id': sesion.idSucursal.toString(),
-  //     });
-
-  //     final decodedData = jsonDecode(resp.body);
-  //     if (decodedData['status'] == 1) {
-  //       respuesta.status = 1;
-  //       respuesta.mensaje = decodedData['msg'];
-  //       respuesta.id = decodedData['venta_id'];
-  //       respuesta.folio = decodedData['folio'];
-  //     } else {
-  //       respuesta.status = 0;
-  //       respuesta.mensaje = decodedData['msg'];
-  //     }
-  //   } catch (e) {
-  //     respuesta.status = 0;
-  //     respuesta.mensaje = 'Error en la peticion. $e';
-  //   }
-  //   return respuesta;
-  // }
-
-  // Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
-  //   if (venta.idDesc != 0) {
-  //     var descue = listaDescuentos
-  //         .firstWhere((descuento) => descuento.id == venta.idDesc)
-  //         .valor;
-  //     venta.cantidadDescuento = (venta.total! * descue! / 100);
-  //     venta.total = venta.total! - venta.cantidadDescuento!;
-  //   }
-  //   var url = Uri.parse('$baseUrl/ventas-detalle/${venta.idVenta}');
-  //   try {
-  //     final resp = await http.post(url, headers: {
-  //       'Authorization': 'Bearer ${sesion.token}',
-  //     }, body: {
-  //       'producto_id': venta.idProd.toString(),
-  //       'cantidad': venta.cantidad.toString(),
-  //       'precio': venta.precio.toString(),
-  //       'subtotal': venta.subtotal.toString(),
-  //       'descuento': venta.cantidadDescuento.toString(),
-  //       'total': venta.total.toString(),
-  //       'descuento_id': venta.idDesc.toString(),
-  //       'id_sucursal': venta.id_sucursal.toString(),
-  //     });
-
-  //     final decodedData = jsonDecode(resp.body);
-  //     if (decodedData['status'] == 1) {
-  //       respuesta.status = 1;
-  //       respuesta.mensaje = decodedData['msg'];
-  //       respuesta.id = decodedData['venta_id'];
-  //     } else {
-  //       respuesta.status = 0;
-  //       respuesta.mensaje = decodedData['msg'];
-  //     }
-  //   } catch (e) {
-  //     respuesta.status = 0;
-  //     respuesta.mensaje = 'Error en la peticion. $e';
-  //   }
-
-  //   return respuesta;
-  // }
 
   Future<Resultado> guardarVentaCompleta(
       VentaCabecera cabecera, List<VentaDetalle> detalles) async {
@@ -120,8 +45,6 @@ class VentasProvider {
         };
       }).toList(),
     };
-    print(ventaData);
-    print(jsonEncode(ventaData));
     try {
       final resp = await http.post(
         url,

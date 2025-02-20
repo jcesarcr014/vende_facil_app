@@ -22,6 +22,7 @@ class CorteProvider {
       });
       final decodedData = json.decode(response.body);
       if (decodedData['status'] == 1) {
+        print(decodedData);
         listaMovimientosCorte.clear();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -37,7 +38,7 @@ class CorteProvider {
         corteActual.ventasTarjeta =
             decodedData['corte']['ventas_tarjeta'].toString();
         corteActual.totalIngresos =
-            decodedData['corte']['total_ingresos'].toString();
+            decodedData['corte']['total_ingresos'].toStringAsFixed(2);
         corteActual.observaciones = decodedData['corte']['observaciones'];
         corteActual.numVentas = decodedData['corte']['numero_ventas'];
         corteActual.diferencia = decodedData['corte']['diferencia'].toString();

@@ -65,6 +65,7 @@ class UsuarioProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+        sesion.limpiar();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = token;
@@ -88,8 +89,10 @@ class UsuarioProvider {
 
           globals.actualizaSucursales = false;
         } else {
-          globals.actualizaSucursales = false;
+          globals.actualizaArticulos = true;
+          globals.actualizaArticulosCotizaciones = true;
           sesion.idSucursal = decodedData["sucursales"][0]['i'];
+          sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
       } else {
         respuesta.status = 0;
@@ -113,6 +116,7 @@ class UsuarioProvider {
       if (decodedData['status'] == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', decodedData['token']);
+        sesion.limpiar();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = decodedData['token'];
@@ -136,6 +140,7 @@ class UsuarioProvider {
           globals.actualizaArticulos = true;
           globals.actualizaArticulosCotizaciones = true;
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
+          sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
       } else {
         respuesta.status = 0;

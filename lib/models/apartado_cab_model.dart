@@ -2,6 +2,8 @@ class ApartadoCabecera {
   int? id;
   int? usuarioId;
   int? clienteId;
+  int? idnegocio;
+  int? idsucursal;
   String? folio;
   double? subtotal;
   int? descuentoId;
@@ -19,9 +21,6 @@ class ApartadoCabecera {
   int? pagado;
   int? entregado;
   String? fechaCancelacion;
-  int? idnegocio;
-  int? idsucursal;
-
   String? nombreCliente;
 
   ApartadoCabecera(

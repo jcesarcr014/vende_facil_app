@@ -27,7 +27,7 @@ class AppRoutes {
     'descuentos': (BuildContext context) => const DescuentosScreen(),
     'nvo-producto': (BuildContext context) => const AgregaProductoScreen(),
     'productos': (BuildContext context) => const ProductosScreen(),
-    'nvo-abono': (BuildContext context) => const AgregarAbonoScreen(),
+    'nvo-abono': (BuildContext context) => const AgregarAbonoScreen(), //
     'historial': (BuildContext context) => const HistorialScreen(),
     'config': (BuildContext context) => const ConfigScreen(),
     'config-impresora': (BuildContext context) => const ImpresoraScreen(),
@@ -40,7 +40,8 @@ class AppRoutes {
     'nvo-tarjetas': (BuildContext context) => const AgregaTarjetaScreen(),
     "ventasD": (BuildContext context) => const VentaDetallesScreen(),
     'perfil': (BuildContext context) => const PerfilScreen(),
-    'abono_detalle': (BuildContext context) => const AbonoDetallesScreen(),
+    'abono_detalle': (BuildContext context) =>
+        const AbonoDetallesScreen(), // detalle apartado
     'config-apartado': (BuildContext context) => const AjustesApartadoScreen(),
     'empleados': (BuildContext context) => const ListaEmpleadosScreen(),
     'nvo-empleado': (BuildContext context) => const RegistroEmpleadoScreen(),
@@ -53,7 +54,8 @@ class AppRoutes {
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage(),
-    'abonosPagos': (BuildContext context) => const AbonoScreenpago(),
+    'abonosPagos': (BuildContext context) =>
+        const AbonoScreenpago(), //realizar abono
     'listaCotizaciones': (BuildContext context) =>
         const HistorialCotizacionesScreen(),
     'HomerCotizar': (BuildContext context) => const HomeCotizarScreen(),
@@ -62,7 +64,8 @@ class AppRoutes {
     'menuAbonos': (BuildContext context) => const MenuAbonoScreen(),
     'detalleCotizacions': (BuildContext context) =>
         const CotizacionDetallesScreen(),
-    'abonos-liquidados': (BuildContext context) => const AbonosLiquidados(),
+    'lista-apartados': (BuildContext context) =>
+        const AbonosLiquidados(), //lista abonos
     'historial_empleado': (BuildContext context) =>
         const HistorialEmpleadoScreen(),
     'seleccionar-sucursal-cotizacion': (BuildContext context) =>

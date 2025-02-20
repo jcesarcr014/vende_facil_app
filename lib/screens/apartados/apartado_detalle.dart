@@ -9,10 +9,10 @@ class AbonoDetallesScreen extends StatefulWidget {
   const AbonoDetallesScreen({super.key});
 
   @override
-  State<AbonoDetallesScreen> createState() => _VentaDetallesScreenState();
+  State<AbonoDetallesScreen> createState() => _AbonoDetallesScreen();
 }
 
-class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
+class _AbonoDetallesScreen extends State<AbonoDetallesScreen> {
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -179,7 +179,9 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
                             ),
                           ],
                         ),
-                        _botonesAbono(),
+                        Column(
+                          children: _botonesAbono(),
+                        ),
                       ],
                     ),
                   )));
@@ -213,12 +215,12 @@ class _VentaDetallesScreenState extends State<AbonoDetallesScreen> {
     if (apartadoSeleccionado.pagado == 1 &&
         apartadoSeleccionado.entregado == 0) {
       botones.add(ElevatedButton(
-          onPressed: _entregarProductos(), child: Text('Entregar productos')));
+          onPressed: _entregarProductos, child: Text('Entregar productos')));
     }
     return botones;
   }
 
-  _entregarProductos() async {
+  void _entregarProductos() async {
     setState(() {
       textLoading = 'Actualizando pedido';
       isLoading = false;

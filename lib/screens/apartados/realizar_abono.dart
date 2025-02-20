@@ -30,6 +30,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
   double total = 0.0;
 
   bool isPrinted = false;
+  bool x2ticket = false;
   final ticket = ImpresionesTickets();
 
   @override
@@ -195,12 +196,27 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(
                       children: [
-                        Checkbox(
-                            value: isPrinted,
-                            onChanged: (value) => setState(() {
-                                  isPrinted = value!;
-                                })),
-                        Text('Imprimir ticket')
+                        Row(
+                          children: [
+                            Checkbox(
+                                value: isPrinted,
+                                onChanged: (value) => setState(() {
+                                      isPrinted = value!;
+                                    })),
+                            Text('Imprimir ticket')
+                          ],
+                        ),
+                        if (isPrinted)
+                          Row(
+                            children: [
+                              Checkbox(
+                                  value: x2ticket,
+                                  onChanged: (value) => setState(() {
+                                        x2ticket = value!;
+                                      })),
+                              Text('Imprimir copia')
+                            ],
+                          )
                       ],
                     ),
                   ),
@@ -284,7 +300,8 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                   content: const Text('El abono se ha agregado correctamente'),
                   actions: [
                     ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, 'nvo-abono',
+                      onPressed: () => Navigator.pushReplacementNamed(
+                          context, 'menuAbonos',
                           arguments: value),
                       child: const Text('Aceptar'),
                     ),
@@ -292,10 +309,11 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
                 ));
         if (isPrinted) {
           value = await ticket.imprimirAbono(venta, abono, tarjeta, efectivo,
-              double.parse(TotalController.text));
-          if (value.status != 1)
+              double.parse(TotalController.text), x2ticket);
+          if (value.status != 1) {
             mostrarAlerta(context, 'Error',
                 value.mensaje ?? 'Error al imprimir el ticket');
+          }
         }
       } else {
         showDialog(

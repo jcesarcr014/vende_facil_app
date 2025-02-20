@@ -8,6 +8,7 @@ class CuentaSesion {
   String? email;
   String? telefono;
   bool? cotizar;
+  String? sucursal;
 
   CuentaSesion(
       {this.idUsuario,
@@ -18,8 +19,21 @@ class CuentaSesion {
       this.nombreUsuario,
       this.email,
       this.telefono,
-      this.cotizar
-      });
+      this.cotizar,
+      this.sucursal});
+
+  void limpiar() {
+    idUsuario = null;
+    tipoUsuario = null;
+    idNegocio = null;
+    idSucursal = null;
+    token = null;
+    nombreUsuario = null;
+    email = null;
+    telefono = null;
+    cotizar = null;
+    sucursal = null;
+  }
 }
 
 CuentaSesion sesion = CuentaSesion();

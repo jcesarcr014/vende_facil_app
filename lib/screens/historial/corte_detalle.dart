@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
@@ -116,10 +117,18 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        impresionesTickets.imprimirCorte(0).then((value) {
-                          if (value.status != 1) {
-                            mostrarAlerta(context, 'ERROR',
-                                'Ocurrio un error al imprimir el corte: ${value.mensaje}');
+                        SharedPreferences.getInstance().then((prefs) {
+                          String mac = prefs.getString('macPrinter') ?? '';
+                          if (mac.isEmpty) {
+                            mostrarAlerta(context, 'Atencion',
+                                'No tienes una impresora configurada');
+                          } else {
+                            impresionesTickets.imprimirCorte(0).then((value) {
+                              if (value.status != 1) {
+                                mostrarAlerta(context, 'ERROR',
+                                    'Ocurrio un error al imprimir el corte: ${value.mensaje}');
+                              }
+                            });
                           }
                         });
                       },

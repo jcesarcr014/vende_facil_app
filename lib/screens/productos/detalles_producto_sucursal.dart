@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
-import '../search_screenProductos.dart';
-
 class DetallesProductoSucursal extends StatelessWidget {
   final Producto producto;
 

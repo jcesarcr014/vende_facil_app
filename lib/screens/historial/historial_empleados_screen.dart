@@ -203,13 +203,30 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
             itemBuilder: (context, index) {
               final movimiento = listaMovimientosCorte[index];
               String tipoMovimiento = '';
-              if (movimiento.tipoMovimiento == 'V') {
-                tipoMovimiento = 'Venta';
-              } else if (movimiento.tipoMovimiento == 'P') {
-                tipoMovimiento = 'Apartado';
-              } else if (movimiento.tipoMovimiento == 'A') {
-                tipoMovimiento = 'Abono';
+              switch (movimiento.tipoMovimiento) {
+                case 'VD':
+                  tipoMovimiento = 'Venta domicilio';
+                  break;
+                case 'VT':
+                  tipoMovimiento = 'Venta Tienda';
+                  break;
+                case 'P':
+                  tipoMovimiento = 'Apartado';
+                  break;
+                case 'A':
+                  tipoMovimiento = 'Abono';
+                  break;
+                case 'E':
+                  tipoMovimiento = 'Entrega apartado';
+                  break;
+                case 'CV':
+                  tipoMovimiento = 'Cancelacion venta';
+                  break;
+                case 'CA':
+                  tipoMovimiento = 'Cancelacion apartado';
+                  break;
               }
+
               return ListTile(
                 title: Text(
                   '$tipoMovimiento - Folio: ${movimiento.folio}',

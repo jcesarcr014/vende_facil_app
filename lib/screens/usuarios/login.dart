@@ -193,11 +193,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: windowHeight * 0.1,
                           ),
                           InputField(
-                              icon: Icons.person,
-                              labelText: 'Usuario',
+                              icon: Icons.email,
+                              labelText: 'Correo',
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'El usuario es obligatorio';
+                                  return 'El correo es obligatorio';
                                 }
                                 return null;
                               },

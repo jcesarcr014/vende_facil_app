@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/screens/screens.dart';
 
 class AgregarAbonoScreen extends StatefulWidget {
   const AgregarAbonoScreen({super.key});
@@ -125,7 +124,7 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
                   return ListTile(
                     title: Text(listaApartadosPendientes[index].nombreCliente!),
                     subtitle: Text(
-                        '${listaApartadosPendientes[index].folio} - ${DateFormat('yyyy-MM-dd').format(DateFormat('yyyy-MM-dd HH:mm:ss').parse(listaApartadosPendientes[index].fechaVencimiento!))}'),
+                        '${listaApartadosPendientes[index].folio} - ${DateFormat('yyyy-MM-dd').format(DateTime.parse(listaApartadosPendientes[index].fechaVencimiento!))}'),
                     trailing: getStatusIcon(listaApartadosPendientes[index]),
                     onTap: () {
                       apartadosProvider

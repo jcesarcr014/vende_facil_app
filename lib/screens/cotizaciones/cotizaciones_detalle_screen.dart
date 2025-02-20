@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/providers/ticket_provider.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
@@ -59,7 +58,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     listaDescuentos;
     _loadData();
     super.initState();
-    if(sesion.tipoUsuario == 'P') {
+    if (sesion.tipoUsuario == 'P') {
       idSucursal = sesion.idSucursal.toString();
       isLoading = false;
       setState(() {});

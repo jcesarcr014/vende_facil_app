@@ -6,6 +6,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ApartadoDetalleScreen extends StatefulWidget {
   const ApartadoDetalleScreen({super.key});
@@ -24,6 +25,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
   double total = 0.0;
   int cantidad = 0;
   bool isPrinted = false;
+  bool x2ticket = false;
 
   final efectivoController = TextEditingController();
   final tarjetaController = TextEditingController();
@@ -212,12 +214,27 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(
                       children: [
-                        Checkbox(
-                            value: isPrinted,
-                            onChanged: (value) => setState(() {
-                                  isPrinted = value!;
-                                })),
-                        Text('Imprimir ticket')
+                        Row(
+                          children: [
+                            Checkbox(
+                                value: isPrinted,
+                                onChanged: (value) => setState(() {
+                                      isPrinted = value!;
+                                    })),
+                            Text('Imprimir ticket')
+                          ],
+                        ),
+                        if (isPrinted)
+                          Row(
+                            children: [
+                              Checkbox(
+                                  value: x2ticket,
+                                  onChanged: (value) => setState(() {
+                                        x2ticket = value!;
+                                      })),
+                              Text('Imprimir copia')
+                            ],
+                          )
                       ],
                     ),
                   ),
@@ -284,7 +301,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
           double.parse(tarjetaController.text.replaceAll(',', ''));
       apartado.anticipo = totalAnticipo;
       apartado.saldoPendiente = apartado.total! - totalAnticipo;
-      apartado.fechaApartado = fechaFormateada.format(fechaActual);
+      apartado.fechaApartado = fechaActual.toString();
       apartado.fechaVencimiento = fechaController.text;
       List<ApartadoDetalle> detalles = [];
       for (ItemVenta item in ventaTemporal) {
@@ -304,21 +321,25 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
           .guardaApartadoCompleto(apartado, detalles)
           .then((resp) async {
         if (resp.status == 1) {
-          setState(() {
-            textLoading = '';
-            isLoading = false;
-            totalVentaTemporal = 0.0;
-          });
           if (isPrinted) {
+            setState(() {
+              textLoading = 'Imprimiendo ticket';
+            });
             final result = await impresionesTicket.imprimirApartado(
                 apartado,
                 totalAnticipo,
                 double.parse(totalCompra) - totalAnticipo,
                 double.parse(tarjetaController.text),
-                double.parse(efectivoController.text));
+                double.parse(efectivoController.text),
+                x2ticket);
+            setState(() {
+              textLoading = '';
+              isLoading = false;
+            });
             if (result.status == 1) {
               Navigator.pushReplacementNamed(context, 'home');
               ventaTemporal.clear();
+              mostrarAlerta(context, '', 'Venta realizada');
               return;
             }
             isLoading = false;
@@ -326,6 +347,13 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
             mostrarAlerta(context, 'Error', result.mensaje ?? 'Algo salio mal');
             return;
           }
+          setState(() {
+            ventaTemporal.clear();
+            textLoading = '';
+            isLoading = false;
+            totalVentaTemporal = 0.0;
+            globals.actualizaArticulos = true;
+          });
           Navigator.pushReplacementNamed(context, 'home');
           mostrarAlerta(context, '', 'Apartado realizada');
         } else {

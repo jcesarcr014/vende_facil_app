@@ -17,7 +17,7 @@ class InputFieldMoney extends StatefulWidget {
   final double? maxValue; // Nuevo parámetro opcional para el valor máximo
 
   const InputFieldMoney({
-    Key? key,
+    super.key,
     this.hintText,
     this.labelText,
     this.helperText,
@@ -31,7 +31,7 @@ class InputFieldMoney extends StatefulWidget {
     this.errorText,
     this.fontSize,
     this.maxValue, // Inicialización del nuevo parámetro
-  }) : super(key: key);
+  });
 
   @override
   _InputFieldMoneyState createState() => _InputFieldMoneyState();
@@ -57,7 +57,8 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
     final text = widget.controller.text;
     if (text.isNotEmpty) {
       // Reemplazar caracteres no numéricos y punto decimal
-      final value = double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+      final value =
+          double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
 
       // Si el valor es mayor que el máximo permitido, mostrar mensaje de error
       if (widget.maxValue != null && value > widget.maxValue!) {
@@ -116,7 +117,9 @@ class _InputFieldMoneyState extends State<InputFieldMoney> {
   void validate() {
     setState(() {
       errorText = widget.validator?.call(widget.controller.text) ??
-          (widget.maxValue != null && (double.tryParse(widget.controller.text) ?? 0.0) > widget.maxValue!
+          (widget.maxValue != null &&
+                  (double.tryParse(widget.controller.text) ?? 0.0) >
+                      widget.maxValue!
               ? "El valor no puede ser mayor a ${widget.maxValue}"
               : null);
     });

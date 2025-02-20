@@ -41,7 +41,7 @@ class ApartadoProvider {
                 })
             .toList(),
       };
-      print(jsonEncode(apartadoData));
+
       final resp = await http.post(
         url,
         headers: {
@@ -107,6 +107,7 @@ class ApartadoProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+        print(decodedData);
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
 
@@ -202,6 +203,7 @@ class ApartadoProvider {
 
   Future<Resultado> apartadosPendientesNegocio() async {
     var url = Uri.parse('$baseUrl/apartados-pendientes-n/${sesion.idNegocio}');
+
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -264,11 +266,13 @@ class ApartadoProvider {
 
   Future<Resultado> apartadosPendientesSucursal() async {
     var url = Uri.parse('$baseUrl/apartados-pendientes-s/${sesion.idSucursal}');
+
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
+      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
