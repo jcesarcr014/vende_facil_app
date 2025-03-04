@@ -293,7 +293,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
         textLoading = 'Guardando datos';
       });
       final fechaActual = DateTime(now.year, now.month, now.day);
-      DateFormat fechaFormateada = DateFormat('yyyy-MM-dd');
+      // DateFormat fechaFormateada = DateFormat('yyyy-MM-dd');
       formattedEndDate = dateFormatter.format(_fechaVencimiento);
       apartado.pagoEfectivo =
           double.parse(efectivoController.text.replaceAll(',', ''));

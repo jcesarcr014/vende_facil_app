@@ -19,6 +19,7 @@ class AppRoutes {
     'home': (BuildContext context) => const HomeScreen(),
     'login': (BuildContext context) => const LoginScreen(),
     'registro': (BuildContext context) => const RegistroScreen(),
+    'recupera': (BuildContext context) => const RecuperaPassScreen(),
     'nva-categoria': (BuildContext context) => const AgregaCategoriaScreen(),
     'categorias': (BuildContext context) => const CategoriasScreens(),
     'nvo-cliente': (BuildContext context) => const AgregaClienteScreen(),

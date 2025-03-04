@@ -333,6 +333,7 @@ class _ventaScreenState extends State<VentaScreen> {
     });
     venta.importeTarjeta = tarjeta;
     venta.importeEfectivo = totalEfectivo;
+    venta.cambio = double.parse(CambioController.text);
     //AQUI EMPIEZ NUEVO CODIGO
     List<VentaDetalle> detalles = ventaTemporal
         .map((item) => VentaDetalle(

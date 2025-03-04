@@ -117,14 +117,14 @@ class ProductsScreen extends StatelessWidget {
                 ListTile(
                     leading: const Icon(Icons.request_quote),
                     title: const Text(
-                      'Cotizar Productos',
+                      'Nueva cotización',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    subtitle: const Text('Estimacion de costo de productos '),
+                    subtitle: const Text('Crear cotizacion de productos'),
                     trailing: const Icon(Icons.arrow_right),
                     onTap: () {
                       sesion.cotizar = true;

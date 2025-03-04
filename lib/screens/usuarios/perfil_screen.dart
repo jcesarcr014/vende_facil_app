@@ -109,6 +109,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   _clear() {
+    sesion = CuentaSesion();
     listaAbonos.clear();
     listaApartadosPendientes.clear();
     listaApartadosPagados.clear();
@@ -133,6 +134,5 @@ class _PerfilScreenState extends State<PerfilScreen> {
     listasucursalEmpleado.clear();
     listaVentas.clear();
     listacotizacion.clear();
-    listacotizaciondetalles.clear();
   }
 }

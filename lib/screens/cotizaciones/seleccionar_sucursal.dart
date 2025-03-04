@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
+import 'package:vende_facil/widgets/widgets.dart';
 
 class SeleccionarSucursal extends StatefulWidget {
   const SeleccionarSucursal({super.key});
@@ -11,7 +11,7 @@ class SeleccionarSucursal extends StatefulWidget {
 }
 
 class _SeleccionarSucursalState extends State<SeleccionarSucursal> {
-  String? _valueIdSucursal = '0';
+  int _valueIdSucursal = 0;
   final sucursal = NegocioProvider();
   bool isLoading = false;
   double windowHeight = 0.0;
@@ -38,27 +38,20 @@ class _SeleccionarSucursalState extends State<SeleccionarSucursal> {
   }
 
   Widget _sucursalesDropdown() {
-    List<DropdownMenuItem<String>> listaSucursalesItems = [
+    List<DropdownMenuItem<int>> listaSucursalesItems = [
       const DropdownMenuItem(
-          value: '0', child: SizedBox(child: Text('Seleccione sucursal')))
+          value: 0,
+          child: SizedBox(child: Text('Seleccione sucursal para cotizar')))
     ];
 
     for (Sucursal sucursal in listaSucursales) {
       listaSucursalesItems.add(DropdownMenuItem(
-        value: sucursal.id.toString(),
+        value: sucursal.id,
         child: Text(sucursal.nombreSucursal!),
       ));
-
-      if (sucursal.id.toString() == _valueIdSucursal) {
-        _valueIdSucursal = sucursal.id.toString();
-      }
     }
 
-    if (_valueIdSucursal == null || _valueIdSucursal!.isEmpty) {
-      _valueIdSucursal = '0';
-    }
-
-    return DropdownButton<String>(
+    return DropdownButton<int>(
       items: listaSucursalesItems,
       isExpanded: true,
       value: _valueIdSucursal,
@@ -75,16 +68,10 @@ class _SeleccionarSucursalState extends State<SeleccionarSucursal> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccionar Sucursal'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
-            icon: const Icon(Icons.menu),
-          ),
-        ],
+        automaticallyImplyLeading: true,
       ),
       body: isLoading
-        ? Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -109,13 +96,21 @@ class _SeleccionarSucursalState extends State<SeleccionarSucursal> {
                       height: 70, // Aumentar la altura del botón
                       child: ElevatedButton(
                         onPressed: () {
-                          if(_valueIdSucursal == null || _valueIdSucursal == '0') return;
-                          final sucursalSeleccionada = listaSucursales.firstWhere((sucursal) => sucursal.id.toString() == _valueIdSucursal);
-                          sesion.idSucursal = sucursalSeleccionada.id;
-                          globals.cargarArticulosPropietarios = true;
-                          Navigator.pushNamed(context, 'HomerCotizar');
+                          if (_valueIdSucursal == 0) {
+                            mostrarAlerta(context, 'Atención',
+                                'Debes seleccionar una sucursal');
+                          } else {
+                            final sucursalSeleccionada =
+                                listaSucursales.firstWhere((sucursal) =>
+                                    sucursal.id == _valueIdSucursal);
+                            sesion.idSucursal = sucursalSeleccionada.id;
+                            Navigator.pushNamed(context, 'HomerCotizar');
+                          }
                         },
-                        child: const Text('Aceptar', style: TextStyle(fontSize: 22), // Aumentar el tamaño del texto
+                        child: const Text(
+                          'Aceptar',
+                          style: TextStyle(
+                              fontSize: 22), // Aumentar el tamaño del texto
                         ),
                       ),
                     ),

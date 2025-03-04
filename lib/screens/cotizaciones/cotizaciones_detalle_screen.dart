@@ -23,37 +23,36 @@ class CotizacionDetalleScreen extends StatefulWidget {
 }
 
 class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
+  final cantidadControllers = TextEditingController();
+  final cotizaciones = CotizarProvider();
+  final TicketProvider ticketProvider = TicketProvider();
+  final NegocioProvider negocioProvider = NegocioProvider();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
   double subTotalItem = 0.0;
-  final cantidadControllers = TextEditingController();
-
-  List<DropdownMenuItem> listaClien = [];
-
-  String _valueIdcliente = listaClientes
-      .firstWhere((cliente) => cliente.nombre == 'Público en general')
-      .id
-      .toString();
-  final cotizaciones = CotizarProvider();
   double descuento = 0.0;
   double restate = 0.0;
   int idcliente = 0;
   int idDescuento = 0;
-
-  final TicketProvider ticketProvider = TicketProvider();
-  final NegocioProvider negocioProvider = NegocioProvider();
-  List<Producto> listaProductosCotizaciones = [];
-
-  final cantidadConttroller = TextEditingController();
-
   String? nombreCliente;
   String? idSucursal;
+  final cantidadConttroller = TextEditingController();
+  List<DropdownMenuItem> listaClien = [];
+  List<Producto> listaProductosCotizaciones = [];
+  String _valueIdcliente = listaClientes
+      .firstWhere((cliente) => cliente.nombre == 'Público en general')
+      .id
+      .toString();
 
   @override
   void initState() {
-    isLoading = true;
+    setState(() {
+      isLoading = true;
+      textLoading = 'Leyendo productos';
+    });
+
     _actualizaTotalTemporal();
     listaDescuentos;
     _loadData();
@@ -85,191 +84,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
       ticketModel.logo = model?.logo;
       ticketModel.message = model?.message;
     });
-  }
-
-  Future<void> _generatePDF() async {
-    final PdfDocument document = PdfDocument();
-
-    final PdfPage page = document.pages.add();
-
-    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-    final PdfFont boldFont =
-        PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
-    final PdfFont titleFont =
-        PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
-    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14,
-        style: PdfFontStyle.italic);
-
-    // Definir color para la tabla
-    final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
-    Negocio negocio = await negocioProvider.consultaSucursal(idSucursal!);
-
-    final String telefonoData = negocio.telefono ?? '';
-    final String direccionData = negocio.direccion ?? '';
-
-    // Información estática del negocio
-    String nombreNegocio = negocio.nombreNegocio ?? 'PENDIENTE';
-    String telefono = "Teléfono: $telefonoData";
-    String direccion = "Dirección: $direccionData";
-    String cliente = nombreCliente ?? 'Público en general';
-    cliente = "Nombre Cliente: $cliente";
-
-    // Calcular posición del logo y el nombre del negocio
-    double pageWidth = page.getClientSize().width;
-    double logoWidth = 100;
-    double logoXPosition = 0;
-    double nombreXPosition =
-        logoWidth + 20; // Espacio entre el logo y el nombre
-
-    // Cargar la imagen del logo si está disponible, o cargar la imagen de los assets si está vacío o nulo
-    PdfBitmap? logoBitmap;
-
-    // Dibujar el logo y el nombre de la empresa juntos en la parte superior
-    if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
-      final logoImage = await _downloadImage(ticketModel.logo!);
-      if (logoImage != null) {
-        final PdfBitmap image = PdfBitmap(logoImage);
-        page.graphics.drawImage(
-            image,
-            Rect.fromLTWH(logoXPosition, 0, logoWidth,
-                100)); // Ajustar el tamaño del logo
-      }
-    } else {
-      // Cargar la imagen desde los assets
-      final ByteData imageData = await rootBundle.load('assets/logo.png');
-      final List<int> imageBytes = imageData.buffer.asUint8List();
-      logoBitmap = PdfBitmap(imageBytes);
-    }
-
-    // Dibujar el logo si existe
-    if (logoBitmap != null) {
-      page.graphics.drawImage(
-        logoBitmap,
-        Rect.fromLTWH(
-            logoXPosition, 0, logoWidth, 100), // Ajustar el tamaño del logo
-      );
-    }
-    // Dibujar el nombre de la empresa al lado del logo
-    page.graphics.drawString(nombreNegocio, titleFont,
-        brush: brush,
-        bounds:
-            Rect.fromLTWH(nombreXPosition, 0, pageWidth - nombreXPosition, 30));
-
-    // Dibujar el teléfono y la dirección debajo del nombre
-    page.graphics.drawString(telefono, italicFont,
-        brush: brush,
-        bounds: Rect.fromLTWH(
-            nombreXPosition, 30, pageWidth - nombreXPosition, 20));
-
-    page.graphics.drawString(direccion, italicFont,
-        brush: brush,
-        bounds: Rect.fromLTWH(
-            nombreXPosition, 50, pageWidth - nombreXPosition, 20));
-
-    page.graphics.drawString(cliente, italicFont,
-        brush: brush,
-        bounds: Rect.fromLTWH(
-            nombreXPosition, 70, pageWidth - nombreXPosition, 20));
-
-    // Reducir el espacio antes de la cotización de productos
-    double yPosAfterMessage = 120; // Ajusta esta variable según sea necesario
-
-    // Dibujar encabezado de la cotización
-    page.graphics.drawString('Cotización de Productos', boldFont,
-        brush: brush,
-        bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30)); // Encabezado
-    page.graphics.drawString('Folio: ${cotizacionDetalle.folio}', font,
-        bounds: Rect.fromLTWH(
-            0, yPosAfterMessage + 30, 500, 30)); // Número de folio
-
-    // Crear la tabla
-    final PdfGrid grid = PdfGrid();
-    grid.columns.add(count: 3); // Añadir 3 columnas: Producto, Cantidad, Total
-
-    // Estilo para la tabla
-    grid.style = PdfGridStyle(
-      font: font,
-      cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
-    );
-
-    // Añadir encabezados a la tabla
-    final PdfGridRow headerRow = grid.headers.add(1)[0];
-    headerRow.style = PdfGridRowStyle(
-      backgroundBrush: PdfSolidBrush(PdfColor(68, 114, 196)),
-      textPen: PdfPens.white,
-      textBrush: PdfBrushes.white,
-      font: boldFont,
-    );
-    headerRow.cells[0].value = 'Producto';
-    headerRow.cells[1].value = 'Cantidad';
-    headerRow.cells[2].value = 'Total';
-
-    // Rellenar filas dinámicamente desde listaProductosCotizaciones
-    double total = 0;
-    for (var producto in listaProductosCotizaciones) {
-      final PdfGridRow row = grid.rows.add();
-      row.cells[0].value =
-          producto.producto; // Asume que tienes un campo nombre
-      row.cells[1].value = producto.cantidad.toString(); // Campo cantidad
-      row.cells[2].value = producto.costo!.toStringAsFixed(2); // Total
-      total += producto.costo!;
-    }
-
-    // Añadir fila de subtotal
-    final PdfGridRow subtotalRow = grid.rows.add();
-    subtotalRow.cells[0].value = 'Subtotal';
-    subtotalRow.cells[1].value = ''; // Celda vacía para alineación
-    subtotalRow.cells[2].value = total.toStringAsFixed(2);
-    subtotalRow.style = PdfGridRowStyle(
-      font: boldFont,
-      textBrush: PdfBrushes.black,
-    );
-
-    // Añadir fila de total
-    final PdfGridRow totalRow = grid.rows.add();
-    totalRow.cells[0].value = 'Total';
-    totalRow.cells[1].value = ''; // Celda vacía para alineación
-    totalRow.cells[2].value = total.toStringAsFixed(2);
-    totalRow.style = PdfGridRowStyle(
-      font: boldFont,
-      textBrush: PdfBrushes.black,
-    );
-
-    // Dibujar la tabla en el PDF
-    grid.draw(
-        page: page, bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0));
-
-    // Guardar el PDF en bytes
-    List<int> bytes = document.saveSync();
-
-    // Liberar el documento
-    document.dispose();
-
-    // Guardar el archivo en el dispositivo
-    final directory = await getApplicationSupportDirectory();
-    final path = directory.path;
-    File file =
-        File('$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
-
-    await file.writeAsBytes(bytes, flush: true);
-
-    // Abrir el PDF generado en el dispositivo
-    OpenFile.open(
-        '$path/Cotizacion-Vende Fácil-${cotizacionDetalle.folio}.pdf');
-  }
-
-  Future<Uint8List?> _downloadImage(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        return response.bodyBytes;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      mostrarAlerta(context, 'Error', 'Error al descargar la imagen: $e');
-      return null;
-    }
   }
 
   @override
@@ -347,7 +161,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
                     SizedBox(
                       width: windowWidth * 0.2,
                       child: const Text(
-                        'Selecione el  cliente',
+                        'Selecione cliente',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -402,66 +216,42 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   }
 
   _cotizacion(Cotizacion cotiz) async {
-    int idCabecera = 0;
-    int detallesGuardadosCorrectamente = 0;
     setState(() {
       isLoading = true;
-      textLoading = 'Guardando cotizacion';
+      textLoading = 'Guardando cotización';
     });
-    await cotizaciones.guardarCotizacion(cotiz).then((respCab) async {
-      if (respCab.status == 1) {
-        idCabecera = respCab.id!;
-        for (ItemVenta item in cotizarTemporal) {
-          CotizacionDetalle ventaDetalle = CotizacionDetalle(
-            folio: respCab.folio,
-            idcotizacion: idCabecera,
-            idProd: item.idArticulo,
-            cantidad: item.cantidad,
-            precio: item.precioPublico,
-            idDesc: cotiz.idDescuento,
-            cantidadDescuento: cotiz.descuento,
-            total: item.totalItem,
-            subtotal: item.subTotalItem,
-          );
-          cotizacionDetalle = ventaDetalle;
+    List<CotizacionDetalle> detalles = [];
+    for (ItemVenta item in cotizarTemporal) {
+      CotizacionDetalle ventaDetalle = CotizacionDetalle(
+        idProd: item.idArticulo,
+        cantidad: item.cantidad,
+        precio: item.precioPublico,
+        idDesc: cotiz.idDescuento,
+        cantidadDescuento: cotiz.descuento,
+        total: item.totalItem,
+        subtotal: item.subTotalItem,
+      );
+      detalles.add(ventaDetalle);
+    }
+    cotizaciones.guardarCotizacionCompleta(cotiz, detalles).then((resp) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      if (resp.status == 1) {
+        cotizarTemporal.clear();
+        totalCotizacionTemporal = 0.0;
+        cotiz.folio = resp.folio;
+        listacotizacion.add(cotiz);
+        setState(() {});
+        globals.actualizaArticulosCotizaciones = true;
 
-          await cotizaciones
-              .guardarCotizacionDetalle(ventaDetalle)
-              .then((respDet) {
-            if (respDet.status == 1) {
-              detallesGuardadosCorrectamente++;
-            } else {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-              });
-              mostrarAlerta(context, 'ERROR', respDet.mensaje!);
-            }
-          });
-        }
-
-        if (detallesGuardadosCorrectamente == cotizarTemporal.length) {
-          setState(() {
-            textLoading = '';
-            isLoading = false;
-          });
-          cotizarTemporal.clear();
-          setState(() {});
-          totalCotizacionTemporal = 0.0;
-          globals.actualizaArticulosCotizaciones = true;
-          listacotizacion.add(cotiz);
-          mostrarAlerta(context, '', 'cotizacion realizada');
-          _generatePDF();
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.popAndPushNamed(context, 'HomerCotizar');
-        }
+        _generatePDF(cotiz);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('HomerCotizar', (route) => false);
+        mostrarAlerta(context, '', 'Cotizacion guardada, generando PDF.');
       } else {
-        setState(() {
-          isLoading = false;
-          textLoading = '';
-        });
-        mostrarAlerta(context, 'ERROR', respCab.mensaje!);
+        mostrarAlerta(context, 'ERROR', 'Ocurrio un error: ${resp.mensaje}');
       }
     });
   }
@@ -680,5 +470,136 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
         });
       },
     );
+  }
+
+  Future<void> _generatePDF(Cotizacion cotiz) async {
+    print('=============== ENTRO A PDF ===============');
+    final PdfDocument document = PdfDocument();
+    final PdfPage page = document.pages.add();
+    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
+    final PdfFont boldFont =
+        PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.bold);
+    final PdfFont titleFont =
+        PdfStandardFont(PdfFontFamily.helvetica, 18, style: PdfFontStyle.bold);
+    final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14,
+        style: PdfFontStyle.italic);
+    final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
+    Negocio negocio = await negocioProvider.consultaSucursal(idSucursal!);
+    final String telefonoData = negocio.telefono ?? '';
+    final String direccionData = negocio.direccion ?? '';
+    String nombreNegocio = negocio.nombreNegocio ?? 'PENDIENTE';
+    String telefono = "Teléfono: $telefonoData";
+    String direccion = "Dirección: $direccionData";
+    String cliente = nombreCliente ?? 'Público en general';
+    cliente = "Nombre Cliente: $cliente";
+    double pageWidth = page.getClientSize().width;
+    double logoWidth = 100;
+    double logoXPosition = 0;
+    double nombreXPosition = logoWidth + 20;
+    PdfBitmap? logoBitmap;
+    if (ticketModel.logo != null && ticketModel.logo!.isNotEmpty) {
+      final logoImage = await _downloadImage(ticketModel.logo!);
+      if (logoImage != null) {
+        final PdfBitmap image = PdfBitmap(logoImage);
+        page.graphics
+            .drawImage(image, Rect.fromLTWH(logoXPosition, 0, logoWidth, 100));
+      }
+    } else {
+      final ByteData imageData = await rootBundle.load('assets/logo.png');
+      final List<int> imageBytes = imageData.buffer.asUint8List();
+      logoBitmap = PdfBitmap(imageBytes);
+    }
+    if (logoBitmap != null) {
+      page.graphics.drawImage(
+        logoBitmap,
+        Rect.fromLTWH(logoXPosition, 0, logoWidth, 100),
+      );
+    }
+    page.graphics.drawString(nombreNegocio, titleFont,
+        brush: brush,
+        bounds:
+            Rect.fromLTWH(nombreXPosition, 0, pageWidth - nombreXPosition, 30));
+    page.graphics.drawString(telefono, italicFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(
+            nombreXPosition, 30, pageWidth - nombreXPosition, 20));
+    page.graphics.drawString(direccion, italicFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(
+            nombreXPosition, 50, pageWidth - nombreXPosition, 20));
+
+    page.graphics.drawString(cliente, italicFont,
+        brush: brush,
+        bounds: Rect.fromLTWH(
+            nombreXPosition, 70, pageWidth - nombreXPosition, 20));
+    double yPosAfterMessage = 120;
+    page.graphics.drawString('Cotización de Productos', boldFont,
+        brush: brush, bounds: Rect.fromLTWH(0, yPosAfterMessage, 500, 30));
+    page.graphics.drawString('Folio: ${cotiz.folio}', font,
+        bounds: Rect.fromLTWH(0, yPosAfterMessage + 30, 500, 30));
+    final PdfGrid grid = PdfGrid();
+    grid.columns.add(count: 3);
+    grid.style = PdfGridStyle(
+      font: font,
+      cellPadding: PdfPaddings(left: 5, right: 5, top: 3, bottom: 3),
+    );
+    final PdfGridRow headerRow = grid.headers.add(1)[0];
+    headerRow.style = PdfGridRowStyle(
+      backgroundBrush: PdfSolidBrush(PdfColor(68, 114, 196)),
+      textPen: PdfPens.white,
+      textBrush: PdfBrushes.white,
+      font: boldFont,
+    );
+    headerRow.cells[0].value = 'Producto';
+    headerRow.cells[1].value = 'Cantidad';
+    headerRow.cells[2].value = 'Total';
+    double total = 0;
+    for (var producto in listaProductosCotizaciones) {
+      final PdfGridRow row = grid.rows.add();
+      row.cells[0].value = producto.producto;
+      row.cells[1].value = producto.cantidad.toString();
+      row.cells[2].value = producto.costo!.toStringAsFixed(2);
+      total += producto.costo!;
+    }
+
+    final PdfGridRow subtotalRow = grid.rows.add();
+    subtotalRow.cells[0].value = 'Subtotal';
+    subtotalRow.cells[1].value = '';
+    subtotalRow.cells[2].value = total.toStringAsFixed(2);
+    subtotalRow.style = PdfGridRowStyle(
+      font: boldFont,
+      textBrush: PdfBrushes.black,
+    );
+    final PdfGridRow totalRow = grid.rows.add();
+    totalRow.cells[0].value = 'Total';
+    totalRow.cells[1].value = '';
+    totalRow.cells[2].value = total.toStringAsFixed(2);
+    totalRow.style = PdfGridRowStyle(
+      font: boldFont,
+      textBrush: PdfBrushes.black,
+    );
+    grid.draw(
+        page: page, bounds: Rect.fromLTWH(0, yPosAfterMessage + 60, 0, 0));
+    List<int> bytes = document.saveSync();
+    document.dispose();
+    final directory = await getApplicationSupportDirectory();
+    final path = directory.path;
+    File file = File('$path/Cotizacion-Vendo-Facil-${cotiz.folio}.pdf');
+    await file.writeAsBytes(bytes, flush: true);
+    OpenFile.open('$path/Cotizacion-Vendo-Facil-${cotiz.folio}.pdf');
+  }
+
+  Future<Uint8List?> _downloadImage(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      mostrarAlerta(context, 'Error', 'Error al descargar la imagen: $e');
+      return null;
+    }
   }
 }

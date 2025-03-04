@@ -107,7 +107,6 @@ class ApartadoProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
-        print(decodedData);
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
 
@@ -272,7 +271,6 @@ class ApartadoProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -721,11 +719,17 @@ class ApartadoProvider {
     return respuesta;
   }
 
-  Future<Resultado> cancelarApartado(int idApartado) async {
-    var url = Uri.parse('$baseUrl/apartado-cancelar/$idApartado');
+  Future<Resultado> cancelarApartado(
+      int idApartado, String devolucion, String metodoDevolucion) async {
+    var url = Uri.parse('$baseUrl/apartado-cancelar');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'apartado_id': idApartado.toString(),
+        'usuario_id': sesion.idUsuario.toString(),
+        'devolucion': devolucion,
+        'metodo_devolucion': metodoDevolucion,
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

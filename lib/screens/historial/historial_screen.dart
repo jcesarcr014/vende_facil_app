@@ -375,7 +375,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
     await negocioProvider.getlistaSucursales();
 
-    if (venta.tipo_movimiento == "V") {
+    if (venta.tipo_movimiento == "VT" || venta.tipo_movimiento == "VD") {
       final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
       isLoading = false;
       setState(() {});
@@ -430,13 +430,33 @@ class _HistorialScreenState extends State<HistorialScreen> {
       return Column(
         children: listaVentas.map((venta) {
           String text;
-          if (venta.tipo_movimiento! == 'V') {
-            text = 'Venta';
-          } else if (venta.tipo_movimiento! == 'P') {
-            text = 'Apartado';
-          } else {
-            text = 'Abono';
+          switch (venta.tipo_movimiento) {
+            case 'VD':
+              text = 'Venta domicilio';
+              break;
+            case 'VT':
+              text = 'Venta Tienda';
+              break;
+            case 'P':
+              text = 'Apartado';
+              break;
+            case 'A':
+              text = 'Abono';
+              break;
+            case 'E':
+              text = 'Entrega apartado';
+              break;
+            case 'CV':
+              text = 'Cancelacion venta';
+              break;
+            case 'CA':
+              text = 'Cancelacion apartado';
+              break;
+            default:
+              text = '';
+              break;
           }
+
           return ListTile(
               title: Text(
                   '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),

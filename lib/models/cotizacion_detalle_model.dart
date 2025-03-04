@@ -29,5 +29,4 @@ class CotizacionDetalle {
   });
 }
 
-List<CotizacionDetalle> listacotizaciondetalles = [];
-List<CotizacionDetalle> listacotizaciondetalles2 = [];
+List<CotizacionDetalle> detalleCotActual = [];

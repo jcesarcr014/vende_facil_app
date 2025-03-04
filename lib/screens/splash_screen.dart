@@ -33,6 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
       isLoading = true;
     });
     usuariosProvider.userInfo().then((value) async {
+      print(value.mensaje);
       if (value.status != 1) {
         setState(() {
           isLoading = false;

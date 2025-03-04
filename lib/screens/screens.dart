@@ -1,9 +1,10 @@
+export 'package:vende_facil/screens/usuarios/recupera_pass.dart';
 export 'package:vende_facil/screens/historial/corte_detalle.dart';
 export 'package:vende_facil/screens/historial/cortes_empleados.dart';
 export 'package:vende_facil/screens/historial/menu_historial.dart';
 export 'package:vende_facil/screens/cotizaciones/seleccionar_sucursal.dart';
 export 'package:vende_facil/screens/configuracion/configuracion_impresora_screen.dart';
-export 'package:vende_facil/screens/apartados/lista-abonos.dart';
+export 'package:vende_facil/screens/apartados/lista_abonos.dart';
 export 'package:vende_facil/screens/ventas/detalles_abono.dart';
 export 'package:vende_facil/screens/ventas/detalles_apartado.dart';
 export 'package:vende_facil/screens/productos/detalles_producto_sucursal.dart';

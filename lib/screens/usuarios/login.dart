@@ -257,7 +257,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                   child: const Text('Registrarse'))
                             ],
-                          )
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, 'recupera');
+                                  },
+                                  child:
+                                      const Text('¿Olvidaste tu contraseña?'))
+                            ],
+                          ),
                         ],
                       ),
                     ),

@@ -75,15 +75,18 @@ class _AbonosLiquidadosState extends State<AbonosLiquidados> {
                     )
                   : ListView.builder(
                       itemCount: lista.length,
-                      itemBuilder: (context, index) => ListTile(
-                        title: Text(lista[index].folio!),
-                        trailing: Text('\$${lista[index].total}'),
-                        subtitle: Text(
-                            'Nombre Cliente: ${lista[index].nombreCliente} \n${lista[index].fechaPagoTotal}'),
-                        onTap: () {
-                          _detalles(index);
-                        },
-                      ),
+                      itemBuilder: (context, index) {
+                        var reversedIndex = lista.length - 1 - index;
+                        return ListTile(
+                          title: Text(lista[reversedIndex].folio!),
+                          trailing: Text('\$${lista[reversedIndex].total}'),
+                          subtitle: Text(
+                              'Cliente: ${lista[reversedIndex].nombreCliente} \n${lista[reversedIndex].fechaApartado}'),
+                          onTap: () {
+                            _detalles(reversedIndex);
+                          },
+                        );
+                      },
                     ),
             ),
     );

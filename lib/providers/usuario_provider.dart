@@ -272,6 +272,27 @@ class UsuarioProvider {
     return respuesta;
   }
 
+  Future<Resultado> recuperaPass(String email) async {
+    var url = Uri.parse('$baseUrl/recupera-contrasena');
+    try {
+      final resp = await http.post(url, body: {
+        'email': email,
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
   //Empleados
   Future<Resultado> nuevoEmpleado(Usuario user, String pass) async {
     var url =

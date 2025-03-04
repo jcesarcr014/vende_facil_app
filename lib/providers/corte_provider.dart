@@ -22,7 +22,6 @@ class CorteProvider {
       });
       final decodedData = json.decode(response.body);
       if (decodedData['status'] == 1) {
-        print(decodedData);
         listaMovimientosCorte.clear();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/productos/qr_scanner_screen.dart';
-import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/screens/ventas/resultados.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
@@ -28,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final TarjetaConttroller = TextEditingController();
   final CambioConttroller = TextEditingController();
   final variablesprovider = VariablesProvider();
+  final busquedaController = TextEditingController();
+  List<Producto> productosFiltrados = [];
 
   bool isLoading = false;
   String textLoading = '';
@@ -51,13 +52,22 @@ class _HomeScreenState extends State<HomeScreen> {
           .listarProductosSucursal(sesion.idSucursal!)
           .then((value) {
         setState(() {
+          productosFiltrados = List.from(listaProductosSucursal);
           globals.actualizaArticulos = false;
           textLoading = '';
           isLoading = false;
         });
       });
     }
+    productosFiltrados = List.from(listaProductosSucursal);
+    setState(() {});
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    busquedaController.dispose();
+    super.dispose();
   }
 
   @override
@@ -100,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     ..._listaWidgets(),
-                    const Divider(),
                     ..._productos(),
                   ],
                 ),
@@ -156,45 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
-            onPressed: () {
-              if (ventaTemporal.isNotEmpty) {
-                Navigator.pushNamed(context, 'detalle-venta');
-                setState(() {});
-              } else {
-                mostrarAlerta(
-                    context, '¡Atención!', 'No hay productos en la venta.');
-              }
-            },
-            child: SizedBox(
-              height: windowHeight * 0.1,
-              width: windowWidth * 0.4,
-              child: Center(
-                child:
-                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: windowWidth * 0.05,
-          ),
-        ],
-      ),
-      const Divider(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton(
-              onPressed: () {
-                showSearch(context: context, delegate: Search());
-              },
-              child: SizedBox(
-                  width: windowWidth * 0.10,
-                  height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.search)))),
-          SizedBox(
-            width: windowWidth * 0.05,
-          ),
-          ElevatedButton(
             onPressed: () async {
               final result = await Navigator.push(
                 context,
@@ -220,12 +190,34 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             child: SizedBox(
-                width: windowWidth * 0.10,
-                height: windowHeight * 0.05,
+                width: windowWidth * 0.09,
+                height: windowHeight * 0.07,
                 child: const Center(child: Icon(Icons.qr_code_scanner))),
           ),
           SizedBox(
-            width: windowWidth * 0.05,
+            width: windowWidth * 0.02,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (ventaTemporal.isNotEmpty) {
+                Navigator.pushNamed(context, 'detalle-venta');
+                setState(() {});
+              } else {
+                mostrarAlerta(
+                    context, '¡Atención!', 'No hay productos en la venta.');
+              }
+            },
+            child: SizedBox(
+              height: windowHeight * 0.08,
+              width: windowWidth * 0.4,
+              child: Center(
+                child:
+                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: windowWidth * 0.02,
           ),
           ElevatedButton(
               onPressed: () {
@@ -237,10 +229,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
               child: SizedBox(
-                  width: windowWidth * 0.10,
-                  height: windowHeight * 0.05,
+                  width: windowWidth * 0.09,
+                  height: windowHeight * 0.07,
                   child: const Center(child: Icon(Icons.delete)))),
         ],
+      ),
+      const Divider(),
+      Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: windowWidth * 0.05, vertical: 10),
+        child: TextField(
+          controller: busquedaController,
+          decoration: InputDecoration(
+            labelText: 'Buscar',
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                busquedaController.clear();
+                _filtrarProductos('');
+              },
+            ),
+          ),
+          onChanged: _filtrarProductos,
+        ),
       ),
     ];
 
@@ -317,8 +330,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _productos() {
     List<Widget> listaProd = [];
-    if (listaProductosSucursal.isNotEmpty) {
-      for (Producto producto in listaProductosSucursal) {
+    if (productosFiltrados.isNotEmpty) {
+      for (Producto producto in productosFiltrados) {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             for (ColorCategoria color in listaColores) {
@@ -379,6 +392,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return listaProd;
+  }
+
+  void _filtrarProductos(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        productosFiltrados = List.from(listaProductosSucursal);
+      } else {
+        productosFiltrados = listaProductosSucursal
+            .where((producto) =>
+                producto.producto!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   _actualizaTotalTemporal() {

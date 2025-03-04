@@ -11,6 +11,7 @@ class VentaCabecera {
   double? total;
   double? importeEfectivo;
   double? importeTarjeta;
+  double? cambio;
   int? tipoVenta;
   int? cancelado;
   String? fecha_venta;
@@ -32,6 +33,7 @@ class VentaCabecera {
       this.total,
       this.importeEfectivo,
       this.importeTarjeta,
+      this.cambio,
       this.tipoVenta,
       this.cancelado,
       this.fecha_venta,

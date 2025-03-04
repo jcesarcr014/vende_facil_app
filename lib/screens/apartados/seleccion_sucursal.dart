@@ -34,8 +34,6 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
       });
     });
     indiceRecibido = widget.indice ?? 0;
-    print('========================== INDICE ==========================');
-    print(indiceRecibido);
   }
 
   @override
@@ -43,7 +41,7 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seleccionar Sucursal'),
+        title: const Text('Leyendo sucursales'),
         automaticallyImplyLeading: true,
       ),
       body: (isLoading)

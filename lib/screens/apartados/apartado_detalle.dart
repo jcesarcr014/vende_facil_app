@@ -242,24 +242,107 @@ class _AbonoDetallesScreen extends State<AbonoDetallesScreen> {
   }
 
   _cancelarApartado() async {
-    setState(() {
-      textLoading = 'Cancelando...';
-      isLoading = true;
-    });
-    apartadoProvider.cancelarApartado(apartadoSeleccionado.id!).then((resp) {
-      setState(() {
-        textLoading = '';
-        isLoading = false;
-      });
-      if (resp.status == 1) {
-        Navigator.pushReplacementNamed(context, 'menuAbonos');
-        mostrarAlerta(context, 'Alerta', 'Se canceló el apartado.',
-            tituloColor: Colors.red, mensajeColor: Colors.black);
-      } else {
+    String metodoDevolucion = 'N';
+    final montoController = TextEditingController(text: '0');
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Cancelar Apartado'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: montoController,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(
+                      labelText: 'Monto a devolver',
+                      prefixText: '\$',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Método de devolución:'),
+                  RadioListTile(
+                    title: const Text('Efectivo'),
+                    value: 'E',
+                    groupValue: metodoDevolucion,
+                    onChanged: (value) {
+                      setState(() => metodoDevolucion = value!);
+                    },
+                  ),
+                  RadioListTile(
+                    title: const Text('Bancaria'),
+                    value: 'B',
+                    groupValue: metodoDevolucion,
+                    onChanged: (value) {
+                      setState(() => metodoDevolucion = value!);
+                    },
+                  ),
+                  RadioListTile(
+                    title: const Text('No aplica'),
+                    value: 'N',
+                    groupValue: metodoDevolucion,
+                    onChanged: (value) {
+                      setState(() => metodoDevolucion = value!);
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context, true);
+                  },
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((confirmed) async {
+      if (confirmed == true) {
         setState(() {
+          textLoading = 'Cancelando...';
+          isLoading = true;
+        });
+
+        final resp = await apartadoProvider.cancelarApartado(
+          apartadoSeleccionado.id!,
+          montoController.text,
+          metodoDevolucion,
+        );
+
+        setState(() {
+          textLoading = '';
           isLoading = false;
         });
-        mostrarAlerta(context, "Error", "No se pudo cancelar el apartado.");
+
+        if (resp.status == 1) {
+          Navigator.pushReplacementNamed(context, 'menuAbonos');
+          mostrarAlerta(
+            context,
+            'Alerta',
+            'Se canceló el apartado.',
+            tituloColor: Colors.red,
+            mensajeColor: Colors.black,
+          );
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          mostrarAlerta(context, "Error",
+              "No se pudo cancelar el apartado. ${resp.mensaje}");
+        }
       }
     });
   }

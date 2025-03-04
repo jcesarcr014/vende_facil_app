@@ -17,7 +17,6 @@ class AgregaProductoScreen extends StatefulWidget {
 
 class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final articulosProvider = ArticuloProvider();
-  final imagenProvider = ImagenProvider();
   final categoriasProvider = CategoriaProvider();
   final controllerProducto = TextEditingController();
   final controllerDescripcion = TextEditingController();
@@ -411,22 +410,21 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                           labelText: 'Código de barras:',
                           textCapitalization: TextCapitalization.none,
                           suffixIcon: IconButton(
-                            icon: const Icon(Icons.qr_code_scanner),
-                            onPressed: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => QRScannerScreen(),
-                                ),
-                              );
+                              icon: const Icon(Icons.qr_code_scanner),
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => QRScannerScreen(),
+                                  ),
+                                );
 
-                              if (result != null) {
-                                setState(() {
-                                  controllerCodigoB.text = result;
-                                });
-                              }
-                            }
-                          ),
+                                if (result != null) {
+                                  setState(() {
+                                    controllerCodigoB.text = result;
+                                  });
+                                }
+                              }),
                           controller: controllerCodigoB),
                       SizedBox(
                         height: windowHeight * 0.03,

@@ -78,6 +78,7 @@ class Menu extends StatelessWidget {
   }
 
   _clear() {
+    sesion = CuentaSesion();
     listaAbonos.clear();
     listaApartadosPendientes.clear();
     listaApartadosPagados.clear();
@@ -102,7 +103,6 @@ class Menu extends StatelessWidget {
     listasucursalEmpleado.clear();
     listaVentas.clear();
     listacotizacion.clear();
-    listacotizaciondetalles.clear();
   }
 
   _articulos(BuildContext context) {

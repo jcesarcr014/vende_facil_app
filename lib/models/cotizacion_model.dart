@@ -1,6 +1,4 @@
 // ignore_for_file: non_constant_identifier_names
-import 'package:vende_facil/models/cotizacion_detalle_model.dart';
-
 class Cotizacion {
   int? id;
   int? negocioId;
@@ -15,11 +13,15 @@ class Cotizacion {
   double? importeTarjeta;
   int? cancelado;
   DateTime? fecha_cotizacion;
+  DateTime? fecha_vencimiento;
   String? fecha_cancelacion;
   String? nombreCliente;
   String? name;
   String? tipo_movimiento;
   int? id_sucursal;
+  String? nombreSucursal;
+  String? dirSucursal;
+  String? telsucursal;
   int? dias_vigentes;
   Cotizacion({
     this.id,
@@ -34,16 +36,19 @@ class Cotizacion {
     this.venta_realizada,
     this.importeTarjeta,
     this.cancelado,
-    this. fecha_cotizacion,
+    this.fecha_cotizacion,
+    this.fecha_vencimiento,
     this.fecha_cancelacion,
     this.nombreCliente,
     this.name,
     this.tipo_movimiento,
     this.id_sucursal,
+    this.nombreSucursal,
+    this.dirSucursal,
+    this.telsucursal,
     this.dias_vigentes,
   });
 }
 
 List<Cotizacion> listacotizacion = [];
-List<Cotizacion> listacotizacionCabecera = [];
-CotizacionDetalle cotizacionDetalle = CotizacionDetalle();
+Cotizacion cotActual = Cotizacion();
