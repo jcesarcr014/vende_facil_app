@@ -1,7 +1,7 @@
 library vende_facil.globals;
 
-String baseUrl = "http://62.84.190.222/vf/api"; //test interno
-// String baseUrl = "http://api.vendofacil.com.mx/api"; // PRODUCCION
+// String baseUrl = "http://62.84.190.222/vf/api"; //test interno
+String baseUrl = "http://api.vendofacil.com.mx/api"; // PRODUCCION
 
 bool actualizaCategorias = false;
 bool actualizaArticulos = false;
