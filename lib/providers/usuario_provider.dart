@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:vende_facil/mappers/sucursal_mapper.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -70,19 +69,23 @@ class UsuarioProvider {
         respuesta.mensaje = decodedData['msg'];
         sesion.token = token;
         sesion.idUsuario = decodedData['usuario']['id'];
-        sesion.idNegocio = decodedData['empresa_id'];
-        sesion.tipoUsuario = decodedData['tipo_usuario'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
-        sesion.nombreUsuario = decodedData['usuario']['name'];
+        sesion.idNegocio = decodedData['empresa_id'];
+        sesion.tipoUsuario = decodedData['tipo_usuario'];
         sesion.cotizar = false;
         listaSucursales.clear();
-        List<dynamic> sucursalesJson = decodedData['sucursales'];
-        List<Sucursal> sucursales = sucursalesJson
-            .map((json) => SucursalMapper.dataToSucursalModel(json))
-            .toList();
-        listaSucursales.addAll(sucursales);
+        for (int x = 0; x < decodedData['sucursales'].length; x++) {
+          Sucursal sucursalTemp = Sucursal();
+          sucursalTemp.id = decodedData['sucursales'][x]['id'];
+          sucursalTemp.nombreSucursal =
+              decodedData['sucursales'][x]['nombre_sucursal'];
+          sucursalTemp.direccion = decodedData['sucursales'][x]['direccion'];
+          sucursalTemp.telefono = decodedData['sucursales'][x]['telefono'];
+          listaSucursales.add(sucursalTemp);
+        }
+
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
@@ -128,11 +131,15 @@ class UsuarioProvider {
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.cotizar = false;
         listaSucursales.clear();
-        List<dynamic> sucursalesJson = decodedData['sucursales'];
-        List<Sucursal> sucursales = sucursalesJson
-            .map((json) => SucursalMapper.dataToSucursalModel(json))
-            .toList();
-        listaSucursales.addAll(sucursales);
+        for (int x = 0; x < decodedData['sucursales'].length; x++) {
+          Sucursal sucursalTemp = Sucursal();
+          sucursalTemp.id = decodedData['sucursales'][x]['id'];
+          sucursalTemp.nombreSucursal =
+              decodedData['sucursales'][x]['nombre_sucursal'];
+          sucursalTemp.direccion = decodedData['sucursales'][x]['direccion'];
+          sucursalTemp.telefono = decodedData['sucursales'][x]['telefono'];
+          listaSucursales.add(sucursalTemp);
+        }
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];

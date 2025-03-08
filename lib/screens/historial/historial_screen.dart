@@ -458,11 +458,18 @@ class _HistorialScreenState extends State<HistorialScreen> {
           }
 
           return ListTile(
-              title: Text(
-                  '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
-              subtitle: Text(text),
-              trailing: Text('\$${venta.total}'),
-              onTap: () => _getDetails(venta));
+            title: Text(
+              '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}',
+              style: TextStyle(
+                decoration:
+                    venta.cancelado == '1' ? TextDecoration.lineThrough : null,
+                color: venta.cancelado == '1' ? Colors.red : null,
+              ),
+            ),
+            subtitle: Text(text),
+            trailing: Text('\$${venta.total}'),
+            onTap: () => _getDetails(venta),
+          );
         }).toList(),
       );
     }

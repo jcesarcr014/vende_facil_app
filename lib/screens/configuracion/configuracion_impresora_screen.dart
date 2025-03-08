@@ -101,7 +101,7 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       textLoading = '';
     });
 
-    if (listResult.length == 0) {
+    if (listResult.isEmpty) {
       _msj =
           "No hay impresoras vinculadas, por favor vincula una impresora en la configuración de Bluetooth.";
     } else {

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:vende_facil/util/limpia_datos.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -13,6 +14,7 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
+  final limpiaDatos = LimpiaDatos();
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
@@ -91,7 +93,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               onTap: () {
                 UsuarioProvider().logout().then((value) async {
                   if (value.status == 1) {
-                    _clear();
+                    limpiaDatos.limpiaDatos();
                     final SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     prefs.setString('token', '');
@@ -106,33 +108,5 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
       ),
     );
-  }
-
-  _clear() {
-    sesion = CuentaSesion();
-    listaAbonos.clear();
-    listaApartadosPendientes.clear();
-    listaApartadosPagados.clear();
-    listaApartadosEntregados.clear();
-    listaApartadosCancelados.clear();
-    listaCategorias.clear();
-    listaClientes.clear();
-    listaColores.clear();
-    listaDescuentos.clear();
-    listaDetalles.clear();
-    listaEmpleados.clear();
-    listaPlanes.clear();
-    listaProductos.clear();
-    listaProductosSucursal.clear();
-    listaSucursales.clear();
-    listaTarjetas.clear();
-    listaUsuarios.clear();
-    listaVariables.clear();
-    listaVentaCabecera.clear();
-    listaVentaCabecera2.clear();
-    listaVentadetalles.clear();
-    listasucursalEmpleado.clear();
-    listaVentas.clear();
-    listacotizacion.clear();
   }
 }

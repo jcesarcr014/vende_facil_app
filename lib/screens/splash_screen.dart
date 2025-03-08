@@ -4,6 +4,7 @@ import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/util/limpia_datos.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,6 +14,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final limpiaDatos = LimpiaDatos();
   final usuariosProvider = UsuarioProvider();
   final categoriasProvider = CategoriaProvider();
   final articulosProvider = ArticuloProvider();
@@ -33,8 +35,8 @@ class _SplashScreenState extends State<SplashScreen> {
       isLoading = true;
     });
     usuariosProvider.userInfo().then((value) async {
-      print(value.mensaje);
       if (value.status != 1) {
+        limpiaDatos.limpiaDatos();
         setState(() {
           isLoading = false;
           textLoading = '';
@@ -140,14 +142,17 @@ class _SplashScreenState extends State<SplashScreen> {
         });
 
         if (sesion.idNegocio == 0) {
-          // ignore: use_build_context_synchronously
           Navigator.pushReplacementNamed(context, 'menu');
-          // ignore: use_build_context_synchronously
           mostrarAlerta(context, 'Bienvenido',
               '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
         } else {
-          // ignore: use_build_context_synchronously
-          Navigator.pushReplacementNamed(context, 'menu');
+          if (sesion.tipoUsuario == 'E') {
+            Navigator.pushReplacementNamed(context, 'menu');
+            mostrarAlerta(context, 'Bienvenido',
+                'Hola ${sesion.nombreUsuario}, estas en la sucursal ${sesion.sucursal}');
+          } else {
+            Navigator.pushReplacementNamed(context, 'menu');
+          }
         }
       }
     });

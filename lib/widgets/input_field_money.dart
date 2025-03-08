@@ -34,7 +34,7 @@ class InputFieldMoney extends StatefulWidget {
   });
 
   @override
-  _InputFieldMoneyState createState() => _InputFieldMoneyState();
+  State<InputFieldMoney> createState() => _InputFieldMoneyState();
 }
 
 class _InputFieldMoneyState extends State<InputFieldMoney> {

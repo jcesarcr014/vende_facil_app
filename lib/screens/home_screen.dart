@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Vende Fácil'),
+          title: Text('${sesion.sucursal}'),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(

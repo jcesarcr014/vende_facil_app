@@ -67,8 +67,8 @@ class NegocioProvider {
     return negocio;
   }
 
-  Future<Negocio> consultaSucursal(String id) async {
-    Negocio negocio = Negocio();
+  Future<Sucursal> consultaSucursal(String id) async {
+    Sucursal sucursal = Sucursal();
     final url = Uri.parse('$baseUrl/sucursal-info/$id');
     try {
       final resp = await http.get(url, headers: {
@@ -76,19 +76,20 @@ class NegocioProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
-        negocio.id = decodedData['data']['negocio_id'];
-        negocio.nombreNegocio = decodedData['data']['nombre_sucursal'];
-        negocio.direccion = decodedData['data']['direccion'];
-        negocio.telefono = decodedData['data']['telefono'];
+        sucursal.id = decodedData['data']['id'];
+        sucursal.negocioId = decodedData['data']['negocio_id'];
+        sucursal.nombreSucursal = decodedData['data']['nombre_sucursal'];
+        sucursal.direccion = decodedData['data']['direccion'];
+        sucursal.telefono = decodedData['data']['telefono'];
       } else {
-        negocio.id = 0;
-        negocio.nombreNegocio = decodedData['msg'];
+        sucursal.id = 0;
+        sucursal.nombreSucursal = decodedData['msg'];
       }
     } catch (e) {
-      negocio.id = 0;
-      negocio.nombreNegocio = 'Error en la petición. $e';
+      sucursal.id = 0;
+      sucursal.nombreSucursal = 'Error en la petición. $e';
     }
-    return negocio;
+    return sucursal;
   }
 
   Future<Resultado> editaNegocio(Negocio negocio) async {

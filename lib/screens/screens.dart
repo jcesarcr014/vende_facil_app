@@ -37,7 +37,7 @@ export 'package:vende_facil/screens/usuarios/registro_screen.dart';
 export 'package:vende_facil/screens/ventas/venta_detalle_screen.dart';
 export 'package:vende_facil/screens/search_screen.dart';
 export 'package:vende_facil/screens/suscripcion/agregar_tarjeta.dart';
-export 'package:vende_facil/screens/ventas/detalles_venta.dart';
+export 'package:vende_facil/screens/historial/detalles_venta.dart';
 export 'package:vende_facil/screens/usuarios/perfil_screen.dart';
 export 'package:vende_facil/screens/configuracion/config_apartado_screen.dart';
 export 'package:vende_facil/screens/apartados/search_screen_abonos.dart';

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -56,7 +55,6 @@ class VentasProvider {
         },
         body: jsonEncode(ventaData),
       );
-      print(jsonEncode(ventaData));
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
@@ -101,8 +99,7 @@ class VentasProvider {
               double.parse(decodedData['data'][x]['pago_efectivo']);
           ventasCabezera.importeTarjeta =
               double.parse(decodedData['data'][x]['pago_tarjeta']);
-          ventasCabezera.cancelado =
-              int.parse(decodedData['data'][x]['cancelado']);
+          ventasCabezera.cancelado = decodedData['data'][x]['cancelado'];
           ventasCabezera.fecha_venta = decodedData['data'][x]['fecha_venta'];
           ventasCabezera.fecha_cancelacion =
               decodedData['data'][x]['fecha_cancelacion'];
@@ -136,6 +133,7 @@ class VentasProvider {
         ventaCabecera.negocioId = decodedData['venta'][0]['negocio_id'];
         ventaCabecera.usuarioId = decodedData['venta'][0]['usuario_id'];
         ventaCabecera.idCliente = decodedData['venta'][0]['cliente_id'];
+        ventaCabecera.id_sucursal = decodedData['venta'][0]['sucursal_id'];
         ventaCabecera.folio = decodedData['venta'][0]['folio'];
         ventaCabecera.subtotal =
             double.parse(decodedData['venta'][0]['subtotal']);
@@ -151,9 +149,10 @@ class VentasProvider {
         ventaCabecera.fecha_venta = decodedData['venta'][0]['fecha_venta'];
         ventaCabecera.fecha_cancelacion =
             decodedData['venta'][0]['fecha_cancelacion'];
-        ventaCabecera.cancelado =
-            int.parse(decodedData['venta'][0]['cancelado']);
+        ventaCabecera.cancelado = decodedData['venta'][0]['cancelado'];
         ventaCabecera.nombreCliente = decodedData['venta'][0]['cliente_nombre'];
+        ventaCabecera.nombreSucursal =
+            decodedData['venta'][0]['nombre_sucursal'];
         listaVentaCabecera2.add(ventaCabecera);
         for (int x = 0; x < decodedData['detalles'].length; x++) {
           VentaDetalle ventasDetalle = VentaDetalle();
@@ -260,6 +259,27 @@ class VentasProvider {
     } catch (e) {
       respuesta.status = 0;
 
+      respuesta.mensaje = 'Error en la peticion: $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> cancelarVenta(int idVenta) async {
+    var url = Uri.parse('$baseUrl/ventas-cancelar/$idVenta');
+    try {
+      final resp = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion: $e';
     }
     return respuesta;

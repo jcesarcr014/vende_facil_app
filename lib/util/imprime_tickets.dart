@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ImpresionesTickets {
   final respuesta = Resultado();
   TicketModel? datosTicket = TicketModel();
-  Negocio? sucursal = Negocio();
+  Sucursal? sucursal = Sucursal();
   final ticketProvider = TicketProvider();
   final negocioProvider = NegocioProvider();
   String mensajeTicket = '';
@@ -35,7 +35,9 @@ class ImpresionesTickets {
       }
     });
 
-    (bandera == 1) ? await obtieneDatosTicket() : null;
+    (bandera == 1)
+        ? await obtieneDatosTicket(sesion.idSucursal.toString())
+        : null;
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
@@ -224,7 +226,7 @@ class ImpresionesTickets {
       }
     });
 
-    await obtieneDatosTicket();
+    await obtieneDatosTicket(venta.id_sucursal.toString());
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
@@ -428,7 +430,7 @@ class ImpresionesTickets {
       }
     });
     cantidadArticulos = 0;
-    await obtieneDatosTicket();
+    await obtieneDatosTicket(sesion.idSucursal.toString());
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
@@ -628,7 +630,7 @@ class ImpresionesTickets {
       }
     });
     cantidadArticulos = 0;
-    await obtieneDatosTicket();
+    await obtieneDatosTicket(sesion.idSucursal.toString());
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
@@ -823,7 +825,7 @@ class ImpresionesTickets {
       }
     });
     double pendiente = total - abono;
-    await obtieneDatosTicket();
+    await obtieneDatosTicket(sesion.idSucursal.toString());
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
@@ -919,13 +921,12 @@ class ImpresionesTickets {
     return respuesta;
   }
 
-  Future<void> obtieneDatosTicket() async {
+  Future<void> obtieneDatosTicket(String idSuc) async {
     datosTicket =
         await ticketProvider.getData(sesion.idNegocio.toString(), null);
 
-    sucursal =
-        await negocioProvider.consultaSucursal(sesion.idSucursal.toString());
-    nombreSucursal = sucursal!.nombreNegocio ?? 'Vendo Facil';
+    sucursal = await negocioProvider.consultaSucursal(idSuc);
+    nombreSucursal = sucursal!.nombreSucursal ?? 'Vendo Facil';
     direccionSucursal = sucursal!.direccion ?? '';
     telefonoSucursal = sucursal!.telefono ?? '';
 

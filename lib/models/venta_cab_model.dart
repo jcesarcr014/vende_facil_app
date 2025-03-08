@@ -13,14 +13,16 @@ class VentaCabecera {
   double? importeTarjeta;
   double? cambio;
   int? tipoVenta;
-  int? cancelado;
+  String? cancelado;
   String? fecha_venta;
   String? fecha_cancelacion;
   String? nombreCliente;
   String? name;
   String? tipo_movimiento;
   int? id_sucursal;
+  String? nombreSucursal;
   int? idMovimiento;
+
   VentaCabecera(
       {this.id,
       this.negocioId,
@@ -42,6 +44,7 @@ class VentaCabecera {
       this.name,
       this.tipo_movimiento,
       this.id_sucursal,
+      this.nombreSucursal,
       this.idMovimiento});
 }
 

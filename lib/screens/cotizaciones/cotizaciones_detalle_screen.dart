@@ -473,7 +473,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   }
 
   Future<void> _generatePDF(Cotizacion cotiz) async {
-    print('=============== ENTRO A PDF ===============');
     final PdfDocument document = PdfDocument();
     final PdfPage page = document.pages.add();
     final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
@@ -484,10 +483,10 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 14,
         style: PdfFontStyle.italic);
     final PdfBrush brush = PdfSolidBrush(PdfColor(51, 51, 51));
-    Negocio negocio = await negocioProvider.consultaSucursal(idSucursal!);
+    Sucursal negocio = await negocioProvider.consultaSucursal(idSucursal!);
     final String telefonoData = negocio.telefono ?? '';
     final String direccionData = negocio.direccion ?? '';
-    String nombreNegocio = negocio.nombreNegocio ?? 'PENDIENTE';
+    String nombreNegocio = negocio.nombreSucursal ?? 'PENDIENTE';
     String telefono = "Teléfono: $telefonoData";
     String direccion = "Dirección: $direccionData";
     String cliente = nombreCliente ?? 'Público en general';
