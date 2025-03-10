@@ -93,6 +93,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de Cotización'),
+        automaticallyImplyLeading: true,
       ),
       body: (isLoading)
           ? Center(
@@ -248,7 +249,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
 
         _generatePDF(cotiz);
         Navigator.of(context)
-            .pushNamedAndRemoveUntil('HomerCotizar', (route) => false);
+            .pushNamedAndRemoveUntil('products-menu', (route) => false);
         mostrarAlerta(context, '', 'Cotizacion guardada, generando PDF.');
       } else {
         mostrarAlerta(context, 'ERROR', 'Ocurrio un error: ${resp.mensaje}');

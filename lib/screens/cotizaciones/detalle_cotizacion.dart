@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
 import 'package:vende_facil/providers/ticket_provider.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class CotizacionDetallesScreen extends StatefulWidget {
   const CotizacionDetallesScreen({Key? key}) : super(key: key);
@@ -179,11 +180,72 @@ class _CotizacionDetallesScreenState extends State<CotizacionDetallesScreen> {
                           _generatePDF();
                         },
                       ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        child: const Text('Realizar venta',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          _generarVenta();
+                        },
+                      ),
                     )
                   ],
                 ),
               ),
             ),
+    );
+  }
+
+  _generarVenta() {
+    ventaTemporal.clear();
+    for (var detalle in detalleCotActual) {
+      ventaTemporal.add(ItemVenta(
+          idArticulo: detalle.idProd!,
+          articulo: detalle.nombreProducto!,
+          cantidad: detalle.cantidad!,
+          precioPublico: detalle.precio!,
+          preciomayoreo: detalle.precio!,
+          preciodistribuidor: detalle.precio!,
+          idDescuento: detalle.idDesc!,
+          descuento: detalle.cantidadDescuento!,
+          subTotalItem: detalle.subtotal!,
+          totalItem: detalle.total!,
+          apartado: false));
+    }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Producto(s) agregado(s) a la venta',
+                style: TextStyle(color: Colors.black), // Color del mensaje
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context)
+                  .pushNamedAndRemoveUntil('home', (route) => false),
+              child: const Text('Ir a Venta'),
+            ),
+          ],
+        );
+      },
     );
   }
 

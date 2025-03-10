@@ -82,6 +82,7 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
                               listaSucursales.firstWhere((sucursal) =>
                                   sucursal.id.toString() == _valueIdSucursal);
                           sesion.idSucursal = sucursalSeleccionada.id;
+                          sesion.sucursal = sucursalSeleccionada.nombreSucursal;
                           await articulosProvider
                               .listarProductosSucursal(sucursalSeleccionada.id!)
                               .then((value) {
