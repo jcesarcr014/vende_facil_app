@@ -120,9 +120,13 @@ class _LoginScreenState extends State<LoginScreen> {
             mostrarAlerta(context, 'Bienvenido',
                 '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
           } else {
-            // ignore: duplicate_ignore
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacementNamed(context, 'menu');
+            if (sesion.tipoUsuario == 'E') {
+              Navigator.pushReplacementNamed(context, 'menu');
+              mostrarAlerta(context, 'Bienvenido',
+                  'Hola ${sesion.nombreUsuario}, estas en la sucursal ${sesion.sucursal}');
+            } else {
+              Navigator.pushReplacementNamed(context, 'menu');
+            }
           }
         } else {
           setState(() {
