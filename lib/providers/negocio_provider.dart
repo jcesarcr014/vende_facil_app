@@ -70,6 +70,7 @@ class NegocioProvider {
   Future<Sucursal> consultaSucursal(String id) async {
     Sucursal sucursal = Sucursal();
     final url = Uri.parse('$baseUrl/sucursal-info/$id');
+
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -311,9 +312,9 @@ class NegocioProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      if (sesion.tipoUsuario == 'E') {
-        sesion.idSucursal = decodedData['data'][0]['sucursal_id'];
-      }
+      // if (sesion.tipoUsuario == 'E') {
+      //   sesion.idSucursal = decodedData['data'][0]['sucursal_id'];
+      // }
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

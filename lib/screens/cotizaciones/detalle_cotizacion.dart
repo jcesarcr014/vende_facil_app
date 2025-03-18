@@ -13,7 +13,6 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
 import 'package:vende_facil/providers/ticket_provider.dart';
-import 'package:vende_facil/widgets/widgets.dart';
 
 class CotizacionDetallesScreen extends StatefulWidget {
   const CotizacionDetallesScreen({Key? key}) : super(key: key);
