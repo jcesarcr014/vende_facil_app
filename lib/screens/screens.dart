@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/historial/ventas_dia.dart';
 export 'package:vende_facil/screens/usuarios/recupera_pass.dart';
 export 'package:vende_facil/screens/historial/corte_detalle.dart';
 export 'package:vende_facil/screens/historial/cortes_empleados.dart';

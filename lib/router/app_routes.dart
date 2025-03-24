@@ -74,6 +74,7 @@ class AppRoutes {
     'menu-historial': (BuildContext context) => const MenuHistorialScreen(),
     'cortes-empleados': (BuildContext context) => const CortesEmpleadosScreen(),
     'corte-detalle': (BuildContext context) => const CorteDetalleScreen(),
+    'ventas-dia': (BuildContext context) => const VentasDiaScreen(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

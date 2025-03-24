@@ -1,4 +1,5 @@
 import 'package:vende_facil/models/models.dart';
+import 'package:vende_facil/models/venta_dia_model.dart';
 
 class LimpiaDatos {
   limpiaDatos() {
@@ -35,6 +36,7 @@ class LimpiaDatos {
     listaVentaCabecera2.clear();
     listaVentas.clear();
     listaVentadetalles.clear();
+    listaVentasDia.clear();
     // Variables
     abonoSeleccionado = Abono();
     apartadoSeleccionado = ApartadoCabecera();

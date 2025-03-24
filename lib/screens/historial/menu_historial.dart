@@ -52,6 +52,23 @@ class MenuHistorialScreen extends StatelessWidget {
                 Navigator.pushNamed(context, 'cortes-empleados');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: const Text(
+                'Ventas del dia',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle:
+                  const Text('Detalle de las ventas realizadas en el dia'),
+              trailing: const Icon(Icons.arrow_right),
+              onTap: () {
+                Navigator.pushNamed(context, 'ventas-dia');
+              },
+            ),
           ],
         ),
       ),

@@ -73,6 +73,43 @@ class VentasProvider {
     return respuesta;
   }
 
+  Future<Resultado> ventasDia() async {
+    listaVentasDia.clear();
+    var url = Uri.parse('$baseUrl/ventas-dia/${sesion.idNegocio}');
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['ventas'].length; x++) {
+          VentaDia itemVenta = VentaDia(
+            idVenta: decodedData['ventas'][x]['id'],
+            folio: decodedData['ventas'][x]['folio'],
+            empleado: decodedData['ventas'][x]['name'],
+            sucursal: decodedData['ventas'][x]['nombre_sucursal'],
+            producto: decodedData['ventas'][x]['nombre'],
+            cantidad: decodedData['ventas'][x]['cantidad'],
+            precio: decodedData['ventas'][x]['precio'],
+            subtotal: decodedData['ventas'][x]['subtotal'],
+            total: decodedData['ventas'][x]['total'],
+            fechaVenta: decodedData['ventas'][x]['created_at'],
+          );
+          listaVentasDia.add(itemVenta);
+        }
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion: $e';
+    }
+    return respuesta;
+  }
+
   Future<Resultado> listarventas() async {
     listaVentaCabecera.clear();
     var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
