@@ -12,8 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class HistorialScreen extends StatefulWidget {
-  // ignore: use_key_in_widget_constructors
-  const HistorialScreen({Key? key});
+  const HistorialScreen({super.key});
 
   @override
   State<HistorialScreen> createState() => _HistorialScreenState();
@@ -48,7 +47,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   final negocioProvider = NegocioProvider();
 
-
   @override
   void initState() {
     _startDate = DateTime(now.year, now.month, now.day);
@@ -70,21 +68,12 @@ class _HistorialScreenState extends State<HistorialScreen> {
       canPop: false,
       onPopInvoked: (didpop) {
         if (!didpop) {
-          Navigator.pushReplacementNamed(context, 'menu');
+          Navigator.pushReplacementNamed(context, 'menu-historial');
         }
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Historial de Ventas'),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu),
-            ),
-          ],
         ),
         body: (isLoading)
             ? Center(
@@ -158,7 +147,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                     _dateController.text =
                                         '$formattedStartDate - $formattedEndDate';
                                   });
-                                  //_consultarVentas();
                                 }
                               },
                               decoration: InputDecoration(
@@ -214,7 +202,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                     SizedBox(
                       height: windowHeight * 0.05,
                     ),
-                    
+
                     _sucursales(),
                     SizedBox(
                       height: windowHeight * 0.05,
@@ -252,7 +240,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
     setState(() {});
     _empleadoSeleccionado = value;
     if (value == '0') {
-      final resultado = await reportesProvider.reporteSucursal(formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
+      final resultado = await reportesProvider.reporteSucursal(
+          formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
       if (resultado.status != 1) {
         mostrarAlerta(context, 'Error', resultado.mensaje!);
         return;
@@ -264,7 +253,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
       return;
     }
 
-    final resultado = await reportesProvider.reporteEmpleado(formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
+    final resultado = await reportesProvider.reporteEmpleado(
+        formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
     isLoading = false;
     totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
     setState(() {});
@@ -347,9 +337,11 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
               if (value == '0') {
                 _allBranchOffice = null;
-                final resultado = await reportesProvider.reporteGeneral(formattedStartDate, formattedEndDate);
+                final resultado = await reportesProvider.reporteGeneral(
+                    formattedStartDate, formattedEndDate);
                 isLoading = false;
-                totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
+                totalVentas =
+                    listaVentas.fold(0.0, (sum, item) => sum + item.total!);
                 setState(() {});
                 if (resultado.status != 1) {
                   mostrarAlerta(context, 'Error', resultado.mensaje!);
@@ -383,38 +375,41 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
     await negocioProvider.getlistaSucursales();
 
-    if(venta.tipo_movimiento == "V") {
+    if (venta.tipo_movimiento == "VT" || venta.tipo_movimiento == "VD") {
       final resultado = await ventaProvider.consultarventa(venta.idMovimiento!);
       isLoading = false;
       setState(() {});
-      if(resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+      if (resultado.status != 1) {
+        mostrarAlerta(
+            context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
       }
       Navigator.pushNamed(context, 'ventasD');
       return;
-
-
     }
 
-    if(venta.tipo_movimiento == "P") {
-      final resultado = await apartadoProvider.detallesApartado(venta.idMovimiento!);
+    if (venta.tipo_movimiento == "P") {
+      final resultado =
+          await apartadoProvider.detallesApartado(venta.idMovimiento!);
       isLoading = false;
       setState(() {});
-      if(resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+      if (resultado.status != 1) {
+        mostrarAlerta(
+            context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
       }
       Navigator.pushNamed(context, 'apartadosD');
       return;
     }
 
-    if(venta.tipo_movimiento == "A") {
-      final resultado = await abonoProvider.obtenerAbono(venta.idMovimiento.toString());
+    if (venta.tipo_movimiento == "A") {
+      final resultado =
+          await abonoProvider.obtenerAbono(venta.idMovimiento.toString());
       isLoading = false;
       setState(() {});
-      if(resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
+      if (resultado.status != 1) {
+        mostrarAlerta(
+            context, 'Error', resultado.mensaje ?? 'Intentalo mas tarde');
         return;
       }
       Navigator.pushNamed(context, 'abonoD');
@@ -435,18 +430,45 @@ class _HistorialScreenState extends State<HistorialScreen> {
       return Column(
         children: listaVentas.map((venta) {
           String text;
-          if (venta.tipo_movimiento! == 'V') {
-            text = 'Venta';
-          } else if (venta.tipo_movimiento! == 'P') {
-            text = 'Apartado';
-          } else {
-            text = 'Abono';
+          switch (venta.tipo_movimiento) {
+            case 'VD':
+              text = 'Venta domicilio';
+              break;
+            case 'VT':
+              text = 'Venta Tienda';
+              break;
+            case 'P':
+              text = 'Apartado';
+              break;
+            case 'A':
+              text = 'Abono';
+              break;
+            case 'E':
+              text = 'Entrega apartado';
+              break;
+            case 'CV':
+              text = 'Cancelacion venta';
+              break;
+            case 'CA':
+              text = 'Cancelacion apartado';
+              break;
+            default:
+              text = '';
+              break;
           }
+
           return ListTile(
-            title: Text('${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}'),
+            title: Text(
+              '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}',
+              style: TextStyle(
+                decoration:
+                    venta.cancelado == '1' ? TextDecoration.lineThrough : null,
+                color: venta.cancelado == '1' ? Colors.red : null,
+              ),
+            ),
             subtitle: Text(text),
             trailing: Text('\$${venta.total}'),
-            onTap: () => _getDetails(venta)
+            onTap: () => _getDetails(venta),
           );
         }).toList(),
       );

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -8,23 +7,54 @@ class VentasProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
-  Future<Resultado> guardarVenta(VentaCabecera venta) async {
-    var url = Uri.parse('$baseUrl/ventas/${sesion.idNegocio}');
-    try {
-      final resp = await http.post(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'usuario_id': sesion.idUsuario.toString(),
-        'cliente_id': venta.idCliente.toString(),
-        'subtotal': venta.subtotal!.toStringAsFixed(2),
-        'descuento_id': venta.idDescuento.toString(),
-        'descuento': venta.descuento!.toStringAsFixed(2),
-        'total': venta.total!.toStringAsFixed(2),
-        'pago_efectivo': venta.importeEfectivo!.toStringAsFixed(2),
-        'pago_tarjeta': venta.importeTarjeta!.toStringAsFixed(2),
-        'sucursal_id': sesion.idSucursal.toString(),
-      });
+  Future<Resultado> guardarVentaCompleta(
+      VentaCabecera cabecera, List<VentaDetalle> detalles) async {
+    var url = Uri.parse('$baseUrl/ventas-completa/${sesion.idNegocio}');
 
+    Map<String, dynamic> ventaData = {
+      'cabecera': {
+        'usuario_id': sesion.idUsuario.toString(),
+        'cliente_id': cabecera.idCliente.toString(),
+        'subtotal': cabecera.subtotal!.toStringAsFixed(2),
+        'descuento_id': cabecera.idDescuento.toString(),
+        'descuento': cabecera.descuento!.toStringAsFixed(2),
+        'total': cabecera.total!.toStringAsFixed(2),
+        'pago_efectivo': cabecera.importeEfectivo!.toStringAsFixed(2),
+        'pago_tarjeta': cabecera.importeTarjeta!.toStringAsFixed(2),
+        'tipo_venta': cabecera.tipoVenta.toString(),
+        'cambio': cabecera.cambio!.toStringAsFixed(2),
+        'sucursal_id': sesion.idSucursal.toString(),
+      },
+      'detalles': detalles.map((detalle) {
+        if (detalle.idDesc != 0) {
+          var descue = listaDescuentos
+              .firstWhere((descuento) => descuento.id == detalle.idDesc)
+              .valor;
+          detalle.cantidadDescuento = (detalle.total! * descue! / 100);
+          detalle.total = detalle.total! - detalle.cantidadDescuento!;
+        }
+
+        return {
+          'producto_id': detalle.idProd.toString(),
+          'cantidad': detalle.cantidad.toString(),
+          'precio': detalle.precio.toString(),
+          'subtotal': detalle.subtotal.toString(),
+          'descuento': detalle.cantidadDescuento.toString(),
+          'total': detalle.total.toString(),
+          'descuento_id': detalle.idDesc.toString(),
+          'id_sucursal': detalle.id_sucursal.toString(),
+        };
+      }).toList(),
+    };
+    try {
+      final resp = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${sesion.token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(ventaData),
+      );
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
@@ -37,48 +67,46 @@ class VentasProvider {
       }
     } catch (e) {
       respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion. $e';
+      respuesta.mensaje = 'Error en la petición: $e';
     }
+
     return respuesta;
   }
 
-  Future<Resultado> guardarVentaDetalle(VentaDetalle venta) async {
-    if (venta.idDesc != 0) {
-      var descue = listaDescuentos
-          .firstWhere((descuento) => descuento.id == venta.idDesc)
-          .valor;
-      venta.cantidadDescuento = (venta.total! * descue! / 100);
-      venta.total = venta.total! - venta.cantidadDescuento!;
-    }
-    var url = Uri.parse('$baseUrl/ventas-detalle/${venta.idVenta}');
+  Future<Resultado> ventasDia() async {
+    listaVentasDia.clear();
+    var url = Uri.parse('$baseUrl/ventas-dia/${sesion.idNegocio}');
     try {
-      final resp = await http.post(url, headers: {
+      final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'producto_id': venta.idProd.toString(),
-        'cantidad': venta.cantidad.toString(),
-        'precio': venta.precio.toString(),
-        'subtotal': venta.subtotal.toString(),
-        'descuento': venta.cantidadDescuento.toString(),
-        'total': venta.total.toString(),
-        'descuento_id': venta.idDesc.toString(),
-        'id_sucursal': venta.id_sucursal.toString(),
       });
-
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['ventas'].length; x++) {
+          VentaDia itemVenta = VentaDia(
+            idVenta: decodedData['ventas'][x]['id'],
+            folio: decodedData['ventas'][x]['folio'],
+            empleado: decodedData['ventas'][x]['name'],
+            sucursal: decodedData['ventas'][x]['nombre_sucursal'],
+            producto: decodedData['ventas'][x]['nombre'],
+            cantidad: decodedData['ventas'][x]['cantidad'],
+            precio: decodedData['ventas'][x]['precio'],
+            subtotal: decodedData['ventas'][x]['subtotal'],
+            total: decodedData['ventas'][x]['total'],
+            fechaVenta: decodedData['ventas'][x]['created_at'],
+          );
+          listaVentasDia.add(itemVenta);
+        }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        respuesta.id = decodedData['venta_id'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
       }
     } catch (e) {
       respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion. $e';
+      respuesta.mensaje = 'Error en la peticion: $e';
     }
-
     return respuesta;
   }
 
@@ -108,8 +136,7 @@ class VentasProvider {
               double.parse(decodedData['data'][x]['pago_efectivo']);
           ventasCabezera.importeTarjeta =
               double.parse(decodedData['data'][x]['pago_tarjeta']);
-          ventasCabezera.cancelado =
-              int.parse(decodedData['data'][x]['cancelado']);
+          ventasCabezera.cancelado = decodedData['data'][x]['cancelado'];
           ventasCabezera.fecha_venta = decodedData['data'][x]['fecha_venta'];
           ventasCabezera.fecha_cancelacion =
               decodedData['data'][x]['fecha_cancelacion'];
@@ -138,30 +165,32 @@ class VentasProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
-        VentaCabecera ventasCabezera = VentaCabecera();
-        ventasCabezera.id = decodedData['venta'][0]['id'];
-        ventasCabezera.negocioId = decodedData['venta'][0]['negocio_id'];
-        ventasCabezera.usuarioId = decodedData['venta'][0]['usuario_id'];
-        ventasCabezera.idCliente = decodedData['venta'][0]['cliente_id'];
-        ventasCabezera.folio = decodedData['venta'][0]['folio'];
-        ventasCabezera.subtotal =
+        VentaCabecera ventaCabecera = VentaCabecera();
+        ventaCabecera.id = decodedData['venta'][0]['id'];
+        ventaCabecera.negocioId = decodedData['venta'][0]['negocio_id'];
+        ventaCabecera.usuarioId = decodedData['venta'][0]['usuario_id'];
+        ventaCabecera.idCliente = decodedData['venta'][0]['cliente_id'];
+        ventaCabecera.id_sucursal = decodedData['venta'][0]['sucursal_id'];
+        ventaCabecera.folio = decodedData['venta'][0]['folio'];
+        ventaCabecera.subtotal =
             double.parse(decodedData['venta'][0]['subtotal']);
-        ventasCabezera.idDescuento = decodedData['venta'][0]['descuento_id'];
-        ventasCabezera.descuento =
+        ventaCabecera.idDescuento = decodedData['venta'][0]['descuento_id'];
+        ventaCabecera.descuento =
             double.parse(decodedData['venta'][0]['descuento']);
-        ventasCabezera.total = double.parse(decodedData['venta'][0]['total']);
-        ventasCabezera.importeEfectivo =
+        ventaCabecera.total = double.parse(decodedData['venta'][0]['total']);
+        ventaCabecera.importeEfectivo =
             double.parse(decodedData['venta'][0]['pago_efectivo']);
-        ventasCabezera.importeTarjeta =
+        ventaCabecera.importeTarjeta =
             double.parse(decodedData['venta'][0]['pago_tarjeta']);
-        ventasCabezera.fecha_venta = decodedData['venta'][0]['fecha_venta'];
-        ventasCabezera.fecha_cancelacion =
+        ventaCabecera.cambio = double.parse(decodedData['venta'][0]['cambio']);
+        ventaCabecera.fecha_venta = decodedData['venta'][0]['fecha_venta'];
+        ventaCabecera.fecha_cancelacion =
             decodedData['venta'][0]['fecha_cancelacion'];
-        ventasCabezera.cancelado =
-            int.parse(decodedData['venta'][0]['cancelado']);
-        ventasCabezera.nombreCliente =
-            decodedData['venta'][0]['cliente_nombre'];
-        listaVentaCabecera2.add(ventasCabezera);
+        ventaCabecera.cancelado = decodedData['venta'][0]['cancelado'];
+        ventaCabecera.nombreCliente = decodedData['venta'][0]['cliente_nombre'];
+        ventaCabecera.nombreSucursal =
+            decodedData['venta'][0]['nombre_sucursal'];
+        listaVentaCabecera2.add(ventaCabecera);
         for (int x = 0; x < decodedData['detalles'].length; x++) {
           VentaDetalle ventasDetalle = VentaDetalle();
           ventasDetalle.id = decodedData['detalles'][x]['id'];
@@ -267,6 +296,27 @@ class VentasProvider {
     } catch (e) {
       respuesta.status = 0;
 
+      respuesta.mensaje = 'Error en la peticion: $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> cancelarVenta(int idVenta) async {
+    var url = Uri.parse('$baseUrl/ventas-cancelar/$idVenta');
+    try {
+      final resp = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
       respuesta.mensaje = 'Error en la peticion: $e';
     }
     return respuesta;

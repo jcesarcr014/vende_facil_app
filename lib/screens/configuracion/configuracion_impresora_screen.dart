@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -69,7 +71,7 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
 
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
     connected = conexionStatus;
-    print('Conectado a la impresora:  - $conexionStatus');
+
     setState(() {
       isLoading = false;
       textLoading = '';
@@ -79,12 +81,8 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
         statusBluetoothScan.isGranted &&
         statusLocation.isGranted) {
     } else {
-      print('statusNearbyDevices: $statusNearbyDevices');
-      print('statusBluetoothConnect: $statusBluetoothConnect');
-      print('statusBluetoothScan: $statusBluetoothScan');
-      print('statusLocation: $statusLocation');
       mostrarAlerta(context, 'Atención',
-          'Debes otrogar los permisos necesarios para poder imprimir');
+          'Debes otrogar los permisos necesarios para poder imprimir. Vendo Facil es compatible con impresoras de 58 mm ');
     }
   }
 
@@ -103,7 +101,7 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       textLoading = '';
     });
 
-    if (listResult.length == 0) {
+    if (listResult.isEmpty) {
       _msj =
           "No hay impresoras vinculadas, por favor vincula una impresora en la configuración de Bluetooth.";
     } else {

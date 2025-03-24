@@ -41,7 +41,7 @@ class NegocioProvider {
 
   Future<Negocio> consultaNegocio() async {
     Negocio negocio = Negocio();
-    var url = Uri.parse('$baseUrl/negocio/${sesion.idUsuario}');
+    var url = Uri.parse('$baseUrl/negocio/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -67,29 +67,30 @@ class NegocioProvider {
     return negocio;
   }
 
-  Future<Negocio> consultaSucursal(String id) async {
-    Negocio negocio = Negocio();
+  Future<Sucursal> consultaSucursal(String id) async {
+    Sucursal sucursal = Sucursal();
     final url = Uri.parse('$baseUrl/sucursal-info/$id');
+
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
-        negocio.id = decodedData['data']['negocio_id'];
-        negocio.nombreNegocio = decodedData['data']['nombre_sucursal'];
-        negocio.direccion = decodedData['data']['direccion'];
-        negocio.telefono = decodedData['data']['telefono'];
+        sucursal.id = decodedData['data']['id'];
+        sucursal.negocioId = decodedData['data']['negocio_id'];
+        sucursal.nombreSucursal = decodedData['data']['nombre_sucursal'];
+        sucursal.direccion = decodedData['data']['direccion'];
+        sucursal.telefono = decodedData['data']['telefono'];
       } else {
-        negocio.id = 0;
-        negocio.nombreNegocio = decodedData['msg'];
+        sucursal.id = 0;
+        sucursal.nombreSucursal = decodedData['msg'];
       }
     } catch (e) {
-      negocio.id = 0;
-      negocio.nombreNegocio = 'Error en la petición. $e';
+      sucursal.id = 0;
+      sucursal.nombreSucursal = 'Error en la petición. $e';
     }
-    return negocio;
+    return sucursal;
   }
 
   Future<Resultado> editaNegocio(Negocio negocio) async {
@@ -311,9 +312,9 @@ class NegocioProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      if (sesion.tipoUsuario == 'E') {
-        sesion.idSucursal = decodedData['data'][0]['sucursal_id'];
-      }
+      // if (sesion.tipoUsuario == 'E') {
+      //   sesion.idSucursal = decodedData['data'][0]['sucursal_id'];
+      // }
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

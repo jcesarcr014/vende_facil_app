@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
-import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 
 class InventoryPage extends StatefulWidget {
@@ -86,18 +85,16 @@ class _InventoryPageState extends State<InventoryPage> {
       canPop: false,
       onPopInvoked: (didpop) {
         if (!didpop) {
-          Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false,);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            'products-menu',
+            (route) => false,
+          );
         }
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('INVENTARIOS'),
-          actions: [
-            IconButton(
-                onPressed: () =>
-                    showSearch(context: context, delegate: Searchproductos()),
-                icon: const Icon(Icons.search)),
-          ],
         ),
         body: (isLoading)
             ? Center(
@@ -140,7 +137,7 @@ class _InventoryPageState extends State<InventoryPage> {
       ),
     );
   }
-  
+
   Producto searchProductos(int id) {
     return listaProductosSucursal.firstWhere(
       (producto) => producto.id == id,
@@ -163,11 +160,13 @@ class _InventoryPageState extends State<InventoryPage> {
                   ),
                   onTap: (() {
                     Producto productoData = searchProductos(producto.id!);
-                    if(productoData.id == 0) {
-                      mostrarAlerta(context, 'ERROR', 'Error al obtener la información del ${productoData.producto} con el ID ${productoData.id}');
+                    if (productoData.id == 0) {
+                      mostrarAlerta(context, 'ERROR',
+                          'Error al obtener la información del ${productoData.producto} con el ID ${productoData.id}');
                       return;
                     }
-                    Navigator.pushNamed(context, 'detalles-producto-sucursal', arguments: productoData);
+                    Navigator.pushNamed(context, 'detalles-producto-sucursal',
+                        arguments: productoData);
                   }),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

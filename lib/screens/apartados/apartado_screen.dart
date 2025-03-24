@@ -6,6 +6,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ApartadoDetalleScreen extends StatefulWidget {
   const ApartadoDetalleScreen({super.key});
@@ -24,6 +25,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
   double total = 0.0;
   int cantidad = 0;
   bool isPrinted = false;
+  bool x2ticket = false;
 
   final efectivoController = TextEditingController();
   final tarjetaController = TextEditingController();
@@ -212,8 +214,27 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(
                       children: [
-                        Checkbox(value: isPrinted, onChanged: (value) => setState(() {isPrinted = value!;})),
-                        Text('Imprimir ticket')
+                        Row(
+                          children: [
+                            Checkbox(
+                                value: isPrinted,
+                                onChanged: (value) => setState(() {
+                                      isPrinted = value!;
+                                    })),
+                            Text('Imprimir ticket')
+                          ],
+                        ),
+                        if (isPrinted)
+                          Row(
+                            children: [
+                              Checkbox(
+                                  value: x2ticket,
+                                  onChanged: (value) => setState(() {
+                                        x2ticket = value!;
+                                      })),
+                              Text('Imprimir copia')
+                            ],
+                          )
                       ],
                     ),
                   ),
@@ -272,7 +293,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
         textLoading = 'Guardando datos';
       });
       final fechaActual = DateTime(now.year, now.month, now.day);
-      DateFormat fechaFormateada = DateFormat('yyyy-MM-dd');
+      // DateFormat fechaFormateada = DateFormat('yyyy-MM-dd');
       formattedEndDate = dateFormatter.format(_fechaVencimiento);
       apartado.pagoEfectivo =
           double.parse(efectivoController.text.replaceAll(',', ''));
@@ -280,72 +301,68 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
           double.parse(tarjetaController.text.replaceAll(',', ''));
       apartado.anticipo = totalAnticipo;
       apartado.saldoPendiente = apartado.total! - totalAnticipo;
-      apartado.fechaApartado = fechaFormateada.format(fechaActual);
+      apartado.fechaApartado = fechaActual.toString();
       apartado.fechaVencimiento = fechaController.text;
+      List<ApartadoDetalle> detalles = [];
+      for (ItemVenta item in ventaTemporal) {
+        ApartadoDetalle apartadoDetalle = ApartadoDetalle(
+          productoId: item.idArticulo,
+          cantidad: item.cantidad,
+          precio: item.precioPublico,
+          subtotal: item.subTotalItem,
+          descuentoId: apartado.descuentoId,
+          descuento: item.descuento,
+          total: item.totalItem,
+        );
+        detalles.add(apartadoDetalle);
+      }
 
-      apartadosCabecera.guardaApartadoSucursal(apartado).then((respCabecera) async {
-        if (respCabecera.status == 1) {
-          int contador = ventaTemporal.length;
-          for (ItemVenta item in ventaTemporal) {
-            ApartadoDetalle apartadoDetalle = ApartadoDetalle(
-              apartadoId: respCabecera.id,
-              productoId: item.idArticulo,
-              cantidad: item.cantidad,
-              precio: item.precioPublico,
-              subtotal: item.subTotalItem,
-              descuentoId: apartado.descuentoId,
-              descuento: item.descuento,
-              total: item.totalItem,
-
-            );
-            await apartadosCabecera.guardaApartadoDetalle(apartadoDetalle).then((respDetalle) async {
-              if (respDetalle.status == 1) {
-                contador--;
-                if (contador == 0) {
-                  setState(() {
-                    textLoading = '';
-                    isLoading = false;
-                    totalVentaTemporal = 0.0;
-                  });
-                  
-                  if(isPrinted) {
-                    final result = 
-                      await impresionesTicket.
-                      imprimirApartado(apartadoDetalle, totalAnticipo, double.parse(totalCompra) - totalAnticipo, double.parse(tarjetaController.text), double.parse(efectivoController.text));
-                    if(result.status == 1) {
-                      Navigator.pushReplacementNamed(context, 'home');
-                      ventaTemporal.clear();
-                      return;
-                    }
-                    isLoading = false;
-                    setState(() {});
-                    mostrarAlerta(context, 'Error', result.mensaje ?? 'Algo salio mal');
-                    return;
-                  }
-                  Navigator.pushReplacementNamed(context, 'home');
-                  mostrarAlerta(context, '', 'Apartado realizada');
-                }
-              } else {
-                setState(() {
-                  textLoading = '';
-                  isLoading = false;
-                });
-                mostrarAlerta(context, 'ERROR',
-                    'Ocurrio el siguiente error: ${respDetalle.mensaje}');
-              }
-              return;
+      apartadosCabecera
+          .guardaApartadoCompleto(apartado, detalles)
+          .then((resp) async {
+        if (resp.status == 1) {
+          if (isPrinted) {
+            setState(() {
+              textLoading = 'Imprimiendo ticket';
             });
+            final result = await impresionesTicket.imprimirApartado(
+                apartado,
+                totalAnticipo,
+                double.parse(totalCompra) - totalAnticipo,
+                double.parse(tarjetaController.text),
+                double.parse(efectivoController.text),
+                x2ticket);
+            setState(() {
+              textLoading = '';
+              isLoading = false;
+            });
+            if (result.status == 1) {
+              Navigator.pushReplacementNamed(context, 'home');
+              ventaTemporal.clear();
+              mostrarAlerta(context, '', 'Venta realizada');
+              return;
+            }
+            isLoading = false;
+            setState(() {});
+            mostrarAlerta(context, 'Error', result.mensaje ?? 'Algo salio mal');
+            return;
           }
-
-
-          ventaTemporal.clear();
+          setState(() {
+            ventaTemporal.clear();
+            textLoading = '';
+            isLoading = false;
+            totalVentaTemporal = 0.0;
+            globals.actualizaArticulos = true;
+          });
+          Navigator.pushReplacementNamed(context, 'home');
+          mostrarAlerta(context, '', 'Apartado realizada');
         } else {
           setState(() {
-            isLoading = false;
             textLoading = '';
+            isLoading = false;
           });
-          mostrarAlerta(context, 'ERROR',
-              'Ocurrio un error al guardar la información: ${respCabecera.mensaje}.');
+          mostrarAlerta(
+              context, 'ERROR', 'Ocurrio el siguiente error: ${resp.mensaje}');
         }
       });
     }

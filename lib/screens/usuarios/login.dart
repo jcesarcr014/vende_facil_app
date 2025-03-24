@@ -120,9 +120,13 @@ class _LoginScreenState extends State<LoginScreen> {
             mostrarAlerta(context, 'Bienvenido',
                 '¡Bienvenido de vuelta!. Registre los datos de su negocio en la opción Empresa del menú, para que pueda acceder a todas las opciones de la aplicación.');
           } else {
-            // ignore: duplicate_ignore
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacementNamed(context, 'menu');
+            if (sesion.tipoUsuario == 'E') {
+              Navigator.pushReplacementNamed(context, 'menu');
+              mostrarAlerta(context, 'Bienvenido',
+                  'Hola ${sesion.nombreUsuario}, estas en la sucursal ${sesion.sucursal}');
+            } else {
+              Navigator.pushReplacementNamed(context, 'menu');
+            }
           }
         } else {
           setState(() {
@@ -193,11 +197,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: windowHeight * 0.1,
                           ),
                           InputField(
-                              icon: Icons.person,
-                              labelText: 'Usuario',
+                              icon: Icons.email,
+                              labelText: 'Correo',
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'El usuario es obligatorio';
+                                  return 'El correo es obligatorio';
                                 }
                                 return null;
                               },
@@ -257,7 +261,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                   child: const Text('Registrarse'))
                             ],
-                          )
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, 'recupera');
+                                  },
+                                  child:
+                                      const Text('¿Olvidaste tu contraseña?'))
+                            ],
+                          ),
                         ],
                       ),
                     ),

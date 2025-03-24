@@ -1,11 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:vende_facil/util/limpia_datos.dart';
+import 'package:vende_facil/widgets/widgets.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -16,6 +15,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   final usuarioProvider = UsuarioProvider();
+  final limpiaDatos = LimpiaDatos();
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -42,7 +42,7 @@ class _MenuScreenState extends State<MenuScreen> {
         ];
         menuRoutes = [
           'home',
-          'nvo-abono',
+          'menuAbonos',
           'historial_empleado',
           'productos',
           'categorias',
@@ -71,20 +71,20 @@ class _MenuScreenState extends State<MenuScreen> {
           'Clientes',
           'Empresa',
           'Configuracion',
-          'Mi suscripción',
+          // 'Mi suscripción',
           'Cerrar Sesión'
         ];
         menuRoutes = [
           'home',
           'menuAbonos',
-          'historial',
+          'menu-historial',
           'productos',
           'categorias',
           'descuentos',
           'clientes',
           'menu-negocio',
           'config',
-          'suscripcion',
+          // 'suscripcion',
           'login'
         ];
 
@@ -98,7 +98,7 @@ class _MenuScreenState extends State<MenuScreen> {
           'assets/i_clientes.png',
           'assets/i_empresa.png',
           'assets/i_ajustes.png',
-          'assets/i_suscripcion.png',
+          // 'assets/i_suscripcion.png',
           'assets/i_salir.png',
         ];
       }
@@ -106,16 +106,21 @@ class _MenuScreenState extends State<MenuScreen> {
       menuItems = [
         'Empresa',
         'Configuracion',
-        'Mi suscripción',
+        // 'Mi suscripción',
         'Cerrar Sesión'
       ];
 
-      menuRoutes = ['menu-negocio', 'config', 'suscripcion', 'login'];
+      menuRoutes = [
+        'menu-negocio',
+        'config',
+        //  'suscripcion',
+        'login'
+      ];
 
       menuIcons = [
         'assets/i_empresa.png',
         'assets/i_ajustes.png',
-        'assets/i_suscripcion.png',
+        // 'assets/i_suscripcion.png',
         'assets/i_salir.png',
       ];
     }
@@ -162,9 +167,17 @@ class _MenuScreenState extends State<MenuScreen> {
             return GestureDetector(
               onTap: () async {
                 if (menuRoutes[index] == 'login') {
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  prefs.setString('token', '');
+                  UsuarioProvider().logout().then((value) async {
+                    if (value.status == 1) {
+                      limpiaDatos.limpiaDatos();
+                      final SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      prefs.setString('token', '');
+                      Navigator.pushReplacementNamed(context, 'login');
+                    } else {
+                      mostrarAlerta(context, "Alerta", value.mensaje!);
+                    }
+                  });
                 }
 
                 if (menuRoutes[index] == 'home' && sesion.tipoUsuario == "P") {
@@ -177,15 +190,9 @@ class _MenuScreenState extends State<MenuScreen> {
                   return;
                 }
 
-                if(sesion.tipoUsuario == 'E' && menuRoutes[index] == 'historial_empleado') {
-                  var result = await mostrarAlertaConInput(context, 'Ingrese una cantidad');
-                  if(result != null && result.isNotEmpty) {
-                    Navigator.pushReplacementNamed(context, menuRoutes[index], arguments: double.parse(result));
-                    return;
-                  }
-
-                  mostrarAlerta(context, 'Error', 'Di la cantidad');
-                  return;
+                if (sesion.tipoUsuario == 'E' &&
+                    menuRoutes[index] == 'historial_empleado') {
+                  Navigator.pushReplacementNamed(context, menuRoutes[index]);
                 }
 
                 Navigator.pushReplacementNamed(context, menuRoutes[index]);

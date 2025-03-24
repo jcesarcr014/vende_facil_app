@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:vende_facil/models/apartado_cab_model.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/screens/screens.dart';
 
 class AgregarAbonoScreen extends StatefulWidget {
   const AgregarAbonoScreen({super.key});
@@ -12,7 +11,7 @@ class AgregarAbonoScreen extends StatefulWidget {
 }
 
 class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
-  final apartados = ApartadoProvider();
+  final apartadosProvider = ApartadoProvider();
 
   bool isLoading = false;
   String textLoading = '';
@@ -24,11 +23,11 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
     super.initState();
 
     setState(() {
-      textLoading = 'Leyendo apartados';
+      textLoading = 'Leyendo apartados pendientes.';
       isLoading = true;
     });
 
-    apartados.listarApartados().then((value) {
+    apartadosProvider.apartadosPendientesNegocio().then((value) {
       setState(() {
         textLoading = '';
         isLoading = false;
@@ -95,24 +94,24 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
         appBar: AppBar(
           title: const Text('Abono a venta'),
           automaticallyImplyLeading: true,
-          actions: [
-            // ignore: sized_box_for_whitespace
-            Container(
-              width: 150,
-              child: TextField(
-                onTap: () {
-                  showSearch(context: context, delegate: SearchAbonos());
-                },
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Buscar...',
-                  hintStyle: TextStyle(color: Colors.white),
-                  prefixIconColor: Colors.white,
-                  iconColor: Colors.white,
-                ),
-              ),
-            ),
-          ],
+          // actions: [
+          //   // ignore: sized_box_for_whitespace
+          //   Container(
+          //     width: 150,
+          //     child: TextField(
+          //       onTap: () {
+          //         showSearch(context: context, delegate: SearchAbonos());
+          //       },
+          //       decoration: const InputDecoration(
+          //         prefixIcon: Icon(Icons.search),
+          //         hintText: 'Buscar...',
+          //         hintStyle: TextStyle(color: Colors.white),
+          //         prefixIconColor: Colors.white,
+          //         iconColor: Colors.white,
+          //       ),
+          //     ),
+          //   ),
+          // ],
         ),
         // drawer: const Menu(),
         body: (isLoading)
@@ -120,16 +119,16 @@ class _AgregarAbonoScreenState extends State<AgregarAbonoScreen> {
                 child: CircularProgressIndicator(),
               )
             : ListView.builder(
-                itemCount: listaApartados.length,
+                itemCount: listaApartadosPendientes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    title: Text(listaApartados[index].nombreCliente!),
+                    title: Text(listaApartadosPendientes[index].nombreCliente!),
                     subtitle: Text(
-                        '${listaApartados[index].folio} - ${DateFormat('yyyy-MM-dd').format(DateFormat('yyyy-MM-dd HH:mm:ss').parse(listaApartados[index].fechaVencimiento!))}'),
-                    trailing: getStatusIcon(listaApartados[index]),
+                        '${listaApartadosPendientes[index].folio} - ${DateFormat('yyyy-MM-dd').format(DateTime.parse(listaApartadosPendientes[index].fechaVencimiento!))}'),
+                    trailing: getStatusIcon(listaApartadosPendientes[index]),
                     onTap: () {
-                      apartados
-                          .detallesApartado(listaApartados[index].id!)
+                      apartadosProvider
+                          .detallesApartado(listaApartadosPendientes[index].id!)
                           .then((value) {
                         setState(() {
                           textLoading = '';

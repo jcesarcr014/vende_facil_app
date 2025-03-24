@@ -4,38 +4,36 @@ import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
 
 class SucursalesAbonoScreen extends StatefulWidget {
-  const SucursalesAbonoScreen({super.key});
+  final int? indice;
+  const SucursalesAbonoScreen({this.indice, super.key});
 
   @override
   State<SucursalesAbonoScreen> createState() => _SucursalesAbonoScreenState();
 }
 
 class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
-  String? _valueIdSucursal = '0'; 
+  late int indiceRecibido;
+  String _valueIdSucursal = '0';
   final apartadoProvider = ApartadoProvider();
-  final sucursal = NegocioProvider();
+  final sucursalProvider = NegocioProvider();
   bool isLoading = false;
   double windowHeight = 0.0;
   String textLoading = '';
+
   @override
   initState() {
+    super.initState();
     setState(() {
       textLoading = 'Cargar Sucursales';
       isLoading = true;
     });
-    cargar();
-    super.initState();
-  }
-
-  cargar() async {
-    await sucursal.getlistaSucursales().then(
-      (value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-        });
-      },
-    );
+    sucursalProvider.getlistaSucursales().then((resp) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+      });
+    });
+    indiceRecibido = widget.indice ?? 0;
   }
 
   @override
@@ -43,7 +41,7 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seleccionar Sucursal'),
+        title: const Text('Leyendo sucursales'),
         automaticallyImplyLeading: true,
       ),
       body: (isLoading)
@@ -71,19 +69,7 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
                       width: 300,
                       height: 70,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          final sucursalSeleccionada = listaSucursales.firstWhere((sucursal) => sucursal.id.toString() == _valueIdSucursal);
-                          sesion.idSucursal = sucursalSeleccionada.id;
-                          await apartadoProvider.listarApartados().then((value) {
-                            if (value.status == 1) {
-                              sesion.cotizar = false;
-                              Navigator.pushReplacementNamed(context,'nvo-abono');
-                            } else {
-                              mostrarAlerta(context, "Error ",
-                                  "Nose pudo cargar  los productos");
-                            }
-                          });
-                        },
+                        onPressed: _buscarApartados,
                         child: const Text(
                           'Aceptar',
                           style: TextStyle(
@@ -115,10 +101,6 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
       }
     }
 
-    if (_valueIdSucursal == null || _valueIdSucursal!.isEmpty) {
-      _valueIdSucursal = '0';
-    }
-
     return DropdownButton<String>(
       items: listaSucursalesItems,
       isExpanded: true,
@@ -129,5 +111,42 @@ class _SucursalesAbonoScreenState extends State<SucursalesAbonoScreen> {
         });
       },
     );
+  }
+
+  void _buscarApartados() {
+    if (_valueIdSucursal == '0') {
+      mostrarAlerta(context, 'Atención', 'Debe seleccionar una sucursal');
+    } else {
+      setState(() {
+        isLoading = true;
+        textLoading = 'Leyendo movimientos';
+      });
+      sesion.idSucursal = int.parse(_valueIdSucursal);
+      if (indiceRecibido == 1) {
+        apartadoProvider.apartadosPendientesSucursal().then((resp) {
+          setState(() {
+            isLoading = false;
+            textLoading = '';
+          });
+          if (resp.status == 1) {
+            Navigator.pushNamed(context, 'lista-apartados', arguments: 1);
+          } else {
+            mostrarAlerta(context, 'ERROR', 'Ocurrio un error ${resp.mensaje}');
+          }
+        });
+      } else {
+        apartadoProvider.apartadosPagadosSucursal().then((resp) {
+          setState(() {
+            isLoading = false;
+            textLoading = '';
+          });
+          if (resp.status == 1) {
+            Navigator.pushNamed(context, 'lista-apartados', arguments: 1);
+          } else {
+            mostrarAlerta(context, 'ERROR', 'Ocurrio un error ${resp.mensaje}');
+          }
+        });
+      }
+    }
   }
 }

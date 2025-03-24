@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, camel_case_types, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
@@ -32,6 +33,7 @@ class _ventaScreenState extends State<VentaScreen> {
   double total = 0.0;
 
   bool isPrinted = false;
+  bool x2ticket = false;
 
   @override
   void initState() {
@@ -195,12 +197,38 @@ class _ventaScreenState extends State<VentaScreen> {
                     padding: const EdgeInsets.only(left: 20),
                     child: Row(
                       children: [
-                        Checkbox(
-                            value: isPrinted,
-                            onChanged: (value) => setState(() {
-                                  isPrinted = value!;
-                                })),
-                        Text('Imprimir ticket')
+                        Row(
+                          children: [
+                            Checkbox(
+                                value: isPrinted,
+                                onChanged: (value) {
+                                  SharedPreferences.getInstance().then((prefs) {
+                                    String mac =
+                                        prefs.getString('macPrinter') ?? '';
+                                    if (mac.isEmpty) {
+                                      mostrarAlerta(context, 'Atencion',
+                                          'No tienes una impresora configurada');
+                                    } else {
+                                      setState(() {
+                                        isPrinted = value!;
+                                      });
+                                    }
+                                  });
+                                }),
+                            Text('Imprimir ticket')
+                          ],
+                        ),
+                        if (isPrinted)
+                          Row(
+                            children: [
+                              Checkbox(
+                                  value: x2ticket,
+                                  onChanged: (value) => setState(() {
+                                        x2ticket = value!;
+                                      })),
+                              Text('Imprimir copia')
+                            ],
+                          )
                       ],
                     ),
                   ),
@@ -299,71 +327,65 @@ class _ventaScreenState extends State<VentaScreen> {
   }
 
   _compra(VentaCabecera venta) async {
-    int idCabecera = 0;
-    int detallesGuardadosCorrectamente = 0;
     setState(() {
       isLoading = true;
       textLoading = 'Guardando venta';
     });
     venta.importeTarjeta = tarjeta;
     venta.importeEfectivo = totalEfectivo;
+    venta.cambio = double.parse(CambioController.text);
+    venta.id_sucursal = sesion.idSucursal;
+    //AQUI EMPIEZ NUEVO CODIGO
+    List<VentaDetalle> detalles = ventaTemporal
+        .map((item) => VentaDetalle(
+              idVenta: 0, // Este ID se asignará en el backend
+              idProd: item.idArticulo,
+              cantidad: item.cantidad,
+              precio: item.precioPublico,
+              idDesc: venta.idDescuento,
+              cantidadDescuento: venta.descuento,
+              total: item.totalItem,
+              subtotal: item.subTotalItem,
+              id_sucursal: sesion.idSucursal,
+            ))
+        .toList();
 
-    await ventaCabecera.guardarVenta(venta).then((respCab) async {
-      if (respCab.status == 1) {
-        idCabecera = respCab.id!;
-        for (ItemVenta item in ventaTemporal) {
-          VentaDetalle ventaDetalle = VentaDetalle(
-            idVenta: idCabecera,
-            idProd: item.idArticulo,
-            cantidad: item.cantidad,
-            precio: item.precioPublico,
-            idDesc: venta.idDescuento,
-            cantidadDescuento: venta.descuento,
-            total: item.totalItem,
-            subtotal: item.subTotalItem,
-          );
-
-          await ventaCabecera.guardarVentaDetalle(ventaDetalle).then((respDet) {
-            if (respDet.status == 1) {
-              detallesGuardadosCorrectamente++;
-            } else {
-              setState(() {
-                isLoading = false;
-                textLoading = '';
-              });
-              mostrarAlerta(context, 'ERROR', respDet.mensaje!);
-            }
-          });
-        }
-        if (detallesGuardadosCorrectamente == ventaTemporal.length) {
-          if (isPrinted) {
-            Resultado respuestaImp = await impresionesTickets.imprimirVenta(
-                venta, tarjeta, efectivo, cambio);
-            if (respuestaImp.status != 1) {
-              mostrarAlerta(context, 'ERROR',
-                  'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
-            }
-          }
-
-          setState(() {
-            textLoading = '';
-            isLoading = false;
-          });
-          ventaTemporal.clear();
-          setState(() {});
-          totalVentaTemporal = 0.0;
-          globals.actualizaArticulos = true;
-          Navigator.pushReplacementNamed(context, 'home');
-
-          mostrarAlerta(context, '', 'Venta realizada');
-        }
-      } else {
+    final respuesta = await ventaCabecera.guardarVentaCompleta(venta, detalles);
+    if (respuesta.status == 1) {
+      // Imprimir ticket si es necesario
+      if (isPrinted) {
         setState(() {
-          isLoading = false;
-          textLoading = '';
+          textLoading = 'Imprimiendo ticket';
         });
-        mostrarAlerta(context, 'ERROR', respCab.mensaje!);
+        final respuestaImp = await impresionesTickets.imprimirVenta(
+            venta, tarjeta, efectivo, cambio, x2ticket);
+
+        setState(() {
+          textLoading = '';
+          isLoading = false;
+        });
+        if (respuestaImp.status != 1) {
+          mostrarAlerta(context, 'ERROR',
+              'No fue posible imprimir el ticket: ${respuestaImp.mensaje}');
+        }
       }
-    });
+      setState(() {
+        ventaTemporal.clear();
+        totalVentaTemporal = 0.0;
+        globals.actualizaArticulos = true;
+        isLoading = false;
+        textLoading = '';
+      });
+
+      // Navegar a home y mostrar mensaje de éxito
+      Navigator.pushReplacementNamed(context, 'home');
+      mostrarAlerta(context, '', 'Venta realizada');
+    } else {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      mostrarAlerta(context, 'ERROR', respuesta.mensaje!);
+    }
   }
 }

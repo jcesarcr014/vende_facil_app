@@ -8,7 +8,7 @@ class InputField extends StatelessWidget {
   final String? labelText;
   final String? helperText;
   final IconData? icon;
-  final Widget? suffixIcon; 
+  final Widget? suffixIcon;
   final TextInputType? keyboardType;
   final Function(String)? onChanged;
   final TextCapitalization textCapitalization;
@@ -19,7 +19,9 @@ class InputField extends StatelessWidget {
   final Map<String, String>? formValues;
   final String? Function(String?)? validator;
   final String? errorText;
-  final List<TextInputFormatter>? inputFormatters; // Nuevo parámetro
+  final List<TextInputFormatter>? inputFormatters;
+  final int maxLines;
+  final double? height;
 
   const InputField({
     Key? key,
@@ -38,34 +40,40 @@ class InputField extends StatelessWidget {
     this.validator,
     this.errorText,
     this.formValues,
-    this.inputFormatters, // Agregar inputFormatters como parámetro
+    this.inputFormatters,
+    this.maxLines = 1,
+    this.height,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      autofocus: false,
-      validator: validator,
-      readOnly: readOnly,
-      enabled: enabled,
-      textCapitalization: textCapitalization,
-      keyboardType: keyboardType ?? TextInputType.text,
-      obscureText: obscureText,
-      onChanged: onChanged,
-      inputFormatters: inputFormatters, // Agregar inputFormatters al TextFormField
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+    return SizedBox(
+      height: height,
+      child: TextFormField(
+        controller: controller,
+        autofocus: false,
+        validator: validator,
+        readOnly: readOnly,
+        enabled: enabled,
+        maxLines: maxLines,
+        textCapitalization: textCapitalization,
+        keyboardType: keyboardType ?? TextInputType.text,
+        obscureText: obscureText,
+        onChanged: onChanged,
+        inputFormatters:
+            inputFormatters, // Agregar inputFormatters al TextFormField
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          hintText: hintText,
+          labelText: labelText,
+          errorText: errorText,
+          helperText: helperText,
+          suffixIcon: suffixIcon,
+          icon: icon == null ? null : Icon(icon),
         ),
-        hintText: hintText,
-        labelText: labelText,
-        errorText: errorText,
-        helperText: helperText,
-        suffixIcon: suffixIcon,
-        icon: icon == null ? null : Icon(icon),
       ),
     );
   }
 }
-

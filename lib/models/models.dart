@@ -1,4 +1,4 @@
-export 'package:vende_facil/models/apartado_pagado_model.dart';
+export 'package:vende_facil/models/venta_dia_model.dart';
 export 'package:vende_facil/models/ticket_model.dart';
 export 'package:vende_facil/models/apartado_cab_model.dart';
 export 'package:vende_facil/models/apartado_detalle_model.dart';
@@ -24,3 +24,5 @@ export 'package:vende_facil/models/sucursales_model.dart';
 export 'package:vende_facil/models/sucursalEmpleado_model.dart';
 export 'package:vende_facil/models/cotizacion_model.dart';
 export 'package:vende_facil/models/cotizacion_detalle_model.dart';
+export 'package:vende_facil/models/corte_model.dart';
+export 'package:vende_facil/models/movimiento_model.dart';

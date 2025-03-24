@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:vende_facil/mappers/sucursal_mapper.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -65,30 +64,38 @@ class UsuarioProvider {
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
+        sesion.limpiar();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = token;
         sesion.idUsuario = decodedData['usuario']['id'];
-        sesion.idNegocio = decodedData['empresa_id'];
-        sesion.tipoUsuario = decodedData['tipo_usuario'];
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
-        sesion.nombreUsuario = decodedData['usuario']['name'];
+        sesion.idNegocio = decodedData['empresa_id'];
+        sesion.tipoUsuario = decodedData['tipo_usuario'];
         sesion.cotizar = false;
+        listaSucursales.clear();
+        for (int x = 0; x < decodedData['sucursales'].length; x++) {
+          Sucursal sucursalTemp = Sucursal();
+          sucursalTemp.id = decodedData['sucursales'][x]['id'];
+          sucursalTemp.nombreSucursal =
+              decodedData['sucursales'][x]['nombre_sucursal'];
+          sucursalTemp.direccion = decodedData['sucursales'][x]['direccion'];
+          sucursalTemp.telefono = decodedData['sucursales'][x]['telefono'];
+          listaSucursales.add(sucursalTemp);
+        }
+
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-          listaSucursales.clear();
-          List<dynamic> sucursalesJson = decodedData['sucursales'];
-          List<Sucursal> sucursales = sucursalesJson
-              .map((json) => SucursalMapper.dataToSucursalModel(json))
-              .toList();
-          listaSucursales.addAll(sucursales);
+
           globals.actualizaSucursales = false;
         } else {
-          globals.actualizaSucursales = false;
-          sesion.idSucursal = decodedData["sucursales"];
+          globals.actualizaArticulos = true;
+          globals.actualizaArticulosCotizaciones = true;
+          sesion.idSucursal = decodedData["sucursales"][0]['id'];
+          sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
       } else {
         respuesta.status = 0;
@@ -112,6 +119,7 @@ class UsuarioProvider {
       if (decodedData['status'] == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', decodedData['token']);
+        sesion.limpiar();
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.token = decodedData['token'];
@@ -122,19 +130,24 @@ class UsuarioProvider {
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.cotizar = false;
+        listaSucursales.clear();
+        for (int x = 0; x < decodedData['sucursales'].length; x++) {
+          Sucursal sucursalTemp = Sucursal();
+          sucursalTemp.id = decodedData['sucursales'][x]['id'];
+          sucursalTemp.nombreSucursal =
+              decodedData['sucursales'][x]['nombre_sucursal'];
+          sucursalTemp.direccion = decodedData['sucursales'][x]['direccion'];
+          sucursalTemp.telefono = decodedData['sucursales'][x]['telefono'];
+          listaSucursales.add(sucursalTemp);
+        }
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-          listaSucursales.clear();
-          List<dynamic> sucursalesJson = decodedData['sucursales'];
-          List<Sucursal> sucursales = sucursalesJson
-              .map((json) => SucursalMapper.dataToSucursalModel(json))
-              .toList();
-          listaSucursales.addAll(sucursales);
         } else {
           globals.actualizaArticulos = true;
           globals.actualizaArticulosCotizaciones = true;
-          sesion.idSucursal = decodedData["sucursales"];
+          sesion.idSucursal = decodedData["sucursales"][0]['id'];
+          sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
       } else {
         respuesta.status = 0;
@@ -250,6 +263,27 @@ class UsuarioProvider {
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+      if (decodedData['status'] == 1) {
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la peticion, $e';
+    }
+    return respuesta;
+  }
+
+  Future<Resultado> recuperaPass(String email) async {
+    var url = Uri.parse('$baseUrl/recupera-contrasena');
+    try {
+      final resp = await http.post(url, body: {
+        'email': email,
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {

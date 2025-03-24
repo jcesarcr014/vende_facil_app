@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
 
 class QRScannerScreen extends StatefulWidget {
+  const QRScannerScreen({super.key});
+
   @override
-  _QRScannerScreenState createState() => _QRScannerScreenState();
+  State<QRScannerScreen> createState() => _QRScannerScreenState();
 }
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
@@ -29,7 +31,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     setState(() {
                       _isScanning = false; // Detenemos el escaneo
                     });
-                    Navigator.pop(context, code); // Devolvemos el código y cerramos la pantalla
+                    Navigator.pop(context,
+                        code); // Devolvemos el código y cerramos la pantalla
                   }
                 },
                 child: Container(
@@ -38,7 +41,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   color: Colors.transparent,
                 ),
               )
-            : const Center(child: CircularProgressIndicator()), // Indicador de carga si el escaneo se detiene
+            : const Center(
+                child:
+                    CircularProgressIndicator()), // Indicador de carga si el escaneo se detiene
       ),
     );
   }

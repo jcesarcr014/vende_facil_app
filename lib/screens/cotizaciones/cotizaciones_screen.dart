@@ -1,9 +1,7 @@
-// ignore_for_file: non_constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/screens/search_screen.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
 
@@ -18,56 +16,42 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   final articulosProvider = ArticuloProvider();
   final categoriasProvider = CategoriaProvider();
   final descuentoProvider = DescuentoProvider();
-  final clienteProvider = ClienteProvider();
-  final apartadoProvider = ApartadoProvider();
-  final CantidadConttroller = TextEditingController();
-  final TotalConttroller = TextEditingController();
-  final EfectivoConttroller = TextEditingController();
-  final TarjetaConttroller = TextEditingController();
-  final CambioConttroller = TextEditingController();
+  final cantidadConttroller = TextEditingController();
+  final busquedaController = TextEditingController();
+  List<Producto> productosFiltrados = [];
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
 
-  late bool isEmployee;
+  @override
+  void dispose() {
+    busquedaController.dispose();
+    cantidadConttroller.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
-    listacotizacion.clear();
     _actualizaTotalTemporal();
-    /*
-    if (globals.actualizaArticulosCotizaciones) {
-      isEmployee = true;
+    setState(() {
+      textLoading = 'Actualizando listado de productos';
+      isLoading = true;
+    });
+    articulosProvider.listarProductosSucursal(sesion.idSucursal!).then((value) {
       setState(() {
-        textLoading = 'Actualizando lista de articulos';
-        isLoading = true;
+        productosFiltrados = List.from(listaProductosSucursal);
+        textLoading = 'Cargando descuentos';
       });
-      articulosProvider.listarProductosCotizaciones().then((value) {
+      descuentoProvider.listarDescuentos().then((resp) {
         setState(() {
-          globals.actualizaArticulosCotizaciones = false;
+          globals.actualizaArticulosSucursal = false;
+          globals.actualizaDescuentos = false;
           textLoading = '';
           isLoading = false;
         });
       });
-    }
-    */
-
-    if (globals.cargarArticulosPropietarios) {
-      setState(() {
-        textLoading = 'Actualizando lista de articulos de esta Sucursal';
-        isLoading = true;
-      });
-      articulosProvider
-          .listarProductosSucursal(sesion.idSucursal!)
-          .then((value) {
-        setState(() {
-          globals.cargarArticulosPropietarios = false;
-          textLoading = '';
-          isLoading = false;
-        });
-      });
-    }
+    });
     super.initState();
   }
 
@@ -77,7 +61,7 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cotizaciones'),
+        title: const Text('Cotizar productos'),
         automaticallyImplyLeading: true,
       ),
       body: (isLoading)
@@ -97,7 +81,76 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
               padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
               child: Column(
                 children: [
-                  ..._listaWidgets(),
+                  SizedBox(
+                    height: windowHeight * 0.02,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (cotizarTemporal.isNotEmpty) {
+                            Navigator.pushNamed(context, 'DetalleCotizar');
+                            setState(() {});
+                          } else {
+                            mostrarAlerta(context, '¡Atención!',
+                                'No hay productos en la lista.');
+                          }
+                        },
+                        child: SizedBox(
+                          height: windowHeight * 0.1,
+                          width: windowWidth * 0.4,
+                          child: Center(
+                            child: Text(
+                                'Cotizar \$${totalCotizacionTemporal.toStringAsFixed(2)}'),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: windowWidth * 0.05,
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            if (cotizarTemporal.isNotEmpty) {
+                              _alertaElimnar();
+                            } else {
+                              mostrarAlerta(context, '¡Atención!',
+                                  'No hay productos en la Cotizacion.');
+                            }
+                          },
+                          child: SizedBox(
+                              width: windowWidth * 0.10,
+                              height: windowHeight * 0.05,
+                              child: const Center(child: Icon(Icons.delete)))),
+                    ],
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: windowWidth * 0.05, vertical: 10),
+                    child: TextField(
+                      controller: busquedaController,
+                      decoration: InputDecoration(
+                        labelText: 'Buscar producto',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            busquedaController.clear();
+                            _filtrarProductos('');
+                          },
+                        ),
+                      ),
+                      onChanged: _filtrarProductos,
+                    ),
+                  ),
                   const Divider(),
                   Column(children: _productosSucursal())
                 ],
@@ -106,109 +159,80 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
     );
   }
 
-  _alertaElimnar() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text(
-              '¡Alerta!',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
-            ),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '¿Desea eliminar la lista de articulos de la cotizacion ? Esta acción no podrá revertirse.',
-                )
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    cotizarTemporal.clear();
-                    setState(() {});
-                    totalCotizacionTemporal = 0.0;
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Eliminar')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
-            ],
-          );
-        });
+  void _filtrarProductos(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        productosFiltrados = List.from(listaProductosSucursal);
+      } else {
+        productosFiltrados = listaProductosSucursal
+            .where((producto) =>
+                producto.producto!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
-  _listaWidgets() {
-    List<Widget> listaItems = [
-      SizedBox(
-        height: windowHeight * 0.02,
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              if (cotizarTemporal.isNotEmpty) {
-                Navigator.pushNamed(context, 'DetalleCotizar');
-                setState(() {});
-              } else {
-                mostrarAlerta(context, '¡Atención!',
-                    'No hay productos en la Cotizaciones.');
+  _productosSucursal() {
+    List<Widget> listaProd = [];
+    if (productosFiltrados.isNotEmpty) {
+      for (Producto producto in productosFiltrados) {
+        for (Categoria categoria in listaCategorias) {
+          if (producto.idCategoria == categoria.id) {
+            for (ColorCategoria color in listaColores) {
+              if (color.id == categoria.idColor) {
+                listaProd.add(ListTile(
+                  leading: Icon(
+                    Icons.category,
+                    color: color.color,
+                  ),
+                  onTap: (() => _alertaProducto(producto)),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: windowWidth * 0.45,
+                        child: Text(
+                          producto.producto!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  subtitle: Text(categoria.categoria!),
+                ));
               }
-            },
-            child: SizedBox(
-              height: windowHeight * 0.1,
-              width: windowWidth * 0.4,
-              child: Center(
-                child: Text(
-                    'Cotizar \$${totalCotizacionTemporal.toStringAsFixed(2)}'),
-              ),
+            }
+          }
+        }
+      }
+    } else {
+      final TextTheme textTheme = Theme.of(context).textTheme;
+
+      listaProd.add(Column(
+        children: [
+          const Opacity(
+            opacity: 0.2,
+            child: Icon(
+              Icons.filter_alt_off,
+              size: 130,
             ),
           ),
-          SizedBox(
-            width: windowWidth * 0.05,
+          const SizedBox(
+            height: 15,
           ),
+          Text(
+            'No hay productos para mostrar.',
+            style: textTheme.titleMedium,
+          )
         ],
-      ),
-      const Divider(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OutlinedButton(
-              onPressed: () {
-                showSearch(context: context, delegate: Search());
-              },
-              child: SizedBox(
-                  width: windowWidth * 0.10,
-                  height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.search)))),
-          SizedBox(
-            width: windowWidth * 0.05,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                if (cotizarTemporal.isNotEmpty) {
-                  _alertaElimnar();
-                } else {
-                  mostrarAlerta(context, '¡Atención!',
-                      'No hay productos en la Cotizacion.');
-                }
-              },
-              child: SizedBox(
-                  width: windowWidth * 0.10,
-                  height: windowHeight * 0.05,
-                  child: const Center(child: Icon(Icons.delete)))),
-        ],
-      ),
-    ];
+      ));
+    }
 
-    return listaItems;
+    return listaProd;
   }
 
   _alertaProducto(Producto producto) {
@@ -234,14 +258,14 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
               Flexible(
                 child: InputField(
                   textCapitalization: TextCapitalization.words,
-                  controller: CantidadConttroller..text = '1',
+                  controller: cantidadConttroller..text = '1',
                   keyboardType: isInt
                       ? TextInputType.number
                       : TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
                         RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
-                  ], // Solo números
+                  ],
                 ),
               ),
             ],
@@ -250,10 +274,10 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                if (CantidadConttroller.text.isEmpty) return;
+                if (cantidadConttroller.text.isEmpty) return;
                 _agregaProductoVenta(
                   producto,
-                  double.parse(CantidadConttroller.text),
+                  double.parse(cantidadConttroller.text),
                 );
               },
               child: const Text('Aceptar '),
@@ -266,143 +290,6 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
         );
       },
     );
-  }
-
-/*
-  _productos() {
-    List<Widget> listaProd = [];
-    if (listaProductosCotizaciones.isNotEmpty) {
-      for (Producto producto in listaProductosCotizaciones) {
-        for (Categoria categoria in listaCategorias) {
-          if (producto.idCategoria == categoria.id) {
-            for (ColorCategoria color in listaColores) {
-              if (color.id == categoria.idColor) {
-                listaProd.add(ListTile(
-                  leading: Icon(
-                    Icons.category,
-                    color: color.color,
-                  ),
-                  onTap: (() => _alertaProducto(producto)),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: windowWidth * 0.45,
-                        child: Text(
-                          producto.producto!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  subtitle: Text(categoria.categoria!),
-                ));
-              }
-            }
-          }
-        }
-      }
-    } else {
-      final TextTheme textTheme = Theme.of(context).textTheme;
-
-      listaProd.add(Column(
-        children: [
-          const Opacity(
-            opacity: 0.2,
-            child: Icon(
-              Icons.filter_alt_off,
-              size: 130,
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Text(
-            'No hay productos guardados.',
-            style: textTheme.titleMedium,
-          )
-        ],
-      ));
-    }
-
-    return listaProd;
-  }
-*/
-  _productosSucursal() {
-    List<Widget> listaProd = [];
-    if (listaProductosSucursal.isNotEmpty) {
-      for (Producto producto in listaProductosSucursal) {
-        for (Categoria categoria in listaCategorias) {
-          if (producto.idCategoria == categoria.id) {
-            for (ColorCategoria color in listaColores) {
-              if (color.id == categoria.idColor) {
-                listaProd.add(ListTile(
-                  leading: Icon(
-                    Icons.category,
-                    color: color.color,
-                  ),
-                  onTap: (() => _alertaProducto(producto)),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: windowWidth * 0.45,
-                        child: Text(
-                          producto.producto!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  subtitle: Text(categoria.categoria!),
-                ));
-              }
-            }
-          }
-        }
-      }
-    } else {
-      final TextTheme textTheme = Theme.of(context).textTheme;
-
-      listaProd.add(Column(
-        children: [
-          const Opacity(
-            opacity: 0.2,
-            child: Icon(
-              Icons.filter_alt_off,
-              size: 130,
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Text(
-            'No hay productos guardados.',
-            style: textTheme.titleMedium,
-          )
-        ],
-      ));
-    }
-
-    return listaProd;
-  }
-
-  _actualizaTotalTemporal() {
-    totalCotizacionTemporal = 0;
-    for (ItemVenta item in cotizarTemporal) {
-      totalCotizacionTemporal += item.cantidad * item.precioPublico;
-      item.subTotalItem += item.cantidad * item.precioPublico;
-      item.totalItem = item.cantidad * item.precioPublico;
-    }
-    setState(() {});
   }
 
   _agregaProductoVenta(Producto producto, cantidad) {
@@ -459,5 +346,53 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       } else {}
       _actualizaTotalTemporal();
     }
+  }
+
+  _alertaElimnar() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Text(
+              '¡Alerta!',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '¿Desea eliminar la lista de articulos de la cotizacion ? Esta acción no podrá revertirse.',
+                )
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    cotizarTemporal.clear();
+                    setState(() {});
+                    totalCotizacionTemporal = 0.0;
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Eliminar')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar'))
+            ],
+          );
+        });
+  }
+
+  _actualizaTotalTemporal() {
+    totalCotizacionTemporal = 0;
+    for (ItemVenta item in cotizarTemporal) {
+      totalCotizacionTemporal += item.cantidad * item.precioPublico;
+      item.subTotalItem += item.cantidad * item.precioPublico;
+      item.totalItem = item.cantidad * item.precioPublico;
+    }
+    setState(() {});
   }
 }
