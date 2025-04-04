@@ -36,7 +36,7 @@ class _AbonoScreenState extends State<AbonoScreenpago> {
   @override
   void initState() {
     super.initState();
-    TotalController.text = totalVentaTemporal.toStringAsFixed(2);
+    TotalController.text = totalVT.toStringAsFixed(2);
     EfectivoController.text = "0.00";
     TarjetaController.text = "0.00";
     CambioController.text = "0.00";

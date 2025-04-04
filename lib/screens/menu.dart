@@ -166,8 +166,10 @@ class _MenuScreenState extends State<MenuScreen> {
           itemBuilder: (BuildContext context, int index) {
             return GestureDetector(
               onTap: () async {
+                if (!mounted) return;
                 if (menuRoutes[index] == 'login') {
                   UsuarioProvider().logout().then((value) async {
+                    if (!mounted) return;
                     if (value.status == 1) {
                       limpiaDatos.limpiaDatos();
                       final SharedPreferences prefs =

@@ -45,8 +45,6 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
       });
       descuentoProvider.listarDescuentos().then((resp) {
         setState(() {
-          globals.actualizaArticulosSucursal = false;
-          globals.actualizaDescuentos = false;
           textLoading = '';
           isLoading = false;
         });
@@ -309,8 +307,9 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
             articulo: producto.producto!,
             cantidad: cantidad,
             precioPublico: producto.precioPublico!,
-            preciomayoreo: producto.precioMayoreo!,
-            preciodistribuidor: producto.precioDist!,
+            precioMayoreo: producto.precioMayoreo!,
+            precioDistribuidor: producto.precioDist!,
+            precioUtilizado: producto.precioPublico!,
             idDescuento: 0,
             descuento: 0,
             subTotalItem: producto.precioPublico!,
@@ -334,8 +333,9 @@ class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
               articulo: producto.producto!,
               cantidad: cantidad,
               precioPublico: producto.precioPublico!,
-              preciodistribuidor: producto.precioDist!,
-              preciomayoreo: producto.precioMayoreo!,
+              precioDistribuidor: producto.precioDist!,
+              precioMayoreo: producto.precioMayoreo!,
+              precioUtilizado: producto.precioPublico!,
               idDescuento: 0,
               descuento: 0,
               subTotalItem: producto.precioPublico!,

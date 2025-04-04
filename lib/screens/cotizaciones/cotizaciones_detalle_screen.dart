@@ -63,11 +63,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
       setState(() {});
     } else {
       negocioProvider.getlistaempleadosEnsucursales(null).then((value) {
-        if (value.status == 1) {
-          globals.actualizarEmpleadoSucursales = false;
-        } else {
-          globals.actualizarEmpleadoSucursales = true;
-        }
         idSucursal = sesion.idSucursal.toString();
         isLoading = false;
         setState(() {});
@@ -245,8 +240,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
         cotiz.folio = resp.folio;
         listacotizacion.add(cotiz);
         setState(() {});
-        globals.actualizaArticulosCotizaciones = true;
-
         _generatePDF(cotiz);
         Navigator.of(context)
             .pushNamedAndRemoveUntil('products-menu', (route) => false);
@@ -463,7 +456,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
               totalCotizacionTemporal = 0.00;
               for (ItemVenta item in cotizarTemporal) {
                 totalCotizacionTemporal =
-                    item.cantidad * item.preciodistribuidor;
+                    item.cantidad * item.precioDistribuidor;
                 subTotalItem = totalCotizacionTemporal;
               }
             });

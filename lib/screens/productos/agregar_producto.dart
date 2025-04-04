@@ -26,7 +26,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   final controllerCodigoB = TextEditingController();
   final controllerCantidad = TextEditingController();
 
-  final controllerPrecioMayoreo = TextEditingController();
+  final controllerprecioMayoreo = TextEditingController();
   final controllerPrecioDirecto = TextEditingController();
 
   bool isLoading = false;
@@ -75,7 +75,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       errores++;
     }
 
-    if (controllerPrecioMayoreo.text.isEmpty) {
+    if (controllerprecioMayoreo.text.isEmpty) {
       mensaje += 'Precio Mayoreo, ';
       errores++;
     }
@@ -113,7 +113,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
 
       producto.cantidad = double.parse(controllerCantidad.text);
       producto.precioDist = double.parse(controllerPrecioDirecto.text);
-      producto.precioMayoreo = double.parse(controllerPrecioMayoreo.text);
+      producto.precioMayoreo = double.parse(controllerprecioMayoreo.text);
 
       producto.producto = controllerProducto.text;
       producto.descripcion = controllerDescripcion.text;
@@ -122,7 +122,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       producto.precioPublico =
           double.parse(controllerPrecio.text.replaceAll(',', ''));
       producto.precioMayoreo =
-          double.parse(controllerPrecioMayoreo.text.replaceAll(',', ''));
+          double.parse(controllerprecioMayoreo.text.replaceAll(',', ''));
       producto.precioDist =
           double.parse(controllerPrecioDirecto.text.replaceAll(',', ''));
 
@@ -145,8 +145,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           }
 
           Navigator.pushReplacementNamed(context, 'products-menu');
-          globals.actualizaArticulos = true;
-          globals.actualizaArticulosCotizaciones = true;
+
           mostrarAlerta(context, '', 'Producto Guardado Correctamente');
         });
       } else {
@@ -167,8 +166,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               textLoading = '';
             });
             if (value.status == 1) {
-              globals.actualizaArticulos = true;
-              globals.actualizaArticulosCotizaciones = true;
               Navigator.pop(context);
               Navigator.popAndPushNamed(context, 'productos');
               mostrarAlerta(context, 'Exito', value.mensaje!);
@@ -228,8 +225,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         isLoading = false;
       });
       if (value.status == 1) {
-        globals.actualizaArticulos = true;
-        globals.actualizaArticulosCotizaciones = true;
         Navigator.pushReplacementNamed(context, 'productos');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
@@ -241,8 +236,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   @override
   void dispose() {
     controllerProducto.dispose();
-    //controllerPrecio.dispose();
-    //controllercosto.dispose();
+
     controllerClave.dispose();
     controllerCodigoB.dispose();
     controllerCantidad.dispose();
@@ -280,7 +274,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       controllercosto.text =
           (args.costo != null) ? args.costo!.toStringAsFixed(2) : '0.00';
 
-      controllerPrecioMayoreo.text = args.precioMayoreo.toString() == "null"
+      controllerprecioMayoreo.text = args.precioMayoreo.toString() == "null"
           ? '0.00'
           : args.precioMayoreo.toString();
       controllerPrecioDirecto.text = args.precioDist.toString() == "null"
@@ -312,7 +306,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           Navigator.popAndPushNamed(context, 'productos');
           return;
         }
-        globals.actualizaArticulos = true;
+
         if (!didpop) Navigator.pushReplacementNamed(context, 'products-menu');
       },
       child: Scaffold(
@@ -387,7 +381,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                         height: windowHeight * 0.03,
                       ),
                       InputFieldMoney(
-                          controller: controllerPrecioMayoreo,
+                          controller: controllerprecioMayoreo,
                           labelText: 'Precio Mayoreo'),
                       SizedBox(
                         height: windowHeight * 0.03,

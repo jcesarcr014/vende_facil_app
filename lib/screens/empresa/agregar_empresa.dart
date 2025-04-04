@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregarEmpresa extends StatefulWidget {
   const AgregarEmpresa({super.key});
@@ -33,24 +32,22 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
   bool firstLoad = false;
 
   void loadClientes() async {
-    await clientesProvider.listarClientes().then((value) {
-      if (value.status == 1) {
-        globals.actualizaClientes = false;
-      } else {
-        globals.actualizaClientes = true;
-      }
-    });
+    await clientesProvider.listarClientes();
   }
 
   _guardaNegocio() {
-    if (controllerNombre.text.isNotEmpty && controllerDireccion.text.isNotEmpty) {
+    if (controllerNombre.text.isNotEmpty &&
+        controllerDireccion.text.isNotEmpty) {
       Negocio nuevoNegocio = Negocio();
       nuevoNegocio.idUsuario = sesion.idUsuario;
       nuevoNegocio.nombreNegocio = controllerNombre.text;
-      nuevoNegocio.telefono = (controllerTelefono.text.isNotEmpty) ? controllerTelefono.text : '';
+      nuevoNegocio.telefono =
+          (controllerTelefono.text.isNotEmpty) ? controllerTelefono.text : '';
       nuevoNegocio.direccion = controllerDireccion.text;
-      nuevoNegocio.razonSocial = (controllerRS.text.isNotEmpty) ? controllerRS.text : '';
-      nuevoNegocio.rfc = (controllerRFC.text.isNotEmpty) ? controllerRFC.text : '';
+      nuevoNegocio.razonSocial =
+          (controllerRS.text.isNotEmpty) ? controllerRS.text : '';
+      nuevoNegocio.rfc =
+          (controllerRFC.text.isNotEmpty) ? controllerRFC.text : '';
 
       if (mounted) {
         setState(() {
@@ -67,13 +64,12 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
               isLoading = false;
             });
           }
-          if (value.status == 1) { 
+          if (value.status == 1) {
             loadClientes();
             if (mounted) {
               setState(() {
-                globals.actualizaSucursales = true;
                 _cargar();
-                
+
                 Navigator.pushReplacementNamed(context, 'menu');
               });
             }
@@ -103,7 +99,8 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
         });
       }
     } else {
-      mostrarAlerta(context, 'ERROR', 'Los campos Nombre y Dirección son obligatorios.');
+      mostrarAlerta(
+          context, 'ERROR', 'Los campos Nombre y Dirección son obligatorios.');
     }
   }
 
@@ -237,9 +234,7 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
 
     await usuariosProvider.obtenerUsuarios().then((value) {
       if (mounted) {
-        setState(() {
-          globals.actualizaUsuarios = value.status != 1;
-        });
+        setState(() {});
       }
     });
 
@@ -251,17 +246,13 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
 
     await negocioProvider.getlistaempleadosEnsucursales(null).then((value) {
       if (mounted) {
-        setState(() {
-          globals.actualizarEmpleadoSucursales = value.status != 1;
-        });
+        setState(() {});
       }
     });
 
     await usuariosProvider.obtenerEmpleados().then((value) {
       if (mounted) {
-        setState(() {
-          globals.actualizaEmpleados = value.status != 1;
-        });
+        setState(() {});
       }
     });
 
@@ -273,9 +264,7 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
 
     await categoriasProvider.listarCategorias().then((value) {
       if (mounted) {
-        setState(() {
-          globals.actualizaCategorias = value.status != 1;
-        });
+        setState(() {});
       }
     });
 

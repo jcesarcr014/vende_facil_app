@@ -45,8 +45,6 @@ class _PerfilEmpleadosScreenState extends State<PerfilEmpleadosScreen> {
       });
       if (value.status != 1) {
         mostrarAlerta(context, 'ERROR', 'value.mensaje!');
-      } else {
-        globals.actualizaEmpleados = true;
       }
     });
   }
@@ -121,8 +119,6 @@ class _PerfilEmpleadosScreenState extends State<PerfilEmpleadosScreen> {
       if (value.status != 1) {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       } else {
-        globals.actualizaEmpleados = true;
-
         Navigator.pushReplacementNamed(context, 'menu-negocio');
       }
     });

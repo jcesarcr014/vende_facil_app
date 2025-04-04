@@ -20,8 +20,7 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaDescuentos){
-          setState(() {
+    setState(() {
       textLoading = 'Leyendo descuentos';
       isLoading = true;
     });
@@ -35,7 +34,6 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       }
     });
-    }
     super.initState();
   }
 
@@ -128,16 +126,7 @@ class _DescuentosScreenState extends State<DescuentosScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(descuento.nombre!),
-                Text((descuento.tipoValor == 1)
-                    ? '${descuento.valor!.toStringAsFixed(2)} %'
-                    : '${descuento.valor!.toStringAsFixed(2)} \$'),
-              ],
-            ),
-            subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Tipo'),
-                Text((descuento.valorPred == 1) ? 'Variable' : 'Fijo')
+                Text('${descuento.valor!.toStringAsFixed(2)} %'),
               ],
             ),
           )

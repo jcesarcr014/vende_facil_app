@@ -21,22 +21,20 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaEmpleados) {
+    setState(() {
+      textLoading = 'Leyendo empleados';
+      isLoading = true;
+    });
+    usuarioProvider.obtenerEmpleados().then((value) {
       setState(() {
-        textLoading = 'Leyendo empleados';
-        isLoading = true;
+        textLoading = '';
+        isLoading = false;
       });
-      usuarioProvider.obtenerEmpleados().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-        });
-        if (value.status != 1) {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    }
+      if (value.status != 1) {
+        Navigator.pop(context);
+        mostrarAlerta(context, 'ERROR', value.mensaje!);
+      }
+    });
     super.initState();
   }
 

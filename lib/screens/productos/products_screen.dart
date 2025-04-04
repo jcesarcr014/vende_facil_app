@@ -66,11 +66,12 @@ class ProductsScreen extends StatelessWidget {
                       trailing: const Icon(Icons.arrow_right),
                       onTap: addProduct),
                 if (sesion.tipoUsuario == 'P' ||
-                    (sesion.tipoUsuario == 'E' && globals.empleadoInvetario))
+                    (sesion.tipoUsuario == 'E' &&
+                        globals.empleadoInvetario)) //aqui cambiar variable
                   ListTile(
                       leading: const Icon(Icons.warehouse),
                       title: const Text(
-                        'Inventarios Sucursales',
+                        'Inventario sucursal',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -87,14 +88,14 @@ class ProductsScreen extends StatelessWidget {
                   ListTile(
                       leading: const Icon(Icons.add),
                       title: const Text(
-                        'Agregar Producto Sucursal',
+                        'Asignar Productos Sucursal',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle: const Text('Agrega un producto a tu sucursal'),
+                      subtitle: const Text('Agrega inventario a una sucursal'),
                       trailing: const Icon(Icons.arrow_right),
                       onTap: () => Navigator.pushNamed(
                           context, 'agregar-producto-sucursal')),
@@ -102,22 +103,21 @@ class ProductsScreen extends StatelessWidget {
                   ListTile(
                       leading: const Icon(Icons.delete),
                       title: const Text(
-                        'Quitar Producto Sucursal',
+                        'Retirar Productos Sucursal',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle:
-                          const Text('Elimina un producto de una sucursal'),
+                      subtitle: const Text('Retira inventario de una sucursal'),
                       trailing: const Icon(Icons.arrow_right),
                       onTap: () => Navigator.pushNamed(
                           context, 'eliminar-producto-sucursal')),
                 ListTile(
                     leading: const Icon(Icons.request_quote),
                     title: const Text(
-                      'Nueva cotización',
+                      'Cotizar',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -138,7 +138,7 @@ class ProductsScreen extends StatelessWidget {
                 ListTile(
                     leading: const Icon(Icons.add_chart_sharp),
                     title: const Text(
-                      'Lista de Cotizaciones',
+                      'Cotizaciones',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),

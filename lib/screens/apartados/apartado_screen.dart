@@ -41,9 +41,9 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
 
   @override
   void initState() {
-    totalCompra = totalVentaTemporal.toStringAsFixed(2);
+    totalCompra = totalVT.toStringAsFixed(2);
     anticipoMinimo =
-        ((totalVentaTemporal * (double.parse(listaVariables[0].valor!))) / 100)
+        ((totalVT * (double.parse(listaVariables[0].valor!))) / 100)
             .toStringAsFixed(2);
     efectivoController.text = "0.00";
     tarjetaController.text = "0.00";
@@ -351,8 +351,7 @@ class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
             ventaTemporal.clear();
             textLoading = '';
             isLoading = false;
-            totalVentaTemporal = 0.0;
-            globals.actualizaArticulos = true;
+            totalVT = 0.0;
           });
           Navigator.pushReplacementNamed(context, 'home');
           mostrarAlerta(context, '', 'Apartado realizada');

@@ -20,35 +20,30 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaSucursales || globals.actualizarEmpleadoSucursales) {
-      setState(() {
-        textLoading = 'Leyendo Surcursales';
-        isLoading = true;
-      });
-      negocios.getlistaSucursales().then((respSuc) {
-        if (respSuc.status == 1) {
+    setState(() {
+      textLoading = 'Leyendo Surcursales';
+      isLoading = true;
+    });
+    negocios.getlistaSucursales().then((respSuc) {
+      if (respSuc.status == 1) {
+        setState(() {
+          textLoading = 'Leyendo Empleados';
+        });
+        negocios.getlistaempleadosEnsucursales(null).then((value) {
           setState(() {
-            textLoading = 'Leyendo Empleados';
+            textLoading = '';
+            isLoading = false;
           });
-          negocios.getlistaempleadosEnsucursales(null).then((value) {
-            setState(() {
-              textLoading = '';
-              isLoading = false;
-            });
-            if (value.status == 1) {
-              globals.actualizaSucursales = false;
-              globals.actualizarEmpleadoSucursales = false;
-            } else {
-              Navigator.pop(context);
-              mostrarAlerta(context, 'ERROR', value.mensaje!);
-            }
-          });
-        } else {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', respSuc.mensaje!);
-        }
-      });
-    }
+          if (value.status != 1) {
+            Navigator.pop(context);
+            mostrarAlerta(context, 'ERROR', value.mensaje!);
+          }
+        });
+      } else {
+        Navigator.pop(context);
+        mostrarAlerta(context, 'ERROR', respSuc.mensaje!);
+      }
+    });
     super.initState();
   }
 

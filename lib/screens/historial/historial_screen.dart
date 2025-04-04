@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_import
-
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
 import 'package:vende_facil/models/models.dart';
@@ -24,19 +22,15 @@ class _HistorialScreenState extends State<HistorialScreen> {
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
-  String formattedEndDate = "";
-  String formattedStartDate = "";
+  String formattedSelectedDate = "";
   DateTime now = DateTime.now();
 
-  late DateTime _startDate;
-  late DateTime _endDate;
+  late DateTime _selectedDate;
   double totalVentas = 0.0;
   late DateFormat dateFormatter;
   final _dateController = TextEditingController();
 
-  bool? _allBranchOffice = true;
-  String? _sucursalSeleccionada = '-1';
-  String? _empleadoSeleccionado = '0';
+  String? _sucursalSeleccionada = '0';
 
   final provider = NegocioProvider();
   final reportesProvider = ReportesProvider();
@@ -47,23 +41,93 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
   final negocioProvider = NegocioProvider();
 
+  // Lista para almacenar todas las ventas sin filtrar
+  List<VentaCabecera> todasLasVentas = [];
+  // Lista filtrada que se muestra en pantalla
+  List<VentaCabecera> ventasFiltradas = [];
+
+  // Mapa para agrupar ventas por folio
+  Map<String, List<VentaCabecera>> ventasAgrupadas = {};
+
   @override
   void initState() {
-    _startDate = DateTime(now.year, now.month, now.day);
-    _endDate = _startDate.add(const Duration(days: 30));
+    _selectedDate = DateTime(now.year, now.month, now.day);
     dateFormatter = DateFormat('yyyy-MM-dd');
-    formattedStartDate = dateFormatter.format(_startDate);
-    formattedEndDate = dateFormatter.format(_endDate);
-    _dateController.text = '$formattedStartDate - $formattedEndDate';
+    formattedSelectedDate = dateFormatter.format(_selectedDate);
+    _dateController.text = DateFormat('dd/MM/yyyy').format(_selectedDate);
+
     listaVentas.clear();
     listasucursalEmpleado.clear();
+    ventasFiltradas.clear();
+    todasLasVentas.clear();
+
+    // Cargar sucursales al iniciar
+    if (sesion.tipoUsuario == "P") {
+      provider.getlistaSucursales();
+    }
+
     super.initState();
+  }
+
+  // Consultar ventas para la fecha seleccionada
+  Future<void> _consultarVentas() async {
+    isLoading = true;
+    textLoading =
+        'Consultando ventas del ${DateFormat('dd/MM/yyyy').format(_selectedDate)}';
+    setState(() {});
+
+    final resultado = await reportesProvider.reporteGeneral(
+        formattedSelectedDate, formattedSelectedDate);
+
+    if (resultado.status != 1) {
+      isLoading = false;
+      setState(() {});
+      mostrarAlerta(context, 'Error', resultado.mensaje!);
+      return;
+    }
+
+    // Guardamos todas las ventas sin filtrar
+    todasLasVentas = List.from(listaVentas);
+    _filtrarVentas();
+
+    isLoading = false;
+    setState(() {});
+  }
+
+  // Filtrar ventas según la sucursal seleccionada
+  void _filtrarVentas() {
+    if (_sucursalSeleccionada == '0') {
+      // Mostrar todas las ventas
+      ventasFiltradas = List.from(todasLasVentas);
+    } else {
+      // Filtrar por sucursal
+      ventasFiltradas = todasLasVentas
+          .where(
+              (venta) => venta.id_sucursal.toString() == _sucursalSeleccionada)
+          .toList();
+    }
+
+    // Actualizar el total de ventas
+    totalVentas = ventasFiltradas.fold(0.0, (sum, item) => sum + item.total!);
+
+    // Agrupar ventas por folio
+    ventasAgrupadas.clear();
+    for (var venta in ventasFiltradas) {
+      String folio = venta.folio ?? venta.idMovimiento.toString();
+      if (!ventasAgrupadas.containsKey(folio)) {
+        ventasAgrupadas[folio] = [];
+      }
+      ventasAgrupadas[folio]!.add(venta);
+    }
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
     windowHeight = MediaQuery.of(context).size.height;
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
@@ -80,7 +144,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Espere...'),
+                      Text('Espere...$textLoading'),
                       SizedBox(
                         height: windowHeight * 0.01,
                       ),
@@ -95,7 +159,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                       height: windowHeight * 0.02,
                     ),
                     const Text(
-                      'Seleccione el rango de fechas y los usuarios para realizar la consulta.',
+                      'Seleccione una fecha y sucursal para consultar las ventas.',
                       maxLines: 2,
                       textAlign: TextAlign.justify,
                       style: TextStyle(
@@ -105,7 +169,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
-                    // ignore: avoid_unnecessary_containers
+                    // Selector de fecha (un solo día)
                     Container(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -114,81 +178,49 @@ class _HistorialScreenState extends State<HistorialScreen> {
                             child: TextFormField(
                               controller: _dateController,
                               onTap: () async {
-                                final picked = await showDateRangePicker(
+                                final picked = await showDatePicker(
                                   context: context,
                                   firstDate: DateTime(2015),
-                                  lastDate: DateTime(2100),
-                                  initialDateRange: DateTimeRange(
-                                    start: formattedStartDate.isEmpty
-                                        ? DateTime.now()
-                                        : _startDate,
-                                    end: formattedEndDate.isEmpty
-                                        ? _startDate
-                                            .add(const Duration(days: 30))
-                                        : _endDate,
-                                  ),
+                                  lastDate: DateTime.now(),
+                                  initialDate: _selectedDate,
                                 );
-                                if (picked != null &&
-                                    picked !=
-                                        DateTimeRange(
-                                            start: _startDate,
-                                            end: formattedEndDate.isEmpty
-                                                ? _startDate.add(
-                                                    const Duration(days: 30))
-                                                : _endDate)) {
+                                if (picked != null && picked != _selectedDate) {
                                   setState(() {
-                                    _startDate = picked.start;
-                                    _endDate = picked.end;
-                                    dateFormatter = DateFormat('yyyy-MM-dd');
-                                    formattedStartDate =
-                                        dateFormatter.format(_startDate);
-                                    formattedEndDate =
-                                        dateFormatter.format(_endDate);
+                                    _selectedDate = picked;
+                                    formattedSelectedDate =
+                                        dateFormatter.format(_selectedDate);
                                     _dateController.text =
-                                        '$formattedStartDate - $formattedEndDate';
+                                        DateFormat('dd/MM/yyyy')
+                                            .format(_selectedDate);
                                   });
+
+                                  // Consultar ventas con la nueva fecha
+                                  await _consultarVentas();
                                 }
                               },
                               decoration: InputDecoration(
                                 labelText: 'Seleccionar fecha',
                                 suffixIcon: IconButton(
                                   onPressed: () async {
-                                    final picked = await showDateRangePicker(
+                                    final picked = await showDatePicker(
                                       context: context,
                                       firstDate: DateTime(2015),
-                                      lastDate: DateTime(2100),
-                                      initialDateRange: DateTimeRange(
-                                        start: formattedStartDate.isEmpty
-                                            ? DateTime.now()
-                                            : _startDate,
-                                        end: formattedEndDate.isEmpty
-                                            ? _startDate
-                                                .add(const Duration(days: 30))
-                                            : _endDate,
-                                      ),
+                                      lastDate: DateTime.now(),
+                                      initialDate: _selectedDate,
                                     );
                                     if (picked != null &&
-                                        picked !=
-                                            DateTimeRange(
-                                                start: _startDate,
-                                                end: formattedEndDate.isEmpty
-                                                    ? _startDate.add(
-                                                        const Duration(
-                                                            days: 30))
-                                                    : _endDate)) {
+                                        picked != _selectedDate) {
                                       setState(() {
-                                        _startDate = picked.start;
-                                        _endDate = picked.end;
-                                        dateFormatter =
-                                            DateFormat('yyyy-MM-dd');
-                                        formattedStartDate =
-                                            dateFormatter.format(_startDate);
-                                        formattedEndDate =
-                                            dateFormatter.format(_endDate);
+                                        _selectedDate = picked;
+                                        formattedSelectedDate =
+                                            dateFormatter.format(_selectedDate);
                                         _dateController.text =
-                                            '$formattedStartDate - $formattedEndDate';
+                                            DateFormat('dd/MM/yyyy')
+                                                .format(_selectedDate);
                                       });
-                                      //_consultarVentas();
+
+                                      // Consultar ventas con la nueva fecha
+                                      await _consultarVentas();
                                     }
                                   },
                                   icon: const Icon(Icons.calendar_today),
@@ -200,20 +232,177 @@ class _HistorialScreenState extends State<HistorialScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: windowHeight * 0.05,
+                      height: windowHeight * 0.03,
                     ),
 
-                    _sucursales(),
+                    // Dropdown de sucursales
+                    if (sesion.tipoUsuario == "P") _sucursales(),
+
                     SizedBox(
-                      height: windowHeight * 0.05,
+                      height: windowHeight * 0.02,
                     ),
-                    _empleados(),
-                    SizedBox(
-                      height: windowHeight * 0.05,
+
+                    // Encabezado con información resumida
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      color: Colors.blue.shade50,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Fecha: ${DateFormat('dd/MM/yyyy').format(_selectedDate)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Total ventas: ${ventasAgrupadas.length}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                     ),
+
+                    // Lista de ventas
                     Expanded(
-                      child: SingleChildScrollView(
-                        child: _listaVentas(),
+                      child: ventasFiltradas.isEmpty
+                          ? const Center(
+                              child: Text(
+                                  'No hay ventas registradas en la fecha seleccionada'),
+                            )
+                          : ListView.builder(
+                              itemCount: ventasAgrupadas.length,
+                              itemBuilder: (context, index) {
+                                String folio =
+                                    ventasAgrupadas.keys.elementAt(index);
+                                List<VentaCabecera> items =
+                                    ventasAgrupadas[folio]!;
+                                VentaCabecera primeraVenta = items.first;
+
+                                // Calcular el total por venta
+                                double totalVenta = items.fold(
+                                    0.0, (sum, item) => sum + item.total!);
+
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 6),
+                                  elevation: 2,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                'Folio: ${primeraVenta.folio ?? primeraVenta.idMovimiento}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  decoration:
+                                                      primeraVenta.cancelado ==
+                                                              '1'
+                                                          ? TextDecoration
+                                                              .lineThrough
+                                                          : null,
+                                                  color:
+                                                      primeraVenta.cancelado ==
+                                                              '1'
+                                                          ? Colors.red
+                                                          : null,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            Text(
+                                              // Mostrar solo la hora
+                                              DateFormat('HH:mm').format(
+                                                  DateTime.parse(primeraVenta
+                                                      .fecha_venta!)),
+                                              style: TextStyle(
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text('Empleado: ${primeraVenta.name}'),
+                                        Text(
+                                            'Sucursal: ${primeraVenta.nombreSucursal ?? "No especificada"}'),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _getTipoMovimientoText(
+                                              primeraVenta.tipo_movimiento),
+                                          style: TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.blue.shade700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Divider(),
+
+                                        // Mostrar total
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            const Text(
+                                              'Total:',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              '\$${totalVenta.toStringAsFixed(2)}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: primeraVenta.cancelado ==
+                                                        '1'
+                                                    ? Colors.red
+                                                    : Colors.green,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+
+                    // Botones en la parte inferior
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Función para exportar a PDF (sin implementar)
+                            },
+                            icon: const Icon(Icons.picture_as_pdf),
+                            label: const Text('Exportar PDF'),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Función para imprimir (sin implementar)
+                            },
+                            icon: const Icon(Icons.print),
+                            label: const Text('Imprimir'),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -225,7 +414,11 @@ class _HistorialScreenState extends State<HistorialScreen> {
               height: 50,
               child: Center(
                 child: Text(
-                    'Total de ventas : \$ ${totalVentas.toStringAsFixed(2)}'),
+                    'Total de ventas: \$ ${totalVentas.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
               ),
             ),
           ),
@@ -234,141 +427,49 @@ class _HistorialScreenState extends State<HistorialScreen> {
     );
   }
 
-  _setEmpleados(String? value) async {
-    if (value == '-1') return;
-    isLoading = true;
-    setState(() {});
-    _empleadoSeleccionado = value;
-    if (value == '0') {
-      final resultado = await reportesProvider.reporteSucursal(
-          formattedStartDate, formattedEndDate, _sucursalSeleccionada!);
-      if (resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
-        return;
-      }
-      totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
-      isLoading = false;
-      setState(() {});
-
-      return;
-    }
-
-    final resultado = await reportesProvider.reporteEmpleado(
-        formattedStartDate, formattedEndDate, _sucursalSeleccionada!, value!);
-    isLoading = false;
-    totalVentas = listaVentas.fold(0.0, (sum, item) => sum + item.total!);
-    setState(() {});
-    if (resultado.status != 1) {
-      mostrarAlerta(context, 'Error', resultado.mensaje!);
-      return;
-    }
-  }
-
-  _empleados() {
-    var lista = [
-      const DropdownMenuItem(
-        value: '-1',
-        child: SizedBox(child: Text('Seleccione un Empleado')),
-      ),
+  // Widget para dropdown de sucursales
+  Widget _sucursales() {
+    var listades = [
       const DropdownMenuItem(
         value: '0',
-        child: SizedBox(child: Text('Todos')),
+        child: SizedBox(child: Text('Todas las Sucursales')),
       ),
     ];
-    lista.addAll(listasucursalEmpleado.map((empleado) => DropdownMenuItem(
-          value: empleado.usuarioId.toString(),
-          child: SizedBox(
-            child: Text(empleado.name!),
-          ),
-        )));
+
+    listades.addAll(
+      listaSucursales.map((sucursal) {
+        return DropdownMenuItem(
+          value: sucursal.id.toString(),
+          child: SizedBox(child: Text(sucursal.nombreSucursal ?? '')),
+        );
+      }).toList(),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'EMPLEADOS',
+          'SUCURSALES',
           style: TextStyle(fontSize: 13),
         ),
         DropdownButton(
-            value: _empleadoSeleccionado,
-            isExpanded: true,
-            items: lista,
-            onChanged: _allBranchOffice != null ? _setEmpleados : null)
+          items: listades,
+          isExpanded: true,
+          value: _sucursalSeleccionada,
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _sucursalSeleccionada = value;
+              });
+              _filtrarVentas();
+            }
+          },
+        ),
       ],
     );
   }
 
-  _sucursales() {
-    if (sesion.tipoUsuario == "P") {
-      var listades = [
-        const DropdownMenuItem(
-          value: '-1',
-          child: SizedBox(child: Text('Seleccione una Sucursal')),
-        ),
-        const DropdownMenuItem(
-          value: '0',
-          child: SizedBox(child: Text('Todos')),
-        ),
-      ];
-      listades.addAll(
-        listaSucursales.map((sucursal) {
-          return DropdownMenuItem(
-            value: sucursal.id.toString(),
-            child: SizedBox(child: Text(sucursal.nombreSucursal ?? '')),
-          );
-        }).toList(),
-      );
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'SUCURSALES',
-            style: TextStyle(fontSize: 13),
-          ),
-          DropdownButton(
-            items: listades,
-            isExpanded: true,
-            value: _sucursalSeleccionada,
-            onChanged: (value) async {
-              if (value == '-1') return;
-              isLoading = true;
-              _sucursalSeleccionada = value;
-              setState(() {});
-
-              if (value == '0') {
-                _allBranchOffice = null;
-                final resultado = await reportesProvider.reporteGeneral(
-                    formattedStartDate, formattedEndDate);
-                isLoading = false;
-                totalVentas =
-                    listaVentas.fold(0.0, (sum, item) => sum + item.total!);
-                setState(() {});
-                if (resultado.status != 1) {
-                  mostrarAlerta(context, 'Error', resultado.mensaje!);
-                  return;
-                }
-                return;
-              }
-              isLoading = true;
-              _allBranchOffice = true;
-              final resultado =
-                  await provider.getlistaempleadosEnsucursales(value!);
-              if (resultado.status == 1) {
-                isLoading = false;
-                setState(() {});
-                return;
-              }
-              isLoading = false;
-              setState(() {});
-              mostrarAlerta(
-                  context, 'Selecciona otra sucursal', resultado.mensaje!);
-            },
-          ),
-        ],
-      );
-    }
-  }
-
+  // Función para obtener detalles de la venta seleccionada
   void _getDetails(VentaCabecera venta) async {
     isLoading = true;
     setState(() {});
@@ -420,58 +521,25 @@ class _HistorialScreenState extends State<HistorialScreen> {
     setState(() {});
   }
 
-  _listaVentas() {
-    if (listaVentas.isEmpty) {
-      return const Center(
-        child: Text(
-            'No hay ventas realizadas en el rango de fechas seleccionado.'),
-      );
-    } else {
-      return Column(
-        children: listaVentas.map((venta) {
-          String text;
-          switch (venta.tipo_movimiento) {
-            case 'VD':
-              text = 'Venta domicilio';
-              break;
-            case 'VT':
-              text = 'Venta Tienda';
-              break;
-            case 'P':
-              text = 'Apartado';
-              break;
-            case 'A':
-              text = 'Abono';
-              break;
-            case 'E':
-              text = 'Entrega apartado';
-              break;
-            case 'CV':
-              text = 'Cancelacion venta';
-              break;
-            case 'CA':
-              text = 'Cancelacion apartado';
-              break;
-            default:
-              text = '';
-              break;
-          }
-
-          return ListTile(
-            title: Text(
-              '${venta.name} \n${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.parse(venta.fecha_venta!))}',
-              style: TextStyle(
-                decoration:
-                    venta.cancelado == '1' ? TextDecoration.lineThrough : null,
-                color: venta.cancelado == '1' ? Colors.red : null,
-              ),
-            ),
-            subtitle: Text(text),
-            trailing: Text('\$${venta.total}'),
-            onTap: () => _getDetails(venta),
-          );
-        }).toList(),
-      );
+  // Función para obtener texto descriptivo del tipo de movimiento
+  String _getTipoMovimientoText(String? tipoMovimiento) {
+    switch (tipoMovimiento) {
+      case 'VD':
+        return 'Venta a domicilio';
+      case 'VT':
+        return 'Venta en tienda';
+      case 'P':
+        return 'Apartado';
+      case 'A':
+        return 'Abono';
+      case 'E':
+        return 'Entrega apartado';
+      case 'CV':
+        return 'Cancelación venta';
+      case 'CA':
+        return 'Cancelación apartado';
+      default:
+        return 'Movimiento';
     }
   }
 }

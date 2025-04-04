@@ -16,8 +16,7 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   final controllerNombre = TextEditingController();
   final controllerValor = TextEditingController();
   bool firstLoad = true;
-  bool _tipoValor = true;
-  bool _tipoValorS = true;
+
   bool isLoading = false;
   String textLoading = '';
   double windowWidth = 0.0;
@@ -26,12 +25,16 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   String title = 'Agregar descuento';
 
   _guardaDescuento() {
-    if(!_tipoValorS) {
-      if(controllerValor.text.isEmpty) {
-        mostrarAlerta(context, 'Error', 'Si el descuento es tipo: "Fijo" es obligatorio introducir una cantidad');
-        return;
-      }
+    if (controllerValor.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'Instroduzca el porcentaje de descuento');
+      return;
     }
+
+    if (double.tryParse(controllerValor.text) == null) {
+      mostrarAlerta(context, 'Error', 'Por favor ingrese un número válido');
+      return;
+    }
+
     if (controllerNombre.text.isNotEmpty) {
       setState(() {
         textLoading = (args.id == 0)
@@ -41,17 +44,16 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       });
       Descuento descuento = Descuento();
       descuento.nombre = controllerNombre.text;
-      descuento.tipoValor = (_tipoValor) ? 1 : 0;
+
       descuento.valor = (controllerValor.text.isNotEmpty)
           ? double.parse(controllerValor.text)
           : 0;
-      descuento.valorPred = (_tipoValorS) ? 1 : 0;
+
       if (args.id == 0) {
         descuentosProvider.nuevoDescuento(descuento).then((value) {
           setState(() {
             isLoading = false;
             textLoading = '';
-            globals.actualizaDescuentos = true;
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'descuentos');
@@ -66,7 +68,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
           setState(() {
             isLoading = false;
             textLoading = '';
-            globals.actualizaDescuentos = true;
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'descuentos');
@@ -138,7 +139,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'descuentos');
         mostrarAlerta(context, '', value.mensaje!);
-        globals.actualizaDescuentos = true;
       } else {
         mostrarAlerta(context, '', value.mensaje!);
       }
@@ -151,11 +151,8 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Descuento;
       controllerNombre.text = args.nombre!;
-      if (args.valorPred == 0) {
-        controllerValor.text = args.valor!.toStringAsFixed(2);
-      }
-      _tipoValor = (args.tipoValor == 1) ? true : false;
-      _tipoValorS = (args.valorPred == 1) ? true : false;
+      controllerValor.text = args.valor!.toStringAsFixed(2);
+
       title = 'Editar descuento';
     }
     windowWidth = MediaQuery.of(context).size.width;
@@ -163,7 +160,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        globals.actualizaDescuentos = true;
         if (!didpop) Navigator.pushReplacementNamed(context, 'descuentos');
       },
       child: Scaffold(
@@ -205,37 +201,11 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
-                      SwitchListTile.adaptive(
-                          title: Row(
-                            children: [
-                              const Text('Tipo descuento: '),
-                              Text((_tipoValor) ? '%' : '\$')
-                            ],
-                          ),
-                          value: _tipoValor,
-                          onChanged: (value) {
-                            _tipoValor = value;
-                            setState(() {});
-                          }),
-                      SwitchListTile.adaptive(
-                          title: Row(
-                            children: [
-                              const Text('Tipo de descuento: '),
-                              Text(_tipoValorS ? 'Variable' : 'Fijo')
-                            ],
-                          ),
-                          value: _tipoValorS,
-                          onChanged: (value) {
-                            _tipoValorS = value;
-                            setState(() {});
-                          }),
-                      if (!_tipoValorS)
-                        InputField(
-                            labelText: 'Descuento:',
-                            keyboardType: TextInputType.number,
-                            textCapitalization: TextCapitalization.none,
-                            controller: controllerValor),
-                      
+                      InputField(
+                          labelText: 'Porcentaje descuento:',
+                          keyboardType: TextInputType.number,
+                          textCapitalization: TextCapitalization.none,
+                          controller: controllerValor),
                       SizedBox(
                         height: windowHeight * 0.05,
                       ),
@@ -264,7 +234,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                globals.actualizaArticulos = true;
                                 Navigator.pushReplacementNamed(
                                     context, 'descuentos');
                               },

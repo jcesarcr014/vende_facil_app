@@ -42,74 +42,22 @@ class _LoginScreenState extends State<LoginScreen> {
           .login(controllerUser.text, controllerPass.text)
           .then((value) async {
         if (value.status == 1) {
-          setState(() {
-            textLoading = 'Leyendo información de empleados';
-          });
-          await usuariosProvider.obtenerUsuarios().then((value) {
-            if (value.status == 1) {
-              globals.actualizaUsuarios = false;
-            } else {
-              globals.actualizaUsuarios = true;
-            }
-          });
-          await usuariosProvider.obtenerEmpleados().then((value) {
-            if (value.status == 1) {
-              globals.actualizaEmpleados = false;
-            } else {
-              globals.actualizaEmpleados = true;
-            }
-          });
+          if (sesion.tipoUsuario == 'P') {
+            setState(() {
+              textLoading = 'Leyendo información de empleados';
+            });
+            await usuariosProvider.obtenerUsuarios();
+            await usuariosProvider.obtenerEmpleados();
+          }
+
           setState(() {
             textLoading = 'Leyendo categorias';
           });
-          await categoriasProvider.listarCategorias().then((value) {
-            if (value.status == 1) {
-              globals.actualizaCategorias = false;
-            } else {
-              globals.actualizaCategorias = true;
-            }
-          });
-          setState(() {
-            textLoading = 'Leyendo productos';
-          });
-          await articulosProvider.listarProductos().then((value) {
-            if (value.status == 1) {
-              globals.actualizaArticulos = false;
-            } else {
-              globals.actualizaArticulos = true;
-            }
-          });
-          await articulosProvider.listarProductosCotizaciones().then((value) {
-            if (value.status == 1) {
-              globals.actualizaArticulosCotizaciones = false;
-            } else {
-              globals.actualizaArticulosCotizaciones = true;
-            }
-          });
+          await categoriasProvider.listarCategorias();
           setState(() {
             textLoading = 'Leyendo información adicional';
           });
-          await clientesProvider.listarClientes().then((value) {
-            if (value.status == 1) {
-              globals.actualizaClientes = false;
-            } else {
-              globals.actualizaClientes = true;
-            }
-          });
-          await descuentosProvider.listarDescuentos().then((value) {
-            if (value.status == 1) {
-              globals.actualizaDescuentos = false;
-            } else {
-              globals.actualizaDescuentos = true;
-            }
-          });
-          await variablesprovider.variablesApartado().then((value) {
-            if (value.status == 1) {
-              globals.actualizaVariables = false;
-            } else {
-              globals.actualizaVariables = true;
-            }
-          });
+          await variablesprovider.variablesConfiguracion();
           setState(() {
             textLoading = '';
             isLoading = false;

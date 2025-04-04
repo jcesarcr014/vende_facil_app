@@ -50,8 +50,9 @@ class Resultados extends StatelessWidget {
                         descuento: 1,
                         idDescuento: 1,
                         precioPublico: 10,
-                        preciodistribuidor: 10,
-                        preciomayoreo: 10,
+                        precioDistribuidor: 10,
+                        precioMayoreo: 10,
+                        precioUtilizado: 10,
                         subTotalItem: 10,
                         totalItem: 10),
                   );
@@ -105,8 +106,9 @@ class Resultados extends StatelessWidget {
             articulo: producto.producto!,
             cantidad: cantidad,
             precioPublico: producto.precioPublico!,
-            preciodistribuidor: producto.precioDist!,
-            preciomayoreo: producto.precioMayoreo!,
+            precioDistribuidor: producto.precioDist!,
+            precioMayoreo: producto.precioMayoreo!,
+            precioUtilizado: producto.precioPublico!,
             idDescuento: 0,
             descuento: 0,
             subTotalItem: producto.precioPublico!,
@@ -132,8 +134,9 @@ class Resultados extends StatelessWidget {
               articulo: producto.producto!,
               cantidad: cantidad.toDouble(),
               precioPublico: producto.precioPublico!,
-              preciodistribuidor: producto.precioDist!,
-              preciomayoreo: producto.precioMayoreo!,
+              precioDistribuidor: producto.precioDist!,
+              precioMayoreo: producto.precioMayoreo!,
+              precioUtilizado: producto.precioPublico!,
               idDescuento: 0,
               descuento: 0,
               subTotalItem: producto.precioPublico!,
@@ -149,9 +152,9 @@ class Resultados extends StatelessWidget {
   }
 
   _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
+    totalVT = 0;
     for (ItemVenta item in ventaTemporal) {
-      totalVentaTemporal += item.totalItem;
+      totalVT += item.totalItem;
     }
   }
 

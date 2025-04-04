@@ -32,19 +32,14 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   @override
   void initState() {
     super.initState();
-    if (globals.actualizaArticulos) {
+    setState(() {
+      isLoading = true;
+    });
+    provider.listarProductos().then((respProd) {
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
-      provider.listarProductos().then((respProd) {
-        if (respProd.status == 1) {
-          globals.actualizaArticulos = false;
-        }
-        setState(() {
-          isLoading = false;
-        });
-      });
-    }
+    });
   }
 
   void _setProductsSucursal(int? value) async {
@@ -99,26 +94,28 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       mostrarAlerta(context, 'Error', e.toString());
     }
   }
-  void _validarYGuardarProductoSucursal() {
-  if (_productoSeleccionado == null) {
-    mostrarAlerta(context, 'Error', 'Selecciona un producto');
-    return;
-  }
 
-  if (_selectedSucursal == null) {
-    mostrarAlerta(context, 'Error', 'Selecciona una sucursal',tituloColor: Colors.red);
-    return;
+  void _validarYGuardarProductoSucursal() {
+    if (_productoSeleccionado == null) {
+      mostrarAlerta(context, 'Error', 'Selecciona un producto');
+      return;
+    }
+
+    if (_selectedSucursal == null) {
+      mostrarAlerta(context, 'Error', 'Selecciona una sucursal',
+          tituloColor: Colors.red);
+      return;
+    }
+    if (controller.text.isEmpty || double.tryParse(controller.text) == null) {
+      mostrarAlerta(context, 'Error', 'Ingresa una cantidad válida');
+      return;
+    }
+    if (double.parse(controller.text) <= 0) {
+      mostrarAlerta(context, 'Error', 'La cantidad debe ser mayor a 0');
+      return;
+    }
+    _guardarProductoSucursal();
   }
-  if (controller.text.isEmpty || double.tryParse(controller.text) == null) {
-    mostrarAlerta(context, 'Error', 'Ingresa una cantidad válida');
-    return;
-  }
-  if (double.parse(controller.text) <= 0) {
-    mostrarAlerta(context, 'Error', 'La cantidad debe ser mayor a 0');
-    return;
-  }
-  _guardarProductoSucursal();
-}
 
   void _updateCantidadSucursal() async {
     if (_selectedSucursal == null || _productoSeleccionado == null) {
@@ -168,11 +165,12 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     _selectedProduct = null;
     _selectedSucursal = null;
     _updateCantidadSucursal();
-    globals.actualizaArticulos = true;
+
     controller.clear();
     // Si el producto no existe en la sucursal, crea un nuevo inventario
     if (existe == false) {
-      Resultado resultado = await provider.nvoInventarioSuc(_productoSeleccionado!);
+      Resultado resultado =
+          await provider.nvoInventarioSuc(_productoSeleccionado!);
       isLoading = false;
       setState(() {});
       if (resultado.status != 1) {
@@ -183,7 +181,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       // Añade el producto a la lista de productos de la sucursal
       listaProductosSucursal.add(_productoSeleccionado!);
       _productoSeleccionado = null;
-      
+
       //Navigator.pushReplacementNamed(context, 'products-menu');
       mostrarAlerta(context, 'Exitoso',
           'Se agrego correctamente el producto a la sucursal.');
@@ -191,7 +189,8 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     }
 
     // Si el producto ya existe en la sucursal, actualiza la cantidad
-    Resultado resultado = await provider.inventarioSucAgregar(_productoSeleccionado!);
+    Resultado resultado =
+        await provider.inventarioSucAgregar(_productoSeleccionado!);
     isLoading = false;
     setState(() {});
 
@@ -205,7 +204,8 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
     _productoSeleccionado = null;
 
     //Navigator.pushNamedAndRemoveUntil(context, 'products-menu', (route) => false);
-    mostrarAlerta(context, 'Exitoso','Se agrego correctamente el producto a la sucursal.');
+    mostrarAlerta(context, 'Exitoso',
+        'Se agrego correctamente el producto a la sucursal.');
   }
 
   @override
@@ -240,12 +240,16 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   CustomDropdownSearch(
-                    items: listaProductos.map((producto) => producto.producto!).toList(),
+                    items: listaProductos
+                        .map((producto) => producto.producto!)
+                        .toList(),
                     selectedItem: _selectedProduct ?? "Selecciona un producto",
                     onChanged: (String? newValue) {
                       if (newValue != null) {
-                        _productoSeleccionado = listaProductos.firstWhere((producto) => producto.producto == newValue);
-                         _valuePieza = _productoSeleccionado!.unidad == "0" ? true : false;
+                        _productoSeleccionado = listaProductos.firstWhere(
+                            (producto) => producto.producto == newValue);
+                        _valuePieza =
+                            _productoSeleccionado!.unidad == "0" ? true : false;
                         setState(() {
                           _selectedProduct = newValue;
                         });
@@ -259,7 +263,10 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     readOnly: true,
                     controller: TextEditingController()
                       ..text =
-                          (_productoSeleccionado?.cantidad.toString() != 'null' ? _productoSeleccionado?.cantidad.toString() : '0') ?? '0',
+                          (_productoSeleccionado?.cantidad.toString() != 'null'
+                                  ? _productoSeleccionado?.cantidad.toString()
+                                  : '0') ??
+                              '0',
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -293,16 +300,19 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                   const SizedBox(height: 16),
                   const Divider(),
                   InputField(
-                        labelText: 'Cantidad:',
-                        keyboardType: TextInputType.numberWithOptions(decimal: _valuePieza),
-                        controller: controller,
-                        inputFormatters: [
-                          if (_valuePieza)
-                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
-                          else
-                            FilteringTextInputFormatter.digitsOnly, // Solo números enteros
-                        ],
-                      ),
+                    labelText: 'Cantidad:',
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: _valuePieza),
+                    controller: controller,
+                    inputFormatters: [
+                      if (_valuePieza)
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
+                      else
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Solo números enteros
+                    ],
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

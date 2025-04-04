@@ -41,7 +41,6 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'categorias');
             mostrarAlerta(context, '', value.mensaje!);
-            globals.actualizaCategorias = true;
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -56,7 +55,6 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'categorias');
             mostrarAlerta(context, '', value.mensaje!);
-            globals.actualizaCategorias = true;
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -117,7 +115,6 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'categorias');
         mostrarAlerta(context, '', value.mensaje!);
-        globals.actualizaCategorias = true;
       } else {
         mostrarAlerta(context, '', value.mensaje!);
       }
@@ -141,7 +138,6 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) {
-        globals.actualizaCategorias = true;
         if (!didpop) Navigator.pushReplacementNamed(context, 'categorias');
       },
       child: Scaffold(
@@ -217,7 +213,6 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              globals.actualizaCategorias = true;
                               Navigator.pushReplacementNamed(
                                   context, 'categorias');
                             },

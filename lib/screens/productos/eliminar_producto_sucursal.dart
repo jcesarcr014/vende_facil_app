@@ -14,7 +14,8 @@ class EliminarProductoSucursal extends StatefulWidget {
   const EliminarProductoSucursal({super.key});
 
   @override
-  State<EliminarProductoSucursal> createState() => _EliminarProductoSucursalState();
+  State<EliminarProductoSucursal> createState() =>
+      _EliminarProductoSucursalState();
 }
 
 class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
@@ -24,7 +25,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
   Producto? _producto;
 
   bool isLoading = false;
-  bool _valuePieza = true;  // Variable para determinar si es pieza o no
+  bool _valuePieza = true; // Variable para determinar si es pieza o no
   ArticuloProvider provider = ArticuloProvider();
 
   TextEditingController controller = TextEditingController();
@@ -45,7 +46,8 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
 
     isLoading = true;
     setState(() {});
-    Resultado resultado = await provider.listarProductosSucursal(sucursalSeleccionado.id!);
+    Resultado resultado =
+        await provider.listarProductosSucursal(sucursalSeleccionado.id!);
     if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
       return;
@@ -71,19 +73,23 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
 
     _producto = producto;
     cantidad = producto.disponibleInv.toString();
-    _valuePieza = _producto?.unidad == "0" ? true : false; // Determinar si es pieza o fracción
+    _valuePieza = _producto?.unidad == "0"
+        ? true
+        : false; // Determinar si es pieza o fracción
     setState(() {});
   }
 
   void _quitar() async {
     if (_producto == null) {
-      mostrarAlerta(context, 'Error', 'Primero seleccione una sucursal y producto de la sucursal seleccionada');
+      mostrarAlerta(context, 'Error',
+          'Primero seleccione una sucursal y producto de la sucursal seleccionada');
       return;
     }
 
     isLoading = true;
     setState(() {});
-    Resultado resultado = await provider.inventarioSucQuitar(_producto!.idInv.toString(), controller.text);
+    Resultado resultado = await provider.inventarioSucQuitar(
+        _producto!.idInv.toString(), controller.text);
     isLoading = false;
     setState(() {});
     if (resultado.status != 1) {
@@ -98,7 +104,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
     cantidad = '0';
     _producto = null;
     setState(() {});
-    globals.actualizaArticulos = true;
+
     mostrarAlerta(context, 'Exito', resultado.mensaje!);
   }
 
@@ -151,7 +157,9 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   CustomDropdownSearch(
-                    items: listaProductosSucursal.map((producto) => producto.producto!).toList(),
+                    items: listaProductosSucursal
+                        .map((producto) => producto.producto!)
+                        .toList(),
                     selectedItem: _selectedProduct,
                     onChanged: (String? newValue) {
                       _seleccionarProducto(newValue);
@@ -169,12 +177,15 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
-                    keyboardType: TextInputType.numberWithOptions(decimal: _valuePieza),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: _valuePieza),
                     inputFormatters: [
                       if (_valuePieza)
-                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,3}')) // Permitir fracciones
                       else
-                        FilteringTextInputFormatter.digitsOnly, // Solo números enteros
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Solo números enteros
                     ],
                     controller: controller,
                     decoration: const InputDecoration(

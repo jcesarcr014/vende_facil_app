@@ -29,43 +29,36 @@ class _ProductosScreenState extends State<ProductosScreen> {
   @override
   void initState() {
     setState(() {
-      _filteredProductos = listaProductos;
+      textLoading = 'Leyendo articulos';
+      isLoading = true;
     });
-    if (globals.actualizaArticulos) {
+    articulosProvider.listarProductos().then((respProd) {
       setState(() {
-        textLoading = 'Leyendo articulos';
-        isLoading = true;
+        textLoading = '';
+        isLoading = false;
+        _filteredProductos = listaProductos;
       });
-      articulosProvider.listarProductos().then((respProd) {
-        if (respProd.status == 1) {
-          globals.actualizaArticulos = false;
-        }
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-          _filteredProductos = listaProductos;
-        });
-      });
-    }
+    });
     super.initState();
   }
 
-void _applyFilter() {
-  setState(() {
-    _filteredProductos = List.from(listaProductos);
-    isExpanded = false;
+  void _applyFilter() {
+    setState(() {
+      _filteredProductos = List.from(listaProductos);
+      isExpanded = false;
 
-    if (selectedFilter == Filtros.sortAZ) {
-      // Ordenar los productos de A-Z por su nombre
-      _filteredProductos.sort((a, b) => a.producto!.compareTo(b.producto!));
-    } else if (selectedFilter == Filtros.sortZA) {
-      // Ordenar los productos de Z-A por su nombre
-      _filteredProductos.sort((a, b) => b.producto!.compareTo(a.producto!));
-    } else if (selectedFilter == Filtros.categories) {
-      _filteredProductos.sort((a, b) => a.idCategoria!.compareTo(b.idCategoria!));
-    }
-  });
-}
+      if (selectedFilter == Filtros.sortAZ) {
+        // Ordenar los productos de A-Z por su nombre
+        _filteredProductos.sort((a, b) => a.producto!.compareTo(b.producto!));
+      } else if (selectedFilter == Filtros.sortZA) {
+        // Ordenar los productos de Z-A por su nombre
+        _filteredProductos.sort((a, b) => b.producto!.compareTo(a.producto!));
+      } else if (selectedFilter == Filtros.categories) {
+        _filteredProductos
+            .sort((a, b) => a.idCategoria!.compareTo(b.idCategoria!));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,40 +100,41 @@ void _applyFilter() {
                     SizedBox(
                       height: windowHeight * 0.02,
                     ),
-
                     ExpansionTile(
                       key: UniqueKey(),
                       title: const Text('Ordenar'),
                       initiallyExpanded: isExpanded,
-                      subtitle: const Text('Selecciona una forma para ordenar tus productos'),
+                      subtitle: const Text(
+                          'Selecciona una forma para ordenar tus productos'),
                       children: [
                         RadioListTile(
                           title: const Text('Nombre de A-Z'),
-                          subtitle: const Text('Ordenara tus productos desde la letra "A" hasta la letra "Z"'),
-                          value: Filtros.sortAZ, 
-                          groupValue: selectedFilter, 
+                          subtitle: const Text(
+                              'Ordenara tus productos desde la letra "A" hasta la letra "Z"'),
+                          value: Filtros.sortAZ,
+                          groupValue: selectedFilter,
                           onChanged: (value) => setState(() {
                             selectedFilter = Filtros.sortAZ;
                             _applyFilter();
                           }),
                         ),
-
                         RadioListTile(
                           title: const Text('Nombre de Z-A'),
-                          subtitle: const Text('Ordenara tus productos desde la letra "Z" hasta la letra "A"'),
-                          value: Filtros.sortZA, 
-                          groupValue: selectedFilter, 
+                          subtitle: const Text(
+                              'Ordenara tus productos desde la letra "Z" hasta la letra "A"'),
+                          value: Filtros.sortZA,
+                          groupValue: selectedFilter,
                           onChanged: (value) => setState(() {
                             selectedFilter = Filtros.sortZA;
                             _applyFilter();
                           }),
                         ),
-
                         RadioListTile(
                           title: const Text('Categorias'),
-                          subtitle: const Text('Ordenara tus productos de acuerdo a tus categorias'),
-                          value: Filtros.categories, 
-                          groupValue: selectedFilter, 
+                          subtitle: const Text(
+                              'Ordenara tus productos de acuerdo a tus categorias'),
+                          value: Filtros.categories,
+                          groupValue: selectedFilter,
                           onChanged: (value) => setState(() {
                             selectedFilter = Filtros.categories;
                             _applyFilter();
@@ -148,9 +142,9 @@ void _applyFilter() {
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 25,),
-
+                    const SizedBox(
+                      height: 25,
+                    ),
                     Column(children: _productos())
                   ],
                 ),
@@ -166,14 +160,17 @@ void _applyFilter() {
         for (Categoria categoria in listaCategorias) {
           if (producto.idCategoria == categoria.id) {
             final ColorCategoria color = listaColores.firstWhere(
-              (color) => color.id == categoria.idColor, 
-              orElse: () => ColorCategoria(id: categoria.idColor, color: Colors.grey) // Color por defecto
-            );
+                (color) => color.id == categoria.idColor,
+                orElse: () => ColorCategoria(
+                    id: categoria.idColor,
+                    color: Colors.grey) // Color por defecto
+                );
 
             listaProd.add(ListTile(
               leading: Icon(
                 Icons.category,
-                color: color.color, // Asegúrate de que este valor siempre tenga un color válido
+                color: color
+                    .color, // Asegúrate de que este valor siempre tenga un color válido
               ),
               onTap: (() {
                 setState(() {

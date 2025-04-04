@@ -69,6 +69,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     // Llamar a setState si esto afecta la interfaz de usuario para actualizarla
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     windowWidth = MediaQuery.of(context).size.width;
@@ -84,7 +85,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                     setState(() {
                       textLoading = '';
                       isLoading = false;
-                      globals.actualizaSucursales = true;
                     });
                     if (value.status == 1) {
                       setState(() {
@@ -285,7 +285,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                                 if (value.status == 1) {
                                   setState(() {
                                     isLoading = false;
-                                    globals.actualizarEmpleadoSucursales = true;
                                   });
                                   setState(() {
                                     Navigator.pushReplacementNamed(
@@ -295,7 +294,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                                 } else {
                                   setState(() {
                                     isLoading = false;
-                                    globals.actualizarEmpleadoSucursales = true;
                                   });
                                   mostrarAlerta(
                                       context, 'ERROR', value.mensaje!);
@@ -322,39 +320,41 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
             ),
     );
   }
+
   void _validarAntesDeEditar() {
-  if (controllerNombre.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
-    return;
+    if (controllerNombre.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
+      return;
+    }
+    if (controllerEmail.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'La dirección es requerida.');
+      return;
+    }
+    if (controllerTelefono.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
+      return;
+    }
+    // Si pasa las validaciones, procedemos a editar
+    _editar();
   }
-  if (controllerEmail.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'La dirección es requerida.');
-    return;
-  }
-  if (controllerTelefono.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
-    return;
-  }
-  // Si pasa las validaciones, procedemos a editar
-  _editar();
-}
 
   void _validarAntesDeAgregar() {
-  if (controllerNombre.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
-    return;
+    if (controllerNombre.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
+      return;
+    }
+    if (controllerEmail.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'La dirección es requerida.');
+      return;
+    }
+    if (controllerTelefono.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
+      return;
+    }
+    // Si pasa las validaciones, procedemos a agregar
+    _agregar(sesion.idNegocio, controllerNombre.text, controllerEmail.text,
+        controllerTelefono.text);
   }
-  if (controllerEmail.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'La dirección es requerida.');
-    return;
-  }
-  if (controllerTelefono.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
-    return;
-  }
-  // Si pasa las validaciones, procedemos a agregar
-  _agregar(sesion.idNegocio, controllerNombre.text, controllerEmail.text, controllerTelefono.text);
-}
 
   void _eliminarUsuario(BuildContext parentContext, SucursalEmpleado user) {
     showDialog(
@@ -392,7 +392,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                       setState(() {
                         textLoading = '';
                         isLoading = false;
-                        globals.actualizarEmpleadoSucursales = true;
                       });
                       Navigator.pushReplacementNamed(
                           context, 'lista-sucursales');
@@ -429,7 +428,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       setState(() {
         textLoading = '';
         isLoading = false;
-        globals.actualizaSucursales = true;
       });
       if (value.status == 1) {
         setState(() {
@@ -452,7 +450,6 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       setState(() {
         textLoading = '';
         isLoading = false;
-        globals.actualizaSucursales = true;
       });
       if (value.status == 1) {
         setState(() {

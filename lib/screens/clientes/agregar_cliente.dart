@@ -68,7 +68,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
           });
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'clientes');
-            globals.actualizaClientes = true;
             mostrarAlerta(context, '', value.mensaje!);
           } else {
             mostrarAlerta(context, '', value.mensaje!);
@@ -84,7 +83,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
           if (value.status == 1) {
             Navigator.pushReplacementNamed(context, 'clientes');
             mostrarAlerta(context, '', value.mensaje!);
-            globals.actualizaClientes = true;
           } else {
             mostrarAlerta(context, '', value.mensaje!);
           }
@@ -143,7 +141,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       });
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'clientes');
-        globals.actualizaClientes = true;
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, '', value.mensaje!);
@@ -198,7 +195,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          globals.actualizaClientes = true;
           Navigator.pushReplacementNamed(context, 'clientes');
         }
       },
@@ -341,8 +337,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              globals.actualizaArticulos = true;
-                              globals.actualizaArticulosCotizaciones = true;
                               Navigator.pushReplacementNamed(
                                   context, 'clientes');
                             },

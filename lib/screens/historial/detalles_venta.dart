@@ -252,13 +252,14 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
         articulo: detalle.nombreProducto!,
         cantidad: detalle.cantidad!,
         precioPublico: detalle.precio!,
+        precioMayoreo: 0,
+        precioDistribuidor: 0,
+        precioUtilizado: detalle.precio!,
         idDescuento: detalle.idDesc ?? 0,
         descuento: detalle.cantidadDescuento ?? 0,
         subTotalItem: detalle.subtotal!,
         totalItem: detalle.total!,
         apartado: false,
-        preciomayoreo: 0,
-        preciodistribuidor: 0,
       );
       ventaTemporal.add(item);
     }

@@ -20,23 +20,20 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
 
   @override
   void initState() {
-    if (globals.actualizaCategorias) {
+    setState(() {
+      textLoading = 'Leyendo categorias';
+      isLoading = true;
+    });
+    categoriasProvider.listarCategorias().then((value) {
       setState(() {
-        textLoading = 'Leyendo categorias';
-        isLoading = true;
+        textLoading = '';
+        isLoading = false;
       });
-      categoriasProvider.listarCategorias().then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-          globals.actualizaCategorias = false;
-        });
-        if (value.status != 1) {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    }
+      if (value.status != 1) {
+        Navigator.pop(context);
+        mostrarAlerta(context, 'ERROR', value.mensaje!);
+      }
+    });
     super.initState();
   }
 
@@ -124,7 +121,7 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
               children: [
                 ListTile(
                   onTap: () {
-                    if(sesion.tipoUsuario == 'P'){
+                    if (sesion.tipoUsuario == 'P') {
                       Navigator.pushNamed(context, 'nva-categoria',
                           arguments: cat);
                     }

@@ -43,7 +43,7 @@ class LimpiaDatos {
     corteActual = Corte();
     sesion = CuentaSesion();
     cotActual = Cotizacion();
-    totalVentaTemporal = 0;
+    totalVT = 0;
     sucursalSeleccionado = Sucursal();
     suscripcionActual = SuscripcionOP();
     ticketModel = TicketModel();

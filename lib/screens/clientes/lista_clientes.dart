@@ -20,24 +20,20 @@ class _ClientesScreenState extends State<ClientesScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaClientes) {
+    setState(() {
+      textLoading = 'Leyendo clientes';
+      isLoading = true;
+    });
+    clientesProvider.listarClientes().then((value) {
       setState(() {
-        textLoading = 'Leyendo clientes';
-        isLoading = true;
+        textLoading = '';
+        isLoading = false;
       });
-      clientesProvider.listarClientes().then((value) {
-        setState(() {
-          globals.actualizaClientes = false;
-          textLoading = '';
-          isLoading = false;
-        });
-        if (value.status != 1) {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', value.mensaje!);
-        }
-      });
-    }
-
+      if (value.status != 1) {
+        Navigator.pop(context);
+        mostrarAlerta(context, 'ERROR', value.mensaje!);
+      }
+    });
     super.initState();
   }
 

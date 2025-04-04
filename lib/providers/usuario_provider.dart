@@ -89,11 +89,7 @@ class UsuarioProvider {
         if (sesion.tipoUsuario == 'P') {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-
-          globals.actualizaSucursales = false;
         } else {
-          globals.actualizaArticulos = true;
-          globals.actualizaArticulosCotizaciones = true;
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
           sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
@@ -144,8 +140,6 @@ class UsuarioProvider {
           suscripcionActual.id = decodedData['suscripcion']['id'];
           suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
         } else {
-          globals.actualizaArticulos = true;
-          globals.actualizaArticulosCotizaciones = true;
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
           sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }

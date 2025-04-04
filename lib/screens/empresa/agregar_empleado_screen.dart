@@ -52,7 +52,6 @@ class _RegistroEmpleadoScreenState extends State<RegistroEmpleadoScreen> {
               setState(() {
                 isLoading = false;
                 textLoading = '';
-                globals.actualizaEmpleados = true;
               });
               Navigator.pushReplacementNamed(context, 'menu-negocio');
 

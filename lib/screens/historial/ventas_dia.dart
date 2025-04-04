@@ -36,7 +36,6 @@ class _VentasDiaScreenState extends State<VentasDiaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Agrupar ventas por folio para mostrar como tarjetas individuales
     Map<String, List<VentaDia>> ventasAgrupadas = {};
     for (var venta in listaVentasDia) {
       if (!ventasAgrupadas.containsKey(venta.folio)) {
