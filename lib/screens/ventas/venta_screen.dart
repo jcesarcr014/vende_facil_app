@@ -174,7 +174,6 @@ class _VentaScreenState extends State<VentaScreen> {
       setState(() {
         ventaTemporal.clear();
         totalVT = 0.0;
-        globals.actualizaArticulos = true;
       });
 
       if (!mounted) return;
