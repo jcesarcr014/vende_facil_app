@@ -3,7 +3,6 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/models/usuario_model.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ListaEmpleadosScreen extends StatefulWidget {
   const ListaEmpleadosScreen({super.key});

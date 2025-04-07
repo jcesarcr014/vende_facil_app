@@ -2,12 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/usuario_provider.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 import 'package:vende_facil/widgets/widgets.dart';
 
 class PerfilEmpleadosScreen extends StatefulWidget {
-  // ignore: use_super_parameters
-  const PerfilEmpleadosScreen({Key? key}) : super(key: key);
+  const PerfilEmpleadosScreen({super.key});
 
   @override
   State<PerfilEmpleadosScreen> createState() => _PerfilEmpleadosScreenState();

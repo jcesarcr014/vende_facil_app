@@ -9,8 +9,10 @@ class SuscripcionScreen extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pushReplacementNamed(context, 'menu');
+        }
       },
       child: Scaffold(
         appBar: AppBar(

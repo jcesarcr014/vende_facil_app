@@ -104,7 +104,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       numArticulos += articuloTemporal.cantidad;
     }
 
-    if (double.parse(listaVariables[1].valor!) < numArticulos) {
+    if (double.parse(listaVariables[1].valor) < numArticulos) {
       mostrarAlerta(context, 'ERROR',
           'Supera la cantidad máxima de artículos para apartar.');
       return;
@@ -404,15 +404,17 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed:
-              ventaTemporal.isNotEmpty ? _validarYProcederApartado : null,
-          icon: const Icon(Icons.archive),
-          label: const Text('Apartar'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-        ),
+        (varAplicaApartado)
+            ? OutlinedButton.icon(
+                onPressed:
+                    ventaTemporal.isNotEmpty ? _validarYProcederApartado : null,
+                icon: const Icon(Icons.archive),
+                label: const Text('Apartar'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              )
+            : Container(),
       ],
     );
   }

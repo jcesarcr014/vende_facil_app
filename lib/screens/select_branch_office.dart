@@ -15,12 +15,12 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
   final articulosProvider = ArticuloProvider();
   final sucursal = NegocioProvider();
   bool isLoading = false;
-  double windowHeight = 0.0;
   String textLoading = '';
+
   @override
   initState() {
     setState(() {
-      textLoading = 'Cargar Sucursales';
+      textLoading = 'Cargando sucursales';
       isLoading = true;
     });
     cargar();
@@ -38,87 +38,146 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
     );
   }
 
+  _seleccionarSucursal() async {
+    if (_valueIdSucursal == '0') {
+      mostrarAlerta(context, 'Error', 'Debe seleccionar una sucursal');
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      textLoading = 'Cargando datos de la sucursal';
+    });
+
+    final sucursalSeleccionada = listaSucursales
+        .firstWhere((sucursal) => sucursal.id.toString() == _valueIdSucursal);
+
+    sesion.idSucursal = sucursalSeleccionada.id;
+    sesion.sucursal = sucursalSeleccionada.nombreSucursal;
+
+    try {
+      var result = await articulosProvider
+          .listarProductosSucursal(sucursalSeleccionada.id!);
+
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+
+      if (result.status == 1) {
+        sesion.cotizar = false;
+        Navigator.pushReplacementNamed(context, 'home');
+      } else {
+        mostrarAlerta(context, "Error", "No se pudieron cargar los productos");
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      mostrarAlerta(
+          context, "Error", "Ocurrió un problema al cargar los productos");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccionar Sucursal'),
         automaticallyImplyLeading: false,
+        elevation: 2,
         actions: [
           IconButton(
             onPressed: () => Navigator.pushReplacementNamed(context, 'menu'),
             icon: const Icon(Icons.menu),
+            tooltip: 'Ir al menú principal',
           ),
         ],
       ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Espere...$textLoading'),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  const CircularProgressIndicator(),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 50),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _sucursalesDropdown(),
-                  const SizedBox(height: 40),
-                  Center(
-                    child: SizedBox(
-                      width: 300,
-                      height: 70, // Aumentar la altura del botón
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final sucursalSeleccionada =
-                              listaSucursales.firstWhere((sucursal) =>
-                                  sucursal.id.toString() == _valueIdSucursal);
-                          sesion.idSucursal = sucursalSeleccionada.id;
-                          sesion.sucursal = sucursalSeleccionada.nombreSucursal;
-                          await articulosProvider
-                              .listarProductosSucursal(sucursalSeleccionada.id!)
-                              .then((value) {
-                            if (value.status == 1) {
-                              sesion.cotizar = false;
-                              Navigator.pushReplacementNamed(context, 'home');
-                            } else {
-                              mostrarAlerta(context, "Error ",
-                                  "Nose pudo cargar  los productos");
-                            }
-                          });
-                        },
-                        child: const Text(
-                          'Aceptar',
-                          style: TextStyle(
-                              fontSize: 22), // Aumentar el tamaño del texto
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      body: isLoading ? _buildLoadingIndicator() : _buildContent(),
     );
   }
 
-  Widget _sucursalesDropdown() {
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere... $textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildSeleccionSucursalCard(),
+          const SizedBox(height: 40),
+          _buildActionButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSeleccionSucursalCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(
+              'Selección de Sucursal',
+              Icons.store_outlined,
+              Colors.blue,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Elija la sucursal con la que desea trabajar:',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildSucursalDropdown(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSucursalDropdown() {
     List<DropdownMenuItem<String>> listaSucursalesItems = [
       const DropdownMenuItem(
-          value: '0', child: SizedBox(child: Text('Seleccione sucursal')))
+        value: '0',
+        child: Text('Seleccione sucursal'),
+      )
     ];
 
     for (Sucursal sucursal in listaSucursales) {
       listaSucursalesItems.add(DropdownMenuItem(
         value: sucursal.id.toString(),
-        child: Text(sucursal.nombreSucursal!),
+        child: Text(
+          sucursal.nombreSucursal!,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
       ));
 
       if (sucursal.id.toString() == _valueIdSucursal) {
@@ -130,15 +189,83 @@ class _SucursalesScreenState extends State<SucursalesScreen> {
       _valueIdSucursal = '0';
     }
 
-    return DropdownButton<String>(
-      items: listaSucursalesItems,
-      isExpanded: true,
-      value: _valueIdSucursal,
-      onChanged: (value) {
-        setState(() {
-          _valueIdSucursal = value!;
-        });
-      },
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          const Icon(Icons.storefront_outlined, size: 20, color: Colors.grey),
+          const SizedBox(width: 12),
+          Expanded(
+            child: DropdownButton<String>(
+              items: listaSucursalesItems,
+              isExpanded: true,
+              value: _valueIdSucursal,
+              underline: Container(), // Quitar la línea inferior del dropdown
+              onChanged: (value) {
+                setState(() {
+                  _valueIdSucursal = value!;
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton() {
+    bool sucursalSeleccionada = _valueIdSucursal != '0';
+
+    return SizedBox(
+      width: 300,
+      child: ElevatedButton.icon(
+        onPressed: sucursalSeleccionada ? _seleccionarSucursal : null,
+        icon: const Icon(Icons.check_circle_outline),
+        label: const Text(
+          'Continuar',
+          style: TextStyle(fontSize: 18),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: Colors.grey.shade300,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

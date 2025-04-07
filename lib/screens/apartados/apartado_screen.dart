@@ -6,7 +6,6 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/apartado_provider.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ApartadoDetalleScreen extends StatefulWidget {
   const ApartadoDetalleScreen({super.key});
@@ -15,355 +14,398 @@ class ApartadoDetalleScreen extends StatefulWidget {
 }
 
 class _ApartadoDetalleScreenState extends State<ApartadoDetalleScreen> {
-  bool isLoading = false;
-  String textLoading = '';
-  String totalCompra = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
-  double efectivo = 0.0;
-  double tarjeta = 0.0;
-  double total = 0.0;
-  int cantidad = 0;
-  bool isPrinted = false;
-  bool x2ticket = false;
+  bool _isLoading = false;
+  String _textLoading = '';
+  bool _isPrinted = false;
+  bool _x2ticket = false;
+  bool _fechaValida = false;
 
-  final efectivoController = TextEditingController();
-  final tarjetaController = TextEditingController();
-  final fechaController = TextEditingController();
-  final apartadosCabecera = ApartadoProvider();
-  final impresionesTicket = ImpresionesTickets();
-  String formattedEndDate = "";
-  DateTime now = DateTime.now();
+  final _efectivoController = TextEditingController();
+  final _tarjetaController = TextEditingController();
+  final _fechaController = TextEditingController();
+  final _totalController = TextEditingController();
+  final _anticipoMinimoController = TextEditingController();
+  final _apartadoProvider = ApartadoProvider();
+  final _impresionesTicket = ImpresionesTickets();
+
+  final _now = DateTime.now();
   late DateTime _fechaVencimiento;
-  late DateFormat dateFormatter;
-  bool fechaValida = false;
-  String anticipoMinimo = '';
+  late DateFormat _dateFormatter;
+  String _formattedEndDate = "";
 
   @override
   void initState() {
-    totalCompra = totalVT.toStringAsFixed(2);
-    anticipoMinimo =
-        ((totalVT * (double.parse(listaVariables[0].valor!))) / 100)
-            .toStringAsFixed(2);
-    efectivoController.text = "0.00";
-    tarjetaController.text = "0.00";
-    _fechaVencimiento = DateTime(now.year, now.month, now.day);
-    dateFormatter = DateFormat('yyyy-MM-dd');
-    formattedEndDate = dateFormatter.format(_fechaVencimiento);
-    fechaController.text = formattedEndDate;
     super.initState();
+    _totalController.text = totalVT.toStringAsFixed(2);
+    _anticipoMinimoController.text =
+        ((totalVT * (double.parse(listaVariables[0].valor))) / 100)
+            .toStringAsFixed(2);
+    _efectivoController.text = "0.00";
+    _tarjetaController.text = "0.00";
+
+    _fechaVencimiento = DateTime(_now.year, _now.month, _now.day);
+    _dateFormatter = DateFormat('yyyy-MM-dd');
+    _formattedEndDate = _dateFormatter.format(_fechaVencimiento);
+    _fechaController.text = _formattedEndDate;
   }
 
   @override
-  Widget build(BuildContext context) {
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
-    final ApartadoCabecera apartado =
-        ModalRoute.of(context)?.settings.arguments as ApartadoCabecera;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Apartado'),
-      ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Espere...$textLoading'),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  const CircularProgressIndicator(),
-                ],
-              ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(14.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Text('Total de la compra: ',
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 25)),
-                      Text('\$ $totalCompra',
-                          style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25))
-                    ],
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  Row(
-                    children: [
-                      const Text('Anticipo minimo: ',
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
-                      Text('\$ $anticipoMinimo',
-                          style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20))
-                    ],
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  const Text('Fecha de vencimiento:',
-                      maxLines: 2,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  TextFormField(
-                    controller: fechaController,
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        firstDate: now,
-                        lastDate: DateTime(2100),
-                      );
-
-                      if (picked != null) {
-                        dateFormatter = DateFormat('yyyy-MM-dd');
-                        formattedEndDate = dateFormatter.format(picked);
-                        DateTime referencia =
-                            DateTime(now.year, now.month, now.day);
-
-                        if (picked.isBefore(referencia) ||
-                            picked.isAtSameMomentAs(referencia)) {
-                          fechaValida = false;
-                          mostrarAlerta(context, 'ERROR',
-                              'La fecha de vencimiento del apartadodebe ser posterior al dia de hoy.');
-                          return;
-                        }
-                        fechaValida = true;
-                        setState(() {
-                          fechaController.text = formattedEndDate;
-                        });
-                      }
-                    },
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        onPressed: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            firstDate: now,
-                            lastDate: DateTime(2100),
-                          );
-                          if (picked != null) {
-                            dateFormatter = DateFormat('yyyy-MM-dd');
-                            formattedEndDate = dateFormatter.format(picked);
-                            DateTime referencia =
-                                DateTime(now.year, now.month, now.day);
-
-                            if (picked.isBefore(referencia) ||
-                                picked.isAtSameMomentAs(referencia)) {
-                              fechaValida = false;
-                              mostrarAlerta(context, 'ERROR',
-                                  'La fecha de vencimiento del apartadodebe ser posterior al dia de hoy.');
-                              return;
-                            }
-                            fechaValida = true;
-                            setState(() {
-                              fechaController.text = formattedEndDate;
-                            });
-                            setState(() {
-                              fechaController.text = formattedEndDate;
-                            });
-                          }
-                        },
-                        icon: const Icon(Icons.calendar_today),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  const Text('Anticipo en efectivo:',
-                      maxLines: 2,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  InputFieldMoney(
-                    controller: efectivoController,
-                    labelText: 'Efectivo',
-                  ),
-                  SizedBox(
-                    height: windowHeight * 0.05,
-                  ),
-                  const Text("Anticipo en tarjeta:",
-                      maxLines: 2,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
-                  InputFieldMoney(
-                    controller: tarjetaController,
-                    labelText: 'Tarjeta',
-                  ),
-                  SizedBox(height: windowHeight * 0.025),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Row(
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                                value: isPrinted,
-                                onChanged: (value) => setState(() {
-                                      isPrinted = value!;
-                                    })),
-                            Text('Imprimir ticket')
-                          ],
-                        ),
-                        if (isPrinted)
-                          Row(
-                            children: [
-                              Checkbox(
-                                  value: x2ticket,
-                                  onChanged: (value) => setState(() {
-                                        x2ticket = value!;
-                                      })),
-                              Text('Imprimir copia')
-                            ],
-                          )
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: windowHeight * 0.025),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          _validaciones(apartado);
-                        },
-                        child: const Text('Aceptar'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Cancelar'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-    );
+  void dispose() {
+    _totalController.dispose();
+    _anticipoMinimoController.dispose();
+    _efectivoController.dispose();
+    _tarjetaController.dispose();
+    _fechaController.dispose();
+    super.dispose();
   }
 
-  _validaciones(ApartadoCabecera apartado) {
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _now.add(const Duration(days: 1)),
+      firstDate: _now,
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      _formattedEndDate = _dateFormatter.format(picked);
+      DateTime referencia = DateTime(_now.year, _now.month, _now.day);
+
+      if (picked.isBefore(referencia) || picked.isAtSameMomentAs(referencia)) {
+        _fechaValida = false;
+        if (!mounted) return;
+        mostrarAlerta(context, 'ERROR',
+            'La fecha de vencimiento del apartado debe ser posterior al día de hoy.');
+        return;
+      }
+
+      _fechaValida = true;
+      setState(() {
+        _fechaController.text = _formattedEndDate;
+      });
+    }
+  }
+
+  void _validaciones(ApartadoCabecera apartado) {
     bool validaciones = true;
-    if (!fechaValida) {
+    if (!_fechaValida && _fechaController.text == _dateFormatter.format(_now)) {
+      // Si la fecha no ha sido cambiada, seleccionar el día siguiente automáticamente
+      final tomorrow = _now.add(const Duration(days: 1));
+      _fechaController.text = _dateFormatter.format(tomorrow);
+      _fechaValida = true;
+    } else if (!_fechaValida) {
       validaciones = false;
       mostrarAlerta(context, 'ERROR',
-          'La fecha de vencimiento no es válida, debe ser mayor al dia de hoy.');
-      return;
-    }
-    double totalAnticipo = double.parse(efectivoController.text) +
-        double.parse(tarjetaController.text);
-
-    if (totalAnticipo >= double.parse(totalCompra)) {
-      validaciones = false;
-      mostrarAlerta(context, 'ERROR',
-          'Estas ingresando un monto mayor o igual al total de la compra, para apartado, el anticipo debe ser menor al total de la compra $totalCompra.');
+          'La fecha de vencimiento no es válida, debe ser mayor al día de hoy.');
       return;
     }
 
-    if (totalAnticipo < double.parse(anticipoMinimo)) {
+    double totalAnticipo =
+        double.parse(_efectivoController.text.replaceAll(',', '')) +
+            double.parse(_tarjetaController.text.replaceAll(',', ''));
+    double totalCompra = double.parse(_totalController.text);
+    double anticipoMinimo = double.parse(_anticipoMinimoController.text);
+
+    if (totalAnticipo >= totalCompra) {
       validaciones = false;
       mostrarAlerta(context, 'ERROR',
-          'El anticipo ingresado es menor al monto mínimo requerido de $anticipoMinimo');
+          'Estás ingresando un monto mayor o igual al total de la compra. Para apartado, el anticipo debe ser menor al total de la compra ${totalCompra.toStringAsFixed(2)}.');
+      return;
+    }
+
+    if (totalAnticipo < anticipoMinimo) {
+      validaciones = false;
+      mostrarAlerta(context, 'ERROR',
+          'El anticipo ingresado es menor al monto mínimo requerido de ${anticipoMinimo.toStringAsFixed(2)}');
       return;
     }
 
     if (validaciones) {
-      setState(() {
-        isLoading = true;
-        textLoading = 'Guardando datos';
-      });
-      final fechaActual = DateTime(now.year, now.month, now.day);
-      // DateFormat fechaFormateada = DateFormat('yyyy-MM-dd');
-      formattedEndDate = dateFormatter.format(_fechaVencimiento);
-      apartado.pagoEfectivo =
-          double.parse(efectivoController.text.replaceAll(',', ''));
-      apartado.pagoTarjeta =
-          double.parse(tarjetaController.text.replaceAll(',', ''));
-      apartado.anticipo = totalAnticipo;
-      apartado.saldoPendiente = apartado.total! - totalAnticipo;
-      apartado.fechaApartado = fechaActual.toString();
-      apartado.fechaVencimiento = fechaController.text;
-      List<ApartadoDetalle> detalles = [];
-      for (ItemVenta item in ventaTemporal) {
-        ApartadoDetalle apartadoDetalle = ApartadoDetalle(
-          productoId: item.idArticulo,
-          cantidad: item.cantidad,
-          precio: item.precioPublico,
-          subtotal: item.subTotalItem,
-          descuentoId: apartado.descuentoId,
-          descuento: item.descuento,
-          total: item.totalItem,
-        );
-        detalles.add(apartadoDetalle);
-      }
+      _procesarApartado(apartado, totalAnticipo);
+    }
+  }
 
-      apartadosCabecera
-          .guardaApartadoCompleto(apartado, detalles)
-          .then((resp) async {
-        if (resp.status == 1) {
-          if (isPrinted) {
-            setState(() {
-              textLoading = 'Imprimiendo ticket';
-            });
-            final result = await impresionesTicket.imprimirApartado(
-                apartado,
-                totalAnticipo,
-                double.parse(totalCompra) - totalAnticipo,
-                double.parse(tarjetaController.text),
-                double.parse(efectivoController.text),
-                x2ticket);
-            setState(() {
-              textLoading = '';
-              isLoading = false;
-            });
-            if (result.status == 1) {
-              Navigator.pushReplacementNamed(context, 'home');
-              ventaTemporal.clear();
-              mostrarAlerta(context, '', 'Venta realizada');
-              return;
-            }
-            isLoading = false;
-            setState(() {});
-            mostrarAlerta(context, 'Error', result.mensaje ?? 'Algo salio mal');
-            return;
-          }
+  Future<void> _procesarApartado(
+      ApartadoCabecera apartado, double totalAnticipo) async {
+    setState(() {
+      _isLoading = true;
+      _textLoading = 'Guardando datos';
+    });
+
+    final fechaActual = DateTime(_now.year, _now.month, _now.day);
+    apartado.pagoEfectivo =
+        double.parse(_efectivoController.text.replaceAll(',', ''));
+    apartado.pagoTarjeta =
+        double.parse(_tarjetaController.text.replaceAll(',', ''));
+    apartado.anticipo = totalAnticipo;
+    apartado.saldoPendiente = apartado.total! - totalAnticipo;
+    apartado.fechaApartado = fechaActual.toString();
+    apartado.fechaVencimiento = _fechaController.text;
+
+    List<ApartadoDetalle> detalles = [];
+    for (ItemVenta item in ventaTemporal) {
+      ApartadoDetalle apartadoDetalle = ApartadoDetalle(
+        productoId: item.idArticulo,
+        cantidad: item.cantidad,
+        precio: item.precioPublico,
+        subtotal: item.subTotalItem,
+        descuentoId: apartado.descuentoId,
+        descuento: item.descuento,
+        total: item.totalItem,
+      );
+      detalles.add(apartadoDetalle);
+    }
+
+    final resp =
+        await _apartadoProvider.guardaApartadoCompleto(apartado, detalles);
+
+    if (resp.status == 1) {
+      if (_isPrinted) {
+        setState(() {
+          _textLoading = 'Imprimiendo ticket';
+        });
+
+        final result = await _impresionesTicket.imprimirApartado(
+            apartado,
+            totalAnticipo,
+            apartado.total! - totalAnticipo,
+            apartado.pagoTarjeta!,
+            apartado.pagoEfectivo!,
+            _x2ticket);
+
+        if (result.status != 1) {
+          if (!mounted) return;
           setState(() {
-            ventaTemporal.clear();
-            textLoading = '';
-            isLoading = false;
-            totalVT = 0.0;
-          });
-          Navigator.pushReplacementNamed(context, 'home');
-          mostrarAlerta(context, '', 'Apartado realizada');
-        } else {
-          setState(() {
-            textLoading = '';
-            isLoading = false;
+            _isLoading = false;
+            _textLoading = '';
           });
           mostrarAlerta(
-              context, 'ERROR', 'Ocurrio el siguiente error: ${resp.mensaje}');
+              context,
+              'Error',
+              result.mensaje ??
+                  'No se pudo imprimir el ticket, pero el apartado fue registrado.');
+          return;
         }
+      }
+
+      setState(() {
+        ventaTemporal.clear();
+        totalVT = 0.0;
       });
+
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, 'home');
+      mostrarAlerta(context, 'Éxito', 'Apartado realizado correctamente');
+    } else {
+      if (!mounted) return;
+      mostrarAlerta(
+          context, 'ERROR', 'Ocurrió el siguiente error: ${resp.mensaje}');
     }
+
+    setState(() {
+      _isLoading = false;
+      _textLoading = '';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final apartado =
+        ModalRoute.of(context)?.settings.arguments as ApartadoCabecera;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Detalle de apartado'),
+        elevation: 2,
+      ),
+      body: _isLoading ? _buildLoadingScreen() : _buildApartadoForm(apartado),
+    );
+  }
+
+  Widget _buildLoadingScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere...$_textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApartadoForm(ApartadoCabecera apartado) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Ingrese los datos del apartado',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Asegúrese de que el anticipo cumpla con el mínimo requerido',
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const Divider(height: 30),
+              _buildPaymentField("Total:", _totalController, enabled: false),
+              const SizedBox(height: 16),
+              _buildPaymentField("Anticipo mínimo:", _anticipoMinimoController,
+                  enabled: false),
+              const SizedBox(height: 16),
+              _buildFechaField(),
+              const SizedBox(height: 16),
+              _buildPaymentField("Efectivo:", _efectivoController,
+                  inputMoney: true),
+              const SizedBox(height: 16),
+              _buildPaymentField("Tarjeta:", _tarjetaController,
+                  inputMoney: true),
+              const SizedBox(height: 24),
+              _buildPrintingOptions(),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.cancel),
+                      label: const Text('Cancelar'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _validaciones(apartado),
+                      icon: const Icon(Icons.check_circle),
+                      label: const Text('Registrar Apartado'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentField(String label, TextEditingController controller,
+      {bool enabled = true, bool inputMoney = false}) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: inputMoney
+              ? InputFieldMoney(controller: controller)
+              : TextField(
+                  controller: controller,
+                  enabled: enabled,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
+                    prefixText: enabled ? null : '\$ ',
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFechaField() {
+    return Row(
+      children: [
+        const Expanded(
+          flex: 1,
+          child: Text(
+            "Fecha vencimiento:",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: TextField(
+            controller: _fechaController,
+            readOnly: true,
+            onTap: _selectDate,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.calendar_today),
+                onPressed: _selectDate,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPrintingOptions() {
+    return Column(
+      children: [
+        CheckboxListTile(
+          title: const Text('Imprimir ticket'),
+          value: _isPrinted,
+          onChanged: (value) => setState(() => _isPrinted = value ?? false),
+          controlAffinity: ListTileControlAffinity.leading,
+          activeColor: Colors.green,
+          dense: true,
+        ),
+        if (_isPrinted)
+          Padding(
+            padding: const EdgeInsets.only(left: 32.0),
+            child: CheckboxListTile(
+              title: const Text('Imprimir copia para cliente'),
+              value: _x2ticket,
+              onChanged: (value) => setState(() => _x2ticket = value ?? false),
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+            ),
+          ),
+      ],
+    );
   }
 }

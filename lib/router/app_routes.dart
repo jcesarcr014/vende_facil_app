@@ -28,7 +28,6 @@ class AppRoutes {
     'descuentos': (BuildContext context) => const DescuentosScreen(),
     'nvo-producto': (BuildContext context) => const AgregaProductoScreen(),
     'productos': (BuildContext context) => const ProductosScreen(),
-    'nvo-abono': (BuildContext context) => const AgregarAbonoScreen(), //
     'historial': (BuildContext context) => const HistorialScreen(),
     'config': (BuildContext context) => const ConfigScreen(),
     'config-impresora': (BuildContext context) => const ImpresoraScreen(),

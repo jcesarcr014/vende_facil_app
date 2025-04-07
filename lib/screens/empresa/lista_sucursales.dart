@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ListaSucursalesScreen extends StatefulWidget {
   const ListaSucursalesScreen({super.key});
@@ -53,8 +52,10 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return PopScope(
         canPop: false,
-        onPopInvoked: (didpop) {
-          if (!didpop) Navigator.pushReplacementNamed(context, 'menu-negocio');
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            Navigator.pushReplacementNamed(context, 'menu-negocio');
+          }
         },
         child: Scaffold(
             appBar: AppBar(

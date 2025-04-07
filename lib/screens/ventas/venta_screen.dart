@@ -3,9 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/venta_provider.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
-import 'package:vende_facil/widgets/input_field_money.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
+import 'package:vende_facil/widgets/widgets.dart';
 
 class VentaScreen extends StatefulWidget {
   const VentaScreen({super.key});

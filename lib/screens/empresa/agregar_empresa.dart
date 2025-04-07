@@ -24,10 +24,10 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
   final controllerDireccion = TextEditingController();
   final controllerRFC = TextEditingController();
   final controllerRS = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   bool isLoading = false;
   String textLoading = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
   Negocio args = Negocio(id: 0, nombreNegocio: '');
   bool firstLoad = false;
 
@@ -36,71 +36,68 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
   }
 
   _guardaNegocio() {
-    if (controllerNombre.text.isNotEmpty &&
-        controllerDireccion.text.isNotEmpty) {
-      Negocio nuevoNegocio = Negocio();
-      nuevoNegocio.idUsuario = sesion.idUsuario;
-      nuevoNegocio.nombreNegocio = controllerNombre.text;
-      nuevoNegocio.telefono =
-          (controllerTelefono.text.isNotEmpty) ? controllerTelefono.text : '';
-      nuevoNegocio.direccion = controllerDireccion.text;
-      nuevoNegocio.razonSocial =
-          (controllerRS.text.isNotEmpty) ? controllerRS.text : '';
-      nuevoNegocio.rfc =
-          (controllerRFC.text.isNotEmpty) ? controllerRFC.text : '';
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      if (mounted) {
-        setState(() {
-          textLoading = 'Enviando información';
-          isLoading = true;
-        });
-      }
+    Negocio nuevoNegocio = Negocio();
+    nuevoNegocio.idUsuario = sesion.idUsuario;
+    nuevoNegocio.nombreNegocio = controllerNombre.text;
+    nuevoNegocio.telefono = controllerTelefono.text;
+    nuevoNegocio.direccion = controllerDireccion.text;
+    nuevoNegocio.razonSocial = controllerRS.text;
+    nuevoNegocio.rfc = controllerRFC.text;
 
-      if (args.id == 0) {
-        negocioProvider.nuevoNegocio(nuevoNegocio).then((value) {
+    if (mounted) {
+      setState(() {
+        textLoading = (args.id == 0)
+            ? 'Registrando nueva empresa'
+            : 'Actualizando información de empresa';
+        isLoading = true;
+      });
+    }
+
+    if (args.id == 0) {
+      negocioProvider.nuevoNegocio(nuevoNegocio).then((value) {
+        if (mounted) {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+        }
+        if (value.status == 1) {
+          loadClientes();
           if (mounted) {
             setState(() {
-              textLoading = '';
-              isLoading = false;
+              _cargar();
+              Navigator.pushReplacementNamed(context, 'menu');
             });
           }
-          if (value.status == 1) {
-            loadClientes();
-            if (mounted) {
-              setState(() {
-                _cargar();
-
-                Navigator.pushReplacementNamed(context, 'menu');
-              });
-            }
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, 'ERROR', value.mensaje!);
-          }
-        });
-      } else {
-        negocioProvider.editaNegocio(nuevoNegocio).then((value) {
-          if (mounted) {
-            setState(() {
-              textLoading = '';
-              isLoading = false;
-            });
-          }
-          if (value.status == 1) {
-            if (mounted) {
-              setState(() {
-                Navigator.pushReplacementNamed(context, 'home');
-              });
-            }
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, 'ERROR', value.mensaje!);
-          }
-        });
-      }
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
     } else {
-      mostrarAlerta(
-          context, 'ERROR', 'Los campos Nombre y Dirección son obligatorios.');
+      nuevoNegocio.id = args.id;
+      negocioProvider.editaNegocio(nuevoNegocio).then((value) {
+        if (mounted) {
+          setState(() {
+            textLoading = '';
+            isLoading = false;
+          });
+        }
+        if (value.status == 1) {
+          if (mounted) {
+            setState(() {
+              Navigator.pushReplacementNamed(context, 'home');
+            });
+          }
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, 'ERROR', value.mensaje!);
+        }
+      });
     }
   }
 
@@ -110,6 +107,7 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
       if (mounted) {
         setState(() {
           isLoading = true;
+          textLoading = 'Cargando información de la empresa';
         });
       }
       negocioProvider.consultaNegocio().then((value) {
@@ -145,9 +143,8 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
       controllerRS.text = args.razonSocial ?? '';
       controllerRFC.text = args.rfc ?? '';
     }
+
     final title = (args.id == 0) ? 'Nueva empresa' : 'Editar empresa';
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
 
     return PopScope(
       canPop: false,
@@ -159,69 +156,227 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(title),
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: false,
+          elevation: 2,
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu-negocio');
+              },
+              icon: const Icon(Icons.close),
+              tooltip: 'Cancelar',
+            ),
+          ],
         ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Espere...$textLoading'),
-                      const SizedBox(height: 10),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-                child: Column(
-                  children: [
-                    SizedBox(height: windowHeight * 0.05),
-                    InputField(
-                        labelText: 'Nombre empresa:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerNombre),
-                    SizedBox(height: windowHeight * 0.03),
-                    InputField(
-                        labelText: 'Dirección:',
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: controllerDireccion),
-                    SizedBox(height: windowHeight * 0.03),
-                    InputField(
-                        labelText: 'Telefono:',
-                        keyboardType: TextInputType.phone,
-                        controller: controllerTelefono),
-                    SizedBox(height: windowHeight * 0.03),
-                    InputField(
-                        labelText: 'Razón Social:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerRS),
-                    SizedBox(height: windowHeight * 0.03),
-                    InputField(
-                        labelText: 'R.F.C.:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerRFC),
-                    SizedBox(height: windowHeight * 0.05),
-                    ElevatedButton(
-                        onPressed: () => _guardaNegocio(),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.save),
-                            SizedBox(width: 5),
-                            Text('Guardar'),
-                          ],
-                        ))
-                  ],
-                ),
-              ),
+        body: isLoading ? _buildLoadingIndicator() : _buildForm(),
       ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere... $textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(
+                  'Información de la Empresa',
+                  Icons.business_outlined,
+                  Colors.blue,
+                ),
+                const SizedBox(height: 24),
+                _buildFormField(
+                  labelText: 'Nombre de la empresa:',
+                  textCapitalization: TextCapitalization.words,
+                  controller: controllerNombre,
+                  icon: Icons.business_center_outlined,
+                  required: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'El nombre de la empresa es obligatorio';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  labelText: 'Dirección:',
+                  textCapitalization: TextCapitalization.sentences,
+                  controller: controllerDireccion,
+                  icon: Icons.location_on_outlined,
+                  required: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'La dirección es obligatoria';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  labelText: 'Teléfono:',
+                  keyboardType: TextInputType.phone,
+                  controller: controllerTelefono,
+                  icon: Icons.phone_outlined,
+                ),
+                const SizedBox(height: 24),
+                _buildSectionTitle(
+                  'Información Fiscal',
+                  Icons.receipt_long_outlined,
+                  Colors.green,
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  labelText: 'Razón Social:',
+                  textCapitalization: TextCapitalization.words,
+                  controller: controllerRS,
+                  icon: Icons.business_outlined,
+                ),
+                const SizedBox(height: 16),
+                _buildFormField(
+                  labelText: 'R.F.C.:',
+                  textCapitalization: TextCapitalization.characters,
+                  controller: controllerRFC,
+                  icon: Icons.article_outlined,
+                ),
+                const SizedBox(height: 36),
+                _buildActionButtons(),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormField({
+    required String labelText,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    required TextEditingController controller,
+    required IconData icon,
+    bool readOnly = false,
+    bool required = false,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      readOnly: readOnly,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: required ? '$labelText *' : labelText,
+        prefixIcon: Icon(icon, size: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
+        filled: readOnly,
+        fillColor: readOnly ? Colors.grey[100] : null,
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _guardaNegocio,
+            icon: const Icon(Icons.save_outlined),
+            label: const Text('Guardar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, 'menu-negocio');
+            },
+            icon: const Icon(Icons.cancel_outlined),
+            label: const Text('Cancelar'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   _cargar() async {
     if (mounted) {
       setState(() {
-        textLoading = 'Leyendo datos de sesión.';
+        textLoading = 'Leyendo datos de sesión';
         isLoading = true;
       });
     }

@@ -3,7 +3,6 @@ import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 enum Filtros { sortAZ, sortZA, categories }
 
@@ -66,8 +65,10 @@ class _ProductosScreenState extends State<ProductosScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pop(context);
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pop(context);
+        }
       },
       child: Scaffold(
         appBar: AppBar(

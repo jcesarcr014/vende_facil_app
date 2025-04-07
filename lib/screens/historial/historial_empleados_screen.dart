@@ -53,9 +53,14 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
         textLoading = '';
       });
       if (value.status == 1) {
-        setState(() {
-          body = 2;
-        });
+        if (varEmpleadoCorte) {
+          setState(() {
+            body = 2;
+          });
+        } else {
+          Navigator.pushReplacementNamed(context, 'menu');
+          mostrarAlerta(context, '', 'Corte generado correctamente');
+        }
       } else {
         mostrarAlerta(context, 'ERROR',
             'Ocurrio un error al solicitar el corte ${value.mensaje}');

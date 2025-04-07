@@ -108,7 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
           decoration: InputDecoration(
             labelText: 'Cantidad',
-            helperText: 'Disponibles: ${producto.disponibleInv}',
+            helperText: (varEmpleadoInventario)
+                ? 'Disponibles: ${producto.disponibleInv}'
+                : '',
           ),
         ),
         actions: [
@@ -123,13 +125,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 mostrarAlerta(context, "AVISO", "Cantidad inválida");
                 return;
               }
-
-              if (cantidad > producto.disponibleInv!) {
-                mostrarAlerta(context, "AVISO",
-                    "No hay suficientes productos disponibles");
-                return;
+              if (!varAplicaInventario) {
+                if (cantidad > producto.disponibleInv!) {
+                  mostrarAlerta(context, "AVISO",
+                      "No hay suficientes productos disponibles");
+                  return;
+                }
               }
-
               _procesarAgregarProducto(producto, cantidad);
               Navigator.pop(context);
             },
@@ -273,12 +275,19 @@ class _HomeScreenState extends State<HomeScreen> {
       trailing: Text(
         '\$${producto.precioPublico?.toStringAsFixed(2) ?? '0.00'}',
         style: TextStyle(
-            color: producto.disponibleInv! > 0 ? Colors.green : Colors.red),
+          color: (varEmpleadoInventario)
+              ? producto.disponibleInv! > 0
+                  ? Colors.green
+                  : Colors.red
+              : Colors.black,
+        ),
       ),
-      onTap: producto.disponibleInv! > 0
-          ? () => _agregarProducto(producto)
-          : () =>
-              mostrarAlerta(context, "AVISO", "No hay productos disponibles"),
+      onTap: (!varAplicaInventario)
+          ? producto.disponibleInv! > 0
+              ? () => _agregarProducto(producto)
+              : () => mostrarAlerta(
+                  context, "AVISO", "No hay productos disponibles")
+          : () => _agregarProducto(producto),
     );
   }
 

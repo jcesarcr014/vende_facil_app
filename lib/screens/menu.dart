@@ -127,33 +127,35 @@ class _MenuScreenState extends State<MenuScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: ((context) {
-              return AlertDialog(
-                title: const Text('Salir'),
-                content: const Text('¿Desea salir de la aplicación?'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'No',
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: ((context) {
+                return AlertDialog(
+                  title: const Text('Salir'),
+                  content: const Text('¿Desea salir de la aplicación?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'No',
+                      ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      SystemNavigator.pop();
-                    },
-                    child: const Text('Si'),
-                  ),
-                ],
-              );
-            }));
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        SystemNavigator.pop();
+                      },
+                      child: const Text('Si'),
+                    ),
+                  ],
+                );
+              }));
+        }
       },
       child: Scaffold(
         body: GridView.builder(
@@ -181,7 +183,11 @@ class _MenuScreenState extends State<MenuScreen> {
                     }
                   });
                 }
-
+                if (menuRoutes[index] == 'menuAbonos' && !varAplicaApartado) {
+                  mostrarAlerta(context, 'ATENCIÓN',
+                      'El sistema de apartado no está habilitado en su negocio.');
+                  return;
+                }
                 if (menuRoutes[index] == 'home' && sesion.tipoUsuario == "P") {
                   Navigator.pushNamed(context, 'select-branch-office');
                   return;

@@ -1,5 +1,4 @@
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/models/venta_dia_model.dart';
 
 class LimpiaDatos {
   limpiaDatos() {

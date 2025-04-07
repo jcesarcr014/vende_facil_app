@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregaClienteScreen extends StatefulWidget {
   const AgregaClienteScreen({super.key});
@@ -26,8 +25,6 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
   bool firstLoad = true;
   bool isLoading = false;
   String textLoading = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
   Cliente args = Cliente(id: 0, nombre: '', correo: '');
   bool _valuecliente = false;
 
@@ -42,54 +39,57 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
   }
 
   _guardaCliente() {
-    if (controllerNombre.text.isNotEmpty) {
-      setState(() {
-        textLoading =
-            (args.id == 0) ? 'Registrando cliente' : 'Actualizando cliente';
-        isLoading = true;
+    if (controllerNombre.text.isEmpty) {
+      mostrarAlerta(context, 'Error', 'El campo nombre es obligatorio');
+      return;
+    }
+
+    setState(() {
+      textLoading =
+          (args.id == 0) ? 'Registrando cliente' : 'Actualizando cliente';
+      isLoading = true;
+    });
+
+    Cliente cliente = Cliente();
+    cliente.nombre = controllerNombre.text;
+    cliente.correo = controllerCorreo.text;
+    cliente.telefono = controllerTelefono.text;
+    cliente.direccion = controllerDireccion.text;
+    cliente.ciudad = controllerCiudad.text;
+    cliente.estado = controllerEstado.text;
+    cliente.cp = controllerCP.text;
+    cliente.pais = controllerPais.text;
+    cliente.codigoCliente = controllerCodigo.text;
+    cliente.nota = controllerNota.text;
+    cliente.distribuidor = (_valuecliente) ? 1 : 0;
+
+    if (args.id == 0) {
+      clienteProvider.nuevoCliente(cliente).then((value) {
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
+        if (value.status == 1) {
+          Navigator.pushReplacementNamed(context, 'clientes');
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, '', value.mensaje!);
+        }
       });
-      Cliente cliente = Cliente();
-      cliente.nombre = controllerNombre.text;
-      cliente.correo = controllerCorreo.text;
-      cliente.telefono = controllerTelefono.text;
-      cliente.direccion = controllerDireccion.text;
-      cliente.ciudad = controllerCiudad.text;
-      cliente.estado = controllerEstado.text;
-      cliente.cp = controllerCP.text;
-      cliente.pais = controllerPais.text;
-      cliente.codigoCliente = controllerCodigo.text;
-      cliente.nota = controllerNota.text;
-      cliente.distribuidor = (_valuecliente) ? 1 : 0;
-      if (args.id == 0) {
-        clienteProvider.nuevoCliente(cliente).then((value) {
-          setState(() {
-            isLoading = false;
-            textLoading = '';
-          });
-          if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'clientes');
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
-      } else {
-        cliente.id = args.id;
-        clienteProvider.editaCliente(cliente).then((value) {
-          setState(() {
-            isLoading = false;
-            textLoading = '';
-          });
-          if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'clientes');
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
-      }
     } else {
-      mostrarAlerta(context, 'ERROR', 'El campo nombre es obligatorio');
+      cliente.id = args.id;
+      clienteProvider.editaCliente(cliente).then((value) {
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
+        if (value.status == 1) {
+          Navigator.pushReplacementNamed(context, 'clientes');
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, '', value.mensaje!);
+        }
+      });
     }
   }
 
@@ -100,30 +100,38 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
         builder: (context) {
           return AlertDialog(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: const Text(
               'ATENCIÓN',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '¿Desea eliminar el cliente ${args.nombre} - ${args.codigoCliente}? Esta acción no podrá revertirse.',
+                  textAlign: TextAlign.center,
                 )
               ],
             ),
             actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar',
+                    style: TextStyle(color: Colors.grey)),
+              ),
               ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _eliminarCliente();
-                  },
-                  child: const Text('Eliminar')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
+                onPressed: () {
+                  Navigator.pop(context);
+                  _eliminarCliente();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text('Eliminar',
+                    style: TextStyle(color: Colors.white)),
+              ),
             ],
           );
         });
@@ -134,6 +142,7 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       textLoading = 'Eliminando cliente';
       isLoading = true;
     });
+
     clienteProvider.eliminaCliente(args.id!).then((value) {
       setState(() {
         textLoading = '';
@@ -188,12 +197,12 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
       controllerNota.text = args.nota ?? '';
       _valuecliente = (args.distribuidor == 1) ? true : false;
     }
+
     final title = (args.id == 0) ? 'Nuevo cliente' : 'Editar cliente';
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
+
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           Navigator.pushReplacementNamed(context, 'clientes');
         }
@@ -202,165 +211,304 @@ class _AgregaClienteScreenState extends State<AgregaClienteScreen> {
         appBar: AppBar(
           title: Text(title),
           automaticallyImplyLeading: false,
+          elevation: 2,
           actions: [
             if (args.id != 0)
               IconButton(
-                  onPressed: () {
-                    _alertaEliminar();
-                  },
-                  icon: const Icon(Icons.delete))
+                onPressed: _alertaEliminar,
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Eliminar cliente',
+              ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'clientes');
+              },
+              icon: const Icon(Icons.close),
+              tooltip: 'Cancelar',
+            ),
           ],
         ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Espere...$textLoading'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    InputField(
-                        labelText: 'Nombre:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerNombre),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'e-mail:',
-                        keyboardType: TextInputType.emailAddress,
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerCorreo),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Telefono:',
-                        keyboardType: TextInputType.number,
-                        controller: controllerTelefono),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Dirección:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerDireccion),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Ciudad:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerCiudad),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Estado:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerEstado),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'C.P.:',
-                        keyboardType: TextInputType.number,
-                        controller: controllerCP),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Pais:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerPais),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        readOnly: true,
-                        labelText: 'Codigo:',
-                        textCapitalization: TextCapitalization.words,
-                        controller: controllerCodigo),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        labelText: 'Nota:',
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: controllerNota),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    if (sesion.tipoUsuario == 'P')
-                      SwitchListTile.adaptive(
-                          title: const Text('Tipo de cliente: '),
-                          subtitle:
-                              Text((_valuecliente) ? 'Distribuidor' : 'Normal'),
-                          value: _valuecliente,
-                          onChanged: (value) {
-                            _valuecliente = value;
-                            setState(() {});
-                          }),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                            onPressed: () => _guardaCliente(),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.save),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Guardar',
-                                ),
-                              ],
-                            )),
-                        SizedBox(
-                          width: windowWidth * 0.05,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacementNamed(
-                                  context, 'clientes');
-                            },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.cancel_outlined),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Cancelar',
-                                ),
-                              ],
-                            )),
-                      ],
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.08,
-                    ),
-                  ],
-                ),
-              ),
+        body: isLoading ? _buildLoadingIndicator() : _buildForm(),
       ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere... $textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle(
+                'Información Personal',
+                Icons.person,
+                Colors.blue,
+              ),
+              const SizedBox(height: 16),
+              _buildFormField(
+                labelText: 'Nombre:',
+                textCapitalization: TextCapitalization.words,
+                controller: controllerNombre,
+                icon: Icons.person_outline,
+                required: true,
+              ),
+              const SizedBox(height: 16),
+              _buildFormField(
+                labelText: 'E-mail:',
+                keyboardType: TextInputType.emailAddress,
+                controller: controllerCorreo,
+                icon: Icons.email_outlined,
+              ),
+              const SizedBox(height: 16),
+              _buildFormField(
+                labelText: 'Teléfono:',
+                keyboardType: TextInputType.phone,
+                controller: controllerTelefono,
+                icon: Icons.phone_outlined,
+              ),
+              const SizedBox(height: 24),
+              _buildSectionTitle(
+                'Dirección',
+                Icons.location_on,
+                Colors.green,
+              ),
+              const SizedBox(height: 16),
+              _buildFormField(
+                labelText: 'Dirección:',
+                textCapitalization: TextCapitalization.words,
+                controller: controllerDireccion,
+                icon: Icons.home_outlined,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildFormField(
+                      labelText: 'Ciudad:',
+                      textCapitalization: TextCapitalization.words,
+                      controller: controllerCiudad,
+                      icon: Icons.location_city_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildFormField(
+                      labelText: 'Estado:',
+                      textCapitalization: TextCapitalization.words,
+                      controller: controllerEstado,
+                      icon: Icons.map_outlined,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildFormField(
+                      labelText: 'C.P.:',
+                      keyboardType: TextInputType.number,
+                      controller: controllerCP,
+                      icon: Icons.pin_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildFormField(
+                      labelText: 'País:',
+                      textCapitalization: TextCapitalization.words,
+                      controller: controllerPais,
+                      icon: Icons.public_outlined,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSectionTitle(
+                'Información Adicional',
+                Icons.info_outline,
+                Colors.orange,
+              ),
+              const SizedBox(height: 16),
+              _buildFormField(
+                labelText: 'Código:',
+                textCapitalization: TextCapitalization.none,
+                controller: controllerCodigo,
+                icon: Icons.qr_code_outlined,
+                readOnly: true,
+              ),
+              const SizedBox(height: 16),
+              _buildFormField(
+                labelText: 'Nota:',
+                textCapitalization: TextCapitalization.sentences,
+                controller: controllerNota,
+                icon: Icons.note_outlined,
+                maxLines: 3,
+              ),
+              if (sesion.tipoUsuario == 'P') ...[
+                const SizedBox(height: 16),
+                _buildClientTypeSelector(),
+              ],
+              const SizedBox(height: 32),
+              _buildActionButtons(),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormField({
+    required String labelText,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    required TextEditingController controller,
+    required IconData icon,
+    bool readOnly = false,
+    bool required = false,
+    int maxLines = 1,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      readOnly: readOnly,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: required ? '$labelText *' : labelText,
+        prefixIcon: Icon(icon, size: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
+        filled: readOnly,
+        fillColor: readOnly ? Colors.grey[100] : null,
+      ),
+    );
+  }
+
+  Widget _buildClientTypeSelector() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SwitchListTile.adaptive(
+        title: const Text(
+          'Tipo de cliente:',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          _valuecliente ? 'Distribuidor' : 'Normal',
+          style: TextStyle(
+            color: _valuecliente ? Colors.blue : Colors.grey[700],
+          ),
+        ),
+        value: _valuecliente,
+        onChanged: (value) {
+          setState(() {
+            _valuecliente = value;
+          });
+        },
+        activeColor: Colors.blue,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _guardaCliente,
+            icon: const Icon(Icons.save_outlined),
+            label: const Text('Guardar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, 'clientes');
+            },
+            icon: const Icon(Icons.cancel_outlined),
+            label: const Text('Cancelar'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
