@@ -9,10 +9,6 @@ class ActualizaMontos {
     if (ventaTemporal.isEmpty) return;
     final distribuidor = clienteVentaActual.distribuidor == 1;
     final descuentoActivo = descuentoVentaActual.id != 0;
-
-    print(' ====== descuentoVentaActual.id ${descuentoVentaActual.id} ======');
-    print(' ====== descuentoActivo ${descuentoActivo} ======');
-
     final mayoreoActivo =
         listaVariables.firstWhere((v) => v.nombre == "aplica_mayoreo").valor ==
             '1';

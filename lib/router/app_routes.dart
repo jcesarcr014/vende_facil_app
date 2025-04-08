@@ -77,14 +77,6 @@ class AppRoutes {
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case 'detalles-producto-sucursal':
-        final producto = settings.arguments as Producto;
-        return MaterialPageRoute(
-          builder: (context) => DetallesProductoSucursal(producto: producto),
-        );
-      default:
-        return MaterialPageRoute(builder: (context) => const ErrorScreen());
-    }
+    return MaterialPageRoute(builder: (context) => const ErrorScreen());
   }
 }
