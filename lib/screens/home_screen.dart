@@ -149,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
           idArticulo: producto.id!,
           articulo: producto.producto!,
           cantidad: cantidad,
+          precioUnitario: producto.costo!,
           precioPublico: producto.precioPublico!,
           precioMayoreo: producto.precioMayoreo!,
           precioDistribuidor: producto.precioDist!,
@@ -184,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('${sesion.sucursal}'),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.menu),
+                  icon: const Icon(Icons.home),
                   onPressed: () =>
                       Navigator.pushReplacementNamed(context, 'menu'),
                 ),

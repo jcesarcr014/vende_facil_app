@@ -42,10 +42,34 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
   Widget build(BuildContext context) {
     windowHeight = MediaQuery.of(context).size.height;
     windowWidth = MediaQuery.of(context).size.width;
+
+    // Verificar si la venta está cancelada
+    bool ventaCancelada = listaVentaCabecera2.first.cancelado == '1';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Venta: ${listaVentaCabecera2[0].folio}'),
-        automaticallyImplyLeading: true,
+        actions: [
+          // Si la venta está cancelada, mostrar un indicador en el AppBar
+          if (ventaCancelada)
+            Container(
+              margin: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'CANCELADO',
+                style: TextStyle(
+                  color: Colors.red.shade800,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ],
       ),
       body: (isLoading)
           ? Center(
@@ -53,127 +77,219 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Espere...$textLoading'),
-                  SizedBox(
-                    height: windowHeight * 0.01,
-                  ),
+                  SizedBox(height: windowHeight * 0.01),
                   const CircularProgressIndicator(),
                 ],
               ),
             )
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        'Nombre de la Sucursal: ${sucursalVenta.nombreSucursal}'),
-                    const SizedBox(height: 5),
-                    Text(
-                        'Dirección de la Sucursal: ${sucursalVenta.direccion}'),
-                    const SizedBox(height: 5),
-                    Text('Telefono: ${sucursalVenta.telefono}'),
-                    const SizedBox(height: 5),
-                    Text('Cliente: ${listaVentaCabecera2[0].nombreCliente}'),
-                    const SizedBox(height: 5),
-                    Text(
-                        'Fecha de compra: ${listaVentaCabecera2[0].fecha_venta}'),
-                    const Divider(height: 20),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columnSpacing: 20,
-                        columns: const [
-                          DataColumn(label: Text('Producto')),
-                          DataColumn(label: Text('Cantidad')),
-                          DataColumn(label: Text('Descuento')),
-                          DataColumn(label: Text('Total')),
+          : Column(
+              children: [
+                // Encabezado con información principal
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.blue.shade50,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Folio: ${listaVentaCabecera2[0].folio}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text('Fecha: ${listaVentaCabecera2[0].fecha_venta}'),
+                      Text('Cliente: ${listaVentaCabecera2[0].nombreCliente}'),
+                    ],
+                  ),
+                ),
+
+                // Detalles de la sucursal
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Card(
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Información de la Sucursal',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Nombre: ${sucursalVenta.nombreSucursal ?? ""}'),
+                          Text('Dirección: ${sucursalVenta.direccion ?? ""}'),
+                          Text('Teléfono: ${sucursalVenta.telefono ?? ""}'),
                         ],
-                        rows: listaVentadetalles
-                            .map((detalle) => DataRow(cells: [
-                                  DataCell(
-                                      Text(detalle.nombreProducto.toString())),
-                                  DataCell(Text(detalle.cantidad.toString())),
-                                  DataCell(Text(
-                                      detalle.cantidadDescuento.toString())),
-                                  DataCell(Text(detalle.total.toString())),
-                                ]))
-                            .toList(),
                       ),
                     ),
-                    const Divider(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        _buildSummaryRow('Subtotal',
-                            '${listaVentaCabecera2.first.subtotal}'),
-                        _buildSummaryRow('Descuento',
-                            '${listaVentaCabecera2.first.descuento}'),
-                        _buildSummaryRow(
-                            'Total', '${listaVentaCabecera2.first.total}'),
-                        _buildSummaryRow(
-                            'Cambio', '${listaVentaCabecera2.first.cambio}'),
-                      ],
-                    ),
-                    const Divider(height: 20),
-                    (listaVentaCabecera2.first.cancelado == '0')
-                        ? Center(
-                            child: Text('Acciones',
-                                style: const TextStyle(fontSize: 20),
-                                textAlign: TextAlign.center),
-                          )
-                        : Center(
-                            child: Text('Venta cancelada',
-                                style: const TextStyle(fontSize: 20),
-                                textAlign: TextAlign.center),
-                          ),
-                    (listaVentaCabecera2.first.cancelado == '0')
-                        ? Column(
-                            children: [
-                              SizedBox(height: windowHeight * 0.05),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _reimprimirTicket();
-                                },
-                                child: SizedBox(
-                                  height: windowHeight * 0.1,
-                                  width: windowWidth * 0.8,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.print),
-                                      const SizedBox(width: 10),
-                                      const Text(
-                                        'Reimprimir Ticket',
-                                        style: TextStyle(fontSize: 18),
-                                      ),
+                  ),
+                ),
+
+                // Tabla de productos
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Card(
+                      elevation: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Productos',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: SingleChildScrollView(
+                                  child: DataTable(
+                                    columnSpacing: 20,
+                                    headingRowColor: MaterialStateProperty.all(
+                                      Colors.blue.shade100,
+                                    ),
+                                    columns: const [
+                                      DataColumn(label: Text('Producto')),
+                                      DataColumn(label: Text('Cantidad')),
+                                      DataColumn(label: Text('Descuento')),
+                                      DataColumn(label: Text('Total')),
                                     ],
+                                    rows: listaVentadetalles
+                                        .map((detalle) => DataRow(cells: [
+                                              DataCell(Text(detalle
+                                                  .nombreProducto
+                                                  .toString())),
+                                              DataCell(Text(
+                                                  detalle.cantidad.toString())),
+                                              DataCell(Text(detalle
+                                                  .cantidadDescuento
+                                                  .toString())),
+                                              DataCell(Text(
+                                                  detalle.total.toString())),
+                                            ]))
+                                        .toList(),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _cancelarVenta();
-                                },
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.cancel),
-                                    const SizedBox(width: 10),
-                                    const Text(
-                                      'Cancelar venta',
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: windowHeight * 0.05),
-                            ],
-                          )
-                        : Container()
-                  ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+
+                // Resumen de totales
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Card(
+                    elevation: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          _buildSummaryRow('Subtotal',
+                              '\$${listaVentaCabecera2.first.subtotal?.toStringAsFixed(2) ?? "0.00"}'),
+                          _buildSummaryRow('Descuento',
+                              '\$${listaVentaCabecera2.first.descuento?.toStringAsFixed(2) ?? "0.00"}'),
+                          const Divider(),
+                          _buildSummaryRow('Total',
+                              '\$${listaVentaCabecera2.first.total?.toStringAsFixed(2) ?? "0.00"}'),
+                          _buildSummaryRow('Cambio',
+                              '\$${listaVentaCabecera2.first.cambio?.toStringAsFixed(2) ?? "0.00"}'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Botones de acción (solo si la venta no está cancelada)
+                if (!ventaCancelada)
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _reimprimirTicket,
+                            icon: const Icon(Icons.print),
+                            label: const Text('Reimprimir Ticket'),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _cancelarVenta,
+                            icon: const Icon(Icons.cancel_outlined),
+                            label: const Text('Cancelar Venta'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  // Mensaje de venta cancelada
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red.shade200),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.cancel,
+                            color: Colors.red.shade800,
+                            size: 48,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Esta venta ha sido cancelada',
+                            style: TextStyle(
+                              color: Colors.red.shade800,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.arrow_back),
+                            label: const Text('Volver al historial'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
     );
   }
@@ -182,13 +298,16 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '$label: ',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          Text(value)
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16),
+          ),
         ],
       ),
     );
@@ -200,15 +319,16 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancelar venta'),
-          content: const Text('¿Está seguro que desea cancelar la venta?'),
+          content: const Text(
+              '¿Está seguro que desea cancelar la venta? Esta acción no se puede deshacer y restaurará los productos al inventario.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancelar'),
+              child: const Text('No, regresar'),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 setState(() {
@@ -223,8 +343,8 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                     textLoading = '';
                   });
                   if (value.status == 1) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
+                    Navigator.pop(context); // Regresar a la pantalla anterior
                     mostrarAlerta(
                         context, 'Éxito', 'Venta cancelada correctamente.');
                   } else {
@@ -232,7 +352,11 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                   }
                 });
               },
-              child: const Text('Aceptar'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Sí, cancelar venta'),
             ),
           ],
         );
@@ -251,6 +375,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
         idArticulo: detalle.idProd!,
         articulo: detalle.nombreProducto!,
         cantidad: detalle.cantidad!,
+        precioUnitario: detalle.precioUnitario!,
         precioPublico: detalle.precio!,
         precioMayoreo: 0,
         precioDistribuidor: 0,
@@ -283,6 +408,8 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
       });
       if (resp.status != 1) {
         mostrarAlerta(context, 'ERROR', '${resp.mensaje}');
+      } else {
+        mostrarAlerta(context, 'Éxito', 'Ticket reimpreso correctamente');
       }
     });
   }

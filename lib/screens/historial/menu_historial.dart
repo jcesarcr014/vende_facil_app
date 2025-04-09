@@ -51,15 +51,6 @@ class MenuHistorialScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildMenuCard(
             context: context,
-            title: 'Historial de ventas',
-            subtitle: 'Consultas de ventas por fecha',
-            icon: Icons.receipt_long,
-            iconColor: Colors.indigo,
-            onTap: () => Navigator.pushNamed(context, 'historial'),
-          ),
-          const SizedBox(height: 16),
-          _buildMenuCard(
-            context: context,
             title: 'Cortes empleados',
             subtitle: 'Historial de cortes por fechas',
             icon: Icons.account_balance_wallet,
@@ -69,7 +60,16 @@ class MenuHistorialScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildMenuCard(
             context: context,
-            title: 'Ventas del día',
+            title: 'Reporte general',
+            subtitle: 'Consultas de ventas por fecha',
+            icon: Icons.receipt_long,
+            iconColor: Colors.indigo,
+            onTap: () => Navigator.pushNamed(context, 'historial'),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context: context,
+            title: 'Reporte detallado',
             subtitle: 'Detalle de las ventas realizadas en el día',
             icon: Icons.today,
             iconColor: Colors.green,

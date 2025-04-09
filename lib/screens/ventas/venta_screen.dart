@@ -141,6 +141,7 @@ class _VentaScreenState extends State<VentaScreen> {
               idVenta: 0,
               idProd: item.idArticulo,
               cantidad: item.cantidad,
+              precioUnitario: item.precioUnitario,
               precio: item.precioPublico,
               idDesc: venta.idDescuento,
               cantidadDescuento: venta.descuento,

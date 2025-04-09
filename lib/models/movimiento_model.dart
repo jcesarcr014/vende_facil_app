@@ -14,6 +14,7 @@ class MovimientoCorte {
   String? total;
   String? fecha;
   String? hora;
+  String? cancelado;
   String? nombreSucursal;
   String? nombreUsuario;
   String? nombreCliente;
@@ -33,6 +34,7 @@ class MovimientoCorte {
     this.total,
     this.fecha,
     this.hora,
+    this.cancelado,
     this.nombreSucursal,
     this.nombreUsuario,
     this.nombreCliente,

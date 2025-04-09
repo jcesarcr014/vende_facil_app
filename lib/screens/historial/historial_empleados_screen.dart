@@ -88,7 +88,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'menu');
               },
-              icon: const Icon(Icons.menu),
+              icon: const Icon(Icons.home),
             ),
           ],
         ),
@@ -153,7 +153,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                       return AlertDialog(
                         title: const Text('Confirmar'),
                         content:
-                            Text('¿Desea confirmar el efectivo ingresado?'),
+                            Text('¿Desea confirmar el efectivo ingresado? \n'
+                                'Efectivo: \$${efectivoController.text}'),
                         actions: [
                           TextButton(
                             onPressed: () {

@@ -2,6 +2,7 @@ class ItemVenta {
   int idArticulo;
   String articulo;
   double cantidad;
+  double precioUnitario;
   double precioPublico;
   double precioMayoreo;
   double precioDistribuidor;
@@ -16,6 +17,7 @@ class ItemVenta {
     required this.idArticulo,
     required this.articulo,
     required this.cantidad,
+    required this.precioUnitario,
     required this.precioPublico,
     required this.precioMayoreo,
     required this.precioDistribuidor,

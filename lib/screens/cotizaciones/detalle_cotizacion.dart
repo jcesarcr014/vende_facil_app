@@ -207,6 +207,7 @@ class _CotizacionDetallesScreenState extends State<CotizacionDetallesScreen> {
           idArticulo: detalle.idProd!,
           articulo: detalle.nombreProducto!,
           cantidad: detalle.cantidad!,
+          precioUnitario: detalle.precio!,
           precioPublico: detalle.precio!,
           precioMayoreo: detalle.precio!,
           precioDistribuidor: detalle.precio!,

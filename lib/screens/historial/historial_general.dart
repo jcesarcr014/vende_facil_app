@@ -39,6 +39,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
   final provider = NegocioProvider();
   final reportesProvider = ReportesProvider();
   final ticketProvider = TicketProvider();
+  final ventaProdiver = VentasProvider();
 
   // Lista para almacenar todos los movimientos sin filtrar
   List<MovimientoCorte> todosLosMovimientos = [];
@@ -272,6 +273,11 @@ class _HistorialScreenState extends State<HistorialScreen> {
                               MovimientoCorte movimiento =
                                   movimientosFiltrados[index];
 
+                              // Verificar si el movimiento es una venta (VT o VD)
+                              bool esVenta =
+                                  movimiento.tipoMovimiento == 'VT' ||
+                                      movimiento.tipoMovimiento == 'VD';
+
                               return Card(
                                 margin: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 8),
@@ -311,13 +317,40 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                       Text(
                                           'Sucursal: ${movimiento.nombreSucursal}'),
                                       const SizedBox(height: 4),
-                                      Text(
-                                        _getTipoMovimientoText(
-                                            movimiento.tipoMovimiento),
-                                        style: TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                          color: Colors.blue.shade700,
-                                        ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            _getTipoMovimientoText(
+                                                movimiento.tipoMovimiento),
+                                            style: TextStyle(
+                                              fontStyle: FontStyle.italic,
+                                              color: Colors.blue.shade700,
+                                            ),
+                                          ),
+                                          // Mostrar indicador si el movimiento está cancelado
+                                          if (movimiento.cancelado == '1')
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: Colors.red.shade100,
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Text(
+                                                'CANCELADO',
+                                                style: TextStyle(
+                                                  color: Colors.red.shade800,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                       const SizedBox(height: 8),
                                       const Divider(),
@@ -350,16 +383,45 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                               ),
                                               Text(
                                                 '\$${movimiento.total}',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 16,
-                                                  color: Colors.green,
+                                                  color: movimiento.cancelado ==
+                                                          '1'
+                                                      ? Colors.grey
+                                                      : Colors.green,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ],
                                       ),
+
+                                      // Botón Ver Detalles (solo para ventas)
+                                      if (esVenta)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 12.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              ElevatedButton.icon(
+                                                onPressed: () =>
+                                                    _verDetallesVenta(movimiento
+                                                        .idMovimiento!),
+                                                icon: const Icon(
+                                                    Icons.visibility),
+                                                label:
+                                                    const Text('Ver Detalles'),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.blue,
+                                                  foregroundColor: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -409,6 +471,31 @@ class _HistorialScreenState extends State<HistorialScreen> {
         ],
       ),
     );
+  }
+
+  void _verDetallesVenta(int movimientoId) {
+    // Mostrar indicador de carga
+    setState(() {
+      isLoading = true;
+      textLoading = 'Consultando detalles de la venta';
+    });
+
+    // Consultar detalles de la venta
+    ventaProdiver
+        .consultarventa(int.parse(movimientoId.toString()))
+        .then((resultado) {
+      setState(() {
+        isLoading = false;
+      });
+
+      if (resultado.status != 1) {
+        mostrarAlerta(context, 'Error',
+            resultado.mensaje ?? 'Error al consultar la venta');
+        return;
+      } else {
+        Navigator.pushNamed(context, 'venta-detalles');
+      }
+    });
   }
 
   // Widget para dropdown de sucursales
