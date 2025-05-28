@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/categoria_model.dart';
-import 'package:vende_facil/models/cuenta_sesion_modelo.dart';
+import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -11,12 +9,11 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoriasProvider = CategoriaProvider();
-    final double screenWidth = MediaQuery.of(context).size.width;
 
     void addProduct() async {
       await categoriasProvider.listarCategorias();
       if (listaCategorias.isEmpty) {
-        mostrarAlerta(context, 'Error', 'Primero crea una categoria');
+        mostrarAlerta(context, 'Error', 'Primero crea una categoría');
         return;
       }
       Navigator.pushNamed(context, 'nvo-producto');
@@ -24,134 +21,200 @@ class ProductsScreen extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pushReplacementNamed(context, 'menu');
+        }
       },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Productos'),
+          elevation: 2,
           actions: [
             IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'menu');
-                },
-                icon: const Icon(Icons.menu)),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu');
+              },
+              icon: const Icon(Icons.home),
+              tooltip: 'Ir al menú principal',
+            ),
           ],
         ),
-        body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.0),
-            child: Column(
-              children: [
-                if (sesion.tipoUsuario == 'P')
-                  ListTile(
-                      leading: const Icon(Icons.list_alt),
-                      title: const Text('Listado de Productos',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                      subtitle: const Text('Visualiza tus productos'),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: () {
-                        Navigator.pushNamed(context, 'productos');
-                      }),
-                if (sesion.tipoUsuario == 'P')
-                  ListTile(
-                      leading: const Icon(Icons.add_box),
-                      title: const Text('Agregar Producto',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                      subtitle: const Text('Crea un nuevo producto'),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: addProduct),
-                if (sesion.tipoUsuario == 'P' ||
-                    (sesion.tipoUsuario == 'E' && globals.empleadoInvetario))
-                  ListTile(
-                      leading: const Icon(Icons.warehouse),
-                      title: const Text(
-                        'Inventarios Sucursales',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: const Text(
-                          'Selecciona tu sucursal y visualiza tus productos'),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: () {
-                        Navigator.pushNamed(context, 'InventoryPage');
-                      }),
-                if (sesion.tipoUsuario == 'P')
-                  ListTile(
-                      leading: const Icon(Icons.add),
-                      title: const Text(
-                        'Agregar Producto Sucursal',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: const Text('Agrega un producto a tu sucursal'),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: () => Navigator.pushNamed(
-                          context, 'agregar-producto-sucursal')),
-                if (sesion.tipoUsuario == 'P')
-                  ListTile(
-                      leading: const Icon(Icons.delete),
-                      title: const Text(
-                        'Quitar Producto Sucursal',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle:
-                          const Text('Elimina un producto de una sucursal'),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: () => Navigator.pushNamed(
-                          context, 'eliminar-producto-sucursal')),
-                ListTile(
-                    leading: const Icon(Icons.request_quote),
-                    title: const Text(
-                      'Nueva cotización',
-                      style: TextStyle(
+        body: _buildMenuOptions(context, addProduct),
+      ),
+    );
+  }
+
+  Widget _buildMenuOptions(BuildContext context, VoidCallback addProduct) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Text(
+              'Gestión de Productos',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Mostrar opciones según el tipo de usuario
+          if (sesion.tipoUsuario == 'P') ...[
+            _buildMenuCard(
+              context: context,
+              title: 'Listado de Productos',
+              subtitle: 'Visualiza tus productos',
+              icon: Icons.list_alt,
+              iconColor: Colors.blue,
+              onTap: () => Navigator.pushNamed(context, 'productos'),
+            ),
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
+              title: 'Nuevo Producto',
+              subtitle: 'Crea un nuevo producto',
+              icon: Icons.add_box,
+              iconColor: Colors.green,
+              onTap: addProduct,
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          if (sesion.tipoUsuario == 'P' ||
+              (sesion.tipoUsuario == 'E' && varEmpleadoInventario)) ...[
+            _buildMenuCard(
+              context: context,
+              title: 'Inventario sucursal',
+              subtitle: 'Selecciona tu sucursal y visualiza tus productos',
+              icon: Icons.warehouse,
+              iconColor: Colors.amber,
+              onTap: () => Navigator.pushNamed(context, 'InventoryPage'),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          if (sesion.tipoUsuario == 'P') ...[
+            _buildMenuCard(
+              context: context,
+              title: 'Asignar Productos Sucursal',
+              subtitle: 'Agrega inventario a una sucursal',
+              icon: Icons.add_circle,
+              iconColor: Colors.teal,
+              onTap: () =>
+                  Navigator.pushNamed(context, 'agregar-producto-sucursal'),
+            ),
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
+              title: 'Retirar Productos Sucursal',
+              subtitle: 'Retira inventario de una sucursal',
+              icon: Icons.remove_circle,
+              iconColor: Colors.red,
+              onTap: () =>
+                  Navigator.pushNamed(context, 'eliminar-producto-sucursal'),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          _buildMenuCard(
+            context: context,
+            title: 'Cotizar',
+            subtitle: 'Crear cotización de productos',
+            icon: Icons.request_quote,
+            iconColor: Colors.purple,
+            onTap: () {
+              sesion.cotizar = true;
+              if (sesion.tipoUsuario == 'P') {
+                Navigator.pushNamed(context, 'seleccionar-sucursal-cotizacion');
+                return;
+              }
+              Navigator.pushNamed(context, 'HomerCotizar');
+            },
+          ),
+          const SizedBox(height: 16),
+
+          _buildMenuCard(
+            context: context,
+            title: 'Cotizaciones',
+            subtitle: 'Visualización de cotizaciones',
+            icon: Icons.description,
+            iconColor: Colors.indigo,
+            onTap: () => Navigator.pushNamed(context, 'listaCotizaciones'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  size: 36,
+                  color: iconColor,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    subtitle: const Text('Crear cotizacion de productos'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () {
-                      sesion.cotizar = true;
-                      if (sesion.tipoUsuario == 'P') {
-                        Navigator.pushNamed(
-                            context, 'seleccionar-sucursal-cotizacion');
-                        return;
-                      }
-                      Navigator.pushNamed(context, 'HomerCotizar');
-                    }),
-                ListTile(
-                    leading: const Icon(Icons.add_chart_sharp),
-                    title: const Text(
-                      'Lista de Cotizaciones',
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.grey[600],
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    subtitle: const Text('visualizacion de cotizaciones'),
-                    trailing: const Icon(Icons.arrow_right),
-                    onTap: () {
-                      Navigator.pushNamed(context, 'listaCotizaciones');
-                    })
-              ],
-            )),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

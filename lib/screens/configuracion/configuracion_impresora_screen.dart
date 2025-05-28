@@ -29,14 +29,14 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
   leeDatosTicket() async {
     setState(() {
       isLoading = true;
-      textLoading = 'Cargando datos...';
+      textLoading = 'Cargando datos del ticket';
     });
+
     final TicketModel? model =
         await ticketProvider.getData(sesion.idNegocio.toString(), null);
+
     setState(() {
       datosTicket.message = model!.message ?? 'No hay mensaje personalizado';
-    });
-    setState(() {
       isLoading = false;
       textLoading = '';
     });
@@ -45,8 +45,9 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
   _requestPermissions() async {
     setState(() {
       isLoading = true;
-      textLoading = 'Validando permisos...';
+      textLoading = 'Validando permisos';
     });
+
     // Solicitar permisos de Bluetooth y ubicación
     var statusNearbyDevices = await Permission.nearbyWifiDevices.status;
     var statusBluetoothConnect = await Permission.bluetoothConnect.status;
@@ -76,20 +77,22 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       isLoading = false;
       textLoading = '';
     });
+
     if (statusNearbyDevices.isGranted &&
         statusBluetoothConnect.isGranted &&
         statusBluetoothScan.isGranted &&
         statusLocation.isGranted) {
+      // Permisos concedidos, continuamos
     } else {
       mostrarAlerta(context, 'Atención',
-          'Debes otrogar los permisos necesarios para poder imprimir. Vendo Facil es compatible con impresoras de 58 mm ');
+          'Debe otorgar los permisos necesarios para poder imprimir. Vendo Facil es compatible con impresoras de 58 mm.');
     }
   }
 
   getBluetoots() async {
     setState(() {
       isLoading = true;
-      textLoading = 'Buscando dispositivos';
+      textLoading = 'Buscando dispositivos Bluetooth';
       items = [];
     });
 
@@ -103,9 +106,9 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
 
     if (listResult.isEmpty) {
       _msj =
-          "No hay impresoras vinculadas, por favor vincula una impresora en la configuración de Bluetooth.";
+          "No hay impresoras vinculadas. Por favor, vincule una impresora en la configuración de Bluetooth de su dispositivo.";
     } else {
-      _msj = "Selecciona una impresora para conectar.";
+      _msj = "Seleccione una impresora para conectar:";
     }
 
     setState(() {
@@ -116,8 +119,9 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
   connect(String mac) async {
     setState(() {
       isLoading = true;
-      textLoading = "Conectando a impresora...";
+      textLoading = "Conectando a la impresora...";
     });
+
     final bool result =
         await PrintBluetoothThermal.connect(macPrinterAddress: mac);
 
@@ -139,27 +143,58 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
   }
 
   Future<void> disconnect() async {
+    setState(() {
+      isLoading = true;
+      textLoading = "Desconectando...";
+    });
+
     final bool status = await PrintBluetoothThermal.disconnect;
+
     await SharedPreferences.getInstance().then((prefs) {
       prefs.remove('macPrinter');
     });
+
     setState(() {
       connected = false;
+      isLoading = false;
+      textLoading = '';
     });
   }
 
   Future<void> printTest() async {
+    setState(() {
+      isLoading = true;
+      textLoading = "Imprimiendo ticket de prueba...";
+    });
+
     bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
 
     if (conexionStatus) {
       bool result = false;
-
       List<int> ticket = await testTicket();
       result = await PrintBluetoothThermal.writeBytes(ticket);
+
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+
+      if (result) {
+        mostrarAlerta(
+            context, 'Éxito', 'Impresión de prueba enviada correctamente');
+      } else {
+        mostrarAlerta(
+            context, 'Error', 'No se pudo enviar la impresión de prueba');
+      }
     } else {
       setState(() {
         disconnect();
+        isLoading = false;
+        textLoading = '';
       });
+
+      mostrarAlerta(context, 'Error',
+          'La impresora se ha desconectado. Por favor, conéctela nuevamente.');
     }
   }
 
@@ -237,80 +272,349 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Configuración de Impresora Bluetooth'),
+      appBar: AppBar(
+        title: const Text('Configuración de Impresora'),
+        automaticallyImplyLeading: true,
+        elevation: 2,
+      ),
+      body: isLoading ? _buildLoadingIndicator() : _buildContent(),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere... $textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildActionsCard(),
+          const SizedBox(height: 20),
+          _buildDevicesCard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionsCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(
+              'Acciones de Impresora',
+              Icons.print_outlined,
+              Colors.blue,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Utilice estas opciones para gestionar la conexión con su impresora térmica Bluetooth:',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildActionButton(
+                  icon: Icons.refresh_outlined,
+                  label: 'Actualizar',
+                  color: Colors.blue,
+                  onPressed: getBluetoots,
+                ),
+                _buildActionButton(
+                  icon: Icons.print_outlined,
+                  label: 'Imprimir prueba',
+                  color: Colors.green,
+                  onPressed: connected ? printTest : null,
+                ),
+                _buildActionButton(
+                  icon: Icons.bluetooth_disabled_outlined,
+                  label: 'Desconectar',
+                  color: Colors.red,
+                  onPressed: connected ? disconnect : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildConnectionStatus(),
+          ],
         ),
-        body: isLoading
-            ? Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Espere...'),
-                      SizedBox(
-                        height: screenHeight * 0.01,
-                      ),
-                      const CircularProgressIndicator(),
-                    ]),
-              )
-            : SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(height: 20),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  getBluetoots();
-                                },
-                                child: Text('Actualizar lista')),
-                            ElevatedButton(
-                              onPressed: connected ? disconnect : null,
-                              child: Text("Desconectar"),
+      ),
+    );
+  }
+
+  Widget _buildDevicesCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(
+              'Dispositivos Disponibles',
+              Icons.bluetooth_outlined,
+              Colors.indigo,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _msj,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildDevicesList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionStatus() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: connected
+            ? Colors.green.withOpacity(0.1)
+            : Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: connected ? Colors.green : Colors.grey,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            connected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+            color: connected ? Colors.green : Colors.grey,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Estado:',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                Text(
+                  connected ? 'Conectado' : 'Desconectado',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: connected ? Colors.green : Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (connected)
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDevicesList() {
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: items.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.bluetooth_searching,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No se encontraron dispositivos',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Verifique que su impresora esté encendida y emparejada',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              itemCount: items.length,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                BluetoothInfo device = items[index];
+                bool isConnected =
+                    connected && device.macAdress == connectedDeviceMac;
+
+                return ListTile(
+                  onTap: () {
+                    String mac = device.macAdress;
+                    connect(mac);
+                  },
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isConnected
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.blue.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isConnected ? Icons.print : Icons.bluetooth,
+                      color: isConnected ? Colors.green : Colors.blue,
+                      size: 24,
+                    ),
+                  ),
+                  title: Text(
+                    device.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  subtitle: Text(
+                    "MAC: ${device.macAdress}",
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                  trailing: isConnected
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.green),
+                          ),
+                          child: const Text(
+                            'Conectado',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
-                            ElevatedButton(
-                              onPressed: connected ? printTest : null,
-                              child: Text("Imprimir prueba"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Text(_msj),
-                        Container(
-                            height: screenHeight * 0.5,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              color: Colors.grey.withOpacity(0.3),
-                            ),
-                            child: ListView.builder(
-                              itemCount: items.length > 0 ? items.length : 0,
-                              itemBuilder: (context, index) {
-                                BluetoothInfo device = items[index];
-                                return ListTile(
-                                  onTap: () {
-                                    String mac = device.macAdress;
-                                    connect(mac);
-                                  },
-                                  trailing: (connected &&
-                                          device.macAdress ==
-                                              connectedDeviceMac)
-                                      ? Icon(Icons
-                                          .check) // Muestra el icono solo en el dispositivo conectado
-                                      : null,
-                                  title: Text('Nombre: ${device.name}'),
-                                  subtitle: Text(
-                                      "Dirección MAC: ${device.macAdress}"),
-                                );
-                              },
-                            ))
-                      ],
-                    ))));
+                          ),
+                        )
+                      : const Icon(Icons.chevron_right),
+                );
+              },
+            ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback? onPressed,
+  }) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: ElevatedButton.icon(
+          onPressed: onPressed,
+          icon: Icon(icon, size: 16),
+          label: Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: onPressed != null ? color : Colors.grey[300],
+            foregroundColor:
+                onPressed != null ? Colors.white : Colors.grey[600],
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

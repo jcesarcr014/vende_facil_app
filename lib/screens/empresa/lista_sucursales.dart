@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class ListaSucursalesScreen extends StatefulWidget {
   const ListaSucursalesScreen({super.key});
@@ -20,35 +19,30 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
 
   @override
   void initState() {
-    if (globals.actualizaSucursales || globals.actualizarEmpleadoSucursales) {
-      setState(() {
-        textLoading = 'Leyendo Surcursales';
-        isLoading = true;
-      });
-      negocios.getlistaSucursales().then((respSuc) {
-        if (respSuc.status == 1) {
+    setState(() {
+      textLoading = 'Leyendo Surcursales';
+      isLoading = true;
+    });
+    negocios.getlistaSucursales().then((respSuc) {
+      if (respSuc.status == 1) {
+        setState(() {
+          textLoading = 'Leyendo Empleados';
+        });
+        negocios.getlistaempleadosEnsucursales(null).then((value) {
           setState(() {
-            textLoading = 'Leyendo Empleados';
+            textLoading = '';
+            isLoading = false;
           });
-          negocios.getlistaempleadosEnsucursales(null).then((value) {
-            setState(() {
-              textLoading = '';
-              isLoading = false;
-            });
-            if (value.status == 1) {
-              globals.actualizaSucursales = false;
-              globals.actualizarEmpleadoSucursales = false;
-            } else {
-              Navigator.pop(context);
-              mostrarAlerta(context, 'ERROR', value.mensaje!);
-            }
-          });
-        } else {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'ERROR', respSuc.mensaje!);
-        }
-      });
-    }
+          if (value.status != 1) {
+            Navigator.pop(context);
+            mostrarAlerta(context, 'ERROR', value.mensaje!);
+          }
+        });
+      } else {
+        Navigator.pop(context);
+        mostrarAlerta(context, 'ERROR', respSuc.mensaje!);
+      }
+    });
     super.initState();
   }
 
@@ -58,8 +52,10 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return PopScope(
         canPop: false,
-        onPopInvoked: (didpop) {
-          if (!didpop) Navigator.pushReplacementNamed(context, 'menu-negocio');
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            Navigator.pushReplacementNamed(context, 'menu-negocio');
+          }
         },
         child: Scaffold(
             appBar: AppBar(

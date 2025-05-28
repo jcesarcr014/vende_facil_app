@@ -1,3 +1,5 @@
+export 'package:vende_facil/models/detalles_dia_model.dart';
+
 export 'package:vende_facil/models/venta_dia_model.dart';
 export 'package:vende_facil/models/ticket_model.dart';
 export 'package:vende_facil/models/apartado_cab_model.dart';

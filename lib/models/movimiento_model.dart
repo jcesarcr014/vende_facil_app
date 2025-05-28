@@ -3,27 +3,43 @@ class MovimientoCorte {
   int? idNegocio;
   int? idSucursal;
   int? idUsario;
+  int? idCliente;
   int? idMovimiento;
+  int? idCorte;
+  String? tipoMovimiento;
   String?
-      tipoMovimiento; // VT = Venta tienda,  VD = Venta domicilio, P = Apartado, A = Abono, E = Entrega
+      folio; // VT = Venta tienda,  VD = Venta domicilio, P = Apartado, A = Abono, E = Entrega
   String? montoEfectivo;
   String? montoTarjeta;
   String? total;
-  int? idCorte;
-  String? folio;
+  String? fecha;
+  String? hora;
+  String? cancelado;
+  String? nombreSucursal;
+  String? nombreUsuario;
+  String? nombreCliente;
 
-  MovimientoCorte(
-      {this.id,
-      this.idNegocio,
-      this.idSucursal,
-      this.idUsario,
-      this.idMovimiento,
-      this.tipoMovimiento,
-      this.montoEfectivo,
-      this.montoTarjeta,
-      this.total,
-      this.idCorte,
-      this.folio});
+  MovimientoCorte({
+    this.id,
+    this.idNegocio,
+    this.idSucursal,
+    this.idUsario,
+    this.idCliente,
+    this.idMovimiento,
+    this.idCorte,
+    this.tipoMovimiento,
+    this.folio,
+    this.montoEfectivo,
+    this.montoTarjeta,
+    this.total,
+    this.fecha,
+    this.hora,
+    this.cancelado,
+    this.nombreSucursal,
+    this.nombreUsuario,
+    this.nombreCliente,
+  });
 }
 
 List<MovimientoCorte> listaMovimientosCorte = [];
+List<MovimientoCorte> listaMovimientosReporte = [];

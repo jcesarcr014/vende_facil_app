@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class AgregaDescuentoScreen extends StatefulWidget {
   const AgregaDescuentoScreen({super.key});
@@ -15,69 +14,56 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
   final descuentosProvider = DescuentoProvider();
   final controllerNombre = TextEditingController();
   final controllerValor = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool firstLoad = true;
-  bool _tipoValor = true;
-  bool _tipoValorS = true;
+
   bool isLoading = false;
   String textLoading = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
   Descuento args = Descuento(id: 0);
-  String title = 'Agregar descuento';
 
   _guardaDescuento() {
-    if(!_tipoValorS) {
-      if(controllerValor.text.isEmpty) {
-        mostrarAlerta(context, 'Error', 'Si el descuento es tipo: "Fijo" es obligatorio introducir una cantidad');
-        return;
-      }
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
-    if (controllerNombre.text.isNotEmpty) {
-      setState(() {
-        textLoading = (args.id == 0)
-            ? 'Registrando nuevo descuento'
-            : 'Actualizando descuento';
-        isLoading = true;
+
+    setState(() {
+      textLoading = (args.id == 0)
+          ? 'Registrando nuevo descuento'
+          : 'Actualizando descuento';
+      isLoading = true;
+    });
+
+    Descuento descuento = Descuento();
+    descuento.nombre = controllerNombre.text;
+    descuento.valor = double.parse(controllerValor.text);
+
+    if (args.id == 0) {
+      descuentosProvider.nuevoDescuento(descuento).then((value) {
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
+        if (value.status == 1) {
+          Navigator.pushReplacementNamed(context, 'descuentos');
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, '', value.mensaje!);
+        }
       });
-      Descuento descuento = Descuento();
-      descuento.nombre = controllerNombre.text;
-      descuento.tipoValor = (_tipoValor) ? 1 : 0;
-      descuento.valor = (controllerValor.text.isNotEmpty)
-          ? double.parse(controllerValor.text)
-          : 0;
-      descuento.valorPred = (_tipoValorS) ? 1 : 0;
-      if (args.id == 0) {
-        descuentosProvider.nuevoDescuento(descuento).then((value) {
-          setState(() {
-            isLoading = false;
-            textLoading = '';
-            globals.actualizaDescuentos = true;
-          });
-          if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'descuentos');
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
-      } else {
-        descuento.id = args.id;
-        descuentosProvider.editaDescuento(descuento).then((value) {
-          setState(() {
-            isLoading = false;
-            textLoading = '';
-            globals.actualizaDescuentos = true;
-          });
-          if (value.status == 1) {
-            Navigator.pushReplacementNamed(context, 'descuentos');
-            mostrarAlerta(context, '', value.mensaje!);
-          } else {
-            mostrarAlerta(context, '', value.mensaje!);
-          }
-        });
-      }
     } else {
-      mostrarAlerta(context, 'ERROR', 'El nombre del descuento es obligatorio');
+      descuento.id = args.id;
+      descuentosProvider.editaDescuento(descuento).then((value) {
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
+        if (value.status == 1) {
+          Navigator.pushReplacementNamed(context, 'descuentos');
+          mostrarAlerta(context, '', value.mensaje!);
+        } else {
+          mostrarAlerta(context, '', value.mensaje!);
+        }
+      });
     }
   }
 
@@ -95,30 +81,38 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
         builder: (context) {
           return AlertDialog(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: const Text(
               'ATENCIÓN',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '¿Desea eliminar el descuento  ${args.nombre} ? Esta acción no podrá revertirse.',
+                  '¿Desea eliminar el descuento ${args.nombre}? Esta acción no podrá revertirse.',
+                  textAlign: TextAlign.center,
                 )
               ],
             ),
             actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancelar',
+                    style: TextStyle(color: Colors.grey)),
+              ),
               ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _eliminarDescuento();
-                  },
-                  child: const Text('Eliminar')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
+                onPressed: () {
+                  Navigator.pop(context);
+                  _eliminarDescuento();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text('Eliminar',
+                    style: TextStyle(color: Colors.white)),
+              ),
             ],
           );
         });
@@ -138,7 +132,6 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'descuentos');
         mostrarAlerta(context, '', value.mensaje!);
-        globals.actualizaDescuentos = true;
       } else {
         mostrarAlerta(context, '', value.mensaje!);
       }
@@ -150,140 +143,223 @@ class _AgregaDescuentoScreenState extends State<AgregaDescuentoScreen> {
     if (ModalRoute.of(context)?.settings.arguments != null && firstLoad) {
       firstLoad = false;
       args = ModalRoute.of(context)?.settings.arguments as Descuento;
-      controllerNombre.text = args.nombre!;
-      if (args.valorPred == 0) {
-        controllerValor.text = args.valor!.toStringAsFixed(2);
-      }
-      _tipoValor = (args.tipoValor == 1) ? true : false;
-      _tipoValorS = (args.valorPred == 1) ? true : false;
-      title = 'Editar descuento';
+      controllerNombre.text = args.nombre ?? '';
+      controllerValor.text =
+          args.valor != null ? args.valor!.toStringAsFixed(2) : '';
     }
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
+
+    final title = (args.id == 0) ? 'Nuevo descuento' : 'Editar descuento';
+
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        globals.actualizaDescuentos = true;
-        if (!didpop) Navigator.pushReplacementNamed(context, 'descuentos');
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pushReplacementNamed(context, 'descuentos');
+        }
       },
       child: Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            actions: [
-              if (args.id != 0)
-                IconButton(
-                    onPressed: () {
-                      _alertaEliminar();
-                    },
-                    icon: const Icon(Icons.delete))
-            ],
-            title: Text(title),
+        appBar: AppBar(
+          title: Text(title),
+          automaticallyImplyLeading: false,
+          elevation: 2,
+          actions: [
+            if (args.id != 0)
+              IconButton(
+                onPressed: _alertaEliminar,
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Eliminar descuento',
+              ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'descuentos');
+              },
+              icon: const Icon(Icons.close),
+              tooltip: 'Cancelar',
+            ),
+          ],
+        ),
+        body: isLoading ? _buildLoadingIndicator() : _buildForm(),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere... $textLoading',
+            style: const TextStyle(fontSize: 16),
           ),
-          body: (isLoading)
-              ? Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Espere...$textLoading'),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const CircularProgressIndicator(),
-                      ]),
-                )
-              : SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                      InputField(
-                          labelText: 'Nombre descuento:',
-                          textCapitalization: TextCapitalization.words,
-                          controller: controllerNombre),
-                      SizedBox(
-                        height: windowHeight * 0.03,
-                      ),
-                      SwitchListTile.adaptive(
-                          title: Row(
-                            children: [
-                              const Text('Tipo descuento: '),
-                              Text((_tipoValor) ? '%' : '\$')
-                            ],
-                          ),
-                          value: _tipoValor,
-                          onChanged: (value) {
-                            _tipoValor = value;
-                            setState(() {});
-                          }),
-                      SwitchListTile.adaptive(
-                          title: Row(
-                            children: [
-                              const Text('Tipo de descuento: '),
-                              Text(_tipoValorS ? 'Variable' : 'Fijo')
-                            ],
-                          ),
-                          value: _tipoValorS,
-                          onChanged: (value) {
-                            _tipoValorS = value;
-                            setState(() {});
-                          }),
-                      if (!_tipoValorS)
-                        InputField(
-                            labelText: 'Descuento:',
-                            keyboardType: TextInputType.number,
-                            textCapitalization: TextCapitalization.none,
-                            controller: controllerValor),
-                      
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () => _guardaDescuento(),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.save),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Guardar',
-                                  ),
-                                ],
-                              )),
-                          SizedBox(
-                            width: windowWidth * 0.05,
-                          ),
-                          ElevatedButton(
-                              onPressed: () {
-                                globals.actualizaArticulos = true;
-                                Navigator.pushReplacementNamed(
-                                    context, 'descuentos');
-                              },
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.cancel_outlined),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'Cancelar',
-                                  ),
-                                ],
-                              )),
-                        ],
-                      )
-                    ],
-                  ))),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(
+                  'Información del Descuento',
+                  Icons.discount_outlined,
+                  Colors.purple,
+                ),
+                const SizedBox(height: 24),
+                _buildFormField(
+                  labelText: 'Nombre del descuento:',
+                  textCapitalization: TextCapitalization.words,
+                  controller: controllerNombre,
+                  icon: Icons.label_outline,
+                  required: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'El nombre del descuento es obligatorio';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                _buildFormField(
+                  labelText: 'Porcentaje de descuento:',
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  controller: controllerValor,
+                  icon: Icons.percent_outlined,
+                  required: true,
+                  suffixIcon: const Icon(Icons.percent),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'El porcentaje de descuento es obligatorio';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Por favor ingrese un número válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 36),
+                _buildActionButtons(),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormField({
+    required String labelText,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    required TextEditingController controller,
+    required IconData icon,
+    bool readOnly = false,
+    bool required = false,
+    Widget? suffixIcon,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      readOnly: readOnly,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: required ? '$labelText *' : labelText,
+        prefixIcon: Icon(icon, size: 20),
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
+        filled: readOnly,
+        fillColor: readOnly ? Colors.grey[100] : null,
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _guardaDescuento,
+            icon: const Icon(Icons.save_outlined),
+            label: const Text('Guardar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, 'descuentos');
+            },
+            icon: const Icon(Icons.cancel_outlined),
+            label: const Text('Cancelar'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

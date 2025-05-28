@@ -53,9 +53,14 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
         textLoading = '';
       });
       if (value.status == 1) {
-        setState(() {
-          body = 2;
-        });
+        if (varEmpleadoCorte) {
+          setState(() {
+            body = 2;
+          });
+        } else {
+          Navigator.pushReplacementNamed(context, 'menu');
+          mostrarAlerta(context, '', 'Corte generado correctamente');
+        }
       } else {
         mostrarAlerta(context, 'ERROR',
             'Ocurrio un error al solicitar el corte ${value.mensaje}');
@@ -83,7 +88,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'menu');
               },
-              icon: const Icon(Icons.menu),
+              icon: const Icon(Icons.home),
             ),
           ],
         ),
@@ -148,7 +153,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                       return AlertDialog(
                         title: const Text('Confirmar'),
                         content:
-                            Text('¿Desea confirmar el efectivo ingresado?'),
+                            Text('¿Desea confirmar el efectivo ingresado? \n'
+                                'Efectivo: \$${efectivoController.text}'),
                         actions: [
                           TextButton(
                             onPressed: () {

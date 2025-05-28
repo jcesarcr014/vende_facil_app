@@ -7,7 +7,7 @@ class VariablesProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
-  Future<Resultado> variablesApartado() async {
+  Future<Resultado> variablesConfiguracion() async {
     var url = Uri.parse('$baseUrl/variables-conf/${sesion.idNegocio}');
     try {
       final resp = await http.get(url, headers: {
@@ -25,11 +25,9 @@ class VariablesProvider {
             nombre: decodedData['data'][x]['nombre'],
             valor: decodedData['data'][x]['valor'],
           );
-          if (variable.nombre == 'empleado_cantidades') {
-            globals.empleadoInvetario = variable.valor == '1' ? true : false;
-          }
           listaVariables.add(variable);
         }
+        VariableConf.asignarVariablesGlobales(listaVariables);
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];
@@ -41,23 +39,30 @@ class VariablesProvider {
     return respuesta;
   }
 
-  Future<Resultado> modificarVariables(int id, String valor) async {
-    var url = Uri.parse('$baseUrl/variable/$id');
+  Future<Resultado> modificarVariable(int id, String valor) async {
+    var url = Uri.parse('$baseUrl/variable');
+    print(' ====== $url : $id : $valor   ======  ');
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
+        'id_variable': id.toString(),
         'valor': valor.toString(),
       });
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
-        for (VariableConf variable in listaVariables) {
-          if (variable.id == id) {
-            variable.valor = valor;
-          }
+        listaVariables.clear();
+        for (int x = 0; x < decodedData['variables'].length; x++) {
+          VariableConf variable = VariableConf(
+            id: decodedData['variables'][x]['id'],
+            nombre: decodedData['variables'][x]['nombre'],
+            valor: decodedData['variables'][x]['valor'],
+          );
+          listaVariables.add(variable);
         }
+        VariableConf.asignarVariablesGlobales(listaVariables);
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

@@ -1,5 +1,4 @@
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/models/venta_dia_model.dart';
 
 class LimpiaDatos {
   limpiaDatos() {
@@ -43,7 +42,7 @@ class LimpiaDatos {
     corteActual = Corte();
     sesion = CuentaSesion();
     cotActual = Cotizacion();
-    totalVentaTemporal = 0;
+    totalVT = 0;
     sucursalSeleccionado = Sucursal();
     suscripcionActual = SuscripcionOP();
     ticketModel = TicketModel();

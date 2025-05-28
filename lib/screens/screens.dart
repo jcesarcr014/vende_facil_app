@@ -1,4 +1,4 @@
-export 'package:vende_facil/screens/historial/ventas_dia.dart';
+export 'package:vende_facil/screens/historial/historial_detalle.dart';
 export 'package:vende_facil/screens/usuarios/recupera_pass.dart';
 export 'package:vende_facil/screens/historial/corte_detalle.dart';
 export 'package:vende_facil/screens/historial/cortes_empleados.dart';
@@ -19,7 +19,7 @@ export 'package:vende_facil/screens/apartados/apartado_detalle.dart';
 export 'package:vende_facil/screens/suscripcion/tarjetas_screen.dart';
 export 'package:vende_facil/screens/suscripcion/suscripcion_screen.dart';
 export 'package:vende_facil/screens/menu.dart';
-export 'package:vende_facil/screens/apartados/agregar_abono.dart';
+
 export 'package:vende_facil/screens/categorias/agregar_categoria.dart';
 export 'package:vende_facil/screens/clientes/agregar_cliente.dart';
 export 'package:vende_facil/screens/descuentos/agregar_descuento.dart';
@@ -27,7 +27,7 @@ export 'package:vende_facil/screens/empresa/agregar_empresa.dart';
 export 'package:vende_facil/screens/productos/agregar_producto.dart';
 export 'package:vende_facil/screens/configuracion/configuracion_screen.dart';
 export 'package:vende_facil/screens/error_screen.dart';
-export 'package:vende_facil/screens/historial/historial_screen.dart';
+export 'package:vende_facil/screens/historial/historial_general.dart';
 export 'package:vende_facil/screens/home_screen.dart';
 export 'package:vende_facil/screens/categorias/lista_categorias.dart';
 export 'package:vende_facil/screens/clientes/lista_clientes.dart';
@@ -41,7 +41,7 @@ export 'package:vende_facil/screens/suscripcion/agregar_tarjeta.dart';
 export 'package:vende_facil/screens/historial/detalles_venta.dart';
 export 'package:vende_facil/screens/usuarios/perfil_screen.dart';
 export 'package:vende_facil/screens/configuracion/config_apartado_screen.dart';
-export 'package:vende_facil/screens/apartados/search_screen_abonos.dart';
+
 export 'package:vende_facil/screens/empresa/agregar_empleado_screen.dart';
 export 'package:vende_facil/screens/empresa/lista_empleados.dart';
 export 'package:vende_facil/screens/empresa/perfil_empleado_screen.dart';

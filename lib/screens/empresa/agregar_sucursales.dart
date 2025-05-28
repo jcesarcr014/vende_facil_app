@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
 
 class RegistroSucursalesScreen extends StatefulWidget {
   const RegistroSucursalesScreen({super.key});
@@ -21,8 +20,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   final controllerNombre = TextEditingController();
   final controllerEmail = TextEditingController();
   final controllerTelefono = TextEditingController();
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
+  final _formKey = GlobalKey<FormState>();
+
   bool estatus = (sucursalSeleccionado.nombreSucursal == null) ? true : false;
   bool isLoading = false;
   String textLoading = '';
@@ -69,318 +68,586 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     // Llamar a setState si esto afecta la interfaz de usuario para actualizarla
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text(text.text),
+        automaticallyImplyLeading: false,
+        elevation: 2,
         actions: [
           if (!estatus)
             IconButton(
-                onPressed: () {
-                  negocio.deleteSUcursal(sucursalSeleccionado).then((value) {
-                    setState(() {
-                      textLoading = '';
-                      isLoading = false;
-                      globals.actualizaSucursales = true;
-                    });
-                    if (value.status == 1) {
-                      setState(() {
-                        Navigator.pushReplacementNamed(
-                            context, 'lista-sucursales');
-                      });
-
-                      mostrarAlerta(context, '', value.mensaje!);
-                    } else {
-                      mostrarAlerta(context, 'ERROR', value.mensaje!);
-                    }
-                  });
-                },
-                icon: const Icon(Icons.delete))
+              onPressed: () => _alertaEliminar(),
+              icon: const Icon(Icons.delete_outline),
+              tooltip: 'Eliminar sucursal',
+            ),
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, 'lista-sucursales');
+            },
+            icon: const Icon(Icons.close),
+            tooltip: 'Cancelar',
+          ),
         ],
       ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    InputField(
-                        textCapitalization: TextCapitalization.words,
-                        icon: Icons.holiday_village,
-                        labelText: 'Nombre de la sucursal',
-                        controller: controllerNombre),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        textCapitalization: TextCapitalization.none,
-                        keyboardType: TextInputType.emailAddress,
-                        icon: Icons.gps_fixed_outlined,
-                        labelText: 'Dirección',
-                        controller: controllerEmail),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    InputField(
-                        keyboardType: TextInputType.phone,
-                        icon: Icons.smartphone,
-                        labelText: 'Teléfono',
-                        controller: controllerTelefono),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (estatus) {
-                            _validarAntesDeAgregar();
-                          } else {
-                            _validarAntesDeEditar();
-                          }
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.save),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(funcion.text),
-                          ],
-                        )),
-                    if (estatus == false)
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                    if (estatus == false) const Divider(),
-                    if (estatus == false)
-                      SizedBox(
-                        height: windowHeight * 0.01,
-                      ),
-                    if (estatus == false)
-                      const Text(
-                        'Empleados asiganados:',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    if (estatus == false)
-                      SizedBox(
-                        height: windowHeight * 0.01,
-                      ),
-                    if (estatus == false)
-                      Container(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final screenWidth =
-                                  MediaQuery.of(context).size.width;
-                              final columnSpacing = screenWidth * 0.30;
-                              return DataTable(
-                                columnSpacing: columnSpacing,
-                                columns: const [
-                                  DataColumn(label: Text('Nombre')),
-                                  DataColumn(label: Text('Acciones')),
-                                ],
-                                rows: resultadosFiltrados.map((user) {
-                                  return DataRow(
-                                    cells: [
-                                      DataCell(
-                                        Text("${user.name}"),
-                                      ),
-                                      DataCell(
-                                        Row(
-                                          children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              onPressed: () {
-                                                _eliminarUsuario(context, user);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
-                              );
-                            },
-                          ),
+      body: isLoading ? _buildLoadingIndicator() : _buildContent(),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere... $textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoSection(),
+            if (!estatus) const SizedBox(height: 32),
+            if (!estatus) _buildEmpleadosSection(),
+            if (!estatus) const SizedBox(height: 32),
+            if (!estatus) _buildAsignarEmpleadoSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoSection() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(
+              'Información de la Sucursal',
+              Icons.store_outlined,
+              Colors.blue,
+            ),
+            const SizedBox(height: 24),
+            _buildFormField(
+              labelText: 'Nombre de la sucursal:',
+              textCapitalization: TextCapitalization.words,
+              controller: controllerNombre,
+              icon: Icons.storefront_outlined,
+              required: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El nombre de la sucursal es requerido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildFormField(
+              labelText: 'Dirección:',
+              textCapitalization: TextCapitalization.sentences,
+              controller: controllerEmail,
+              icon: Icons.location_on_outlined,
+              required: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'La dirección es requerida';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildFormField(
+              labelText: 'Teléfono:',
+              keyboardType: TextInputType.phone,
+              controller: controllerTelefono,
+              icon: Icons.phone_outlined,
+              required: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El teléfono es requerido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            _buildActionButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmpleadosSection() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(
+              'Empleados Asignados',
+              Icons.people_outline,
+              Colors.green,
+            ),
+            const SizedBox(height: 16),
+            resultadosFiltrados.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'No hay empleados asignados a esta sucursal',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey,
                         ),
                       ),
-                    if (estatus == false)
-                      SizedBox(
-                        height: windowHeight * 0.1,
-                      ),
-                    if (estatus == false)
-                      const Text(
-                        'Asignar empleado:',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    if (estatus == false)
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: windowWidth * 0.2,
-                            child: const Text(
-                              'Seleccione Empleado',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(width: windowWidth * 0.1),
-                          Expanded(
-                            child: _empleado(),
-                          ),
-                        ],
-                      ),
-                    if (estatus == false)
-                      SizedBox(
-                        height: windowHeight * 0.05,
-                      ),
-                    if (estatus == false)
-                      ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              textLoading = 'Empleado asignado a la sucursal';
-                              isLoading = true;
-                            });
-                            if (_valueIdEmpleado == "0") {
-                              mostrarAlerta(context, "Alerta",
-                                  "Debe seleccionar un empleado");
-                              setState(() {
-                                isLoading = false;
-                              });
-                            } else {
-                              SucursalEmpleado sucursal = SucursalEmpleado();
-                              sucursal.empleadoId = int.parse(_valueIdEmpleado);
-                              sucursal.sucursalId = sucursalSeleccionado.id;
-                              sucursal.negocioId = sesion.idNegocio;
-                              sucursal.propietarioId = sesion.idUsuario;
-                              await negocio
-                                  .addSucursalEmpleado(sucursal)
-                                  .then((value) {
-                                setState(() {
-                                  textLoading =
-                                      'Empleado asignado a la sucursal';
-                                  isLoading = false;
-                                });
-                                if (value.status == 1) {
-                                  setState(() {
-                                    isLoading = false;
-                                    globals.actualizarEmpleadoSucursales = true;
-                                  });
-                                  setState(() {
-                                    Navigator.pushReplacementNamed(
-                                        context, 'lista-sucursales');
-                                  });
-                                  mostrarAlerta(context, '', value.mensaje!);
-                                } else {
-                                  setState(() {
-                                    isLoading = false;
-                                    globals.actualizarEmpleadoSucursales = true;
-                                  });
-                                  mostrarAlerta(
-                                      context, 'ERROR', value.mensaje!);
-                                }
-                              });
-                            }
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text("Agregar"),
-                            ],
-                          )),
-                    SizedBox(
-                      height: windowHeight * 0.05,
                     ),
-                  ],
+                  )
+                : _buildEmpleadosTable(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmpleadosTable() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            headingRowColor: MaterialStateProperty.all(Colors.grey.shade100),
+            columns: const [
+              DataColumn(
+                label: Text(
+                  'Nombre',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Acciones',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+            rows: resultadosFiltrados.map((user) {
+              return DataRow(
+                cells: [
+                  DataCell(
+                    Text(
+                      "${user.name}",
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  DataCell(
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        _eliminarUsuario(context, user);
+                      },
+                      tooltip: 'Eliminar empleado',
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAsignarEmpleadoSection() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(
+              'Asignar Empleado',
+              Icons.person_add_outlined,
+              Colors.orange,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                const Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Seleccione Empleado:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: _buildEmpleadoDropdown(),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _agregarEmpleado,
+                icon: const Icon(Icons.add),
+                label: const Text("Asignar Empleado"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
+
+  Widget _buildEmpleadoDropdown() {
+    var listades = [
+      const DropdownMenuItem(
+        value: '0',
+        child: Text('Seleccione un empleado'),
+      )
+    ];
+
+    for (Usuario empleado in listaEmpleados) {
+      listades.add(DropdownMenuItem(
+        value: empleado.id.toString(),
+        child: Text(empleado.nombre!, overflow: TextOverflow.ellipsis),
+      ));
+    }
+
+    if (_valueIdEmpleado.isEmpty) {
+      _valueIdEmpleado = '0';
+    }
+
+    return DropdownButton(
+      items: listades,
+      isExpanded: true,
+      value: _valueIdEmpleado,
+      underline: Container(),
+      onChanged: (value) {
+        setState(() {
+          _valueIdEmpleado = value!;
+          if (value != "0") {
+            Usuario empleadoSeleccionado = listaEmpleados.firstWhere(
+                (empleado) => empleado.id.toString() == value,
+                orElse: () => Usuario(id: 0));
+
+            if (empleadoSeleccionado.id == 0) {
+              _valueIdEmpleado = '0';
+            } else {
+              _valueIdEmpleado = empleadoSeleccionado.id.toString();
+            }
+          }
+        });
+      },
+    );
+  }
+
+  _agregarEmpleado() async {
+    if (_valueIdEmpleado == "0") {
+      mostrarAlerta(context, "Alerta", "Debe seleccionar un empleado");
+      return;
+    }
+
+    setState(() {
+      textLoading = 'Asignando empleado a la sucursal';
+      isLoading = true;
+    });
+
+    SucursalEmpleado sucursal = SucursalEmpleado();
+    sucursal.empleadoId = int.parse(_valueIdEmpleado);
+    sucursal.sucursalId = sucursalSeleccionado.id;
+    sucursal.negocioId = sesion.idNegocio;
+    sucursal.propietarioId = sesion.idUsuario;
+
+    try {
+      var response = await negocio.addSucursalEmpleado(sucursal);
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+      });
+
+      if (response.status == 1) {
+        Navigator.pushReplacementNamed(context, 'lista-sucursales');
+        mostrarAlerta(context, '', response.mensaje!);
+      } else {
+        mostrarAlerta(context, 'ERROR', response.mensaje!);
+      }
+    } catch (e) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+      });
+      mostrarAlerta(context, 'ERROR', 'Ocurrió un error inesperado');
+    }
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormField({
+    required String labelText,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    required TextEditingController controller,
+    required IconData icon,
+    bool readOnly = false,
+    bool required = false,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      readOnly: readOnly,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: required ? '$labelText *' : labelText,
+        prefixIcon: Icon(icon, size: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 16,
+        ),
+        filled: readOnly,
+        fillColor: readOnly ? Colors.grey[100] : null,
+      ),
+    );
+  }
+
+  Widget _buildActionButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          if (estatus) {
+            _validarAntesDeAgregar();
+          } else {
+            _validarAntesDeEditar();
+          }
+        },
+        icon: const Icon(Icons.save_outlined),
+        label: Text(funcion.text),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _validarAntesDeEditar() {
-  if (controllerNombre.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
-    return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _editar();
   }
-  if (controllerEmail.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'La dirección es requerida.');
-    return;
-  }
-  if (controllerTelefono.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
-    return;
-  }
-  // Si pasa las validaciones, procedemos a editar
-  _editar();
-}
 
   void _validarAntesDeAgregar() {
-  if (controllerNombre.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El nombre de la sucursal es requerido.');
-    return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _agregar(
+      sesion.idNegocio,
+      controllerNombre.text,
+      controllerEmail.text,
+      controllerTelefono.text,
+    );
   }
-  if (controllerEmail.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'La dirección es requerida.');
-    return;
+
+  _alertaEliminar() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'ATENCIÓN',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '¿Desea eliminar la sucursal ${sucursalSeleccionado.nombreSucursal}? Esta acción no podrá revertirse.',
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child:
+                  const Text('Cancelar', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _eliminarSucursal();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child:
+                  const Text('Eliminar', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
   }
-  if (controllerTelefono.text.isEmpty) {
-    mostrarAlerta(context, 'Error', 'El teléfono es requerido.');
-    return;
+
+  _eliminarSucursal() {
+    setState(() {
+      textLoading = 'Eliminando sucursal';
+      isLoading = true;
+    });
+
+    negocio.deleteSUcursal(sucursalSeleccionado).then((value) {
+      setState(() {
+        textLoading = '';
+        isLoading = false;
+      });
+      if (value.status == 1) {
+        Navigator.pushReplacementNamed(context, 'lista-sucursales');
+        mostrarAlerta(context, '', value.mensaje!);
+      } else {
+        mostrarAlerta(context, 'ERROR', value.mensaje!);
+      }
+    });
   }
-  // Si pasa las validaciones, procedemos a agregar
-  _agregar(sesion.idNegocio, controllerNombre.text, controllerEmail.text, controllerTelefono.text);
-}
 
   void _eliminarUsuario(BuildContext parentContext, SucursalEmpleado user) {
     showDialog(
-      context: parentContext, // Asegúrate de pasar un contexto superior
+      context: parentContext,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Eliminar Usuario'),
-          content: const Column(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'Eliminar Empleado',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [Text("¿Quieres eliminar este usuario?")],
+            children: [
+              Text(
+                "¿Está seguro que desea eliminar a ${user.name} de esta sucursal?",
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancelar'),
+              child:
+                  const Text('Cancelar', style: TextStyle(color: Colors.grey)),
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Usa dialogContext aquí
+                Navigator.of(dialogContext).pop();
               },
             ),
-            TextButton(
-              child: const Text('Confirmar'),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child:
+                  const Text('Eliminar', style: TextStyle(color: Colors.white)),
               onPressed: () async {
-                Navigator.of(dialogContext).pop(); // Usa dialogContext aquí
+                Navigator.of(dialogContext).pop();
 
-                // Usa el parentContext para operaciones asíncronas.
                 setState(() {
-                  textLoading = 'Eliminando usuario';
+                  textLoading = 'Eliminando empleado de la sucursal';
                   isLoading = true;
                 });
 
@@ -388,12 +655,11 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                   await negocio
                       .deleteEmpleadoSUcursal(user.usuarioId, user.sucursalId)
                       .then((value) {
+                    setState(() {
+                      textLoading = '';
+                      isLoading = false;
+                    });
                     if (value.status == 1) {
-                      setState(() {
-                        textLoading = '';
-                        isLoading = false;
-                        globals.actualizarEmpleadoSucursales = true;
-                      });
                       Navigator.pushReplacementNamed(
                           context, 'lista-sucursales');
                       mostrarAlerta(context, '', value.mensaje!);
@@ -419,22 +685,25 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   }
 
   _editar() {
+    setState(() {
+      textLoading = 'Actualizando sucursal';
+      isLoading = true;
+    });
+
     Sucursal nueva = Sucursal();
     nueva.id = sucursalSeleccionado.id;
     nueva.negocioId = sucursalSeleccionado.negocioId;
     nueva.nombreSucursal = controllerNombre.text;
     nueva.direccion = controllerEmail.text;
     nueva.telefono = controllerTelefono.text;
+
     negocio.editarSUcursal(nueva).then((value) {
       setState(() {
         textLoading = '';
         isLoading = false;
-        globals.actualizaSucursales = true;
       });
       if (value.status == 1) {
-        setState(() {
-          Navigator.pushReplacementNamed(context, 'lista-sucursales');
-        });
+        Navigator.pushReplacementNamed(context, 'lista-sucursales');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
@@ -443,61 +712,28 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   }
 
   _agregar(seccion, nombre, direcion, telefono) {
+    setState(() {
+      textLoading = 'Registrando nueva sucursal';
+      isLoading = true;
+    });
+
     Sucursal nueva = Sucursal();
     nueva.negocioId = seccion;
     nueva.nombreSucursal = nombre;
     nueva.direccion = direcion;
     nueva.telefono = telefono;
+
     negocio.addSucursal(nueva).then((value) {
       setState(() {
         textLoading = '';
         isLoading = false;
-        globals.actualizaSucursales = true;
       });
       if (value.status == 1) {
-        setState(() {
-          Navigator.pushReplacementNamed(context, 'lista-sucursales');
-        });
+        Navigator.pushReplacementNamed(context, 'lista-sucursales');
         mostrarAlerta(context, '', value.mensaje!);
       } else {
         mostrarAlerta(context, 'ERROR', value.mensaje!);
       }
     });
-  }
-
-  _empleado() {
-    var listades = [
-      const DropdownMenuItem(
-        value: '0',
-        child: SizedBox(child: Text('Todos')),
-      )
-    ];
-    for (Usuario empleado in listaEmpleados) {
-      listades.add(DropdownMenuItem(
-          value: empleado.id.toString(), child: Text(empleado.nombre!)));
-    }
-    if (_valueIdEmpleado.isEmpty) {
-      _valueIdEmpleado = '0';
-    }
-    return DropdownButton(
-      items: listades,
-      isExpanded: true,
-      value: _valueIdEmpleado,
-      onChanged: (value) {
-        _valueIdEmpleado = value!;
-        if (value == "0") {
-        } else {
-          Usuario empleadoSeleccionado = listaEmpleados
-              .firstWhere((empleado) => empleado.id.toString() == value);
-          if (empleadoSeleccionado.id == 0) {
-            _valueIdEmpleado = '0';
-            setState(() {});
-          } else {
-            _valueIdEmpleado = empleadoSeleccionado.id.toString();
-            setState(() {});
-          }
-        }
-      },
-    );
   }
 }

@@ -5,6 +5,7 @@ class VentaDetalle {
   int? idVenta;
   int? idProd;
   double? cantidad;
+  double? precioUnitario;
   double? precio;
   int? idDesc;
   double? cantidadDescuento;
@@ -17,6 +18,7 @@ class VentaDetalle {
     this.idVenta,
     this.idProd,
     this.cantidad,
+    this.precioUnitario,
     this.precio,
     this.idDesc,
     this.cantidadDescuento,

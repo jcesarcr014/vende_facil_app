@@ -11,179 +11,190 @@ class MenuAbonoScreen extends StatefulWidget {
 }
 
 class _MenuAbonoScreenState extends State<MenuAbonoScreen> {
-  final apartadoProvider = ApartadoProvider();
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
-  bool isLoading = false;
-  String textLoading = '';
+  final _apartadoProvider = ApartadoProvider();
+  bool _isLoading = false;
+  String _textLoading = '';
+
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pushReplacementNamed(context, 'menu');
+        }
       },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Menu apartados'),
+          title: const Text('Sistema de Apartados'),
+          elevation: 2,
           actions: [
             IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'menu');
-                },
-                icon: const Icon(Icons.menu)),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu');
+              },
+              icon: const Icon(Icons.home),
+              tooltip: 'Ir al menú principal',
+            ),
           ],
         ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    const CircularProgressIndicator(),
-                  ],
-                ),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.0),
-                child: Column(
-                  children: [
-                    ListTile(
-                        leading: const Icon(Icons.list_alt),
-                        title: const Text('Abonar',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
-                        subtitle: const Text(
-                            'Visualiza  lista de apartados pendientes de liquidar'),
-                        trailing: const Icon(Icons.arrow_right),
-                        onTap: () {
-                          if (sesion.tipoUsuario == 'P') {
-                            Navigator.pushNamed(context, 'selecionarSA',
-                                arguments: 1);
-                          } else {
-                            setState(() {
-                              isLoading = true;
-                              textLoading = 'Leyendo movimientos';
-                            });
-
-                            apartadoProvider
-                                .apartadosPendientesSucursal()
-                                .then((resp) {
-                              setState(() {
-                                isLoading = false;
-                                textLoading = '';
-                              });
-                              if (resp.status == 1) {
-                                Navigator.pushNamed(context, 'lista-apartados',
-                                    arguments: 1);
-                              } else {
-                                mostrarAlerta(context, 'ERROR',
-                                    'Ocurrio un error ${resp.mensaje}');
-                              }
-                            });
-                          }
-                        }),
-                    ListTile(
-                        leading: const Icon(Icons.list_alt),
-                        title: const Text('Entregar productos',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
-                        subtitle: const Text('Lista de apartados pagados'),
-                        trailing: const Icon(Icons.arrow_right),
-                        onTap: () {
-                          if (sesion.tipoUsuario == 'P') {
-                            Navigator.pushNamed(context, 'selecionarSA',
-                                arguments: 1);
-                          } else {
-                            setState(() {
-                              isLoading = true;
-                              textLoading = 'Leyendo movimientos';
-                            });
-                            apartadoProvider
-                                .apartadosPagadosSucursal()
-                                .then((resp) {
-                              setState(() {
-                                isLoading = false;
-                                textLoading = '';
-                              });
-                              if (resp.status == 1) {
-                                Navigator.pushNamed(context, 'lista-apartados',
-                                    arguments: 2);
-                              } else {
-                                mostrarAlerta(context, 'ERROR',
-                                    'Ocurrio un error ${resp.mensaje}');
-                              }
-                            });
-                          }
-                        }),
-                    // if (sesion.tipoUsuario == 'P')
-                    //   ListTile(
-                    //       leading: const Icon(Icons.check),
-                    //       title: const Text(
-                    //         'Apartados entregados',
-                    //         style: TextStyle(fontWeight: FontWeight.bold),
-                    //       ),
-                    //       subtitle: const Text('Lista de apartados entregados'),
-                    //       trailing: const Icon(Icons.arrow_right),
-                    //       onTap: () async {
-                    //         final resultado =
-                    //             await apartadoProvider.apartadosEntregadosNegocio();
-                    //         if (resultado.status != 1) {
-                    //           mostrarAlerta(context, 'Error',
-                    //               resultado.mensaje ?? 'Intentalo mas tarde');
-                    //           return;
-                    //         }
-                    //         listaClientesApartadosLiquidados.clear();
-                    //         for (var apartadoPagado in apartadosPagados) {
-                    //           listaClientesApartadosLiquidados.add(
-                    //               listaClientes.firstWhere(
-                    //                   (cliente) =>
-                    //                       cliente.id == apartadoPagado.clienteId,
-                    //                   orElse: () => Cliente(
-                    //                       id: 0, nombre: 'Publico en general')));
-                    //         }
-                    //         Navigator.pushNamed(context, 'abonos-liquidados');
-                    //       }),
-                    // if (sesion.tipoUsuario == 'P')
-                    //   ListTile(
-                    //       leading: const Icon(Icons.check),
-                    //       title: const Text(
-                    //         'Apartados cancelados',
-                    //         style: TextStyle(fontWeight: FontWeight.bold),
-                    //       ),
-                    //       subtitle: const Text(
-                    //           'Visualiza una lista de tus abonos liquidados'),
-                    //       trailing: const Icon(Icons.arrow_right),
-                    //       onTap: () async {
-                    //         final resultado =
-                    //             await apartadoProvider.apartadosPagadosNegocio();
-                    //         if (resultado.status != 1) {
-                    //           mostrarAlerta(context, 'Error',
-                    //               resultado.mensaje ?? 'Intentalo mas tarde');
-                    //           return;
-                    //         }
-                    //         listaClientesApartadosLiquidados.clear();
-                    //         for (var apartadoPagado in apartadosPagados) {
-                    //           listaClientesApartadosLiquidados.add(
-                    //               listaClientes.firstWhere(
-                    //                   (cliente) =>
-                    //                       cliente.id == apartadoPagado.clienteId,
-                    //                   orElse: () => Cliente(
-                    //                       id: 0, nombre: 'Publico en general')));
-                    //         }
-                    //         Navigator.pushNamed(context, 'abonos-liquidados');
-                    //       }),
-                  ],
-                )),
+        body: _isLoading ? _buildLoadingScreen() : _buildMenuOptions(),
       ),
     );
+  }
+
+  Widget _buildLoadingScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Espere...$_textLoading',
+            style: const TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuOptions() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Text(
+              'Gestión de Apartados',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            title: 'Abonar a Apartados',
+            subtitle: 'Visualiza la lista de apartados pendientes de liquidar',
+            icon: Icons.payment,
+            iconColor: Colors.green,
+            onTap: () => _navegarAListaApartados(1),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            title: 'Entregar Productos',
+            subtitle: 'Visualiza la lista de apartados pagados',
+            icon: Icons.local_shipping,
+            iconColor: Colors.blue,
+            onTap: () => _navegarAListaApartados(2),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  size: 36,
+                  color: iconColor,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _navegarAListaApartados(int opcion) async {
+    if (sesion.tipoUsuario == 'P') {
+      Navigator.pushNamed(context, 'selecionarSA', arguments: 1);
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _textLoading = 'Cargando información';
+    });
+
+    try {
+      final resp = opcion == 1
+          ? await _apartadoProvider.apartadosPendientesSucursal()
+          : await _apartadoProvider.apartadosPagadosSucursal();
+
+      setState(() {
+        _isLoading = false;
+        _textLoading = '';
+      });
+
+      if (resp.status == 1) {
+        Navigator.pushNamed(context, 'lista-apartados', arguments: opcion);
+      } else {
+        mostrarAlerta(context, 'ERROR', 'Ocurrió un error: ${resp.mensaje}');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _textLoading = '';
+      });
+      mostrarAlerta(context, 'ERROR', 'Error inesperado: $e');
+    }
   }
 }

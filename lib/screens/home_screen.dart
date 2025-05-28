@@ -1,4 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -6,7 +5,7 @@ import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/screens/productos/qr_scanner_screen.dart';
 import 'package:vende_facil/screens/ventas/resultados.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/globals.dart' as globals;
+import 'package:vende_facil/util/actualiza_venta.dart' as totales;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,474 +15,372 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final articulosProvider = ArticuloProvider();
-  final categoriasProvider = CategoriaProvider();
-  final descuentoProvider = DescuentoProvider();
-  final clienteProvider = ClienteProvider();
-  final apartadoProvider = ApartadoProvider();
-  final CantidadConttroller = TextEditingController()..text = '1';
-  final TotalConttroller = TextEditingController();
-  final EfectivoConttroller = TextEditingController();
-  final TarjetaConttroller = TextEditingController();
-  final CambioConttroller = TextEditingController();
-  final variablesprovider = VariablesProvider();
-  final busquedaController = TextEditingController();
-  List<Producto> productosFiltrados = [];
+  final _articulosProvider = ArticuloProvider();
+  final _clientesProvider = ClienteProvider();
+  final _descuentosProvider = DescuentoProvider();
+  final _busquedaController = TextEditingController();
+  final _actualizaMontos = totales.ActualizaMontos();
 
-  bool isLoading = false;
-  String textLoading = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
+  List<Producto> _productosFiltrados = [];
+  bool _isLoading = false;
+  String _textLoading = '';
+
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
-    if (sesion.tipoUsuario == 'E') {
-      setState(() {
-        globals.actualizaArticulos = true;
-      });
-    }
-    _actualizaTotalTemporal();
-    if (globals.actualizaArticulos) {
-      setState(() {
-        textLoading = 'Actualizando lista de articulos';
-        isLoading = true;
-      });
-      articulosProvider
-          .listarProductosSucursal(sesion.idSucursal!)
-          .then((value) {
-        setState(() {
-          productosFiltrados = List.from(listaProductosSucursal);
-          globals.actualizaArticulos = false;
-          textLoading = '';
-          isLoading = false;
-        });
-      });
-    }
-    productosFiltrados = List.from(listaProductosSucursal);
-    setState(() {});
     super.initState();
+    _cargaInicial();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.addListener(() {
+        if (_focusNode.hasFocus) {
+          setState(() {});
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
-    busquedaController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('${sesion.sucursal}'),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'menu');
-              },
-              icon: const Icon(Icons.menu),
-            ),
-          ],
-        ),
-        body: (isLoading)
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    const CircularProgressIndicator(),
-                  ],
-                ),
-              )
-            : SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
-                child: Column(
-                  children: [
-                    ..._listaWidgets(),
-                    ..._productos(),
-                  ],
-                ),
-              ),
-      ),
-    );
-  }
+  Future<void> _cargaInicial() async {
+    setState(() {
+      _textLoading = 'Actualizando lista de articulos';
+      _isLoading = true;
+    });
 
-  _alertaElimnar() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text(
-              '¡Alerta!',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red),
-            ),
-            content: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '¿Desea eliminar la lista de articulos de compra ? Esta acción no podrá revertirse.',
-                )
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    ventaTemporal.clear();
-                    setState(() {});
-                    totalVentaTemporal = 0.0;
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Eliminar')),
-              ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'))
-            ],
-          );
-        });
-  }
-
-  _listaWidgets() {
-    List<Widget> listaItems = [
-      SizedBox(
-        height: windowHeight * 0.02,
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => QRScannerScreen(),
-                ),
-              );
-              if (result == null) return;
-              List<Producto> resultados = listaProductosSucursal
-                  .where((producto) =>
-                      producto.producto
-                          ?.toLowerCase()
-                          .contains(result.toLowerCase()) ??
-                      false)
-                  .toList();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Resultados(
-                    resultados: resultados,
-                  ),
-                ),
-              );
-            },
-            child: SizedBox(
-                width: windowWidth * 0.09,
-                height: windowHeight * 0.07,
-                child: const Center(child: Icon(Icons.qr_code_scanner))),
-          ),
-          SizedBox(
-            width: windowWidth * 0.02,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (ventaTemporal.isNotEmpty) {
-                Navigator.pushNamed(context, 'detalle-venta');
-                setState(() {});
-              } else {
-                mostrarAlerta(
-                    context, '¡Atención!', 'No hay productos en la venta.');
-              }
-            },
-            child: SizedBox(
-              height: windowHeight * 0.08,
-              width: windowWidth * 0.4,
-              child: Center(
-                child:
-                    Text('Cobrar \$${totalVentaTemporal.toStringAsFixed(2)}'),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: windowWidth * 0.02,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                if (ventaTemporal.isNotEmpty) {
-                  _alertaElimnar();
-                } else {
-                  mostrarAlerta(
-                      context, '¡Atención!', 'No hay productos en la venta.');
-                }
-              },
-              child: SizedBox(
-                  width: windowWidth * 0.09,
-                  height: windowHeight * 0.07,
-                  child: const Center(child: Icon(Icons.delete)))),
-        ],
-      ),
-      const Divider(),
-      Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: windowWidth * 0.05, vertical: 10),
-        child: TextField(
-          controller: busquedaController,
-          decoration: InputDecoration(
-            labelText: 'Buscar',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                busquedaController.clear();
-                _filtrarProductos('');
-              },
-            ),
-          ),
-          onChanged: _filtrarProductos,
-        ),
-      ),
-    ];
-
-    return listaItems;
-  }
-
-  _alertaProducto(Producto producto) {
-    bool isInt = producto.unidad == '1' ? true : false;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: Row(
-            children: [
-              const Flexible(
-                child: Text(
-                  'Cantidad :',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              SizedBox(
-                width: windowWidth * 0.05,
-              ),
-              Flexible(
-                child: InputField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: CantidadConttroller,
-                  keyboardType: isInt
-                      ? TextInputType.number
-                      : TextInputType.numberWithOptions(
-                          decimal: true), // This will show the numeric keyboard
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(isInt ? r'^[1-9]\d*' : r'^\d+(\.\d{0,4})?$'))
-                  ],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                if (CantidadConttroller.text.isEmpty ||
-                    double.parse(CantidadConttroller.text) <= 0) {
-                  mostrarAlerta(context, "AVISO", "Valor invalido");
-                } else {
-                  if (double.parse(CantidadConttroller.text) >
-                      producto.disponibleInv!) {
-                    mostrarAlerta(context, "AVISO",
-                        "No se puede agregar mas articulos de este producto :${producto.producto}, Productos Disponibles: ${producto.disponibleInv} ");
-                  } else {
-                    _agregaProductoVenta(
-                      producto,
-                      double.parse(CantidadConttroller.text),
-                    );
-                  }
-                }
-              },
-              child: const Text('Aceptar '),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  _productos() {
-    List<Widget> listaProd = [];
-    if (productosFiltrados.isNotEmpty) {
-      for (Producto producto in productosFiltrados) {
-        for (Categoria categoria in listaCategorias) {
-          if (producto.idCategoria == categoria.id) {
-            for (ColorCategoria color in listaColores) {
-              if (color.id == categoria.idColor) {
-                listaProd.add(ListTile(
-                  leading: Icon(
-                    Icons.category,
-                    color: color.color,
-                  ),
-                  onTap: () => producto.disponibleInv! > 0
-                      ? _alertaProducto(producto)
-                      : mostrarAlerta(context, "AVISO",
-                          "No cuenta con productos disponibles"),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: windowWidth * 0.45,
-                        child: Text(
-                          producto.producto!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  subtitle: Text(categoria.categoria!),
-                ));
-              }
-            }
-          }
-        }
-      }
-    } else {
-      final TextTheme textTheme = Theme.of(context).textTheme;
-
-      listaProd.add(Column(
-        children: [
-          const Opacity(
-            opacity: 0.2,
-            child: Icon(
-              Icons.filter_alt_off,
-              size: 130,
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Text(
-            'No hay productos guardados.',
-            style: textTheme.titleMedium,
-          )
-        ],
-      ));
-    }
-
-    return listaProd;
+    await _articulosProvider.listarProductosSucursal(sesion.idSucursal!);
+    setState(() {
+      _productosFiltrados = List.from(listaProductosSucursal);
+      _textLoading = 'Actualizando lista de clientes';
+    });
+    await _clientesProvider.listarClientes();
+    setState(() {
+      clienteVentaActual = listaClientes
+          .firstWhere((cliente) => cliente.nombre == 'Público en general');
+      _textLoading = 'Actualizando lista de descuentos';
+    });
+    await _descuentosProvider.listarDescuentos();
+    setState(() {
+      descuentoVentaActual.id = 0;
+      _textLoading = '';
+      _isLoading = false;
+    });
   }
 
   void _filtrarProductos(String query) {
     setState(() {
-      if (query.isEmpty) {
-        productosFiltrados = List.from(listaProductosSucursal);
-      } else {
-        productosFiltrados = listaProductosSucursal
-            .where((producto) =>
-                producto.producto!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
+      _productosFiltrados = query.isEmpty
+          ? List.from(listaProductosSucursal)
+          : listaProductosSucursal
+              .where((producto) => producto.producto!
+                  .toLowerCase()
+                  .contains(query.toLowerCase()))
+              .toList();
     });
   }
 
-  _actualizaTotalTemporal() {
-    totalVentaTemporal = 0;
-    if (listaVariables.isEmpty) return;
-    var aplica = listaVariables.firstWhere(
-      (variables) => variables.nombre == "aplica_mayoreo",
+  void _agregarProducto(Producto producto) {
+    _mostrarDialogoCantidad(producto);
+  }
+
+  void _mostrarDialogoCantidad(Producto producto) {
+    final cantidadController = TextEditingController(text: '1');
+    final esEntero = producto.unidad == '1';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Agregar ${producto.producto}'),
+        content: TextField(
+          controller: cantidadController,
+          autofocus: true,
+          keyboardType: esEntero
+              ? TextInputType.number
+              : TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(
+                esEntero ? RegExp(r'^[1-9]\d*') : RegExp(r'^\d+(\.\d{0,4})?$'))
+          ],
+          decoration: InputDecoration(
+            labelText: 'Cantidad',
+            helperText: (varEmpleadoInventario)
+                ? 'Disponibles: ${producto.disponibleInv}'
+                : '',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final cantidad = double.tryParse(cantidadController.text) ?? 0;
+              if (cantidad <= 0) {
+                mostrarAlerta(context, "AVISO", "Cantidad inválida");
+                return;
+              }
+              if (!varAplicaInventario) {
+                if (cantidad > producto.disponibleInv!) {
+                  mostrarAlerta(context, "AVISO",
+                      "No hay suficientes productos disponibles");
+                  return;
+                }
+              }
+              _procesarAgregarProducto(producto, cantidad);
+              Navigator.pop(context);
+            },
+            child: const Text('Agregar'),
+          ),
+        ],
+      ),
     );
-    for (ItemVenta item in ventaTemporal) {
-      if (aplica.valor == "0") {
-        totalVentaTemporal += item.cantidad * item.precioPublico;
-        item.subTotalItem += item.cantidad * item.precioPublico;
-        item.totalItem += item.cantidad * item.precioPublico;
-      } else {
-        if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-          totalVentaTemporal += item.cantidad * item.preciomayoreo;
-          item.subTotalItem += totalVentaTemporal;
-          item.totalItem += totalVentaTemporal;
-        } else {
-          totalVentaTemporal += item.totalItem;
-        }
-      }
+  }
+
+  void _procesarAgregarProducto(Producto producto, double cantidad) {
+    bool existe = ventaTemporal.any((item) => item.idArticulo == producto.id);
+    if (!existe) {
+      ventaTemporal.add(ItemVenta(
+          idArticulo: producto.id!,
+          articulo: producto.producto!,
+          cantidad: cantidad,
+          precioUnitario: producto.costo!,
+          precioPublico: producto.precioPublico!,
+          precioMayoreo: producto.precioMayoreo!,
+          precioDistribuidor: producto.precioDist!,
+          precioUtilizado: producto.precioPublico!,
+          idDescuento: 0,
+          descuento: 0,
+          subTotalItem: producto.precioPublico! * cantidad,
+          totalItem: producto.precioPublico! * cantidad,
+          apartado: producto.apartado == 1));
+    } else {
+      final index =
+          ventaTemporal.indexWhere((item) => item.idArticulo == producto.id);
+      ventaTemporal[index].cantidad += cantidad;
     }
+    _actualizaMontos.actualizaTotalVenta();
     setState(() {});
   }
 
-  _agregaProductoVenta(Producto producto, cantidad) {
-    bool existe = false;
-    if (producto.unidad == "1") {
-      for (ItemVenta item in ventaTemporal) {
-        if (item.idArticulo == producto.id) {
-          existe = true;
-          item.cantidad++;
-          item.subTotalItem = item.precioPublico * item.cantidad;
-          item.totalItem = item.subTotalItem - item.descuento;
-        }
-      }
-      if (!existe) {
-        ventaTemporal.add(ItemVenta(
-            idArticulo: producto.id!,
-            articulo: producto.producto!,
-            cantidad: cantidad,
-            precioPublico: producto.precioPublico!,
-            preciomayoreo: producto.precioMayoreo!,
-            preciodistribuidor: producto.precioDist!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: producto.precioPublico!,
-            totalItem: producto.precioPublico!,
-            apartado: (producto.apartado == 1) ? true : false));
-      }
-      _actualizaTotalTemporal();
-    } else {
-      if (producto.unidad == "0") {
-        for (ItemVenta item in ventaTemporal) {
-          if (item.idArticulo == producto.id) {
-            existe = true;
-            item.cantidad++;
-            item.subTotalItem = item.precioPublico * cantidad;
-            item.totalItem = item.subTotalItem - item.descuento;
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            Navigator.pushReplacementNamed(context, 'menu');
           }
-        }
-        if (!existe) {
-          ventaTemporal.add(ItemVenta(
-              idArticulo: producto.id!,
-              articulo: producto.producto!,
-              cantidad: cantidad,
-              precioPublico: producto.precioPublico!,
-              preciodistribuidor: producto.precioDist!,
-              preciomayoreo: producto.precioMayoreo!,
-              idDescuento: 0,
-              descuento: 0,
-              subTotalItem: producto.precioPublico!,
-              totalItem: producto.precioPublico! * cantidad,
-              apartado: (producto.apartado == 1) ? true : false));
-        }
-        _actualizaTotalTemporal();
-      } else {}
-      _actualizaTotalTemporal();
-    }
+        },
+        child: Focus(
+          focusNode: _focusNode,
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              title: Text('${sesion.sucursal}'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.home),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, 'menu'),
+                ),
+              ],
+            ),
+            body: _isLoading ? _buildLoadingView() : _buildMainContent(),
+            bottomNavigationBar: _buildBottomBar(),
+          ),
+        ));
+  }
+
+  Widget _buildLoadingView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(_textLoading),
+          const CircularProgressIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainContent() {
+    return Column(
+      children: [
+        _buildSearchBar(),
+        Expanded(
+          child: _productosFiltrados.isEmpty
+              ? _buildEmptyState()
+              : _buildProductList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: _busquedaController,
+        decoration: InputDecoration(
+          hintText: 'Buscar producto',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _busquedaController.clear();
+              _filtrarProductos('');
+            },
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onChanged: _filtrarProductos,
+      ),
+    );
+  }
+
+  Widget _buildProductList() {
+    return ListView.builder(
+      itemCount: _productosFiltrados.length,
+      itemBuilder: (context, index) {
+        final producto = _productosFiltrados[index];
+        return _buildProductListTile(producto);
+      },
+    );
+  }
+
+  Widget _buildProductListTile(Producto producto) {
+    final categoria = listaCategorias.firstWhere(
+        (cat) => cat.id == producto.idCategoria,
+        orElse: () => Categoria(categoria: 'Sin categoría'));
+
+    final color = listaColores.firstWhere((c) => c.id == categoria.idColor,
+        orElse: () => ColorCategoria(color: Colors.grey));
+
+    return ListTile(
+      leading: Icon(Icons.category, color: color.color),
+      title: Text(
+        producto.producto!,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(categoria.categoria!),
+      trailing: Text(
+        '\$${producto.precioPublico?.toStringAsFixed(2) ?? '0.00'}',
+        style: TextStyle(
+          color: (varEmpleadoInventario)
+              ? producto.disponibleInv! > 0
+                  ? Colors.green
+                  : Colors.red
+              : Colors.black,
+        ),
+      ),
+      onTap: (!varAplicaInventario)
+          ? producto.disponibleInv! > 0
+              ? () => _agregarProducto(producto)
+              : () => mostrarAlerta(
+                  context, "AVISO", "No hay productos disponibles")
+          : () => _agregarProducto(producto),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.filter_alt_off, size: 100, color: Colors.grey),
+          const SizedBox(height: 16),
+          Text(
+            'No se encontraron productos',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar() {
+    return BottomAppBar(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            onPressed: _scanQR,
+          ),
+          ElevatedButton(
+            onPressed: ventaTemporal.isNotEmpty
+                ? () async {
+                    await Navigator.pushNamed(context, 'detalle-venta');
+                    setState(() {});
+                  }
+                : null,
+            child: Text('Cobrar \$${totalVT.toStringAsFixed(2)}'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed:
+                ventaTemporal.isNotEmpty ? _mostrarDialogoEliminarVenta : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _scanQR() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => QRScannerScreen()),
+    );
+
+    if (result == null) return;
+
+    final resultados = listaProductosSucursal
+        .where((producto) =>
+            producto.producto?.toLowerCase().contains(result.toLowerCase()) ??
+            false)
+        .toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Resultados(resultados: resultados),
+      ),
+    );
+  }
+
+  void _mostrarDialogoEliminarVenta() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title:
+            const Text('Eliminar Venta', style: TextStyle(color: Colors.red)),
+        content: const Text('¿Estás seguro de eliminar todos los productos?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              ventaTemporal.clear();
+              _actualizaMontos.actualizaTotalVenta();
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
   }
 }

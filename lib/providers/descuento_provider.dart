@@ -15,9 +15,9 @@ class DescuentoProvider {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'nombre': descuento.nombre,
-        'tipo': descuento.tipoValor.toString(),
+        'tipo': '1',
         'valor': descuento.valor?.toStringAsFixed(2),
-        'valor_predeterminado': descuento.valorPred.toString(),
+        'valor_predeterminado': '1',
         'estatus': '1',
       });
       final decodedData = jsonDecode(resp.body);
@@ -50,9 +50,6 @@ class DescuentoProvider {
           descTemporal.nombre = decodedData['data'][x]['nombre'];
           descTemporal.valor =
               double.parse(decodedData['data'][x]['valor'].toString());
-          descTemporal.tipoValor = int.parse(decodedData['data'][x]['tipo']);
-          descTemporal.valorPred =
-              int.parse(decodedData['data'][x]['valor_predeterminado']);
           listaDescuentos.add(descTemporal);
         }
         respuesta.status = 1;
@@ -81,8 +78,6 @@ class DescuentoProvider {
         descuento.id = decodedData['data'][0]['id'];
         descuento.nombre = decodedData['data'][0]['nombre'];
         descuento.valor = decodedData['data'][0]['valor'];
-        descuento.tipoValor = decodedData['data'][0]['tipo'];
-        descuento.valorPred = decodedData['data'][0]['valor_predeterminado'];
       } else {
         descuento.id = 0;
         descuento.nombre = decodedData['msg'];
@@ -102,9 +97,9 @@ class DescuentoProvider {
         'Authorization': 'Bearer ${sesion.token}',
       }, body: {
         'nombre': descuento.nombre,
-        'tipo': descuento.tipoValor.toString(),
+        'tipo': '1',
         'valor': descuento.valor?.toStringAsFixed(2),
-        'valor_predeterminado': descuento.valorPred.toString(),
+        'valor_predeterminado': '1',
         'estatus': '1',
       });
       final decodedData = jsonDecode(resp.body);

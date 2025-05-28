@@ -7,100 +7,153 @@ class ConfigScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double windowWidth = MediaQuery.of(context).size.width;
-
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) Navigator.pushReplacementNamed(context, 'menu');
+      onPopInvoked: (didPop) {
+        if (!didPop) Navigator.pushReplacementNamed(context, 'menu');
       },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('Configuración'),
+          elevation: 2,
           actions: [
             IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'menu');
-                },
-                icon: const Icon(Icons.menu)),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'menu');
+              },
+              icon: const Icon(Icons.home),
+              tooltip: 'Ir al menú principal',
+            ),
           ],
         ),
-        body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.account_circle_rounded),
-                  title: const Text(
-                    'Mi cuenta',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: const Text('Edita tus datos personales'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    Navigator.pushNamed(context, 'perfil');
-                  },
+        body: _buildMenuOptions(context),
+      ),
+    );
+  }
+
+  Widget _buildMenuOptions(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Text(
+              'Opciones de Configuración',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context: context,
+            title: 'Mi cuenta',
+            subtitle: 'Edita tus datos personales',
+            icon: Icons.account_circle_rounded,
+            iconColor: Colors.blue,
+            onTap: () => Navigator.pushNamed(context, 'perfil'),
+          ),
+          if (sesion.tipoUsuario == "P" && sesion.idNegocio != 0) ...[
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
+              title: 'Ajustes de ventas',
+              subtitle: 'Edita importe mínimo requerido para apartar',
+              icon: CupertinoIcons.tag,
+              iconColor: Colors.purple,
+              onTap: () => Navigator.pushNamed(context, 'config-apartado'),
+            ),
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
+              title: 'Ticket',
+              subtitle: 'Configura tu ticket de compra',
+              icon: CupertinoIcons.ticket,
+              iconColor: Colors.amber,
+              onTap: () => Navigator.pushNamed(context, 'ticket'),
+            ),
+          ],
+          const SizedBox(height: 16),
+          _buildMenuCard(
+            context: context,
+            title: 'Impresora',
+            subtitle: 'Configura tu impresora de tickets',
+            icon: CupertinoIcons.printer,
+            iconColor: Colors.teal,
+            onTap: () => Navigator.pushNamed(context, 'config-impresora'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                (sesion.tipoUsuario == "P" && sesion.idNegocio != 0)
-                    ? ListTile(
-                        leading: const Icon(CupertinoIcons.tag),
-                        title: const Text(
-                          'Ajustes de apartado',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: const Text(
-                            'Edita importe minimo requerido para apartar'),
-                        trailing: const Icon(Icons.arrow_right),
-                        onTap: () {
-                          Navigator.pushNamed(context, 'config-apartado');
-                        },
-                      )
-                    : Container(),
-                (sesion.tipoUsuario == "P" && sesion.idNegocio != 0)
-                    ? ListTile(
-                        leading: const Icon(CupertinoIcons.ticket),
-                        title: const Text(
-                          'Ticket',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: const Text('Configura tu ticket de compra'),
-                        trailing: const Icon(Icons.arrow_right),
-                        onTap: () {
-                          Navigator.pushNamed(context, 'ticket');
-                        },
-                      )
-                    : Container(),
-                ListTile(
-                  leading: const Icon(CupertinoIcons.printer),
-                  title: const Text(
-                    'Impresora',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                child: Icon(
+                  icon,
+                  size: 36,
+                  color: iconColor,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: const Text('Configura tuimpresora de tickets'),
-                  trailing: const Icon(Icons.arrow_right),
-                  onTap: () {
-                    Navigator.pushNamed(context, 'config-impresora');
-                  },
-                )
-              ],
-            )),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

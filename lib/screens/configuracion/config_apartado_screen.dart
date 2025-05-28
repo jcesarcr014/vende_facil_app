@@ -4,7 +4,6 @@ import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 
 class AjustesApartadoScreen extends StatefulWidget {
-  // ignore: use_super_parameters
   const AjustesApartadoScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,9 +11,6 @@ class AjustesApartadoScreen extends StatefulWidget {
 }
 
 class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
-  final apartadoProvider = ApartadoProvider();
-  bool _valuePieza = false;
-  bool _valueInformacion = false;
   final variablesprovider = VariablesProvider();
   final GlobalKey<FormState> _formApartadoConf = GlobalKey<FormState>();
   final controllerPorcentaje = TextEditingController();
@@ -23,72 +19,119 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
   String? _porcentajeError;
   String? _articulosError;
   bool isLoading = false;
-  int idVarArticulos = 0;
-  int idaplicamayoreo = 0;
-  int idempleadoCatidades = 0;
-  int idcatidadVarArticulos = 0;
-  int idVarPorcentaje = 0;
   String textLoading = '';
   double windowWidth = 0.0;
   double windowHeight = 0.0;
+
+  // Valores de las variables
+  bool aplicaApartado = false;
+  bool aplicaMayoreo = false;
+  bool empleadoCantidades = false;
+  bool empleadoCorte = false;
+  bool aplicaInventario = false;
+
+  // IDs de las variables
+  Map<String, int> variableIds = {};
 
   @override
   void dispose() {
     controllerPorcentaje.dispose();
     controllerArticulos.dispose();
+    controllerArticulosMayoreo.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
+    super.initState();
+    _cargarVariables();
+  }
+
+  void _cargarVariables() {
     setState(() {
-      textLoading = 'Leyendo valores.';
+      textLoading = 'Cargando configuración...';
       isLoading = true;
     });
-    variablesprovider.variablesApartado().then((value) {
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
-      if (value.status == 1) {
-        for (VariableConf varTemp in listaVariables) {
-          if (varTemp.nombre == 'porcentaje_anticipo') {
-            idVarPorcentaje = varTemp.id!;
-            controllerPorcentaje.text = varTemp.valor!;
-          } else if (varTemp.nombre == 'productos_apartados') {
-            idcatidadVarArticulos = varTemp.id!;
-            controllerArticulos.text = varTemp.valor!;
-          }
-          if (varTemp.nombre == "productos_mayoreo") {
-            idVarArticulos = varTemp.id!;
-            if (varTemp.valor == null) {
-              controllerArticulosMayoreo.text = "";
-            } else {
-              controllerArticulosMayoreo.text = varTemp.valor!;
-            }
-          }
-          if (varTemp.nombre == "aplica_mayoreo") {
-            idaplicamayoreo = varTemp.id!;
-            if (varTemp.valor == null) {
-            } else {
-              _valuePieza = (varTemp.valor == "1") ? true : false;
-            }
-          }
 
-          if (varTemp.nombre == "empleado_cantidades") {
-            idempleadoCatidades = varTemp.id!;
-            if (varTemp.valor == null) {
-            } else {
-              _valueInformacion = (varTemp.valor == "1") ? true : false;
-            }
-          }
-        }
+    variablesprovider.variablesConfiguracion().then((value) {
+      if (value.status == 1) {
+        _actualizarVariablesLocales();
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
       } else {
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
         Navigator.pop(context);
         mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
       }
     });
-    super.initState();
+  }
+
+  void _actualizarVariablesLocales() {
+    for (var variable in listaVariables) {
+      variableIds[variable.nombre] = variable.id;
+      switch (variable.nombre) {
+        case 'aplica_apartado':
+          aplicaApartado = variable.valor == '1';
+          break;
+        case 'porcentaje_anticipo':
+          controllerPorcentaje.text = variable.valor;
+          break;
+        case 'productos_apartados':
+          controllerArticulos.text = variable.valor;
+          break;
+        case 'aplica_mayoreo':
+          aplicaMayoreo = variable.valor == '1';
+          break;
+        case 'productos_mayoreo':
+          controllerArticulosMayoreo.text = variable.valor;
+          break;
+        case 'empleado_cantidades':
+          empleadoCantidades = variable.valor == '1';
+          break;
+        case 'empleado_corte':
+          empleadoCorte = variable.valor == '1';
+          break;
+        case 'aplica_iventario':
+          aplicaInventario = variable.valor == '1';
+          break;
+      }
+    }
+  }
+
+  Future<void> _guardarVariable(String nombre, String valor) async {
+    setState(() {
+      textLoading = 'Guardando configuración...';
+      isLoading = true;
+    });
+
+    try {
+      final resultado = await variablesprovider.modificarVariable(
+          variableIds[nombre]!, valor);
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+
+      if (resultado.status == 1) {
+        mostrarAlerta(
+            context, 'Guardado', 'Configuración actualizada correctamente',
+            tituloColor: Colors.green);
+      } else {
+        mostrarAlerta(
+            context, 'Error', 'Error al guardar: ${resultado.mensaje}');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      mostrarAlerta(context, 'Error', 'Error inesperado: $e');
+    }
   }
 
   @override
@@ -98,7 +141,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configuración de apartado'),
+        title: const Text('Configuración de Negocio'),
         automaticallyImplyLeading: true,
       ),
       body: (isLoading)
@@ -106,230 +149,353 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Espere...$textLoading'),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  Text('$textLoading'),
+                  const SizedBox(height: 10),
                   const CircularProgressIndicator(),
                 ],
               ),
             )
           : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.03),
+              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.05),
               child: Form(
                 key: _formApartadoConf,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: windowHeight * 0.02,
-                    ),
-                    const Text(
-                      'Si su negocio no maneja sistema de apartado, deje en 0 los artículos permitidos apartar.',
-                      textAlign: TextAlign.justify,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    SizedBox(height: windowHeight * 0.02),
+
+                    // SECCIÓN APARTADO
+                    Card(
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        children: [
+                          SwitchListTile.adaptive(
+                            title: const Text(
+                              'Activar sistema de apartado',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            subtitle: Text(aplicaApartado
+                                ? 'El sistema de apartado está activado'
+                                : 'El sistema de apartado está desactivado'),
+                            value: aplicaApartado,
+                            onChanged: (value) async {
+                              await _guardarVariable(
+                                  'aplica_apartado', value ? '1' : '0');
+                              setState(() {
+                                aplicaApartado = value;
+                              });
+                            },
+                          ),
+                          if (aplicaApartado)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Divider(),
+                                  const Text(
+                                    'Configuración de apartado',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: windowHeight * 0.02),
+
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: const Text(
+                                          'Porcentaje mínimo de anticipo:',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                      SizedBox(width: windowWidth * 0.02),
+                                      Expanded(
+                                        flex: 2,
+                                        child: InputField(
+                                          controller: controllerPorcentaje,
+                                          labelText: '%',
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Requerido';
+                                            }
+                                            try {
+                                              final double parsedValue =
+                                                  double.parse(value);
+                                              if (parsedValue < 1 ||
+                                                  parsedValue > 100) {
+                                                return 'Entre 1-100';
+                                              }
+                                            } catch (e) {
+                                              return 'Inválido';
+                                            }
+                                            return null;
+                                          },
+                                          errorText: _porcentajeError,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height: windowHeight * 0.02),
+
+                                  // Artículos máximos por apartado
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: const Text(
+                                          'Artículos máximos por apartado:',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                      SizedBox(width: windowWidth * 0.02),
+                                      Expanded(
+                                        flex: 2,
+                                        child: InputField(
+                                          controller: controllerArticulos,
+                                          labelText: 'Cantidad',
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Requerido';
+                                            }
+                                            try {
+                                              final int parsedValue =
+                                                  int.parse(value);
+                                              if (parsedValue < 1) {
+                                                return 'Mínimo 1';
+                                              }
+                                            } catch (e) {
+                                              return 'Inválido';
+                                            }
+                                            return null;
+                                          },
+                                          errorText: _articulosError,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height: windowHeight * 0.02),
+
+                                  // Botón guardar configuración de apartado
+                                  Center(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        if (_formApartadoConf.currentState!
+                                            .validate()) {
+                                          _guardarConfiguracionApartado();
+                                        }
+                                      },
+                                      child: const Text(
+                                          'Guardar configuración de apartado'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      height: windowHeight * 0.05,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.6,
-                          child: const Text(
-                            'Porcentaje mínimo de anticipo: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                            maxLines: 2,
-                          ),
-                        ),
-                        SizedBox(
-                          width: windowWidth * 0.02,
-                        ),
-                        Expanded(
-                          child: InputField(
-                            controller: controllerPorcentaje,
-                            labelText: 'Porcentaje',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Por favor ingrese un porcentaje';
-                              }
-                              final numericValue = value;
 
-                              try {
-                                final double parsedValue =
-                                    double.parse(numericValue);
-                                if (parsedValue < 1 || parsedValue > 100) {
-                                  return 'El porcentaje debe estar entre 1 y 100';
-                                }
-                              } catch (e) {
-                                return 'Valor no válido';
-                              }
-                              return null;
-                            },
-                            errorText: _porcentajeError,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.02,
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.6,
-                          child: const Text(
-                            'Artículos máximos permitidos apartar por compra: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                    // SECCIÓN MAYOREO
+                    Card(
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        children: [
+                          SwitchListTile.adaptive(
+                            title: const Text(
+                              'Activar precios de mayoreo',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
-                            maxLines: 2,
-                          ),
-                        ),
-                        SizedBox(
-                          width: windowWidth * 0.02,
-                        ),
-                        Expanded(
-                          child: InputField(
-                            controller: controllerArticulos,
-                            labelText: 'Cantidad de artículos',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Por favor ingrese un número de artículos maximos permitidos';
-                              }
-                              final numericValue = value;
-
-                              try {
-                                final int parsedValue = int.parse(numericValue);
-                                if (parsedValue < 0) {
-                                  return 'Valor mínimo permitido es 0';
-                                }
-                              } catch (e) {
-                                return 'Valor no válido';
-                              }
-                              return null;
+                            subtitle: Text(aplicaMayoreo
+                                ? 'Los precios de mayoreo están activados'
+                                : 'Los precios de mayoreo están desactivados'),
+                            value: aplicaMayoreo,
+                            onChanged: (value) async {
+                              await _guardarVariable(
+                                  'aplica_mayoreo', value ? '1' : '0');
+                              setState(() {
+                                aplicaMayoreo = value;
+                              });
                             },
-                            errorText: _articulosError,
-                            keyboardType: TextInputType.number,
                           ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(1.0),
-                      child: SwitchListTile.adaptive(
-                        title: const Text(
-                          'Se permite mayoreo:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        subtitle: Text(_valuePieza ? 'Permirtir ' : 'Negar'),
-                        value: _valuePieza,
-                        onChanged: (value) {
-                          _valuePieza = value;
-                          setState(() {
-                            if (_valuePieza == false) {
-                              controllerArticulosMayoreo.text = "0";
-                            } else {
-                              controllerArticulosMayoreo.text = "10";
-                            }
-                          });
-                        },
+
+                          // Contenedor con configuraciones adicionales de mayoreo
+                          if (aplicaMayoreo)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Divider(),
+                                  const Text(
+                                    'Configuración de mayoreo',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: windowHeight * 0.02),
+
+                                  // Cantidad de artículos para mayoreo
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: const Text(
+                                          'Cantidad mínima para mayoreo:',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                      SizedBox(width: windowWidth * 0.02),
+                                      Expanded(
+                                        flex: 2,
+                                        child: InputField(
+                                          controller:
+                                              controllerArticulosMayoreo,
+                                          labelText: 'Cantidad',
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Requerido';
+                                            }
+                                            try {
+                                              final int parsedValue =
+                                                  int.parse(value);
+                                              if (parsedValue < 2) {
+                                                return 'Mínimo 2';
+                                              }
+                                            } catch (e) {
+                                              return 'Inválido';
+                                            }
+                                            return null;
+                                          },
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height: windowHeight * 0.02),
+
+                                  // Botón guardar configuración de mayoreo
+                                  Center(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        if (_formApartadoConf.currentState!
+                                            .validate()) {
+                                          _guardarVariable('productos_mayoreo',
+                                              controllerArticulosMayoreo.text);
+                                        }
+                                      },
+                                      child: const Text(
+                                          'Guardar configuración de mayoreo'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.6,
-                          child: const Text(
-                            'Números de artículos para descuento de mayoreo: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                            maxLines: 2,
-                          ),
-                        ),
-                        SizedBox(
-                          width: windowWidth * 0.02,
-                        ),
-                        Expanded(
-                          child: InputField(
-                            controller: controllerArticulosMayoreo,
-                            labelText: 'Cantidad de artículos',
-                            enabled: _valuePieza,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Por favor ingrese un número de artículos maximos permitidos';
-                              }
-                              final numericValue = value;
 
-                              try {
-                                final int parsedValue = int.parse(numericValue);
-                                if (parsedValue < 0) {
-                                  return 'Valor mínimo permitido es 0';
-                                }
-                              } catch (e) {
-                                return 'Valor no válido';
-                              }
-                              return null;
-                            },
-                            errorText: _articulosError,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Tooltip(
-                        message:
-                            'Permitir al empleado ver inventario de su sucursal.',
-                        child: SwitchListTile.adaptive(
-                          title: const Text(
-                            'Inventario de sucursal',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                    // CONFIGURACIONES DE EMPLEADOS Y SISTEMA
+                    Card(
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Otras configuraciones',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          subtitle: Text(_valueInformacion
-                              ? 'Empleados SI ven inventario.'
-                              : 'Empleados NO ven inventario.'),
-                          value: _valueInformacion,
-                          onChanged: (value) {
-                            setState(() {
-                              _valueInformacion = value;
-                            });
-                          },
-                        ),
+
+                          // Ver cantidades de inventario
+                          SwitchListTile.adaptive(
+                            title: const Text(
+                              'Empleados pueden ver inventario',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Text(empleadoCantidades
+                                ? 'Los empleados pueden ver cantidades en inventario'
+                                : 'Los empleados no pueden ver cantidades en inventario'),
+                            value: empleadoCantidades,
+                            onChanged: (value) async {
+                              await _guardarVariable(
+                                  'empleado_cantidades', value ? '1' : '0');
+                              setState(() {
+                                empleadoCantidades = value;
+                              });
+                            },
+                          ),
+
+                          const Divider(height: 1),
+
+                          // Ver totales en corte
+                          SwitchListTile.adaptive(
+                            title: const Text(
+                              'Empleados pueden ver totales en corte',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Text(empleadoCorte
+                                ? 'Los empleados pueden ver los totales en su corte'
+                                : 'Los empleados no pueden ver los totales en su corte'),
+                            value: empleadoCorte,
+                            onChanged: (value) async {
+                              await _guardarVariable(
+                                  'empleado_corte', value ? '1' : '0');
+                              setState(() {
+                                empleadoCorte = value;
+                              });
+                            },
+                          ),
+
+                          const Divider(height: 1),
+
+                          // Vender sin inventario
+                          SwitchListTile.adaptive(
+                            title: const Text(
+                              'Vender sin inventario suficiente',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Text(aplicaInventario
+                                ? 'Se permite la venta aunque no haya inventario suficiente'
+                                : 'No se permite la venta si no hay inventario suficiente'),
+                            value: aplicaInventario,
+                            onChanged: (value) async {
+                              await _guardarVariable(
+                                  'aplica_iventario', value ? '1' : '0');
+                              setState(() {
+                                aplicaInventario = value;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(
-                      height: windowHeight * 0.03,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formApartadoConf.currentState!.validate()) {
-                          _guardarVariables();
-                        }
-                      },
-                      child: const Text('Guardar'),
-                    ),
+
+                    SizedBox(height: windowHeight * 0.05),
                   ],
                 ),
               ),
@@ -337,87 +503,49 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
     );
   }
 
-  _guardarVariables() {
+  void _guardarConfiguracionApartado() async {
     setState(() {
-      textLoading = 'Guardando ajustes.....';
+      textLoading = 'Guardando configuración de apartado...';
       isLoading = true;
     });
-    variablesprovider
-        .modificarVariables(idVarPorcentaje, controllerPorcentaje.text)
-        .then((respPorcentaje) {
-      if (respPorcentaje.status == 1) {
-        variablesprovider
-            .modificarVariables(idcatidadVarArticulos, controllerArticulos.text)
-            .then((respArticulos) {
-          if (respArticulos.status == 1) {
-            variablesprovider
-                .modificarVariables(
-                    idVarArticulos, controllerArticulosMayoreo.text)
-                .then((respArticulosmayoreo) {
-              if (respArticulosmayoreo.status == 1) {
-                variablesprovider
-                    .modificarVariables(
-                        idaplicamayoreo, (_valuePieza) ? '1' : '0')
-                    .then((aplicamayoreo) {
-                  if (aplicamayoreo.status == 1) {
-                    variablesprovider
-                        .modificarVariables(idempleadoCatidades,
-                            (_valueInformacion) ? '1' : '0')
-                        .then((aplicamayoreo) {
-                      if (aplicamayoreo.status == 1) {
-                        setState(() {
-                          textLoading = '';
-                          isLoading = false;
-                        });
-                        mostrarAlerta(
-                            context,
-                            'Correcto',
-                            tituloColor: Colors.green,
-                            'Valores guardados correctamente');
-                      } else {
-                        setState(() {
-                          textLoading = '';
-                          isLoading = false;
-                        });
-                        mostrarAlerta(context, 'Error',
-                            'Error al guardar los valores: ${respArticulos.mensaje}');
-                      }
-                    });
-                  } else {
-                    setState(() {
-                      textLoading = '';
-                      isLoading = false;
-                    });
-                    mostrarAlerta(context, 'Error',
-                        'Error al guardar los valores: ${respArticulos.mensaje}');
-                  }
-                });
-              } else {
-                setState(() {
-                  textLoading = '';
-                  isLoading = false;
-                });
-                mostrarAlerta(context, 'Error',
-                    'Error al guardar los valores: ${respArticulos.mensaje}');
-              }
-            });
-          } else {
-            setState(() {
-              textLoading = '';
-              isLoading = false;
-            });
-            mostrarAlerta(context, 'Error',
-                'Error al guardar los valores: ${respArticulos.mensaje}');
-          }
+
+    try {
+      // Guardar porcentaje de anticipo
+      final resultadoPorcentaje = await variablesprovider.modificarVariable(
+          variableIds['porcentaje_anticipo']!, controllerPorcentaje.text);
+
+      if (resultadoPorcentaje.status == 1) {
+        // Guardar cantidad de artículos por apartado
+        final resultadoArticulos = await variablesprovider.modificarVariable(
+            variableIds['productos_apartados']!, controllerArticulos.text);
+
+        setState(() {
+          isLoading = false;
+          textLoading = '';
         });
+
+        if (resultadoArticulos.status == 1) {
+          mostrarAlerta(context, 'Guardado',
+              'Configuración de apartado actualizada correctamente',
+              tituloColor: Colors.green);
+        } else {
+          mostrarAlerta(context, 'Error',
+              'Error al guardar: ${resultadoArticulos.mensaje}');
+        }
       } else {
         setState(() {
-          textLoading = '';
           isLoading = false;
+          textLoading = '';
         });
         mostrarAlerta(context, 'Error',
-            'Error al guardar los valores: ${respPorcentaje.mensaje}');
+            'Error al guardar: ${resultadoPorcentaje.mensaje}');
       }
-    });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        textLoading = '';
+      });
+      mostrarAlerta(context, 'Error', 'Error inesperado: $e');
+    }
   }
 }

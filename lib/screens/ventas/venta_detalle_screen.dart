@@ -1,12 +1,11 @@
-// ignore_for_file: dead_code, prefer_final_fields, depend_on_referenced_packages, null_check_always_fails
-
 import 'package:flutter/material.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
+import 'package:vende_facil/util/actualiza_venta.dart' as totales;
 
 class VentaDetalleScreen extends StatefulWidget {
   const VentaDetalleScreen({super.key});
+
   @override
   State<VentaDetalleScreen> createState() => _VentaDetalleScreenState();
 }
@@ -14,759 +13,409 @@ class VentaDetalleScreen extends StatefulWidget {
 class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   bool isLoading = false;
   String textLoading = '';
-  double windowWidth = 0.0;
-  double windowHeight = 0.0;
-  double subTotalItem = 0.0;
-  String _valueIdDescuento = '0';
-  String nombreClienteTemp = 'Publico en general';
-  String _valueIdcliente = listaClientes
+  final cantidadController = TextEditingController();
+  final _actualizaMontos = totales.ActualizaMontos();
+  final sinDescuento = Descuento(id: 0, nombre: 'Sin descuento', valor: 0.0);
+
+  int _descuentoId = 0;
+  int _clienteId = listaClientes
       .firstWhere((cliente) => cliente.nombre == 'Público en general')
-      .id
-      .toString();
-  double descuento = 0.0;
-  double restate = 0.0;
-  int idcliente = 0;
-  int idDescuento = 0;
-  bool _valuePieza = false;
-  final cantidadControllers = TextEditingController();
-  Descuento descuentoSeleccionado =
-      Descuento(id: 0, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
+      .id!;
 
-  final TicketProvider ticketProvider = TicketProvider();
-  final NegocioProvider negocioProvider = NegocioProvider();
-  List<Producto> listaProductosCotizaciones = [];
-
-  final cantidadConttroller = TextEditingController();
+  bool _ventaDomicilio = false;
 
   @override
   void initState() {
-    _actualizaTotalTemporal();
-    listaDescuentos;
     super.initState();
-    _fetchData();
+
+    _actualizaMontos.actualizaTotalVenta();
   }
 
-  void _fetchData() {
-    setState(() {});
+  @override
+  void dispose() {
+    cantidadController.dispose();
+    super.dispose();
+  }
+
+  void _actualizarEstado() {
+    setState(() {
+      _actualizaMontos.actualizaTotalVenta();
+    });
+  }
+
+  void _removerItemTemporal(ItemVenta item) {
+    setState(() {
+      ventaTemporal.remove(item);
+      _actualizaMontos.actualizaTotalVenta();
+    });
+  }
+
+  void _mostrarDialogCantidad(ItemVenta item, Producto producto) {
+    cantidadController.text = item.cantidad.toString();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Editar Cantidad'),
+        content: TextField(
+          controller: cantidadController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Cantidad'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final nuevaCantidad = double.tryParse(cantidadController.text);
+              if (nuevaCantidad != null && nuevaCantidad > 0) {
+                if (nuevaCantidad <= producto.disponibleInv!) {
+                  setState(() {
+                    item.cantidad = nuevaCantidad;
+                    _actualizaMontos.actualizaTotalVenta();
+                  });
+                  Navigator.pop(context);
+                } else {
+                  mostrarAlerta(context, 'AVISO',
+                      'No hay suficiente inventario. Disponibles: ${producto.disponibleInv}');
+                }
+              } else {
+                mostrarAlerta(context, 'AVISO', 'Cantidad inválida');
+              }
+            },
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _validarYProcederApartado() {
+    double numArticulos = 0;
+
+    for (ItemVenta articuloTemporal in ventaTemporal) {
+      if (!articuloTemporal.apartado) {
+        mostrarAlerta(context, 'ERROR',
+            'Algunos artículos no pueden apartarse. Revise los productos.');
+        return;
+      }
+      numArticulos += articuloTemporal.cantidad;
+    }
+
+    if (double.parse(listaVariables[1].valor) < numArticulos) {
+      mostrarAlerta(context, 'ERROR',
+          'Supera la cantidad máxima de artículos para apartar.');
+      return;
+    }
+
+    ApartadoCabecera apartado = ApartadoCabecera(
+      clienteId: clienteVentaActual.id,
+      subtotal: subtotalVT,
+      descuentoId: _descuentoId,
+      descuento: descuentoVT,
+      total: totalVT,
+    );
+
+    Navigator.pushNamed(context, 'apartado', arguments: apartado);
+  }
+
+  void _procederCobro() {
+    VentaCabecera venta = VentaCabecera(
+      idCliente: _clienteId,
+      subtotal: subtotalVT,
+      idDescuento: _descuentoId,
+      descuento: descuentoVT,
+      total: totalVT,
+      tipoVenta: _ventaDomicilio ? 1 : 0,
+      nombreCliente: clienteVentaActual.nombre,
+    );
+
+    Navigator.pushNamed(context, 'venta', arguments: venta);
   }
 
   @override
   Widget build(BuildContext context) {
-    windowWidth = MediaQuery.of(context).size.width;
-    windowHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
+        title: const Text('Detalle de Venta'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Ayuda'),
+                  content: const Text('• Deslice un producto para eliminarlo\n'
+                      '• Toque el ícono de edición para cambiar cantidad\n'
+                      '• Seleccione descuentos y cliente según necesite'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Entendido'),
+                    )
+                  ],
+                ),
+              );
+            },
+          )
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _buildMainContent(),
+    );
+  }
+
+  Widget _buildMainContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildProductList(),
+          const SizedBox(height: 16),
+          _buildSalesSummary(),
+          const SizedBox(height: 16),
+          _buildDiscountSection(),
+          const SizedBox(height: 16),
+          _buildClientSection(),
+          const SizedBox(height: 16),
+          _buildSaleTypeToggle(),
+          const SizedBox(height: 16),
+          _buildActionButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductList() {
+    return Card(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Productos (${ventaTemporal.length})',
+                style: Theme.of(context).textTheme.titleMedium),
+          ),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: ventaTemporal.length,
+            separatorBuilder: (context, index) => const Divider(),
+            itemBuilder: (context, index) {
+              final item = ventaTemporal[index];
+              final producto = listaProductosSucursal
+                  .firstWhere((p) => p.id == item.idArticulo);
+
+              return Dismissible(
+                key: Key(item.idArticulo.toString()),
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(Icons.delete, color: Colors.white),
+                  ),
+                ),
+                onDismissed: (_) => _removerItemTemporal(item),
+                child: ListTile(
+                  title: Text('${producto.producto}'),
+                  subtitle: Text(
+                      'Precio: \$${item.precioPublico.toStringAsFixed(2)}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${item.cantidad}',
+                          style: const TextStyle(fontSize: 16)),
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () => _mostrarDialogCantidad(item, producto),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSalesSummary() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
           children: [
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, 'home');
-              },
-              icon: const Icon(Icons.arrow_back),
-            ),
-            const SizedBox(width: 8),
-            const Text('Detalle de venta'),
+            _buildSummaryRow('Subtotal', subtotalVT),
+            _buildSummaryRow('Descuento', descuentoVT),
+            _buildSummaryRow('Total', totalVT, isTotal: true),
+            _buildSummaryRow('Ahorro', ahorroVT),
           ],
         ),
       ),
-      body: (isLoading)
-          ? Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Espere...$textLoading'),
-                    SizedBox(
-                      height: windowHeight * 0.01,
-                    ),
-                    const CircularProgressIndicator(),
-                  ]),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: windowWidth * 0.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: windowHeight * 0.02,
-                  ),
-                  Column(children: _listaTemporal()),
-                  const SizedBox(height: 0.5),
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        'Subtotal ',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: windowWidth * 0.5),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      child: Text(
-                        '\$${subTotalItem.toStringAsFixed(2)}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ]),
-                  const SizedBox(height: 0.5),
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        'Descuento ',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: windowWidth * 0.1),
-                    Expanded(
-                      child: _descuentos(),
-                    ),
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                        width: windowWidth * 0.2,
-                        child: Text(
-                          '\$${descuento.toStringAsFixed(2)}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        )),
-                  ]),
-                  SizedBox(
-                    height: windowHeight * 0.03,
-                  ),
-                  const SizedBox(height: 10),
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        'Total ',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: windowWidth * 0.5),
-                    SizedBox(
-                        width: windowWidth * 0.2,
-                        child: Text(
-                          '\$${totalVentaTemporal.toStringAsFixed(2)}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        )),
-                  ]),
-                  const SizedBox(height: 10),
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      child: const Text(
-                        'Selecione el  cliente',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: windowWidth * 0.1),
-                    Expanded(
-                      child: _clientes(),
-                    ),
-                    SizedBox(width: windowWidth * 0.1),
-                  ]),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: SwitchListTile.adaptive(
-                      title: const Text('Tipo de venta:'),
-                      subtitle: Text(_valuePieza ? 'Domicilio' : 'Tienda'),
-                      value: _valuePieza,
-                      onChanged: (value) {
-                        _valuePieza = value;
-                        setState(() {
-                          _actualizaTotalTemporal();
-                        });
-                      },
-                    ),
-                  ),
-                  Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    SizedBox(width: windowWidth * 0.1),
-                    SizedBox(
-                      width: windowWidth * 0.2,
-                      height: windowHeight * 0.1,
-                    ),
-                  ]),
-                  Center(
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              VentaCabecera venta = VentaCabecera(
-                                idCliente: int.parse(_valueIdcliente),
-                                subtotal: subTotalItem,
-                                idDescuento: idDescuento,
-                                descuento: descuento,
-                                total: totalVentaTemporal,
-                                tipoVenta: _valuePieza ? 1 : 0,
-                                nombreCliente: nombreClienteTemp,
-                              );
-                              Navigator.pushNamed(context, 'venta',
-                                  arguments: venta);
-                              setState(() {});
-                            },
-                            child: SizedBox(
-                              height: windowHeight * 0.1,
-                              width: windowWidth * 0.6,
-                              child: Center(
-                                child: Text(
-                                  'Cobrar   \$${totalVentaTemporal.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            )),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              _validaApartado();
-                            },
-                            child: SizedBox(
-                              height: windowHeight * 0.07,
-                              width: windowWidth * 0.6,
-                              child: const Center(
-                                child: Text(
-                                  'Apartar',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  ),
-                ],
-              )),
     );
   }
 
-  _listaTemporal() {
-    List<Widget> productos = [];
-    for (ItemVenta item in ventaTemporal) {
-      for (Producto prod in listaProductosSucursal) {
-        if (prod.id == item.idArticulo) {
-          prod.costo = item.totalItem;
-          prod.cantidad = item.cantidad;
-          if (!listaProductosCotizaciones.any((p) => p.id == prod.id)) {
-            listaProductosCotizaciones.add(prod);
-          }
-          productos.add(Dismissible(
-              key: Key(item.idArticulo.toString()),
-              onDismissed: (direction) {
-                _removerItemTemporal(item);
-              },
-              background: Container(
-                color: Colors.red,
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              child: ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: windowWidth * 0.3,
-                      child: Text(
-                        '${prod.producto} ',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: windowWidth * 0.1,
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            transitionBuilder:
-                                (Widget child, Animation<double> animation) {
-                              return ScaleTransition(
-                                scale: animation,
-                                child: child,
-                              );
-                            },
-                            child: Tooltip(
-                              message: 'Editar Cantidad',
-                              child: IconButton(
-                                key: ValueKey<double>(item.cantidad),
-                                onPressed: item.totalItem > 0.00
-                                    ? () {
-                                        setState(() {
-                                          cantidadControllers.text =
-                                              '${item.cantidad}';
-                                        });
-                                        showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              content: Row(
-                                                children: [
-                                                  const Flexible(
-                                                    child: Text(
-                                                      'Cantidad :',
-                                                      style: TextStyle(
-                                                          color: Colors.red),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: windowWidth * 0.05,
-                                                  ),
-                                                  Flexible(
-                                                    child: InputField(
-                                                      textCapitalization:
-                                                          TextCapitalization
-                                                              .words,
-                                                      controller:
-                                                          cantidadControllers,
-                                                      keyboardType: TextInputType
-                                                          .number, // This will show the numeric keyboard
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                    if (cantidadControllers
-                                                            .text.isEmpty ||
-                                                        double.parse(
-                                                                cantidadControllers
-                                                                    .text) <=
-                                                            0) {
-                                                      mostrarAlerta(
-                                                          context,
-                                                          "AVISO",
-                                                          "valor invalido");
-                                                    } else {
-                                                      if (double.parse(
-                                                              cantidadControllers
-                                                                  .text) >
-                                                          prod.disponibleInv!) {
-                                                        cantidadControllers
-                                                                .text =
-                                                            '${item.cantidad}';
-                                                        mostrarAlerta(
-                                                            context,
-                                                            "AVISO",
-                                                            "Nose puede agregar mas articulos de este producto :${prod.producto}, Productos Disponibles: ${prod.disponibleInv} ");
-                                                      } else {
-                                                        item.cantidad =
-                                                            double.parse(
-                                                                cantidadControllers
-                                                                    .text);
-                                                        _actualizaTotalTemporal();
-                                                        cantidadControllers
-                                                                .text =
-                                                            '${item.cantidad}';
-                                                      }
-                                                    }
-                                                  },
-                                                  child: const Text('Aceptar '),
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  child: const Text('Cancelar'),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }
-                                    : null,
-                                icon: const Icon(Icons.edit),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                            width: windowWidth * 0.15,
-                            child: Text(
-                              '  ${item.cantidad} ',
-                              textAlign: TextAlign.center,
-                            )),
-                      ],
-                    ),
-                    Text('\$${_calcularPrecio(item).toStringAsFixed(2)}')
-                  ],
-                ),
-                subtitle: const Divider(),
-              )));
-        }
-      }
-    }
-    setState(() {});
-    return productos;
+  Widget _buildSummaryRow(String label, double value, {bool isTotal = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label,
+              style: isTotal ? Theme.of(context).textTheme.titleMedium : null),
+          Text('\$${value.toStringAsFixed(2)}',
+              style: isTotal
+                  ? Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)
+                  : null),
+        ],
+      ),
+    );
   }
 
-  _validaApartado() {
-    apartadoValido = true;
-    double numArticulos = 0;
-    for (ItemVenta articuloTemporal in ventaTemporal) {
-      if (articuloTemporal.apartado == false) {
-        apartadoValido = false;
-        mostrarAlerta(context, 'ERROR',
-            'El articulo nose puede apartar. Para modificar este valor, ve a Productos -> Editar producto.');
-
-        return;
-      } else {
-        numArticulos = numArticulos + articuloTemporal.cantidad;
-      }
-    }
-    if (double.parse(listaVariables[1].valor!) < numArticulos) {
-      apartadoValido = false;
-      mostrarAlerta(context, 'ERROR',
-          'Superas la cantidad de artículos que se pueden apartar. Para modificar este valor, ve a Configuración -> Ajustes apartado.');
-      return;
-    }
-    if (apartadoValido) {
-      ApartadoCabecera apartado = ApartadoCabecera(
-        clienteId: int.parse(_valueIdcliente),
-        subtotal: subTotalItem,
-        descuentoId: idDescuento,
-        descuento: descuento,
-        total: totalVentaTemporal,
-      );
-      Navigator.pushNamed(context, 'apartado', arguments: apartado);
-    } else {
-      mostrarAlerta(
-          context, 'ERROR', 'Todos los articulos deben ser apartables.');
-    }
+  Widget _buildDiscountSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Descuento', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            _buildDiscountDropdown(),
+          ],
+        ),
+      ),
+    );
   }
 
-  _removerItemTemporal(ItemVenta item) {
-    setState(() {
-      ventaTemporal.remove(item);
-      _actualizaTotalTemporal();
-    });
-  }
-
-  _actualizaTotalTemporal() {
-    var aplica = listaVariables
-        .firstWhere((variables) => variables.nombre == "aplica_mayoreo");
-    totalVentaTemporal = 0;
-    subTotalItem = 0;
-    if (_valuePieza == true) {
-      for (ItemVenta item in ventaTemporal) {
-        totalVentaTemporal += item.cantidad * item.precioPublico;
-        subTotalItem += item.cantidad * item.precioPublico;
-        item.totalItem = item.cantidad * item.precioPublico;
-        descuento += item.descuento;
-      }
-    } else {
-      var clienteseleccionado = listaClientes
-          .firstWhere((cliente) => cliente.id.toString() == _valueIdcliente);
-      if (clienteseleccionado.distribuidor == 1) {
-        for (ItemVenta item in ventaTemporal) {
-          totalVentaTemporal += item.cantidad * item.preciodistribuidor;
-          subTotalItem += item.cantidad * item.preciodistribuidor;
-          item.totalItem = item.cantidad * item.preciodistribuidor;
-          descuento += item.descuento;
-        }
-      } else {
-        for (ItemVenta item in ventaTemporal) {
-          if (aplica.valor == "0") {
-            totalVentaTemporal += item.cantidad * item.precioPublico;
-            subTotalItem += item.cantidad * item.precioPublico;
-            item.totalItem = item.cantidad * item.precioPublico;
-            descuento += item.descuento;
-          } else {
-            if (item.cantidad >= double.parse(listaVariables[3].valor!)) {
-              totalVentaTemporal += item.cantidad * item.preciomayoreo;
-              subTotalItem += item.cantidad * item.preciomayoreo;
-              item.totalItem = item.cantidad * item.preciomayoreo;
-              descuento += item.descuento;
-            } else {
-              totalVentaTemporal += item.cantidad * item.precioPublico;
-              subTotalItem += item.cantidad * item.precioPublico;
-              item.totalItem = item.cantidad * item.precioPublico;
-              descuento += item.descuento;
-            }
-          }
-        }
-      }
-    }
-    setState(() {});
-  }
-
-  _descuentos() {
-    var listades = [
-      const DropdownMenuItem(
-        value: '0',
-        child: SizedBox(child: Text('Ninguno')),
-      )
+  Widget _buildDiscountDropdown() {
+    _descuentoId = sinDescuento.id!;
+    List<DropdownMenuItem<int>> discountItems = [
+      DropdownMenuItem(
+          value: sinDescuento.id, child: Text('${sinDescuento.nombre}')),
+      ...listaDescuentos.map((descuento) => DropdownMenuItem(
+          value: descuento.id, child: Text(descuento.nombre ?? 'Sin nombre')))
     ];
-    for (Descuento descuentos in listaDescuentos) {
-      listades.add(DropdownMenuItem(
-          value: descuentos.id.toString(), child: Text(descuentos.nombre!)));
-    }
-    if (_valueIdDescuento.isEmpty) {
-      _valueIdDescuento = '0';
-    }
-    return DropdownButton(
-      items: listades,
-      isExpanded: true,
-      value: _valueIdDescuento,
-      onChanged: (value) {
-        _valueIdDescuento = value!;
-        if (value == "0") {
-          setState(() {});
-          descuento = 0.00;
-          totalVentaTemporal = subTotalItem;
-          descuentoSeleccionado = Descuento(
-              id: 0, valor: 0.00, nombre: '', tipoValor: 0, valorPred: 0);
-        } else {
-          descuentoSeleccionado = listaDescuentos
-              .firstWhere((descuento) => descuento.id.toString() == value);
-          if (descuentoSeleccionado.valorPred == 0) {
-            _actualizaTotalTemporal();
-            if (descuentoSeleccionado.tipoValor == 1) {
-              setState(() {
-                idDescuento = descuentoSeleccionado.id!;
-                descuento = 0.00;
-                descuento = descuentoSeleccionado.valor!;
-                totalVentaTemporal = subTotalItem;
-                descuento = (totalVentaTemporal * descuento) / 100;
-                totalVentaTemporal = totalVentaTemporal - descuento;
-                _valuePieza = false;
-              });
-            } else {
-              setState(() {
-                idDescuento = descuentoSeleccionado.id!;
-                descuento = 0.00;
-                descuento = descuentoSeleccionado.valor!;
-                totalVentaTemporal = subTotalItem;
-                totalVentaTemporal =
-                    totalVentaTemporal - descuentoSeleccionado.valor!;
-                _valuePieza = false;
-              });
-            }
-          } else {
-            _alertadescuento(descuentoSeleccionado);
-          }
-        }
-      },
-    );
-  }
 
-  _clientes() {
-    List<DropdownMenuItem> listaClien = [];
-    for (Cliente cliente in listaClientes) {
-      if (cliente.nombre == 'Público en general') {
-        listaClien.add(DropdownMenuItem(
-            value: cliente.id.toString(),
-            child: const Text('Público en general')));
-      }
-    }
-
-    for (Cliente cliente in listaClientes) {
-      if (cliente.nombre != 'Público en general') {
-        listaClien.add(DropdownMenuItem(
-            value: cliente.id.toString(), child: Text(cliente.nombre!)));
-      }
-    }
-    if (_valueIdcliente.isEmpty) {
-      _valueIdcliente = listaClientes
-          .firstWhere((cliente) => cliente.nombre == 'Público en general')
-          .id
-          .toString();
-    }
-    return DropdownButton(
-      items: listaClien,
-      isExpanded: true,
-      value: _valueIdcliente,
+    return DropdownButtonFormField<int>(
+      value: _descuentoId,
+      items: discountItems,
       onChanged: (value) {
-        _valueIdcliente = value!;
         setState(() {
-          var clienteseleccionado = listaClientes.firstWhere(
-              (cliente) => cliente.id == int.parse(_valueIdcliente));
-          nombreClienteTemp = clienteseleccionado.nombre!;
-          if (clienteseleccionado.distribuidor == 1 && !_valuePieza) {
-            setState(() {
-              _actualizaTotalTemporal();
-              // totalVentaTemporal = 0.00;
-              // for (ItemVenta item in ventaTemporal) {
-              //   totalVentaTemporal = item.cantidad * item.preciodistribuidor;
-              //   subTotalItem = totalVentaTemporal;
-              // }
-              // _valuePieza = false;
-              // if (descuentoSeleccionado.valorPred == 0) {
-              //   if (descuentoSeleccionado.tipoValor == 1) {
-              //     setState(() {
-              //       idDescuento = descuentoSeleccionado.id!;
-              //       descuento = 0.00;
-              //       descuento = descuentoSeleccionado.valor!;
-              //       totalVentaTemporal = subTotalItem;
-              //       descuento = (totalVentaTemporal * descuento) / 100;
-              //       totalVentaTemporal = totalVentaTemporal - descuento;
-              //       _valuePieza = false;
-              //     });
-              //   } else {
-              //     setState(() {
-              //       idDescuento = descuentoSeleccionado.id!;
-              //       descuento = 0.00;
-              //       descuento = descuentoSeleccionado.valor!;
-              //       totalVentaTemporal = subTotalItem;
-              //       totalVentaTemporal =
-              //           totalVentaTemporal - descuentoSeleccionado.valor!;
-              //       _valuePieza = false;
-              //     });
-              //   }
-              // } else {
-              //   _alertadescuento(descuentoSeleccionado);
-              // }
-            });
+          _descuentoId = value!;
+          if (value != 0) {
+            descuentoVentaActual = listaDescuentos
+                .firstWhere((descuento) => descuento.id == value);
           } else {
-            _actualizaTotalTemporal();
-            // setState(() {
-            //   totalVentaTemporal = 0.00;
-            //   for (ItemVenta item in ventaTemporal) {
-            //     totalVentaTemporal = item.cantidad * item.precioPublico;
-            //     subTotalItem = totalVentaTemporal;
-            //   }
-            //   _valuePieza = false;
-            //   if (descuentoSeleccionado.valorPred == 0) {
-            //     if (descuentoSeleccionado.tipoValor == 1) {
-            //       setState(() {
-            //         idDescuento = descuentoSeleccionado.id!;
-            //         descuento = 0.00;
-            //         descuento = descuentoSeleccionado.valor!;
-            //         totalVentaTemporal = subTotalItem;
-            //         descuento = (totalVentaTemporal * descuento) / 100;
-            //         totalVentaTemporal = totalVentaTemporal - descuento;
-            //         _valuePieza = false;
-            //       });
-            //     } else {
-            //       setState(() {
-            //         idDescuento = descuentoSeleccionado.id!;
-            //         descuento = 0.00;
-            //         descuento = descuentoSeleccionado.valor!;
-            //         totalVentaTemporal = subTotalItem;
-            //         totalVentaTemporal =
-            //             totalVentaTemporal - descuentoSeleccionado.valor!;
-            //         _valuePieza = false;
-            //       });
-            //     }
-            //   } else {
-            //     _alertadescuento(descuentoSeleccionado);
-            //   }
-            // });
+            descuentoVentaActual = sinDescuento;
+            // descuentoVentaActual.id = 0;
           }
+          _actualizarEstado();
         });
       },
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+      ),
     );
   }
 
-  _alertadescuento(Descuento descuentos) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: Row(
-            children: [
-              const Flexible(
-                child: Text(
-                  'Cantidad :',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              SizedBox(
-                width: windowWidth * 0.05,
-              ),
-              Flexible(
-                child: InputField(
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  controller: cantidadConttroller,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                double cantidad =
-                    double.tryParse(cantidadConttroller.text) ?? -1;
-
-                // Validar que la cantidad no sea menor que cero ni mayor que totalVentaTemporal
-                if (cantidad < 0) {
-                  mostrarAlerta(
-                      context, "error", 'La cantidad no puede ser menor a 0');
-                } else if (cantidad > totalVentaTemporal &&
-                    descuentos.tipoValor == 0) {
-                  Navigator.pop(context);
-                  mostrarAlerta(context, "error",
-                      'La cantidad no puede ser mayor al total de la venta');
-                } else if (cantidad >= 100) {
-                  Navigator.pop(context);
-                  mostrarAlerta(context, "error", 'No se puede descontar 100%');
-                } else {
-                  Navigator.pop(context);
-
-                  // Aplicar descuento
-                  if (descuentos.tipoValor == 1) {
-                    setState(() {
-                      idDescuento = descuentos.id!;
-                      descuento = (totalVentaTemporal * cantidad) / 100;
-                      totalVentaTemporal = totalVentaTemporal - descuento;
-                      _valuePieza = false;
-                    });
-                  } else {
-                    setState(() {
-                      idDescuento = descuentos.id!;
-                      descuento = cantidad;
-                      totalVentaTemporal = totalVentaTemporal - descuento;
-                      _valuePieza = false;
-                    });
-                  }
-                }
-              },
-              child: const Text('Aceptar'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
+  Widget _buildClientSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Cliente', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            _buildClientDropdown(),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  double _calcularPrecio(ItemVenta item) {
-    var clienteseleccionado = listaClientes
-        .firstWhere((cliente) => cliente.id.toString() == _valueIdcliente);
+  Widget _buildClientDropdown() {
+    Cliente defaultClient = listaClientes
+        .firstWhere((cliente) => cliente.nombre == 'Público en general');
 
-    if (clienteseleccionado.distribuidor == 1) {
-      return item.preciodistribuidor *
-          item.cantidad; // Precio para distribuidores
-    } else {
-      return item.precioPublico * item.cantidad; // Precio para público
-    }
+    List<DropdownMenuItem<int>> clientItems = [
+      DropdownMenuItem(
+          value: defaultClient.id, child: Text('${defaultClient.nombre}')),
+      ...listaClientes
+          .where((cliente) => cliente.nombre != 'Público en general')
+          .map((cliente) => DropdownMenuItem(
+              value: cliente.id, child: Text('${cliente.nombre}')))
+    ];
+
+    return DropdownButtonFormField<int>(
+      value: _clienteId,
+      items: clientItems,
+      onChanged: (value) {
+        setState(() {
+          _clienteId = value ?? defaultClient.id!;
+          clienteVentaActual =
+              listaClientes.firstWhere((cliente) => cliente.id == _clienteId);
+          _actualizarEstado();
+        });
+      },
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildSaleTypeToggle() {
+    return Card(
+      child: SwitchListTile(
+        title: const Text('Tipo de Venta'),
+        subtitle: Text(_ventaDomicilio ? 'Domicilio' : 'Tienda'),
+        value: _ventaDomicilio,
+        onChanged: (value) {
+          setState(() {
+            _ventaDomicilio = value;
+            ventaDomicilio = value;
+            _actualizarEstado();
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ElevatedButton.icon(
+          onPressed: ventaTemporal.isNotEmpty ? _procederCobro : null,
+          icon: const Icon(Icons.point_of_sale),
+          label: Text('Cobrar \$${totalVT.toStringAsFixed(2)}'),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+        ),
+        const SizedBox(height: 16),
+        (varAplicaApartado)
+            ? OutlinedButton.icon(
+                onPressed:
+                    ventaTemporal.isNotEmpty ? _validarYProcederApartado : null,
+                icon: const Icon(Icons.archive),
+                label: const Text('Apartar'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              )
+            : Container(),
+      ],
+    );
   }
 }

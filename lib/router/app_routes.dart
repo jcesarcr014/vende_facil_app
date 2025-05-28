@@ -28,7 +28,6 @@ class AppRoutes {
     'descuentos': (BuildContext context) => const DescuentosScreen(),
     'nvo-producto': (BuildContext context) => const AgregaProductoScreen(),
     'productos': (BuildContext context) => const ProductosScreen(),
-    'nvo-abono': (BuildContext context) => const AgregarAbonoScreen(), //
     'historial': (BuildContext context) => const HistorialScreen(),
     'config': (BuildContext context) => const ConfigScreen(),
     'config-impresora': (BuildContext context) => const ImpresoraScreen(),
@@ -74,18 +73,12 @@ class AppRoutes {
     'menu-historial': (BuildContext context) => const MenuHistorialScreen(),
     'cortes-empleados': (BuildContext context) => const CortesEmpleadosScreen(),
     'corte-detalle': (BuildContext context) => const CorteDetalleScreen(),
-    'ventas-dia': (BuildContext context) => const VentasDiaScreen(),
+    'ventas-dia': (BuildContext context) => const ReporteDetalleDiaScreen(),
+    'venta-detalles': (BuildContext context) =>
+        const VentaDetallesScreen(), // detalle venta
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case 'detalles-producto-sucursal':
-        final producto = settings.arguments as Producto;
-        return MaterialPageRoute(
-          builder: (context) => DetallesProductoSucursal(producto: producto),
-        );
-      default:
-        return MaterialPageRoute(builder: (context) => const ErrorScreen());
-    }
+    return MaterialPageRoute(builder: (context) => const ErrorScreen());
   }
 }
