@@ -96,7 +96,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
         case 'empleado_corte':
           empleadoCorte = variable.valor == '1';
           break;
-        case 'aplica_iventario':
+        case 'aplica_inventario':
           aplicaInventario = variable.valor == '1';
           break;
       }
@@ -485,7 +485,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                             value: aplicaInventario,
                             onChanged: (value) async {
                               await _guardarVariable(
-                                  'aplica_iventario', value ? '1' : '0');
+                                  'aplica_inventario', value ? '1' : '0');
                               setState(() {
                                 aplicaInventario = value;
                               });

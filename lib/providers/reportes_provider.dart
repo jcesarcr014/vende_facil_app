@@ -76,10 +76,8 @@ class ReportesProvider {
         return respuesta;
       }
 
-      // Limpiar listas antes de agregar nuevos datos
       ReporteDetalleDia.limpiarListas();
 
-      // Procesar ventas del día
       if (decodedData.containsKey('ventasDias') &&
           decodedData['ventasDias'] is List) {
         List<dynamic> ventasList = decodedData['ventasDias'];
@@ -89,7 +87,6 @@ class ReportesProvider {
         }
       }
 
-      // Procesar apartados del día
       if (decodedData.containsKey('apartadosDia') &&
           decodedData['apartadosDia'] is List) {
         List<dynamic> apartadosList = decodedData['apartadosDia'];
@@ -99,7 +96,6 @@ class ReportesProvider {
         }
       }
 
-      // Procesar abonos del día
       if (decodedData.containsKey('abonosDia') &&
           decodedData['abonosDia'] is List) {
         List<dynamic> abonosList = decodedData['abonosDia'];

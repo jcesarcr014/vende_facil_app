@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/screens/screens.dart';
 
-import '../models/producto_model.dart';
-
 class AppRoutes {
   static const initialRoute = 'splash';
 
@@ -14,6 +12,7 @@ class AppRoutes {
     'agregar-producto-sucursal': (BuildContext context) =>
         const AgregarProductoSucursal(),
     'products-menu': (BuildContext context) => const ProductsScreen(),
+    'iventario-almacen': (BuildContext context) => const AlmacenInventoryPage(),
     'splash': (BuildContext context) => const SplashScreen(),
     'select-branch-office': (BuildContext context) => const SucursalesScreen(),
     'home': (BuildContext context) => const HomeScreen(),

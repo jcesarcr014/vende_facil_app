@@ -1,3 +1,4 @@
+export 'package:vende_facil/screens/productos/inventario_almacen.dart';
 export 'package:vende_facil/screens/historial/historial_detalle.dart';
 export 'package:vende_facil/screens/usuarios/recupera_pass.dart';
 export 'package:vende_facil/screens/historial/corte_detalle.dart';
@@ -19,7 +20,6 @@ export 'package:vende_facil/screens/apartados/apartado_detalle.dart';
 export 'package:vende_facil/screens/suscripcion/tarjetas_screen.dart';
 export 'package:vende_facil/screens/suscripcion/suscripcion_screen.dart';
 export 'package:vende_facil/screens/menu.dart';
-
 export 'package:vende_facil/screens/categorias/agregar_categoria.dart';
 export 'package:vende_facil/screens/clientes/agregar_cliente.dart';
 export 'package:vende_facil/screens/descuentos/agregar_descuento.dart';

@@ -56,7 +56,10 @@ class ImpresionesTickets {
     bytes += generator.text(
         'Hora corte: ${DateFormat('HH-mm-ss').format(DateTime.parse(corteActual.fecha!))} \n');
     bytes +=
-        generator.text('Efectivo en caja: ${corteActual.efectivoInicial!} \n');
+        generator.text('Efectivo inicial: ${corteActual.efectivoInicial!} \n');
+    // Add the new efectivoCaja line
+    bytes +=
+        generator.text('Efectivo en caja: ${corteActual.efectivoCaja!} \n');
 
     bytes += generator.text('Detalles de corte \n',
         styles: PosStyles(align: PosAlign.left, bold: true));

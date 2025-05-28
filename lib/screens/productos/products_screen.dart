@@ -86,6 +86,18 @@ class ProductsScreen extends StatelessWidget {
             const SizedBox(height: 16),
           ],
 
+          if (sesion.tipoUsuario == 'P') ...[
+            _buildMenuCard(
+              context: context,
+              title: 'Inventario almacen',
+              subtitle: 'Visualiza tus productos en alamcen',
+              icon: Icons.warehouse,
+              iconColor: Colors.amber,
+              onTap: () => Navigator.pushNamed(context, 'iventario-almacen'),
+            ),
+            const SizedBox(height: 16),
+          ],
+
           if (sesion.tipoUsuario == 'P' ||
               (sesion.tipoUsuario == 'E' && varEmpleadoInventario)) ...[
             _buildMenuCard(

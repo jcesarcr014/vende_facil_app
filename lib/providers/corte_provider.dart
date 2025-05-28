@@ -7,6 +7,50 @@ class CorteProvider {
   final baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
+  Future<Resultado> validarCaja() async {
+    var url = Uri.parse(
+        '$baseUrl/validar-caja/${sesion.idUsuario}/${sesion.idSucursal}');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+
+      final decodedData = json.decode(response.body);
+      respuesta.status = decodedData['status'];
+      respuesta.mensaje = decodedData['msg'];
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error al validar caja: $e';
+    }
+
+    return respuesta;
+  }
+
+  Future<Resultado> agregarEfectivoInicial(String montoEfectivo) async {
+    var url = Uri.parse('$baseUrl/abrir-caja');
+
+    try {
+      final response = await http.post(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'negocio_id': sesion.idNegocio.toString(),
+        'usuario_id': sesion.idUsuario.toString(),
+        'sucursal_id': sesion.idSucursal.toString(),
+        'monto_efectivo': montoEfectivo,
+      });
+
+      final decodedData = json.decode(response.body);
+      respuesta.status = decodedData['status'];
+      respuesta.mensaje = decodedData['msg'];
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error al registrar el efectivo inicial: $e';
+    }
+
+    return respuesta;
+  }
+
   Future<Resultado> solicitarCorte(String efectivo, String comentarios) async {
     var url = Uri.parse('$baseUrl/corte-nuevo');
 
@@ -30,6 +74,8 @@ class CorteProvider {
         corteActual.idUsuario = int.parse(decodedData['corte']['id_usuario']);
         corteActual.idSucursal = int.parse(decodedData['corte']['id_sucursal']);
         corteActual.fecha = decodedData['corte']['fecha'];
+        corteActual.efectivoCaja =
+            decodedData['corte']['efectivo_caja'].toString();
         corteActual.efectivoInicial =
             decodedData['corte']['efectivo_inicial'].toString();
         corteActual.ventasEfectivo =
@@ -86,6 +132,8 @@ class CorteProvider {
         corteActual.idSucursal = (decodedData['corte']['id_sucursal']);
         corteActual.empleado = decodedData['corte']['name'];
         corteActual.fecha = decodedData['corte']['fecha'];
+        corteActual.efectivoCaja =
+            decodedData['corte']['efectivo_caja'].toString();
         corteActual.efectivoInicial =
             decodedData['corte']['efectivo_inicial'].toString();
         corteActual.ventasEfectivo =

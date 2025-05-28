@@ -231,6 +231,85 @@ class ArticuloProvider {
     return respuesta;
   }
 
+  // Función para listar productos del almacén (versión simplificada)
+  Future<Resultado> listarProductosAlmacen() async {
+    var url = Uri.parse('$baseUrl/productos-almacen/${sesion.idNegocio}');
+    List<Producto> listaProductosAlmacen = [];
+
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      });
+      final decodedData = jsonDecode(resp.body);
+
+      if (decodedData['status'] == 1) {
+        for (int x = 0; x < decodedData['data'].length; x++) {
+          Producto productoTemp = Producto();
+          productoTemp.id = decodedData['data'][x]['id'];
+          productoTemp.producto = decodedData['data'][x]['nombre'];
+          productoTemp.descripcion = decodedData['data'][x]['descripcion'];
+          productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
+          productoTemp.unidad = decodedData['data'][x]['unidad'];
+          productoTemp.clave = decodedData['data'][x]['clave'];
+          productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+          productoTemp.cantidad =
+              double.parse(decodedData['data'][x]['cantidad']);
+
+          listaProductosAlmacen.add(productoTemp);
+        }
+
+        // Actualizar la lista global
+        listaProductos = listaProductosAlmacen;
+
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición: $e';
+    }
+
+    return respuesta;
+  }
+
+  // Función para actualizar solo la cantidad de un producto
+  Future<Resultado> actualizarCantidadProducto(
+      int idProducto, double cantidad) async {
+    var url = Uri.parse('$baseUrl/producto-almacen/$idProducto');
+
+    try {
+      final resp = await http.put(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+      }, body: {
+        'cantidad': cantidad.toString(),
+      });
+
+      final decodedData = jsonDecode(resp.body);
+
+      if (decodedData['status'] == 1) {
+        // Actualizar el producto en la lista local
+        final index = listaProductos.indexWhere((p) => p.id == idProducto);
+        if (index != -1) {
+          listaProductos[index].cantidad = cantidad;
+        }
+
+        respuesta.status = 1;
+        respuesta.mensaje = decodedData['msg'];
+      } else {
+        respuesta.status = 0;
+        respuesta.mensaje = decodedData['msg'];
+      }
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición: $e';
+    }
+
+    return respuesta;
+  }
+
   //SUCURSALES
   Future<Resultado> listarProductosSucursal(int idSucursal) async {
     var url = Uri.parse('$baseUrl/productos-sucursal/$idSucursal');
