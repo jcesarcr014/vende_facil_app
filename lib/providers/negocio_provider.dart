@@ -41,13 +41,12 @@ class NegocioProvider {
 
   Future<Negocio> consultaNegocio() async {
     Negocio negocio = Negocio();
-    var url = Uri.parse('$baseUrl/negocio/${sesion.idNegocio}');
+    var url = Uri.parse('$baseUrl/negocio/${sesion.idUsuario}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
         negocio.id = sesion.idNegocio;
         negocio.nombreNegocio = decodedData['data'][0]['nombre_negocio'];

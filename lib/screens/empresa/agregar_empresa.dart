@@ -90,7 +90,7 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
         if (value.status == 1) {
           if (mounted) {
             setState(() {
-              Navigator.pushReplacementNamed(context, 'home');
+              Navigator.pushReplacementNamed(context, 'menu-negocio');
             });
           }
           mostrarAlerta(context, '', value.mensaje!);
@@ -353,22 +353,22 @@ class _AgregarEmpresaState extends State<AgregarEmpresa> {
             ),
           ),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, 'menu-negocio');
-            },
-            icon: const Icon(Icons.cancel_outlined),
-            label: const Text('Cancelar'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
+        // const SizedBox(width: 16),
+        // Expanded(
+        //   child: OutlinedButton.icon(
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, 'menu-negocio');
+        //     },
+        //     icon: const Icon(Icons.cancel_outlined),
+        //     label: const Text('Cancelar'),
+        //     style: OutlinedButton.styleFrom(
+        //       padding: const EdgeInsets.symmetric(vertical: 16),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

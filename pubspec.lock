@@ -660,10 +660,10 @@ packages:
     dependency: "direct main"
     description:
       name: print_bluetooth_thermal
-      sha256: "87e8ff5d3553b84e1da64f98244d51c3fc3b2604a1d7cf14de231d617963fc33"
+      sha256: "74e3face536392562764f5555bf15e02c16de7436e9f7f0cb23a7f749c39691f"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.6"
   qr_mobile_vision:
     dependency: "direct main"
     description:
