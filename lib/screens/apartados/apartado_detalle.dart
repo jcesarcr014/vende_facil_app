@@ -429,11 +429,11 @@ class _AbonoDetallesScreen extends State<AbonoDetallesScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Confirmar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
+                  child: const Text('Confirmar'),
                 ),
               ],
             );

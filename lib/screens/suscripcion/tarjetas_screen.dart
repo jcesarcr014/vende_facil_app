@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/models/models.dart';
 
 class TarjetaScreen extends StatefulWidget {
@@ -11,7 +9,7 @@ class TarjetaScreen extends StatefulWidget {
 }
 
 class _TarjetaScreenState extends State<TarjetaScreen> {
-  final suscripcionProvider = SuscripcionProvider();
+  // final suscripcionProvider = SuscripcionProvider();
   int idTarjeta = 0;
   bool isLoading = false;
   String textLoading = '';
@@ -45,18 +43,18 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
       isLoading = true;
       textLoading = 'Eliminando tarjeta...';
     });
-    suscripcionProvider.eliminarTarjeta(idTarjeta).then((value) {
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
-      if (value.status == 1) {
-        Navigator.pop(context);
-        mostrarAlerta(context, 'OK', value.mensaje!);
-      } else {
-        mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
-      }
-    });
+    // suscripcionProvider.eliminarTarjeta(idTarjeta).then((value) {
+    //   setState(() {
+    //     isLoading = false;
+    //     textLoading = '';
+    //   });
+    //   if (value.status == 1) {
+    //     Navigator.pop(context);
+    //     mostrarAlerta(context, 'OK', value.mensaje!);
+    //   } else {
+    //     mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
+    //   }
+    // });
   }
 
   @override
@@ -65,15 +63,15 @@ class _TarjetaScreenState extends State<TarjetaScreen> {
       isLoading = true;
       textLoading = 'Cargando tarjetas...';
     });
-    suscripcionProvider.listarTarjetas().then((value) {
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
-      if (value.status != 1) {
-        mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
-      }
-    });
+    // suscripcionProvider.listarTarjetas().then((value) {
+    //   setState(() {
+    //     isLoading = false;
+    //     textLoading = '';
+    //   });
+    //   if (value.status != 1) {
+    //     mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
+    //   }
+    // });
     super.initState();
   }
 

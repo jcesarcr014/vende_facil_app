@@ -225,7 +225,7 @@ class _MenuScreenState extends State<MenuScreen> {
               icon: _materialIcons['menuAbonos']!,
               iconColor: _iconColors['abonos']!),
           MenuItemData(
-              title: 'Historial',
+              title: 'Abrir y Cerrar Caja',
               route: 'historial_empleado',
               icon: _materialIcons['historial_empleado']!,
               iconColor: _iconColors['historial']!),
@@ -361,9 +361,9 @@ class _MenuScreenState extends State<MenuScreen> {
           'El sistema de apartado no está habilitado en su negocio.');
       return;
     }
-    if (item.route == 'home' && sesion.tipoUsuario == "P") {
-      // Para propietario, 'home' podría ser un dashboard o seleccionar sucursal
-      // Si siempre es seleccionar sucursal para venta:
+    if (item.route == 'home' &&
+        sesion.tipoUsuario == "P" &&
+        !suscripcionActual.unisucursal) {
       Navigator.pushNamed(context, 'select-branch-office');
       return;
     }
@@ -372,7 +372,7 @@ class _MenuScreenState extends State<MenuScreen> {
         sesion.caja == false) {
       mostrarAlerta(context, 'ATENCIÓN',
           'Debes registrar el efectivo inicial antes de comenzar con las ventas.');
-      _validarCaja(); // Volvemos a validar por si necesita abrir la caja
+      _validarCaja();
       return;
     }
 

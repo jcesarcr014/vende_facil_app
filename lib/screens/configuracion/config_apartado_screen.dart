@@ -4,7 +4,7 @@ import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 
 class AjustesApartadoScreen extends StatefulWidget {
-  const AjustesApartadoScreen({Key? key}) : super(key: key);
+  const AjustesApartadoScreen({super.key});
 
   @override
   State<AjustesApartadoScreen> createState() => _AjustesApartadoScreenState();
@@ -149,7 +149,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('$textLoading'),
+                  Text(textLoading),
                   const SizedBox(height: 10),
                   const CircularProgressIndicator(),
                 ],

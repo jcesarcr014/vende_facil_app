@@ -21,7 +21,7 @@ class LimpiaDatos {
     ventaTemporal.clear();
     cotizarTemporal.clear();
     listaMovimientosCorte.clear();
-    listaPlanes.clear();
+    // listaPlanes.clear();
     listaProductos.clear();
     listaProductosCotizaciones.clear();
     listaProductosSucursal.clear();
@@ -44,7 +44,7 @@ class LimpiaDatos {
     cotActual = Cotizacion();
     totalVT = 0;
     sucursalSeleccionado = Sucursal();
-    suscripcionActual = SuscripcionOP();
+    suscripcionActual = PlanSuscripcion(unisucursal: true);
     ticketModel = TicketModel();
     empleadoSeleccionado = Usuario();
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/models/models.dart';
 
 class AgregaTarjetaScreen extends StatefulWidget {
@@ -12,7 +11,7 @@ class AgregaTarjetaScreen extends StatefulWidget {
 }
 
 class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
-  final suscripcionProvider = SuscripcionProvider();
+  // final suscripcionProvider = SuscripcionProvider();
   final controllerTitular = TextEditingController();
   final controllerNumTarjeta = TextEditingController();
   final controllerVencM = TextEditingController();
@@ -42,18 +41,18 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
         fechaA: controllerVencA.text,
         ccv: controllerCCV.text,
       );
-      suscripcionProvider.nvaTarjetaOP(tarjeta).then((value) {
-        setState(() {
-          textLoading = '';
-          isLoading = false;
-        });
-        if (value.status == 1) {
-          Navigator.pop(context);
-          mostrarAlerta(context, 'OK', value.mensaje!);
-        } else {
-          mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
-        }
-      });
+      // suscripcionProvider.nvaTarjetaOP(tarjeta).then((value) {
+      //   setState(() {
+      //     textLoading = '';
+      //     isLoading = false;
+      //   });
+      //   if (value.status == 1) {
+      //     Navigator.pop(context);
+      //     mostrarAlerta(context, 'OK', value.mensaje!);
+      //   } else {
+      //     mostrarAlerta(context, 'Error', 'Error: ${value.mensaje}');
+      //   }
+      // });
     }
   }
 
@@ -98,21 +97,45 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
-
-                      Column(children: [
-                        Text('Aceptamos todas las tarjetas de Crédito y Debito', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-                        Row(children: [
-                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/visa_logo.jpg'))),
-                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/Mastercard.png'))),
-                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/american.png'))),
-                          Expanded(flex: 1, child: SizedBox(height: windowHeight * 0.04, child:  Image.asset('assets/Carnet.png'))),
-                        ],)
-                      ],),
-
+                      Column(
+                        children: [
+                          Text(
+                            'Aceptamos todas las tarjetas de Crédito y Debito',
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  flex: 1,
+                                  child: SizedBox(
+                                      height: windowHeight * 0.04,
+                                      child:
+                                          Image.asset('assets/visa_logo.jpg'))),
+                              Expanded(
+                                  flex: 1,
+                                  child: SizedBox(
+                                      height: windowHeight * 0.04,
+                                      child: Image.asset(
+                                          'assets/Mastercard.png'))),
+                              Expanded(
+                                  flex: 1,
+                                  child: SizedBox(
+                                      height: windowHeight * 0.04,
+                                      child:
+                                          Image.asset('assets/american.png'))),
+                              Expanded(
+                                  flex: 1,
+                                  child: SizedBox(
+                                      height: windowHeight * 0.04,
+                                      child: Image.asset('assets/Carnet.png'))),
+                            ],
+                          )
+                        ],
+                      ),
                       SizedBox(
                         height: windowHeight * 0.05,
                       ),
-
                       InputField(
                         labelText: 'Titular',
                         icon: Icons.person,
@@ -228,50 +251,51 @@ class _AgregaTarjetaScreenState extends State<AgregaTarjetaScreen> {
                               errorText: _ccvError,
                             ),
                           ),
-
-                          SizedBox(width: 20,),
-
+                          SizedBox(
+                            width: 20,
+                          ),
                           Expanded(
-                            flex: 2,
-                            child: SizedBox(
-                              height: windowHeight * 0.1,
-                              child: Image.asset('assets/Component.png')
-                            )
-                          )
+                              flex: 2,
+                              child: SizedBox(
+                                  height: windowHeight * 0.1,
+                                  child: Image.asset('assets/Component.png')))
                         ],
                       ),
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),
-
-                      Row(
-                        children: [
-                          Expanded(
+                      Row(children: [
+                        Expanded(
                             flex: 1,
                             child: Column(
                               children: [
-                                Text('Transacciones realizadas via', style: TextStyle(fontSize: 12),),
+                                Text(
+                                  'Transacciones realizadas via',
+                                  style: TextStyle(fontSize: 12),
+                                ),
                                 Image.asset('assets/OpenPay.jpeg')
                               ],
-                            )
-                          ),
-                          SizedBox(width: 20,),
-                          Expanded(
+                            )),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Expanded(
                             flex: 1,
                             child: Row(
                               children: [
-                                  Icon(
-                                    Icons.verified, // O también puedes usar Icons.security
-                                    color: Colors.green,
-                                    size: 30.0,
-                                  ),
-                                  Text('Tus pagos se realizan \n de forma segura con \n encriptación de 256 bits', style: TextStyle(fontSize: 12),)
+                                Icon(
+                                  Icons
+                                      .verified, // O también puedes usar Icons.security
+                                  color: Colors.green,
+                                  size: 30.0,
+                                ),
+                                Text(
+                                  'Tus pagos se realizan \n de forma segura con \n encriptación de 256 bits',
+                                  style: TextStyle(fontSize: 12),
+                                )
                               ],
-                            )
-                          )
-                        ]
-                      ),
-
+                            ))
+                      ]),
                       SizedBox(
                         height: windowHeight * 0.03,
                       ),

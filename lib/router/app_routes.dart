@@ -47,12 +47,14 @@ class AppRoutes {
     'perfil-empleado': (BuildContext context) => const PerfilEmpleadosScreen(),
     'venta': (BuildContext context) => const VentaScreen(),
     'apartado': (BuildContext context) => const ApartadoDetalleScreen(),
-    'planes': (BuildContext context) => const PlanesScreen(),
+    // 'planes': (BuildContext context) => const PlanesScreen(),
     'nvo-pass': (BuildContext context) => const CambioPassScreen(),
     'lista-sucursales': (BuildContext context) => const ListaSucursalesScreen(),
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage(),
+    'inventarioUnisucursal': (BuildContext context) =>
+        const InventarioUnicaSucScreen(),
     'abonosPagos': (BuildContext context) =>
         const AbonoScreenpago(), //realizar abono
     'listaCotizaciones': (BuildContext context) =>

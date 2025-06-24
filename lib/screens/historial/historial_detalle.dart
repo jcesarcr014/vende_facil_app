@@ -5,11 +5,8 @@ import 'package:vende_facil/widgets/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 class ReporteDetalleDiaScreen extends StatefulWidget {
   const ReporteDetalleDiaScreen({super.key});

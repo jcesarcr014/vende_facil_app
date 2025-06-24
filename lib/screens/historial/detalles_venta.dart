@@ -158,7 +158,7 @@ class _VentaDetallesScreenState extends State<VentaDetallesScreen> {
                                 child: SingleChildScrollView(
                                   child: DataTable(
                                     columnSpacing: 20,
-                                    headingRowColor: MaterialStateProperty.all(
+                                    headingRowColor: WidgetStateProperty.all(
                                       Colors.blue.shade100,
                                     ),
                                     columns: const [

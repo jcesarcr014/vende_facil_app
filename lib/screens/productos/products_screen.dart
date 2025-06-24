@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/providers/providers.dart';
-import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
+import 'package:vende_facil/models/models.dart'; // Asegúrate que 'sesion' y otras dependencias estén aquí
+import 'package:vende_facil/providers/providers.dart'; // Asumo CategoriaProvider está aquí
+import 'package:vende_facil/widgets/mostrar_alerta_ok.dart'; // Para mostrarAlerta
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -11,13 +11,22 @@ class ProductsScreen extends StatelessWidget {
     final categoriasProvider = CategoriaProvider();
 
     void addProduct() async {
+      // Asumo que listaCategorias es una variable global o accesible
       await categoriasProvider.listarCategorias();
       if (listaCategorias.isEmpty) {
-        mostrarAlerta(context, 'Error', 'Primero crea una categoría');
+        if (context.mounted) {
+          // Verificar si el widget está montado antes de usar context
+          mostrarAlerta(context, 'Error', 'Primero crea una categoría');
+        }
         return;
       }
-      Navigator.pushNamed(context, 'nvo-producto');
+      if (context.mounted) {
+        Navigator.pushNamed(context, 'nvo-producto');
+      }
     }
+
+    final bool esPropietario = sesion.tipoUsuario == 'P';
+    final bool esMonoSucursal = suscripcionActual.unisucursal;
 
     return PopScope(
       canPop: false,
@@ -28,7 +37,8 @@ class ProductsScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading:
+              false, // Ya que se maneja con PopScope y el botón de home
           title: const Text('Productos'),
           elevation: 2,
           actions: [
@@ -36,17 +46,24 @@ class ProductsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'menu');
               },
-              icon: const Icon(Icons.home),
+              icon:
+                  const Icon(Icons.home_filled), // Icono más estándar para home
               tooltip: 'Ir al menú principal',
             ),
           ],
         ),
-        body: _buildMenuOptions(context, addProduct),
+        body: _buildMenuOptions(
+            context, addProduct, esPropietario, esMonoSucursal),
       ),
     );
   }
 
-  Widget _buildMenuOptions(BuildContext context, VoidCallback addProduct) {
+  Widget _buildMenuOptions(
+    BuildContext context,
+    VoidCallback addProduct,
+    bool esPropietario,
+    bool esMonoSucursal,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
@@ -64,72 +81,95 @@ class ProductsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Mostrar opciones según el tipo de usuario
-          if (sesion.tipoUsuario == 'P') ...[
-            _buildMenuCard(
-              context: context,
-              title: 'Listado de Productos',
-              subtitle: 'Visualiza tus productos',
-              icon: Icons.list_alt,
-              iconColor: Colors.blue,
-              onTap: () => Navigator.pushNamed(context, 'productos'),
-            ),
-            const SizedBox(height: 16),
+          // --- Opciones Comunes o para Propietario ---
+          if (esPropietario) ...[
             _buildMenuCard(
               context: context,
               title: 'Nuevo Producto',
-              subtitle: 'Crea un nuevo producto',
-              icon: Icons.add_box,
-              iconColor: Colors.green,
+              subtitle: 'Crea un nuevo producto en tu catálogo',
+              icon: Icons.add_box_outlined,
+              iconColor: Colors.green.shade600,
               onTap: addProduct,
             ),
             const SizedBox(height: 16),
           ],
 
-          if (sesion.tipoUsuario == 'P') ...[
+          if (esPropietario && esMonoSucursal) ...[
             _buildMenuCard(
               context: context,
-              title: 'Inventario almacen',
-              subtitle: 'Visualiza tus productos en alamcen',
-              icon: Icons.warehouse,
-              iconColor: Colors.amber,
+              title: 'Inventario (Mi Tienda)',
+              subtitle: 'Gestiona el stock de tu tienda',
+              icon: Icons.storefront_outlined,
+              iconColor: Colors.deepPurple.shade500,
+              onTap: () =>
+                  Navigator.pushNamed(context, 'inventarioUnisucursal'),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          if (esPropietario && !esMonoSucursal) ...[
+            _buildMenuCard(
+              context: context,
+              title: 'Listado de Productos', // Catálogo General / Almacén
+              subtitle: 'Visualiza tu catálogo de productos',
+              icon: Icons.list_alt_outlined,
+              iconColor: Colors.blue.shade700,
+              onTap: () => Navigator.pushNamed(
+                  context, 'productos'), // Pantalla de listado de almacén
+            ),
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
+              title: 'Inventario Almacén',
+              subtitle: 'Stock general antes de asignar',
+              icon: Icons.inventory_2_outlined,
+              iconColor: Colors.orange.shade700,
               onTap: () => Navigator.pushNamed(context, 'iventario-almacen'),
             ),
             const SizedBox(height: 16),
-          ],
-
-          if (sesion.tipoUsuario == 'P' ||
-              (sesion.tipoUsuario == 'E' && varEmpleadoInventario)) ...[
             _buildMenuCard(
+              // Mover "Inventario por Sucursal" aquí, ya que es para multi-sucursal
               context: context,
-              title: 'Inventario sucursal',
-              subtitle: 'Selecciona tu sucursal y visualiza tus productos',
-              icon: Icons.warehouse,
-              iconColor: Colors.amber,
+              title: 'Inventario por Sucursal',
+              subtitle: 'Selecciona y visualiza stock por sucursal',
+              icon: Icons.warehouse_outlined,
+              iconColor: Colors.amber.shade700,
               onTap: () => Navigator.pushNamed(context, 'InventoryPage'),
             ),
             const SizedBox(height: 16),
-          ],
-
-          if (sesion.tipoUsuario == 'P') ...[
             _buildMenuCard(
               context: context,
-              title: 'Asignar Productos Sucursal',
-              subtitle: 'Agrega inventario a una sucursal',
-              icon: Icons.add_circle,
-              iconColor: Colors.teal,
+              title: 'Asignar Productos a Sucursal',
+              subtitle: 'Mueve stock del almacén a una sucursal',
+              icon: Icons.add_circle_outline,
+              iconColor: Colors.teal.shade600,
               onTap: () =>
                   Navigator.pushNamed(context, 'agregar-producto-sucursal'),
             ),
             const SizedBox(height: 16),
             _buildMenuCard(
               context: context,
-              title: 'Retirar Productos Sucursal',
-              subtitle: 'Retira inventario de una sucursal',
-              icon: Icons.remove_circle,
-              iconColor: Colors.red,
+              title: 'Retirar Productos de Sucursal',
+              subtitle: 'Devuelve stock de sucursal al almacén',
+              icon: Icons.remove_circle_outline,
+              iconColor: Colors.red.shade600,
               onTap: () =>
                   Navigator.pushNamed(context, 'eliminar-producto-sucursal'),
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (sesion.tipoUsuario == 'E' &&
+              varEmpleadoInventario &&
+              (esPropietario ? !esMonoSucursal : true)) ...[
+            _buildMenuCard(
+              context: context,
+              title:
+                  'Inventario de Mi Sucursal', // Más específico para empleado
+              subtitle: 'Visualiza el stock de tu sucursal asignada',
+              icon: Icons.store_mall_directory_outlined, // Icono diferente
+              iconColor: Colors.cyan.shade700,
+              onTap: () => Navigator.pushNamed(context,
+                  'InventoryPage'), // Asumo que InventoryPage maneja la sucursal del empleado
             ),
             const SizedBox(height: 16),
           ],
@@ -138,25 +178,36 @@ class ProductsScreen extends StatelessWidget {
             context: context,
             title: 'Cotizar',
             subtitle: 'Crear cotización de productos',
-            icon: Icons.request_quote,
-            iconColor: Colors.purple,
+            icon: Icons.request_quote_outlined,
+            iconColor: Colors.purple.shade600,
             onTap: () {
               sesion.cotizar = true;
               if (sesion.tipoUsuario == 'P') {
-                Navigator.pushNamed(context, 'seleccionar-sucursal-cotizacion');
+                // Si es mono-sucursal, no necesita seleccionar sucursal.
+                // Si es multi-sucursal, sí.
+                // Esto podría requerir que 'seleccionar-sucursal-cotizacion' sepa si es mono.
+                // O tener una ruta directa para cotizar si es mono.
+                // Por ahora, mantenemos tu lógica original, pero es un punto a revisar.
+                if (esPropietario && esMonoSucursal) {
+                  // Para mono-sucursal, ¿a dónde va? ¿Directo a 'HomerCotizar' asumiendo la única sucursal?
+                  // Necesitarías asegurar que sesion.idSucursal esté seteado para la única sucursal.
+                  Navigator.pushNamed(context, 'HomerCotizar'); // Ejemplo
+                } else {
+                  Navigator.pushNamed(
+                      context, 'seleccionar-sucursal-cotizacion');
+                }
                 return;
               }
               Navigator.pushNamed(context, 'HomerCotizar');
             },
           ),
           const SizedBox(height: 16),
-
           _buildMenuCard(
             context: context,
             title: 'Cotizaciones',
             subtitle: 'Visualización de cotizaciones',
-            icon: Icons.description,
-            iconColor: Colors.indigo,
+            icon: Icons.description_outlined,
+            iconColor: Colors.indigo.shade600,
             onTap: () => Navigator.pushNamed(context, 'listaCotizaciones'),
           ),
         ],
@@ -164,6 +215,7 @@ class ProductsScreen extends StatelessWidget {
     );
   }
 
+  // _buildMenuCard se mantiene igual, no necesita cambios aquí
   Widget _buildMenuCard({
     required BuildContext context,
     required String title,

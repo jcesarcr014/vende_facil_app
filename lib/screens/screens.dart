@@ -41,7 +41,6 @@ export 'package:vende_facil/screens/suscripcion/agregar_tarjeta.dart';
 export 'package:vende_facil/screens/historial/detalles_venta.dart';
 export 'package:vende_facil/screens/usuarios/perfil_screen.dart';
 export 'package:vende_facil/screens/configuracion/config_apartado_screen.dart';
-
 export 'package:vende_facil/screens/empresa/agregar_empleado_screen.dart';
 export 'package:vende_facil/screens/empresa/lista_empleados.dart';
 export 'package:vende_facil/screens/empresa/perfil_empleado_screen.dart';
@@ -61,3 +60,4 @@ export 'package:vende_facil/screens/cotizaciones/detalle_cotizacion.dart';
 export 'package:vende_facil/screens/apartados/seleccion_sucursal.dart';
 export 'package:vende_facil/screens/apartados/menu_abonos.dart';
 export 'package:vende_facil/screens/historial/historial_empleados_screen.dart';
+export 'package:vende_facil/screens/productos/inventario_unisucursal.dart';

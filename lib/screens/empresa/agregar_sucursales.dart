@@ -14,85 +14,103 @@ class RegistroSucursalesScreen extends StatefulWidget {
 }
 
 class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
-  final negocio = NegocioProvider();
-  final text = TextEditingController();
-  final funcion = TextEditingController();
+  final negocioProvider = NegocioProvider(); // Renombrado para consistencia
   final controllerNombre = TextEditingController();
-  final controllerEmail = TextEditingController();
+  final controllerDireccion =
+      TextEditingController(); // Renombrado desde controllerEmail
   final controllerTelefono = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  bool estatus = (sucursalSeleccionado.nombreSucursal == null) ? true : false;
-  bool isLoading = false;
-  String textLoading = '';
+  bool _esNuevaSucursal = true; // Para determinar si es modo nuevo o edición
+  bool _isLoading = false;
+  String _textLoading = '';
+  String _tituloPantalla = "Nueva Sucursal";
+  String _textoBotonGuardar = "Guardar";
+
   String _valueIdEmpleado = '0';
-  List<SucursalEmpleado> resultadosFiltrados = [];
+  List<SucursalEmpleado> _empleadosAsignadosFiltrados = [];
 
   @override
   void initState() {
-    if (estatus) {
-      text.text = "Nueva Sucursal";
-      funcion.text = "Guardar";
-      setState(() {});
-    } else {
-      filtrarResultados();
-
-      controllerNombre.text = sucursalSeleccionado.nombreSucursal!;
-      controllerEmail.text = sucursalSeleccionado.direccion ?? "";
-      controllerTelefono.text = sucursalSeleccionado.telefono ?? "";
-      text.text = "Editar Sucursal";
-      funcion.text = "Editar";
-      setState(() {});
-    }
     super.initState();
+    // Determinar si es nuevo o edición basado en sucursalSeleccionado
+    if (sucursalSeleccionado.id != null && sucursalSeleccionado.id != 0) {
+      _esNuevaSucursal = false;
+      _tituloPantalla = "Editar Sucursal";
+      _textoBotonGuardar = "Actualizar";
+      controllerNombre.text = sucursalSeleccionado.nombreSucursal ?? "";
+      controllerDireccion.text = sucursalSeleccionado.direccion ?? "";
+      controllerTelefono.text = sucursalSeleccionado.telefono ?? "";
+      _cargarEmpleadosAsignados(); // Cargar empleados solo si estamos editando
+    } else {
+      _esNuevaSucursal = true;
+      sucursalSeleccionado
+          .limpiar(); // Asegurar que esté limpio para nueva sucursal
+    }
+  }
+
+  Future<void> _cargarEmpleadosAsignados() async {
+    _filtrarEmpleadosActuales();
+  }
+
+  void _filtrarEmpleadosActuales() {
+    // Renombrada desde filtrarResultados
+    if (!mounted) return;
+    setState(() {
+      _empleadosAsignadosFiltrados =
+          listasucursalEmpleado // Asume que listasucursalEmpleado está actualizada
+              .where((element) => element.sucursalId == sucursalSeleccionado.id)
+              .toList();
+    });
   }
 
   @override
   void dispose() {
     controllerNombre.dispose();
-    controllerEmail.dispose();
+    controllerDireccion.dispose();
     controllerTelefono.dispose();
     super.dispose();
   }
 
-  Future<void> filtrarResultados() async {
-    resultadosFiltrados.clear();
-    // Simular un retraso si es necesario
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    // Realizar la operación de filtrado
-    resultadosFiltrados = listasucursalEmpleado
-        .where((element) => element.sucursalId == sucursalSeleccionado.id)
-        .toList();
-
-    // Llamar a setState si esto afecta la interfaz de usuario para actualizarla
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(text.text),
-        automaticallyImplyLeading: false,
-        elevation: 2,
-        actions: [
-          if (!estatus)
+    final bool mostrarSeccionEmpleados =
+        (suscripcionActual.limiteEmpleados ?? 0) > 0;
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Navigator.pop(
+              context, false); // Indicar que no hubo cambios (o cancelado)
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_tituloPantalla),
+          automaticallyImplyLeading: false,
+          elevation: 2,
+          actions: [
+            if (!_esNuevaSucursal) // Solo mostrar eliminar si estamos editando
+              IconButton(
+                onPressed: _alertaEliminar,
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Eliminar sucursal',
+              ),
             IconButton(
-              onPressed: () => _alertaEliminar(),
-              icon: const Icon(Icons.delete_outline),
-              tooltip: 'Eliminar sucursal',
+              onPressed: () {
+                // Al cerrar, siempre hacemos pop, la pantalla anterior decidirá si recarga.
+                Navigator.pop(context,
+                    false); // false indica que no se guardaron cambios aquí
+              },
+              icon: const Icon(Icons.close),
+              tooltip: 'Cancelar',
             ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, 'lista-sucursales');
-            },
-            icon: const Icon(Icons.close),
-            tooltip: 'Cancelar',
-          ),
-        ],
+          ],
+        ),
+        body: _isLoading
+            ? _buildLoadingIndicator()
+            : _buildContent(mostrarSeccionEmpleados),
       ),
-      body: isLoading ? _buildLoadingIndicator() : _buildContent(),
     );
   }
 
@@ -102,7 +120,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Espere... $textLoading',
+            'Espere... $_textLoading',
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 20),
@@ -112,7 +130,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(bool mostrarSeccionEmpleados) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -120,11 +138,14 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoSection(),
-            if (!estatus) const SizedBox(height: 32),
-            if (!estatus) _buildEmpleadosSection(),
-            if (!estatus) const SizedBox(height: 32),
-            if (!estatus) _buildAsignarEmpleadoSection(),
+            _buildInfoSection(), // Contiene el botón de guardar/actualizar
+            if (!_esNuevaSucursal && mostrarSeccionEmpleados) ...[
+              // Solo si edita y puede tener empleados
+              const SizedBox(height: 24),
+              _buildEmpleadosSection(),
+              const SizedBox(height: 24),
+              _buildAsignarEmpleadoSection(),
+            ]
           ],
         ),
       ),
@@ -134,67 +155,106 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
   Widget _buildInfoSection() {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(
-              'Información de la Sucursal',
-              Icons.store_outlined,
-              Colors.blue,
-            ),
+            _buildSectionTitle('Información de la Sucursal',
+                Icons.store_outlined, Colors.blue),
             const SizedBox(height: 24),
             _buildFormField(
-              labelText: 'Nombre de la sucursal:',
-              textCapitalization: TextCapitalization.words,
-              controller: controllerNombre,
-              icon: Icons.storefront_outlined,
-              required: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'El nombre de la sucursal es requerido';
-                }
-                return null;
-              },
-            ),
+                labelText: 'Nombre de la sucursal:',
+                textCapitalization: TextCapitalization.words,
+                controller: controllerNombre,
+                icon: Icons.storefront_outlined,
+                required: true,
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Nombre requerido' : null),
             const SizedBox(height: 16),
             _buildFormField(
-              labelText: 'Dirección:',
-              textCapitalization: TextCapitalization.sentences,
-              controller: controllerEmail,
-              icon: Icons.location_on_outlined,
-              required: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'La dirección es requerida';
-                }
-                return null;
-              },
-            ),
+                labelText: 'Dirección:',
+                textCapitalization: TextCapitalization.sentences,
+                controller: controllerDireccion,
+                icon: Icons.location_on_outlined,
+                required: true,
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Dirección requerida' : null),
             const SizedBox(height: 16),
             _buildFormField(
-              labelText: 'Teléfono:',
-              keyboardType: TextInputType.phone,
-              controller: controllerTelefono,
-              icon: Icons.phone_outlined,
-              required: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'El teléfono es requerido';
-                }
-                return null;
-              },
-            ),
+                labelText: 'Teléfono:',
+                keyboardType: TextInputType.phone,
+                controller: controllerTelefono,
+                icon: Icons.phone_outlined,
+                required: true,
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Teléfono requerido' : null),
             const SizedBox(height: 24),
-            _buildActionButton(),
+            SizedBox(
+              // Botón de Guardar / Actualizar
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _guardarOEditarSucursal,
+                icon: const Icon(Icons.save_outlined),
+                label: Text(_textoBotonGuardar),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _guardarOEditarSucursal() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+      _textLoading = _esNuevaSucursal
+          ? 'Registrando sucursal...'
+          : 'Actualizando sucursal...';
+    });
+
+    Sucursal sucursalParaGuardar = Sucursal(
+      id: _esNuevaSucursal ? null : sucursalSeleccionado.id,
+      negocioId: sesion.idNegocio, // Siempre el negocio actual
+      nombreSucursal: controllerNombre.text,
+      direccion: controllerDireccion.text,
+      telefono: controllerTelefono.text,
+    );
+
+    Resultado resultadoApi;
+    if (_esNuevaSucursal) {
+      resultadoApi = await negocioProvider.addSucursal(sucursalParaGuardar);
+    } else {
+      resultadoApi = await negocioProvider.editarSUcursal(sucursalParaGuardar);
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+      _textLoading = '';
+    });
+
+    if (resultadoApi.status == 1) {
+      mostrarAlerta(context, 'Éxito', resultadoApi.mensaje!);
+      Navigator.pop(context,
+          true); // true para indicar que la lista anterior debe recargar
+    } else {
+      mostrarAlerta(context, 'Error',
+          resultadoApi.mensaje ?? 'No se pudo guardar la sucursal.');
+    }
   }
 
   Widget _buildEmpleadosSection() {
@@ -214,7 +274,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
               Colors.green,
             ),
             const SizedBox(height: 16),
-            resultadosFiltrados.isEmpty
+            _empleadosAsignadosFiltrados.isEmpty
                 ? const Center(
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
@@ -246,7 +306,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            headingRowColor: MaterialStateProperty.all(Colors.grey.shade100),
+            headingRowColor: WidgetStateProperty.all(Colors.grey.shade100),
             columns: const [
               DataColumn(
                 label: Text(
@@ -261,7 +321,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                 ),
               ),
             ],
-            rows: resultadosFiltrados.map((user) {
+            rows: _empleadosAsignadosFiltrados.map((user) {
               return DataRow(
                 cells: [
                   DataCell(
@@ -408,8 +468,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     }
 
     setState(() {
-      textLoading = 'Asignando empleado a la sucursal';
-      isLoading = true;
+      _textLoading = 'Asignando empleado a la sucursal';
+      _isLoading = true;
     });
 
     SucursalEmpleado sucursal = SucursalEmpleado();
@@ -419,10 +479,10 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     sucursal.propietarioId = sesion.idUsuario;
 
     try {
-      var response = await negocio.addSucursalEmpleado(sucursal);
+      var response = await negocioProvider.addSucursalEmpleado(sucursal);
       setState(() {
-        textLoading = '';
-        isLoading = false;
+        _textLoading = '';
+        _isLoading = false;
       });
 
       if (response.status == 1) {
@@ -433,8 +493,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       }
     } catch (e) {
       setState(() {
-        textLoading = '';
-        isLoading = false;
+        _textLoading = '';
+        _isLoading = false;
       });
       mostrarAlerta(context, 'ERROR', 'Ocurrió un error inesperado');
     }
@@ -446,7 +506,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -505,14 +565,14 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: () {
-          if (estatus) {
+          if (_esNuevaSucursal) {
             _validarAntesDeAgregar();
           } else {
             _validarAntesDeEditar();
           }
         },
         icon: const Icon(Icons.save_outlined),
-        label: Text(funcion.text),
+        label: Text(_esNuevaSucursal ? 'Agregar' : 'Editar'),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
           foregroundColor: Colors.white,
@@ -539,7 +599,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     _agregar(
       sesion.idNegocio,
       controllerNombre.text,
-      controllerEmail.text,
+      controllerDireccion.text,
       controllerTelefono.text,
     );
   }
@@ -591,14 +651,14 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
 
   _eliminarSucursal() {
     setState(() {
-      textLoading = 'Eliminando sucursal';
-      isLoading = true;
+      _textLoading = 'Eliminando sucursal';
+      _isLoading = true;
     });
 
-    negocio.deleteSUcursal(sucursalSeleccionado).then((value) {
+    negocioProvider.deleteSUcursal(sucursalSeleccionado).then((value) {
       setState(() {
-        textLoading = '';
-        isLoading = false;
+        _textLoading = '';
+        _isLoading = false;
       });
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'lista-sucursales');
@@ -647,17 +707,17 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                 Navigator.of(dialogContext).pop();
 
                 setState(() {
-                  textLoading = 'Eliminando empleado de la sucursal';
-                  isLoading = true;
+                  _textLoading = 'Eliminando empleado de la sucursal';
+                  _isLoading = true;
                 });
 
                 try {
-                  await negocio
+                  await negocioProvider
                       .deleteEmpleadoSUcursal(user.usuarioId, user.sucursalId)
                       .then((value) {
                     setState(() {
-                      textLoading = '';
-                      isLoading = false;
+                      _textLoading = '';
+                      _isLoading = false;
                     });
                     if (value.status == 1) {
                       Navigator.pushReplacementNamed(
@@ -670,8 +730,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
                 } catch (e) {
                   if (mounted) {
                     setState(() {
-                      textLoading = '';
-                      isLoading = false;
+                      _textLoading = '';
+                      _isLoading = false;
                     });
                   }
                   mostrarAlerta(parentContext, 'ERROR', 'Ocurrió un error');
@@ -686,21 +746,21 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
 
   _editar() {
     setState(() {
-      textLoading = 'Actualizando sucursal';
-      isLoading = true;
+      _textLoading = 'Actualizando sucursal';
+      _isLoading = true;
     });
 
     Sucursal nueva = Sucursal();
     nueva.id = sucursalSeleccionado.id;
     nueva.negocioId = sucursalSeleccionado.negocioId;
     nueva.nombreSucursal = controllerNombre.text;
-    nueva.direccion = controllerEmail.text;
+    nueva.direccion = controllerDireccion.text;
     nueva.telefono = controllerTelefono.text;
 
-    negocio.editarSUcursal(nueva).then((value) {
+    negocioProvider.editarSUcursal(nueva).then((value) {
       setState(() {
-        textLoading = '';
-        isLoading = false;
+        _textLoading = '';
+        _isLoading = false;
       });
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'lista-sucursales');
@@ -713,8 +773,8 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
 
   _agregar(seccion, nombre, direcion, telefono) {
     setState(() {
-      textLoading = 'Registrando nueva sucursal';
-      isLoading = true;
+      _textLoading = 'Registrando nueva sucursal';
+      _isLoading = true;
     });
 
     Sucursal nueva = Sucursal();
@@ -723,10 +783,10 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
     nueva.direccion = direcion;
     nueva.telefono = telefono;
 
-    negocio.addSucursal(nueva).then((value) {
+    negocioProvider.addSucursal(nueva).then((value) {
       setState(() {
-        textLoading = '';
-        isLoading = false;
+        _textLoading = '';
+        _isLoading = false;
       });
       if (value.status == 1) {
         Navigator.pushReplacementNamed(context, 'lista-sucursales');

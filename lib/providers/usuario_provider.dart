@@ -32,10 +32,15 @@ class UsuarioProvider {
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
         sesion.cotizar = false;
-        suscripcionActual.id = decodedData['suscripcion']['id'];
-        suscripcionActual.idUsuario =
-            decodedData['suscripcion']['id_usuario_app'];
-        suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
+        suscripcionActual.idSuscripcion =
+            decodedData['info_plan']['id_suscripcion'];
+        suscripcionActual.idPlan = decodedData['info_plan']['id_plan'];
+        suscripcionActual.limiteSucursales =
+            decodedData['info_plan']['limite_sucursales'];
+        suscripcionActual.limiteEmpleados =
+            decodedData['info_plan']['limite_empleados'];
+        suscripcionActual.unisucursal =
+            (decodedData['info_plan']['limite_sucursales'] == 1) ? true : false;
       } else {
         respuesta.status = 0;
         respuesta.mensaje = '${decodedData['msg']}: ${decodedData['errors']}';
@@ -85,11 +90,17 @@ class UsuarioProvider {
           sucursalTemp.telefono = decodedData['sucursales'][x]['telefono'];
           listaSucursales.add(sucursalTemp);
         }
-
-        if (sesion.tipoUsuario == 'P') {
-          suscripcionActual.id = decodedData['suscripcion']['id'];
-          suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-        } else {
+        suscripcionActual.idSuscripcion =
+            decodedData['info_plan']['id_suscripcion'];
+        suscripcionActual.idPlan = decodedData['info_plan']['id_plan'];
+        suscripcionActual.limiteSucursales =
+            decodedData['info_plan']['limite_sucursales'];
+        suscripcionActual.limiteEmpleados =
+            decodedData['info_plan']['limite_empleados'];
+        suscripcionActual.unisucursal =
+            (decodedData['info_plan']['limite_sucursales'] == 1) ? true : false;
+        if (sesion.tipoUsuario == 'E' ||
+            (sesion.tipoUsuario == 'P' && suscripcionActual.unisucursal)) {
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
           sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
@@ -136,10 +147,17 @@ class UsuarioProvider {
           sucursalTemp.telefono = decodedData['sucursales'][x]['telefono'];
           listaSucursales.add(sucursalTemp);
         }
-        if (sesion.tipoUsuario == 'P') {
-          suscripcionActual.id = decodedData['suscripcion']['id'];
-          suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-        } else {
+        suscripcionActual.idSuscripcion =
+            decodedData['info_plan']['id_suscripcion'];
+        suscripcionActual.idPlan = decodedData['info_plan']['id_plan'];
+        suscripcionActual.limiteSucursales =
+            decodedData['info_plan']['limite_sucursales'];
+        suscripcionActual.limiteEmpleados =
+            decodedData['info_plan']['limite_empleados'];
+        suscripcionActual.unisucursal =
+            (decodedData['info_plan']['limite_sucursales'] == 1) ? true : false;
+        if (sesion.tipoUsuario == 'E' ||
+            (sesion.tipoUsuario == 'P' && suscripcionActual.unisucursal)) {
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
           sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }

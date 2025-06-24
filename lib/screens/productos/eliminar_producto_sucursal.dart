@@ -111,7 +111,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
 
     if (cantidadRetirar > cantidadDisponible) {
       mostrarAlerta(context, 'Error',
-          'La cantidad a retirar no puede ser mayor que la disponible (${cantidadDisponible})');
+          'La cantidad a retirar no puede ser mayor que la disponible ($cantidadDisponible)');
       return;
     }
 

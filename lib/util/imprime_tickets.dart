@@ -1083,7 +1083,7 @@ class ImpresionesTickets {
 
     // Pie de página
     bytes += generator.feed(1);
-    bytes += generator.text('$mensajeTicket',
+    bytes += generator.text(mensajeTicket,
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('VENDE FACIL',
         styles: PosStyles(align: PosAlign.center));
@@ -1304,7 +1304,7 @@ class ImpresionesTickets {
 
     // Pie de página
     bytes += generator.feed(1);
-    bytes += generator.text('$mensajeTicket',
+    bytes += generator.text(mensajeTicket,
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('VENDE FACIL',
         styles: PosStyles(align: PosAlign.center));
