@@ -1,11 +1,11 @@
-class PlanSuscripcion {
+class Suscripcion {
   int? idSuscripcion;
   int? idPlan;
   int? limiteSucursales;
   int? limiteEmpleados;
   bool unisucursal;
 
-  PlanSuscripcion({
+  Suscripcion({
     this.idSuscripcion,
     this.idPlan,
     this.limiteSucursales,
@@ -14,4 +14,4 @@ class PlanSuscripcion {
   });
 }
 
-PlanSuscripcion suscripcionActual = PlanSuscripcion(unisucursal: true);
+Suscripcion suscripcionActual = Suscripcion(unisucursal: true);

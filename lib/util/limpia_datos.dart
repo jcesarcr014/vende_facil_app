@@ -44,7 +44,7 @@ class LimpiaDatos {
     cotActual = Cotizacion();
     totalVT = 0;
     sucursalSeleccionado = Sucursal();
-    suscripcionActual = PlanSuscripcion(unisucursal: true);
+    suscripcionActual = Suscripcion(unisucursal: true);
     ticketModel = TicketModel();
     empleadoSeleccionado = Usuario();
   }

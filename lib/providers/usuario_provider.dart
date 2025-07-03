@@ -100,7 +100,7 @@ class UsuarioProvider {
         suscripcionActual.unisucursal =
             (decodedData['info_plan']['limite_sucursales'] == 1) ? true : false;
         if (sesion.tipoUsuario == 'E' ||
-            (sesion.tipoUsuario == 'P' && suscripcionActual.unisucursal)) {
+            (sesion.tipoUsuario == 'P' && suscripcionActual.unisucursal && sesion.idNegocio != 0)) {
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
           sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
@@ -123,6 +123,7 @@ class UsuarioProvider {
         'password': pass,
       });
       final decodedData = jsonDecode(resp.body);
+      print(decodedData);
       if (decodedData['status'] == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', decodedData['token']);
@@ -157,7 +158,7 @@ class UsuarioProvider {
         suscripcionActual.unisucursal =
             (decodedData['info_plan']['limite_sucursales'] == 1) ? true : false;
         if (sesion.tipoUsuario == 'E' ||
-            (sesion.tipoUsuario == 'P' && suscripcionActual.unisucursal)) {
+            (sesion.tipoUsuario == 'P' && suscripcionActual.unisucursal && sesion.idNegocio != 0)) {
           sesion.idSucursal = decodedData["sucursales"][0]['id'];
           sesion.sucursal = decodedData["sucursales"][0]['nombre_sucursal'];
         }
