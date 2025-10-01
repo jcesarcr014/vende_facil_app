@@ -152,8 +152,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       return false;
     }
     if (_valueIdCategoria == '0') {
-      if (mounted)
+      if (mounted) {
         mostrarAlerta(context, 'Validación', 'Debe seleccionar una categoría.');
+      }
       return false;
     }
     return true;
@@ -163,8 +164,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     if (!_validarFormulario()) return;
 
     if (_args.id != 0 && !_camposHanCambiado) {
-      if (mounted)
+      if (mounted) {
         mostrarAlerta(context, 'Información', 'No se han realizado cambios.');
+      }
       // Si no hay cambios, podríamos hacer pop con false para no recargar innecesariamente.
       // Navigator.pop(context, false);
       return;
@@ -307,11 +309,12 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   }
 
   void _onApartadoChanged(bool puedeApartar) {
-    if (mounted)
+    if (mounted) {
       setState(() {
         _valueApartado = puedeApartar;
         _camposHanCambiado = true;
       });
+    }
   }
 
   void _onCategoriaChanged(String? nuevaCategoriaId) {
@@ -352,8 +355,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
           : true, // Prevenir pop si hay cambios sin guardar
       onPopInvoked: (bool didPop) async {
         // Hacerla async
-        if (didPop)
+        if (didPop) {
           return; // Si se permitió el pop (ej. canPop = true), no hacer nada más
+        }
 
         if (_camposHanCambiado) {
           final debeSalir = await showDialog<bool>(
@@ -532,10 +536,12 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')),
               ],
               validator: (value) {
-                if (value == null || value.isEmpty)
+                if (value == null || value.isEmpty) {
                   return 'La cantidad es requerida';
-                if (double.tryParse(value) == null)
+                }
+                if (double.tryParse(value) == null) {
                   return 'Ingrese un valor numérico válido';
+                }
                 return null;
               },
             ),
@@ -747,8 +753,9 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => QRScannerScreen()));
-                  if (result != null && mounted)
+                  if (result != null && mounted) {
                     setState(() => _controllerCodigoB.text = result);
+                  }
                 },
                 tooltip: 'Escanear código',
               ),

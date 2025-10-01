@@ -61,6 +61,15 @@ class ConfigScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildMenuCard(
               context: context,
+              title: 'Mi Suscripción', // Nueva opción
+              subtitle: 'Ver y administrar tu plan actual',
+              icon: Icons.workspace_premium_outlined, // Icono para suscripción/premium
+              iconColor: Colors.deepOrange.shade600,
+              onTap: () => Navigator.pushNamed(context, 'planes'), // Navega a la nueva pantalla
+            ),
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
               title: 'Ajustes de ventas',
               subtitle: 'Edita importe mínimo requerido para apartar',
               icon: CupertinoIcons.tag,
@@ -76,6 +85,7 @@ class ConfigScreen extends StatelessWidget {
               iconColor: Colors.amber,
               onTap: () => Navigator.pushNamed(context, 'ticket'),
             ),
+            
           ],
           const SizedBox(height: 16),
           _buildMenuCard(
@@ -115,7 +125,7 @@ class ConfigScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(

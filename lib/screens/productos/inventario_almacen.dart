@@ -21,20 +21,12 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
   List<Producto> _productosFiltrados = [];
   List<Producto> _todosProductos = [];
 
-  final FocusNode _focusNode = FocusNode();
+
 
   @override
   void initState() {
     super.initState();
     _cargarProductos();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.addListener(() {
-        if (_focusNode.hasFocus) {
-          setState(() {});
-        }
-      });
-    });
   }
 
   Future<void> _cargarProductos() async {
@@ -45,48 +37,40 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
 
     try {
       final resultado = await _provider.listarProductosAlmacen();
+      if (!mounted) return;
 
-      if (resultado.status != 1) {
-        setState(() {
-          _isLoading = false;
-          _productosFiltrados = [];
-          _todosProductos = [];
-        });
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
-        return;
-      }
-
-      setState(() {
+      if (resultado.status == 1) {
         _todosProductos = List.from(listaProductos);
         _productosFiltrados = List.from(listaProductos);
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
+      } else {
         _productosFiltrados = [];
         _todosProductos = [];
+        if(mounted) mostrarAlerta(context, 'Error', resultado.mensaje ?? 'No se pudo cargar la información.');
+      }
+    } catch (e) {
+      _productosFiltrados = [];
+      _todosProductos = [];
+      if(mounted) mostrarAlerta(context, 'Error', e.toString());
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
       });
-      mostrarAlerta(context, 'Error', e.toString());
     }
   }
 
   void _filtrarProductos(String query) {
+    if(!mounted) return;
     setState(() {
       if (query.isEmpty) {
         _productosFiltrados = List.from(_todosProductos);
       } else {
         _productosFiltrados = _todosProductos
             .where((producto) =>
-                producto.producto!
-                    .toLowerCase()
-                    .contains(query.toLowerCase()) ||
-                (producto.clave?.toLowerCase().contains(query.toLowerCase()) ??
-                    false) ||
-                (producto.codigoBarras
-                        ?.toLowerCase()
-                        .contains(query.toLowerCase()) ??
-                    false))
+                (producto.producto?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+                (producto.clave?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+                (producto.codigoBarras?.toLowerCase().contains(query.toLowerCase()) ?? false))
             .toList();
       }
     });
@@ -95,7 +79,6 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
   @override
   void dispose() {
     _searchController.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -103,48 +86,31 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           Navigator.pushReplacementNamed(context, 'products-menu');
         }
       },
-      child: Focus(
-        focusNode: _focusNode,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('INVENTARIO ALMACÉN'),
-            automaticallyImplyLeading: false,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: _cargarProductos,
-                tooltip: 'Actualizar inventario',
-              ),
-              IconButton(
-                icon: const Icon(Icons.help_outline),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Ayuda'),
-                      content: const Text(
-                          '• Use el buscador para filtrar los productos\n'
-                          '• Toque un producto para actualizar su cantidad\n'
-                          '• Cada tarjeta muestra los detalles del producto'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Entendido'),
-                        )
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          body: _isLoading ? _buildLoadingView() : _buildMainContent(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('INVENTARIO ALMACÉN'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _cargarProductos,
+              tooltip: 'Actualizar inventario',
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'products-menu');
+              },
+              icon: const Icon(Icons.close),
+              tooltip: 'Cerrar',
+            ),
+          ],
         ),
+        body: _isLoading ? _buildLoadingView() : _buildMainContent(),
       ),
     );
   }
@@ -275,7 +241,7 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: color.color!.withOpacity(0.1),
+                      color: color.color!.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -386,90 +352,84 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
   }
 
   void _showEditCantidadDialog(Producto producto) {
-    final TextEditingController cantidadController = TextEditingController(
-        text: producto.cantidad
-                ?.toStringAsFixed(producto.unidad == "1" ? 0 : 3) ??
-            '0');
-    bool isPieza = producto.unidad == "1";
+    final cantidadController = TextEditingController(
+      text: producto.cantidad?.toStringAsFixed(producto.unidad == "1" ? 0 : 3) ?? '0',
+    );
+    final bool isPieza = producto.unidad == "1";
 
     showDialog(
       context: context,
-      barrierDismissible: false, // Evita que se cierre tocando fuera
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Editar Cantidad'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RichText(
-              text: TextSpan(
-                style: TextStyle(color: Colors.black, fontSize: 16),
-                children: [
-                  TextSpan(text: 'Producto: '),
-                  TextSpan(
-                    text: producto.producto ?? 'Sin nombre',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          title: const Text('Editar Cantidad en Almacén'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                producto.producto ?? 'Sin nombre',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: cantidadController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: 'Nueva cantidad',
+                  border: const OutlineInputBorder(),
+                  suffixText: isPieza ? 'pzs' : 'unidades',
+                ),
+                keyboardType: TextInputType.numberWithOptions(decimal: !isPieza),
+                inputFormatters: [
+                  if (isPieza)
+                    FilteringTextInputFormatter.digitsOnly
+                  else
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,3}')),
                 ],
               ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext); // solo cerrar
+              },
+              child: const Text('Cancelar'),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: cantidadController,
-              decoration: InputDecoration(
-                labelText: 'Nueva cantidad',
-                border: OutlineInputBorder(),
-                suffixText: isPieza ? 'pzs' : 'unidades',
+            ElevatedButton(
+              onPressed: () async {
+                final String cantidadText = cantidadController.text;
+                Navigator.pop(dialogContext); // cerrar el diálogo primero
+
+                double? nuevaCantidad = double.tryParse(cantidadText);
+                if (nuevaCantidad == null || nuevaCantidad < 0) {
+                  Future.microtask(() {
+                    if (mounted) {
+                      mostrarAlerta(context, 'Error', 'Ingrese una cantidad válida');
+                    }
+                  });
+                  return;
+                }
+
+                if (isPieza) nuevaCantidad = nuevaCantidad.truncateToDouble();
+
+                _guardaCantidad(producto, nuevaCantidad);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
               ),
-              keyboardType: TextInputType.numberWithOptions(decimal: !isPieza),
-              inputFormatters: [
-                if (isPieza)
-                  FilteringTextInputFormatter.digitsOnly
-                else
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}')),
-              ],
+              child: const Text('Guardar'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final String cantidadText = cantidadController.text;
-              // Usa dialogContext en lugar de context para cerrar el diálogo
-              Navigator.pop(dialogContext);
-
-              double? nuevaCantidad = double.tryParse(cantidadText);
-              if (nuevaCantidad == null) {
-                // Usa Future.microtask para asegurar que el diálogo se haya cerrado completamente
-                Future.microtask(() {
-                  if (mounted) {
-                    mostrarAlerta(
-                        context, 'Error', 'Ingrese una cantidad válida');
-                  }
-                });
-                return;
-              }
-              _guardaCantidad(producto, nuevaCantidad);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Guardar'),
-          ),
-        ],
-      ),
-    ).then((_) {
-      // Asegúrate de liberar recursos
-      cantidadController.dispose();
-    });
+        );
+      },
+    );
   }
 
   Future<void> _guardaCantidad(Producto producto, double nuevaCantidad) async {
-    // Verifica si el widget está montado antes de actualizar el estado
     if (!mounted) return;
 
     setState(() {
@@ -478,49 +438,35 @@ class _AlmacenInventoryPageState extends State<AlmacenInventoryPage> {
     });
 
     try {
-      // Usa async/await en lugar de .then()
       final resp = await _provider.actualizarCantidadProducto(
           producto.id!, nuevaCantidad);
 
-      // Verifica nuevamente si el widget está montado después de la operación asíncrona
       if (!mounted) return;
 
-      setState(() {
-        _isLoading = false;
-      });
-
       if (resp.status == 1) {
-        // Actualiza el producto solo si el status es correcto
-        setState(() {
-          producto.cantidad = nuevaCantidad;
+       setState(() {
+          final index = _todosProductos.indexWhere((p) => p.id == producto.id);
+          if (index != -1) {
+            _todosProductos[index].cantidad = nuevaCantidad;
+            _filtrarProductos(_searchController.text);
+          }
+           _isLoading = false; // Quitar el loading aquí
         });
 
-        // Usa un pequeño retraso para asegurar que el árbol de widgets se estabilice
         Future.microtask(() {
-          if (mounted) {
-            mostrarAlerta(
-                context, 'Éxito', 'Cantidad actualizada correctamente');
-          }
+          if (mounted) mostrarAlerta(context, 'Éxito', 'Cantidad actualizada correctamente');
         });
       } else {
-        // En caso de error de la API
+       setState(() => _isLoading = false); // Quitar loading si la API falla
         Future.microtask(() {
-          if (mounted) {
-            mostrarAlerta(context, 'Error', resp.mensaje!);
-          }
+          if (mounted) mostrarAlerta(context, 'Error', resp.mensaje!);
         });
       }
     } catch (e) {
-      // Manejo de excepciones
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-
+        setState(() => _isLoading = false);
         Future.microtask(() {
-          if (mounted) {
-            mostrarAlerta(context, 'Error', e.toString());
-          }
+          if (mounted) mostrarAlerta(context, 'Error', e.toString());
         });
       }
     }

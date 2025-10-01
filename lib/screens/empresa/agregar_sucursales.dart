@@ -78,7 +78,7 @@ class _RegistroSucursalesScreenState extends State<RegistroSucursalesScreen> {
         (suscripcionActual.limiteEmpleados ?? 0) > 0;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           Navigator.pop(
               context, false); // Indicar que no hubo cambios (o cancelado)

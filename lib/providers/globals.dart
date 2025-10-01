@@ -1,6 +1,6 @@
 library vende_facil.globals;
 
-String baseUrl = "http://45.90.121.209/api"; //test interno
+String baseUrl = "http://89.117.144.61/vf/api"; //test interno
 // String baseUrl = "https://dash.vendofacil.com.mx/api"; // PRODUCCION
 
 // bool actualizaCategorias = false;
@@ -18,6 +18,4 @@ String baseUrl = "http://45.90.121.209/api"; //test interno
 // bool actualizaArticulosSucursal = false;
 
 // bool cargarArticulosPropietarios = false;
-
-String opMerchantId = 'mrfxnb2cytmppzzly7oi';
-String opPublicKey = 'pk_d5c9b0e23f5945cf821f36a5b9a8011f';
+String stripePublishableKey = 'pk_test_51RdESBQ158VdmKOUNH0eWHGUIN1oBBCciOlOAJmnFF01SLUuiiN46XgaxFHHzjAD42NSqcbsAbR5LpmwidOGz4Mj00JFGmEC77';

@@ -27,4 +27,4 @@ export 'package:vende_facil/models/cotizacion_detalle_model.dart';
 export 'package:vende_facil/models/corte_model.dart';
 export 'package:vende_facil/models/movimiento_model.dart';
 export 'package:vende_facil/models/suscripcion_model.dart';
-
+export 'package:vende_facil/models/metodo_pago_stripe.dart';

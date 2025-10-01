@@ -209,7 +209,7 @@ class _InventoryPageState extends State<InventoryPage> {
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             ),
-            value: _selectedSucursal,
+            initialValue: _selectedSucursal,
             isExpanded: true,
             items: listaSucursales
                 .map((sucursal) => DropdownMenuItem(

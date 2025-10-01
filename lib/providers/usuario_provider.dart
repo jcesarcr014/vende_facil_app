@@ -19,7 +19,7 @@ class UsuarioProvider {
         'password': pass,
       });
       final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
+       if (decodedData['status'] == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', decodedData['token']);
         respuesta.status = 1;
@@ -27,7 +27,7 @@ class UsuarioProvider {
         sesion.token = decodedData['token'];
         sesion.idUsuario = decodedData['usuario']['id'];
         sesion.idNegocio = decodedData['empresa_id'];
-        sesion.tipoUsuario = decodedData['tipo_usuario'];
+        sesion.tipoUsuario = 'P';
         sesion.nombreUsuario = decodedData['usuario']['name'];
         sesion.email = decodedData['usuario']['email'];
         sesion.telefono = decodedData['usuario']['phone'];
@@ -123,7 +123,6 @@ class UsuarioProvider {
         'password': pass,
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', decodedData['token']);
@@ -197,7 +196,7 @@ class UsuarioProvider {
 
   Future<Usuario> consultaUsuario() async {
     Usuario user = Usuario();
-    var url = Uri.parse('$baseUrl/usuario/${sesion.idUsuario}');
+    var url = Uri.parse('$baseUrl/usuario/detalle/${sesion.idUsuario}');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

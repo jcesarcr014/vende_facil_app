@@ -46,11 +46,12 @@ class _InventarioUnicaSucScreenState extends State<InventarioUnicaSucScreen> {
       _textLoading = 'Actualizando inventario...';
       if (mounted) setState(() {});
     } else if (!_isLoading && _textLoading.isEmpty) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _isLoading = true;
           _textLoading = 'Cargando inventario...';
         });
+      }
     }
 
     List<Producto> tempInventario = [];
@@ -97,8 +98,9 @@ class _InventarioUnicaSucScreenState extends State<InventarioUnicaSucScreen> {
       if (mensajeErrorApi != null) {
         Future.microtask(() {
           // Para asegurar que se muestre después del build
-          if (mounted && context.mounted)
+          if (mounted && context.mounted) {
             mostrarAlerta(context, 'Error', mensajeErrorApi!);
+          }
         });
       }
     }
@@ -323,12 +325,13 @@ class _InventarioUnicaSucScreenState extends State<InventarioUnicaSucScreen> {
             (cat) => cat.id == producto.idCategoria,
             orElse: () => Categoria(id: 0, categoria: 'Desconocida'));
         if (listaColores.isNotEmpty && categoriaDelProducto.idColor != null) {
-          final ColorCategoria? colorCat = listaColores.firstWhere(
+          final ColorCategoria colorCat = listaColores.firstWhere(
               (color) => color.id == categoriaDelProducto?.idColor,
               orElse: () =>
                   ColorCategoria(id: 0, color: Colors.blueGrey.shade300));
-          if (colorCat != null && colorCat.color != null)
+          if (colorCat.color != null) {
             colorDeCategoria = colorCat.color!;
+          }
         }
       } catch (e) {/* Usar defaults */}
     }

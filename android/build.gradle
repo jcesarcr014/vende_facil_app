@@ -3,10 +3,10 @@
 buildscript {
     
     ext {
-        kotlin_version = '1.8.20' // <-- IMPORTANTE: VERSIÓN DE KOTLIN
-        compileSdkVersion = 34
+        kotlin_version = '2.1.0' // <-- IMPORTANTE: VERSIÓN DE KOTLIN
+        compileSdkVersion = 35
         minSdkVersion = 21
-        targetSdkVersion = 34
+        targetSdkVersion = 35
     }
     repositories {
         google()

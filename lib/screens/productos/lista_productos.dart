@@ -356,12 +356,13 @@ class _ProductosScreenState extends State<ProductosScreen> {
             (cat) => cat.id == producto.idCategoria,
             orElse: () => Categoria(id: 0, categoria: 'Desconocida'));
         if (listaColores.isNotEmpty && categoriaDelProducto.idColor != null) {
-          final ColorCategoria? colorCat = listaColores.firstWhere(
+          final ColorCategoria colorCat = listaColores.firstWhere(
               (color) => color.id == categoriaDelProducto?.idColor,
               orElse: () =>
                   ColorCategoria(id: 0, color: Colors.blueGrey.shade300));
-          if (colorCat != null && colorCat.color != null)
+          if (colorCat.color != null) {
             colorDeCategoria = colorCat.color!;
+          }
         }
       } catch (e) {/* Usar defaults */}
     }

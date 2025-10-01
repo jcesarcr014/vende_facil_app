@@ -110,8 +110,8 @@ class _AbonosLiquidadosState extends State<AbonosLiquidados> {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: esPendiente
-              ? Colors.amber.withOpacity(0.3)
-              : Colors.green.withOpacity(0.3),
+              ? Colors.amber.withValues(alpha: 0.3)
+              : Colors.green.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -130,8 +130,8 @@ class _AbonosLiquidadosState extends State<AbonosLiquidados> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: esPendiente
-                      ? Colors.amber.withOpacity(0.2)
-                      : Colors.green.withOpacity(0.2),
+                      ? Colors.amber.withValues(alpha: 0.2)
+                      : Colors.green.withValues(alpha: 0.2),
                 ),
                 child: Center(
                   child: Icon(

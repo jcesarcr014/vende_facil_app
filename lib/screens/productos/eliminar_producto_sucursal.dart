@@ -278,7 +278,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                 ),
                 prefixIcon: const Icon(Icons.storefront_outlined, size: 20),
               ),
-              value: _selectedSucursal,
+              initialValue: _selectedSucursal,
               isExpanded: true,
               validator: (value) {
                 if (value == null) {

@@ -34,9 +34,6 @@ class AppRoutes {
     'menu-negocio': (BuildContext context) => const MenuEmpresaScreen(),
     'negocio': (BuildContext context) => const AgregarEmpresa(),
     'menu': (BuildContext context) => const MenuScreen(),
-    'suscripcion': (BuildContext context) => const SuscripcionScreen(),
-    'tarjetas': (BuildContext context) => const TarjetaScreen(),
-    'nvo-tarjetas': (BuildContext context) => const AgregaTarjetaScreen(),
     "ventasD": (BuildContext context) => const VentaDetallesScreen(),
     'perfil': (BuildContext context) => const PerfilScreen(),
     'abono_detalle': (BuildContext context) =>
@@ -47,7 +44,7 @@ class AppRoutes {
     'perfil-empleado': (BuildContext context) => const PerfilEmpleadosScreen(),
     'venta': (BuildContext context) => const VentaScreen(),
     'apartado': (BuildContext context) => const ApartadoDetalleScreen(),
-    // 'planes': (BuildContext context) => const PlanesScreen(),
+    'planes': (BuildContext context) => const PlanesScreen(),
     'nvo-pass': (BuildContext context) => const CambioPassScreen(),
     'lista-sucursales': (BuildContext context) => const ListaSucursalesScreen(),
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),

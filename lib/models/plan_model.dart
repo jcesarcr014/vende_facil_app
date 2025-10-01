@@ -26,5 +26,8 @@ class PlanSuscripcion {
   
   });
 }
+ 
+
+
 
 List<PlanSuscripcion> listaPlanes = [];

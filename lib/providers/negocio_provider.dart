@@ -22,7 +22,6 @@ class NegocioProvider {
         'razon_social': negocio.razonSocial,
       });
       final decodedData = jsonDecode(resp.body);
-
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

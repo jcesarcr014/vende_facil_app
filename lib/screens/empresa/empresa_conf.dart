@@ -11,7 +11,7 @@ class MenuEmpresaScreen extends StatelessWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         // Cambiado de onPopInvokedWithResult a onPopInvoked
         if (!didPop) {
           Navigator.pushReplacementNamed(context, 'menu');
@@ -39,6 +39,9 @@ class MenuEmpresaScreen extends StatelessWidget {
 
   Widget _buildMenuOptions(
       BuildContext context, bool esMonoSucursal, int limiteEmpleados) {
+        print('esMonoSucursal: $esMonoSucursal');
+        print('limiteEmpleados: $limiteEmpleados');
+        print('sesion.idNegocio: ${sesion.idNegocio}');
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
@@ -65,7 +68,7 @@ class MenuEmpresaScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // 2. "Sucursal(es)"
-          if (esMonoSucursal) ...[
+          if (esMonoSucursal && sesion.idNegocio != 0) ...[
             _buildMenuCard(
               context: context,
               title: 'Mi Sucursal',
@@ -97,16 +100,16 @@ class MenuEmpresaScreen extends StatelessWidget {
             ),
           ] else ...[
             // Multi-Sucursal
-            _buildMenuCard(
-              context: context,
-              title: 'Sucursales',
-              subtitle: 'Agrega o edita tus sucursales',
-              icon: Icons.store_mall_directory_outlined,
-              iconColor: Colors.green.shade600,
-              onTap: () => Navigator.pushNamed(context, 'lista-sucursales'),
-            ),
-          ],
-          const SizedBox(height: 16),
+            if(sesion.idNegocio != 0) ...[
+              _buildMenuCard(
+                context: context,
+                title: 'Sucursales',
+                subtitle: 'Agrega o edita tus sucursales',
+                icon: Icons.store_mall_directory_outlined,
+                iconColor: Colors.green.shade600,
+                onTap: () => Navigator.pushNamed(context, 'lista-sucursales'),
+              ),
+              const SizedBox(height: 16),
 
           // 3. "Empleados" - Visible solo si limiteEmpleados > 0
           if (limiteEmpleados > 0) ...[
@@ -120,6 +123,9 @@ class MenuEmpresaScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
+            ]
+          ],
+          
         ],
       ),
     );

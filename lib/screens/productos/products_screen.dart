@@ -28,6 +28,9 @@ class ProductsScreen extends StatelessWidget {
     final bool esPropietario = sesion.tipoUsuario == 'P';
     final bool esMonoSucursal = suscripcionActual.unisucursal;
 
+
+
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {

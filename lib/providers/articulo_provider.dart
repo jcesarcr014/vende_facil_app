@@ -144,26 +144,15 @@ class ArticuloProvider {
   Future<Resultado> eliminaProducto(int idProd) async {
     // Esta función ahora DEBE decidir si llamar a la ruta unisucursal o multi-sucursal
     // Necesitas una forma de saber si 'sesion.esMonoSucursal' es true
-    var url;
-    Map<String, String>? body;
+    Uri url;
 
     url = Uri.parse('$baseUrl/productos/multi-sucursal/eliminar/$idProd');
     try {
       http.Response resp;
-      if (body != null) {
-        resp = await http.delete(url,
-            headers: {
-              'Authorization': 'Bearer ${sesion.token}',
-              'Content-Type': 'application/json', // Si envías body como JSON
-              'Accept': 'application/json',
-            },
-            body: jsonEncode(body));
-      } else {
-        resp = await http.delete(url, headers: {
-          'Authorization': 'Bearer ${sesion.token}',
-          'Accept': 'application/json',
-        });
-      }
+      resp = await http.delete(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+        'Accept': 'application/json',
+      });
 
       final decodedData = jsonDecode(resp.body);
       if (decodedData['status'] == 1) {
@@ -440,7 +429,6 @@ class ArticuloProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1) {
         listaProductosSucursal.clear();
         for (int x = 0; x < decodedData['data'].length; x++) {

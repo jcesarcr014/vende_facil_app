@@ -45,7 +45,7 @@ final ThemeData appTheme = ThemeData(
     ),
   ),
   appBarTheme: AppBarTheme(
-    color: primaryColor,
+    backgroundColor: primaryColor,
     elevation: 4,
     titleTextStyle: const TextStyle(
       fontSize: 20,
