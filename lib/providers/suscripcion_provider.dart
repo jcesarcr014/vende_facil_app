@@ -86,7 +86,9 @@ class SuscripcionProvider {
         },
         body: jsonEncode(body),
       );
+
       final decodedData = jsonDecode(resp.body);
+      print(decodedData);
       respuesta.status = decodedData['status'] ?? 0;
       respuesta.mensaje = decodedData['msg'] ?? 'Error desconocido.';
     } catch (e) {
