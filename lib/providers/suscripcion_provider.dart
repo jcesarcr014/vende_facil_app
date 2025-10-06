@@ -29,7 +29,7 @@ class SuscripcionProvider {
       }
 
       final decodedData = jsonDecode(resp.body);
-
+      print(decodedData);
       if (decodedData['status'] == 1 && decodedData['data'] is List) {
         for (final planData in decodedData['data']) {
           PlanSuscripcion planTemp = PlanSuscripcion(

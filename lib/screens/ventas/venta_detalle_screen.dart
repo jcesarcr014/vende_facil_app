@@ -124,11 +124,6 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   void _procederCobro() {
-    if (_requiereFactura && _folioFacturaController.text.trim().isEmpty) {
-      mostrarAlerta(context, 'Dato Requerido',
-          'Por favor, ingrese el folio de la factura.');
-      return;
-    }
     VentaCabecera venta = VentaCabecera(
       idCliente: _clienteId,
       subtotal: subtotalVT,
@@ -137,8 +132,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       total: totalVT,
       tipoVenta: _ventaDomicilio ? 1 : 0,
       nombreCliente: clienteVentaActual.nombre,
-      //  factura: _requiereFactura ? 1 : 0,
-      // folioFactura: _folioFacturaController.text,
+      factura: _requiereFactura ? 1 : 0,
+      folioFactura: _folioFacturaController.text,
     );
 
     Navigator.pushNamed(context, 'venta', arguments: venta);

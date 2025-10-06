@@ -13,6 +13,8 @@ class VentaCabecera {
   double? importeTarjeta;
   double? cambio;
   int? tipoVenta;
+  int? factura;
+  String? folioFactura;
   String? cancelado;
   String? fecha_venta;
   String? fecha_cancelacion;
@@ -37,6 +39,8 @@ class VentaCabecera {
       this.importeTarjeta,
       this.cambio,
       this.tipoVenta,
+      this.factura,
+      this.folioFactura,
       this.cancelado,
       this.fecha_venta,
       this.fecha_cancelacion,

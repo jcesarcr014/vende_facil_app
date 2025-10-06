@@ -25,7 +25,6 @@ class _PlanesScreenState extends State<PlanesScreen> {
   }
 
   Future<void> _cargarDatosIniciales() async {
-    // Cargar planes y método de pago en paralelo para más eficiencia
     await Future.wait([
       _cargarPlanes(),
       // _cargarMetodoPago(),
@@ -427,7 +426,24 @@ class _PlanesScreenState extends State<PlanesScreen> {
                       // ... (resto del texto)
                     ),
                     const Divider(height: 32),
-                    // ... (resto de las _buildFeatureRow)
+
+                    // --- SECCIÓN DE CARACTERÍSTICAS (CORREGIDA Y AÑADIDA) ---
+                    _buildFeatureRow(Icons.store_outlined,
+                        '${plan.sucursales ?? 0}', 'Sucursal(es)'),
+                    _buildFeatureRow(Icons.people_alt_outlined,
+                        '${plan.empleados ?? 0}', 'Empleado(s)'),
+                    _buildFeatureRow(
+                        Icons.inventory_2_outlined,
+                        (plan.productos ?? 0) == 0
+                            ? 'Ilimitados'
+                            : '${plan.productos}',
+                        'Productos'),
+                    _buildFeatureRow(
+                        Icons.receipt_long_outlined,
+                        (plan.ventas ?? 0) == 0
+                            ? 'Ilimitadas'
+                            : '${plan.ventas}',
+                        'Ventas por mes'),
                     const SizedBox(height: 24),
                     if (!esPlanActual)
                       ElevatedButton(
@@ -436,8 +452,14 @@ class _PlanesScreenState extends State<PlanesScreen> {
                             : () => _seleccionarPlan(
                                 plan), // Esta función ahora es la simplificada
                         style: ElevatedButton.styleFrom(
-                            // ... (estilo del botón)
-                            ),
+                          backgroundColor: colorPrimario,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 3,
+                        ),
                         child: const Text(
                             'Seleccionar Plan Gratis', // Texto del botón actualizado
                             style: TextStyle(
@@ -452,20 +474,27 @@ class _PlanesScreenState extends State<PlanesScreen> {
             Positioned(
               top: 0,
               child: Container(
-                // ... (estilo del chip)
                 decoration: BoxDecoration(
                   color: colorPrimario,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2), // Corregido
+                      color: Colors.black.withValues(alpha: 0.2),
                       spreadRadius: 1,
                       blurRadius: 3,
                       offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-                // ...
+                child: const Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                  child: Text('PLAN ACTUAL',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12)),
+                ),
               ),
             ),
         ],

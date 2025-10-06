@@ -22,6 +22,8 @@ class VentasProvider {
         'pago_efectivo': cabecera.importeEfectivo!.toStringAsFixed(2),
         'pago_tarjeta': cabecera.importeTarjeta!.toStringAsFixed(2),
         'tipo_venta': cabecera.tipoVenta.toString(),
+        'factura': cabecera.factura.toString(),
+        'folio_factura': cabecera.folioFactura.toString(),
         'cambio': cabecera.cambio!.toStringAsFixed(2),
         'sucursal_id': sesion.idSucursal.toString(),
       },

@@ -35,22 +35,13 @@ class _VentaScreenState extends State<VentaScreen> {
   void initState() {
     super.initState();
     // Asignar valor inicial al _totalValue también
-    _totalValue =
-        totalVT; // Asumiendo que totalVT es un double global o accesible
+    _totalValue = totalVT;
     _totalController.text = _totalValue.toStringAsFixed(2);
-
-    // Inicializar los controladores de efectivo y tarjeta
-    // El InputFieldMoney ya debería manejar el "0.00" por defecto si está vacío
-    // _efectivoController.text = "0.00";
-    // _tarjetaController.text = "0.00";
 
     _cambioController.text = "0.00";
 
     _efectivoController.addListener(_onEfectivoChanged);
     _tarjetaController.addListener(_onTarjetaChanged);
-
-    // Calcular el cambio inicial por si acaso, aunque debería ser 0.00
-    // _calculateAndSetCambio(); // Se llamará cuando los campos se inicialicen
   }
 
   @override
