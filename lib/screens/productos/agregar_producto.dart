@@ -55,34 +55,56 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       _textLoading = 'Cargando datos...';
     });
 
-    await _categoriasProvider.listarCategorias();
+    final categoriasFuture = _categoriasProvider.listarCategorias();
+
+    Producto? productoArg; // Producto que viene de la pantalla anterior
+    final routeArgs = ModalRoute.of(context)?.settings.arguments;
+
+    if (routeArgs != null) {
+      if (routeArgs is Map<String, dynamic>) {
+        productoArg = routeArgs['producto'] as Producto?;
+      } else if (routeArgs is Producto) {
+        productoArg = routeArgs;
+      }
+    }
+    if (productoArg != null && productoArg.id != null && productoArg.id != 0) {
+      // --- MODO EDICIÓN: CONSULTAR DATOS COMPLETOS DEL PRODUCTO ---
+      try {
+        final productoCompleto =
+            await _articulosProvider.consultaProducto(productoArg.id!);
+        if (productoCompleto.id != 0) {
+          _args = productoCompleto; // Usar el producto completo de la API
+        } else {
+          // Si la consulta falla, usar los argumentos como fallback y mostrar error
+          _args = productoArg;
+          if (mounted) {
+            mostrarAlerta(context, 'Advertencia',
+                'No se pudieron cargar todos los detalles del producto. Mostrando datos parciales.');
+          }
+        }
+      } catch (e) {
+        _args = productoArg; // Fallback
+        if (mounted) {
+          mostrarAlerta(context, 'Error', 'Error al consultar el producto: $e');
+        }
+      }
+    } else {
+      // --- MODO NUEVO PRODUCTO ---
+      _args = Producto(id: 0); // Asegurar que es un producto nuevo limpio
+    }
+
+    // Esperar a que las categorías terminen de cargar si no lo han hecho
+    await categoriasFuture;
 
     if (!mounted) return;
 
-    final routeArgs = ModalRoute.of(context)?.settings.arguments;
-    if (routeArgs != null) {
-      if (routeArgs is Map<String, dynamic>) {
-        if (routeArgs.containsKey('producto') &&
-            routeArgs['producto'] is Producto) {
-          _args = routeArgs['producto'] as Producto;
-        }
-        // _rutaOrigen ya no es tan crucial para la lógica de pop si siempre hacemos pop con resultado
-        // pero puede ser útil para debug o lógica muy específica si se necesita.
-        // _rutaOrigen = routeArgs['origen_pantalla'] as String?;
-      } else if (routeArgs is Producto) {
-        _args = routeArgs;
-      }
-    }
-
-    _poblarCamposConArgs(); // Esta función llena los controllers
+    _poblarCamposConArgs();
     _registrarListenersDeCambios();
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _textLoading = '';
-      });
-    }
+    setState(() {
+      _isLoading = false;
+      _textLoading = '';
+    });
   }
 
   void _poblarCamposConArgs() {
@@ -603,13 +625,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     );
   }
 
-  // Debes pegar aquí tus implementaciones de _buildInformacionBasicaCard, _buildPreciosCard,
-  // _buildCodigosCard, _buildCategoriaSelector, _buildSectionTitle, _buildFormField, _buildActionButton
-  // tal como las tenías, solo asegurándote que los onChanged de los switches y dropdowns
-  // llamen a las nuevas funciones _onUnidadChanged, _onApartadoChanged, _onCategoriaChanged.
-  // Ya modifiqué _buildUnidadSelector, _buildInventarioCard (para el switch de apartado), y _categorias.
-  // El resto de _buildFormField y _buildActionButton no necesitan cambios en su estructura interna.
-  // Lo importante es la lógica en initState, _guardarProducto, _eliminarProducto, y el PopScope.
   Widget _buildInformacionBasicaCard() {
     return Card(
       elevation: 2,
@@ -666,57 +681,65 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             _buildSectionTitle(
                 'Precios', Icons.attach_money_outlined, Colors.green),
             const SizedBox(height: 24),
-            _buildFormField(
-                labelText: 'Costo:',
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                controller: _controllercosto,
-                icon: Icons.receipt_outlined,
-                required: true,
-                prefixText: '\$ ',
-                validator: (v) =>
-                    (double.tryParse(v?.replaceAll(',', '') ?? "") == null)
-                        ? "Inválido"
-                        : null),
+            InputFieldMoney(
+              controller: _controllercosto,
+              labelText: 'Costo: *',
+              icon: Icons.receipt_outlined, // El icono ahora se pasa aquí
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El costo es requerido';
+                }
+                if (double.tryParse(value.replaceAll(',', '')) == null) {
+                  return 'Ingrese un valor numérico válido';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 16),
-            _buildFormField(
-                labelText: 'Precio público:',
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                controller: _controllerPrecio,
-                icon: Icons.point_of_sale_outlined,
-                required: true,
-                prefixText: '\$ ',
-                validator: (v) =>
-                    (double.tryParse(v?.replaceAll(',', '') ?? "") == null)
-                        ? "Inválido"
-                        : null),
+            InputFieldMoney(
+              controller: _controllerPrecio,
+              labelText: 'Precio público: *',
+              icon: Icons.point_of_sale_outlined,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El precio público es requerido';
+                }
+                if (double.tryParse(value.replaceAll(',', '')) == null) {
+                  return 'Ingrese un valor numérico válido';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 16),
-            _buildFormField(
-                labelText: 'Precio mayoreo:',
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                controller: _controllerprecioMayoreo,
-                icon: Icons.store_outlined,
-                required: true,
-                prefixText: '\$ ',
-                validator: (v) =>
-                    (double.tryParse(v?.replaceAll(',', '') ?? "") == null)
-                        ? "Inválido"
-                        : null),
+            InputFieldMoney(
+              controller: _controllerprecioMayoreo,
+              labelText: 'Precio mayoreo: *',
+              icon: Icons.store_outlined,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El precio mayoreo es requerido';
+                }
+                if (double.tryParse(value.replaceAll(',', '')) == null) {
+                  return 'Ingrese un valor numérico válido';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 16),
-            _buildFormField(
-                labelText: 'Precio distribuidor:',
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                controller: _controllerPrecioDirecto,
-                icon: Icons.local_shipping_outlined,
-                required: true,
-                prefixText: '\$ ',
-                validator: (v) =>
-                    (double.tryParse(v?.replaceAll(',', '') ?? "") == null)
-                        ? "Inválido"
-                        : null),
+            InputFieldMoney(
+              controller: _controllerPrecioDirecto,
+              labelText: 'Precio distribuidor: *',
+              icon: Icons.local_shipping_outlined,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El precio distribuidor es requerido';
+                }
+                if (double.tryParse(value.replaceAll(',', '')) == null) {
+                  return 'Ingrese un valor numérico válido';
+                }
+                return null;
+              },
+            ),
           ],
         ),
       ),

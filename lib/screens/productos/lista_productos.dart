@@ -121,15 +121,11 @@ class _ProductosScreenState extends State<ProductosScreen> {
   }
 
   void _navegarAEditarProducto(Producto producto) async {
-    // Navegar a AgregaProductoScreen para edición.
-    // Para multi-sucursal, la 'cantidad' en AgregaProductoScreen
-    // se referirá al stock del almacén central.
-    final fueModificado =
-        await Navigator.pushNamed(context, 'nvo-producto', arguments: {
-      // Pasar argumentos como mapa si es necesario para AgregaProductoScreen
-      'producto': producto,
-      'origen_pantalla': 'listaProductosMulti' // O un identificador similar
-    });
+    final fueModificado = await Navigator.pushNamed(context, 'nvo-producto',
+        arguments: {
+          'producto': producto,
+          'origen_pantalla': 'listaProductosMulti'
+        });
 
     if (fueModificado == true && mounted) {
       _cargarDatos(); // Recargar si hubo cambios

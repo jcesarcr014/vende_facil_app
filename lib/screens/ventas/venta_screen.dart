@@ -169,21 +169,13 @@ class _VentaScreenState extends State<VentaScreen> {
       _mostrarError('El pago con tarjeta no puede ser mayor al total.');
       return;
     }
-    // El cambio ya se calcula para ser >= 0.
-    // La validación importante es que lo pagado (efectivo + tarjeta) sea >= total.
     if (totalPagadoConMedios < total) {
       _mostrarError('El monto pagado es menor al importe total de la venta.');
       return;
     }
 
-    // El 'totalEfectivo' que pasas a procesarCompra es el efectivo neto después de dar cambio.
-    // Si el pago es exacto con efectivo o hay cambio, efectivo - cambioActual es correcto.
-    // Si el pago es con tarjeta o mixto, y el cambio se da del efectivo, también es correcto.
     final efectivoNetoParaCaja = efectivoActual - cambioActual;
 
-    // Llamar a procesar compra con los valores correctos
-    // El 'efectivo' que se pasa a _procesarCompra debe ser el monto recibido en efectivo.
-    // El 'totalEfectivo' que se guarda en la venta es el efectivo que se queda en caja (efectivo recibido - cambio).
     await _procesarCompra(venta, efectivoActual, tarjetaActual,
         efectivoNetoParaCaja, cambioActual);
   }
@@ -272,14 +264,9 @@ class _VentaScreenState extends State<VentaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Obtener argumentos solo una vez si es posible, o asegurarse de que no cause problemas.
-    // Si esta pantalla puede ser reconstruida y los argumentos cambian, esto es correcto.
-    // Si los argumentos son fijos para la vida de la pantalla, podrían obtenerse en initState.
-    // Pero ModalRoute.of(context) dentro de build es común.
     final VentaCabecera? venta =
         ModalRoute.of(context)?.settings.arguments as VentaCabecera?;
 
-    // Si venta es null, ¿qué debería pasar? Mostrar un error o un estado vacío.
     if (venta == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Error')),
@@ -288,12 +275,9 @@ class _VentaScreenState extends State<VentaScreen> {
       );
     }
 
-    // Actualizar el total si cambia (aunque usualmente no debería cambiar en esta pantalla)
-    // Esto es más por si totalVT global se modifica externamente y esta pantalla se reconstruye.
     if (_totalValue != totalVT) {
       _totalValue = totalVT;
       _totalController.text = _totalValue.toStringAsFixed(2);
-      // Recalcular cambio si el total cambia
       SchedulerBinding.instance.addPostFrameCallback((_) {
         _calculateAndSetCambio();
       });
@@ -303,10 +287,6 @@ class _VentaScreenState extends State<VentaScreen> {
       appBar: AppBar(
         title: const Text('Detalle de cobro'),
         elevation: 2,
-        // leading: IconButton( // Opcional: si quieres un botón de atrás explícito
-        //   icon: Icon(Icons.arrow_back),
-        //   onPressed: () => Navigator.pop(context),
-        // ),
       ),
       body: _isLoading
           ? _buildLoadingScreen()

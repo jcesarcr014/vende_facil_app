@@ -1,11 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
-import 'package:vende_facil/screens/search_screenProductos.dart';
 import 'package:vende_facil/providers/articulo_provider.dart';
 import 'package:vende_facil/widgets/widgets.dart';
-import '../../widgets/custom_dropdown_search.dart';
+import 'package:vende_facil/widgets/custom_dropdown_search.dart';
 
 class AgregarProductoSucursal extends StatefulWidget {
   const AgregarProductoSucursal({super.key});
@@ -16,204 +14,170 @@ class AgregarProductoSucursal extends StatefulWidget {
 }
 
 class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
-  String? _selectedProduct;
-  Producto? _productoSeleccionado;
-  int? _selectedSucursal;
-  String? _cantidadSucursal;
-  ArticuloProvider provider = ArticuloProvider();
-  bool isLoading = false;
-  bool _valuePieza = true;
-  bool? existe;
+  final _provider = ArticuloProvider();
   final _formKey = GlobalKey<FormState>();
+  final _cantidadController = TextEditingController();
 
-  TextEditingController controller = TextEditingController();
+  bool _isLoading = true;
+  String _textLoading = '';
+
+  Producto? _productoSeleccionado;
+  int? _selectedSucursalId;
+  int _inventarioId = 0;
+  String _cantidadEnSucursal = '0';
+  bool _productoYaExisteEnSucursal = false;
 
   @override
   void initState() {
     super.initState();
+    _cargarProductosAlmacen();
+  }
+
+  Future<void> _cargarProductosAlmacen() async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
+      _textLoading = 'Cargando productos del almacén...';
     });
-    provider.listarProductos().then((respProd) {
-      setState(() {
-        isLoading = false;
-      });
-    });
+    // Llama a la función que trae la lista de productos del almacén
+    final resultado = await _provider.listarProductosAlmacen();
+    if (!mounted) return;
+    if (resultado.status != 1) {
+      mostrarAlerta(context, 'Error',
+          resultado.mensaje ?? 'No se pudo cargar la lista de productos.');
+    }
+    setState(() => _isLoading = false);
   }
 
-  void _setProductsSucursal(int? value) async {
-    _selectedSucursal = value;
-    isLoading = true;
-    setState(() {});
-
-    Sucursal sucursalSeleccionado = listaSucursales.firstWhere(
-      (sucursal) => sucursal.id == value,
-      orElse: () => Sucursal(),
-    );
-
-    if (sucursalSeleccionado.id == null) {
-      isLoading = false;
-      setState(() {});
-      mostrarAlerta(context, 'Error', 'Selecciona otra sucursal');
-      return;
-    }
-
-    _productoSeleccionado?.idSucursal = sucursalSeleccionado.id!;
-
-    try {
-      Resultado resultado =
-          await provider.listarProductosSucursal(sucursalSeleccionado.id!);
-      if (resultado.status != 1) {
-        isLoading = false;
-        setState(() {});
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
-        return;
-      }
-      Producto producto = listaProductosSucursal.firstWhere(
-          (producto) => producto.id == _productoSeleccionado!.id,
-          orElse: () => Producto(id: null, producto: 'No encontrado'));
-
-      if (producto.id == null) {
-        existe = false;
-        isLoading = false;
-        _cantidadSucursal = '0';
-        setState(() {});
-        return;
-      }
-
-      _cantidadSucursal = producto.disponibleInv?.toString();
-
-      _productoSeleccionado?.idInv = producto.idInv;
-      isLoading = false;
-      existe = true;
-      setState(() {});
-    } catch (e) {
-      isLoading = false;
-      setState(() {});
-      mostrarAlerta(context, 'Error', e.toString());
-    }
-  }
-
-  void _validarYGuardarProductoSucursal() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (_productoSeleccionado == null) {
-      mostrarAlerta(context, 'Error', 'Selecciona un producto');
-      return;
-    }
-
-    if (_selectedSucursal == null) {
-      mostrarAlerta(context, 'Error', 'Selecciona una sucursal');
-      return;
-    }
-
-    if (double.parse(controller.text) <= 0) {
-      mostrarAlerta(context, 'Error', 'La cantidad debe ser mayor a 0');
-      return;
-    }
-
-    _guardarProductoSucursal();
-  }
-
-  void _updateCantidadSucursal() async {
-    if (_selectedSucursal == null || _productoSeleccionado == null) {
-      _cantidadSucursal = '0';
-      setState(() {});
-      return;
-    }
-
-    isLoading = true;
-    setState(() {});
-
-    try {
-      Resultado resultado = await provider.listarProductosSucursal(
-          listaSucursales.firstWhere((s) => s.id == _selectedSucursal).id!);
-
-      if (resultado.status != 1) {
-        isLoading = false;
-        setState(() {});
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
-        return;
-      }
-
-      Producto producto = listaProductosSucursal.firstWhere(
-          (producto) => producto.id == _productoSeleccionado!.id,
-          orElse: () => Producto(id: null, producto: 'No encontrado'));
-
-      _cantidadSucursal = producto.id != null
-          ? producto.disponibleInv!.toInt().toString()
-          : '0';
-      isLoading = false;
-      setState(() {});
-    } catch (e) {
-      isLoading = false;
-      setState(() {});
-      mostrarAlerta(context, 'Error', e.toString());
-    }
-  }
-
-  void _guardarProductoSucursal() async {
-    if (controller.text.isEmpty || _cantidadSucursal == null) return;
+  void _onProductoSeleccionado(String? nombreProducto) {
+    if (nombreProducto == null || !mounted) return;
     setState(() {
-      isLoading = true;
-      textLoading = 'Guardando producto en sucursal';
+      _productoSeleccionado =
+          listaProductos.firstWhere((p) => p.producto == nombreProducto);
     });
 
-    // Asigna la cantidad ingresada al producto seleccionado
-    _productoSeleccionado?.cantidadInv = double.parse(controller.text);
-
-    _selectedProduct = null;
-    _selectedSucursal = null;
-    _updateCantidadSucursal();
-
-    controller.clear();
-    // Si el producto no existe en la sucursal, crea un nuevo inventario
-    if (existe == false) {
-      Resultado resultado =
-          await provider.nvoInventarioSuc(_productoSeleccionado!);
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
-
-      if (resultado.status != 1) {
-        mostrarAlerta(context, 'Error', resultado.mensaje!);
-        return;
-      }
-
-      // Añade el producto a la lista de productos de la sucursal
-      listaProductosSucursal.add(_productoSeleccionado!);
-      _productoSeleccionado = null;
-
-      mostrarAlerta(context, 'Éxito',
-          'Se agregó correctamente el producto a la sucursal.');
-      return;
+    if (_selectedSucursalId != null) {
+      _actualizarStockSucursal();
     }
+  }
 
-    // Si el producto ya existe en la sucursal, actualiza la cantidad
-    Resultado resultado =
-        await provider.inventarioSucAgregar(_productoSeleccionado!);
+  void _onSucursalSeleccionada(int? sucursalId) {
+    if (sucursalId == null || !mounted) return;
     setState(() {
-      isLoading = false;
-      textLoading = '';
+      _selectedSucursalId = sucursalId;
     });
+
+    if (_productoSeleccionado != null) {
+      _actualizarStockSucursal();
+    }
+  }
+
+  Future<void> _actualizarStockSucursal() async {
+    if (_selectedSucursalId == null || _productoSeleccionado == null) return;
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _textLoading = 'Consultando stock en sucursal...';
+    });
+
+    final resultado =
+        await _provider.listarProductosSucursal(_selectedSucursalId!);
+    if (!mounted) return;
 
     if (resultado.status != 1) {
       mostrarAlerta(context, 'Error', resultado.mensaje!);
+      setState(() => _isLoading = false);
       return;
     }
 
-    // Actualiza la lista de productos de la sucursal
-    listaProductosSucursal.add(_productoSeleccionado!);
-    _productoSeleccionado = null;
+    final productoEnSucursal = listaProductosSucursal.firstWhere(
+        (p) => p.id == _productoSeleccionado!.id,
+        orElse: () => Producto(id: null));
 
-    mostrarAlerta(
-        context, 'Éxito', 'Se agregó correctamente el producto a la sucursal.');
+    if (productoEnSucursal.id != null) {
+      _productoYaExisteEnSucursal = true;
+      _cantidadEnSucursal = (productoEnSucursal.disponibleInv ?? 0)
+          .toStringAsFixed(productoEnSucursal.unidad == "1" ? 0 : 3);
+      _productoSeleccionado!.idInv = productoEnSucursal.idInv;
+    } else {
+      _productoYaExisteEnSucursal = false;
+      _cantidadEnSucursal = '0';
+      _productoSeleccionado!.idInv = null;
+    }
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
 
-  String textLoading = '';
+  Future<void> _guardarProductoSucursal() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (_productoSeleccionado == null || _selectedSucursalId == null) {
+      mostrarAlerta(
+          context, 'Atención', 'Debe seleccionar un producto y una sucursal.');
+      return;
+    }
+
+    final double cantidadAAgregar =
+        double.tryParse(_cantidadController.text) ?? 0.0;
+    if (cantidadAAgregar <= 0) {
+      mostrarAlerta(
+          context, 'Error', 'La cantidad a agregar debe ser mayor a 0.');
+      return;
+    }
+
+    if (cantidadAAgregar > (_productoSeleccionado!.cantidad ?? 0)) {
+      mostrarAlerta(context, 'Error',
+          'No puedes agregar más de la existencia en almacén (${_productoSeleccionado!.cantidad}).');
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _textLoading = 'Agregando a sucursal...';
+    });
+
+    Resultado resultadoApi;
+
+    _productoSeleccionado!.cantidadInv = cantidadAAgregar;
+    if (_productoYaExisteEnSucursal) {
+      resultadoApi =
+          await _provider.inventarioSucAgregar(_productoSeleccionado!);
+    } else {
+      _productoSeleccionado!.idSucursal = _selectedSucursalId!;
+      resultadoApi = await _provider.nvoInventarioSuc(_productoSeleccionado!);
+    }
+
+    if (!mounted) return;
+
+    if (resultadoApi.status == 1) {
+      mostrarAlerta(
+          context, 'Éxito', resultadoApi.mensaje ?? 'Operación exitosa.');
+      // Limpiar la UI para una nueva operación
+      setState(() {
+        _productoSeleccionado = null;
+        _selectedSucursalId = null;
+        _cantidadEnSucursal = '0';
+        _cantidadController.clear();
+      });
+      // Recargar la data de fondo para que la próxima selección esté actualizada
+      await _cargarProductosAlmacen();
+    } else {
+      setState(() {
+        _isLoading = false;
+        _textLoading = '';
+      });
+      mostrarAlerta(
+          context, 'Error', resultadoApi.mensaje ?? 'No se pudo guardar.');
+    }
+  }
+
+  @override
+  void dispose() {
+    _cantidadController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,12 +188,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
         elevation: 2,
         actions: [
           IconButton(
-            onPressed: () =>
-                showSearch(context: context, delegate: Searchproductos()),
-            icon: const Icon(Icons.search),
-            tooltip: 'Buscar producto',
-          ),
-          IconButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, 'products-menu');
             },
@@ -238,7 +196,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
           ),
         ],
       ),
-      body: isLoading ? _buildLoadingIndicator() : _buildForm(),
+      body: _isLoading ? _buildLoadingIndicator() : _buildForm(),
     );
   }
 
@@ -247,10 +205,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            'Espere... $textLoading',
-            style: const TextStyle(fontSize: 16),
-          ),
+          Text('Espere... $_textLoading', style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 20),
           const CircularProgressIndicator(),
         ],
@@ -282,45 +237,30 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   Widget _buildSeleccionProductoCard() {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(
-              'Selección de Producto',
-              Icons.inventory_2_outlined,
-              Colors.blue,
-            ),
+            _buildSectionTitle('Selección de Producto',
+                Icons.inventory_2_outlined, Colors.blue),
             const SizedBox(height: 24),
             CustomDropdownSearch(
-              items:
-                  listaProductos.map((producto) => producto.producto!).toList(),
-              selectedItem: _selectedProduct ?? "Selecciona un producto",
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  _productoSeleccionado = listaProductos
-                      .firstWhere((producto) => producto.producto == newValue);
-                  _valuePieza =
-                      _productoSeleccionado!.unidad == "0" ? true : false;
-                  setState(() {
-                    _selectedProduct = newValue;
-                  });
-                  _updateCantidadSucursal();
-                }
-              },
+              items: listaProductos
+                  .map((producto) => producto.producto ?? '')
+                  .toList(),
+              selectedItem:
+                  _productoSeleccionado?.producto, // Pasar el nombre, o null
+              onChanged: _onProductoSeleccionado,
               labelText: 'Nombre del producto *',
             ),
             const SizedBox(height: 16),
             _buildInfoField(
               labelText: 'Existencia en almacén:',
-              value: (_productoSeleccionado?.cantidad.toString() != 'null'
-                      ? _productoSeleccionado?.cantidad.toString()
-                      : '0') ??
-                  '0',
+              value: (_productoSeleccionado?.cantidad?.toStringAsFixed(
+                      _productoSeleccionado?.unidad == "1" ? 0 : 3) ??
+                  '0'),
               icon: Icons.warehouse_outlined,
             ),
           ],
@@ -332,52 +272,39 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   Widget _buildSeleccionSucursalCard() {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(
-              'Selección de Sucursal',
-              Icons.store_outlined,
-              Colors.green,
-            ),
+                'Selección de Sucursal', Icons.store_outlined, Colors.green),
             const SizedBox(height: 24),
             DropdownButtonFormField<int>(
               decoration: InputDecoration(
                 labelText: 'Sucursal destino *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 prefixIcon: const Icon(Icons.storefront_outlined, size: 20),
               ),
-              initialValue: _selectedSucursal,
+              value: _selectedSucursalId,
               isExpanded: true,
-              validator: (value) {
-                if (value == null) {
-                  return 'Seleccione una sucursal';
-                }
-                return null;
-              },
+              validator: (value) =>
+                  value == null ? 'Seleccione una sucursal' : null,
               items: listaSucursales
                   .map((sucursal) => DropdownMenuItem(
-                        value: sucursal.id,
-                        child: Text(sucursal.nombreSucursal ?? ''),
-                      ))
+                      value: sucursal.id,
+                      child: Text(sucursal.nombreSucursal ?? '')))
                   .toList(),
-              onChanged: _setProductsSucursal,
+              onChanged: _onSucursalSeleccionada,
             ),
             const SizedBox(height: 16),
             _buildInfoField(
-              labelText: 'Existencia en sucursal:',
-              value: _cantidadSucursal ?? '0',
+              labelText: 'Existencia actual en sucursal:',
+              value: _cantidadEnSucursal,
               icon: Icons.shopping_bag_outlined,
             ),
           ],
@@ -387,34 +314,30 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
   }
 
   Widget _buildCantidadCard() {
+    bool esPorPiezas = _productoSeleccionado?.unidad == "1";
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle(
-              'Cantidad a Agregar',
-              Icons.add_circle_outline,
-              Colors.orange,
-            ),
+                'Cantidad a Agregar', Icons.add_circle_outline, Colors.orange),
             const SizedBox(height: 24),
             _buildFormField(
               labelText: 'Cantidad a agregar:',
               keyboardType:
-                  TextInputType.numberWithOptions(decimal: !_valuePieza),
-              controller: controller,
+                  TextInputType.numberWithOptions(decimal: !esPorPiezas),
+              controller: _cantidadController,
               icon: Icons.numbers_outlined,
               required: true,
               inputFormatters: [
-                if (_valuePieza)
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,3}'))
+                if (esPorPiezas)
+                  FilteringTextInputFormatter.digitsOnly
                 else
-                  FilteringTextInputFormatter.digitsOnly,
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,3}')),
               ],
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -423,19 +346,30 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                 if (double.tryParse(value) == null) {
                   return 'Ingrese un valor numérico válido';
                 }
-                if (double.parse(value) <= 0) {
-                  return 'La cantidad debe ser mayor a 0';
-                }
                 return null;
               },
-              suffix: _productoSeleccionado != null
-                  ? Text(
-                      _valuePieza ? 'Kg/m' : 'Piezas',
-                      style: TextStyle(color: Colors.grey[600]),
-                    )
-                  : null,
+              suffix: Text(esPorPiezas ? 'Piezas' : 'Kg/m/l',
+                  style: TextStyle(color: Colors.grey[600])),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _isLoading ? null : _guardarProductoSucursal,
+        icon: const Icon(Icons.save_outlined),
+        label: const Text('Agregar a Sucursal'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -450,29 +384,19 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
             color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
+          child: Icon(icon, color: color, size: 24),
         ),
         const SizedBox(width: 12),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        Text(title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ],
     );
   }
 
-  Widget _buildInfoField({
-    required String labelText,
-    required String value,
-    required IconData icon,
-  }) {
+  Widget _buildInfoField(
+      {required String labelText,
+      required String value,
+      required IconData icon}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -484,24 +408,17 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
         children: [
           Icon(icon, size: 20, color: Colors.grey[600]),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                labelText,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(labelText,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(value,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+              ],
+            ),
           ),
         ],
       ),
@@ -528,32 +445,10 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
         prefixIcon: Icon(icon, size: 20),
         suffix: suffix,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(width: 1),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: _validarYGuardarProductoSucursal,
-        icon: const Icon(Icons.save_outlined),
-        label: const Text('Agregar a Sucursal'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+            borderSide: const BorderSide(width: 1)),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
     );
   }

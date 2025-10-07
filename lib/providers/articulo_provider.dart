@@ -87,7 +87,6 @@ class ArticuloProvider {
   }
 
   Future<Producto> consultaProducto(int idProd) async {
-    // Endpoint sin cambios: La API /producto/{idProducto} (GET) ahora puede devolver info adaptada
     Producto productoTemp = Producto(id: 0);
     var url = Uri.parse('$baseUrl/producto/$idProd');
     try {
@@ -214,6 +213,7 @@ class ArticuloProvider {
     // Igual que listarProductos, ahora apunta a la vista de almacén.
     var url = Uri.parse(
         '$baseUrl/productos/almacen/${sesion.idNegocio}'); // Actualizado
+
     try {
       // ... (lógica de request y parseo igual a tu original) ...
       // (Solo he omitido el cuerpo del for para brevedad, debe ser igual a tu original)
@@ -357,9 +357,7 @@ class ArticuloProvider {
     // Endpoint actualizado: productos/almacen/lista-detallada/{idNegocio}
     var url = Uri.parse(
         '$baseUrl/productos/almacen/lista-detallada/${sesion.idNegocio}');
-    List<Producto> listaProductosAlmacenTemporal =
-        []; // Usar una lista temporal aquí
-
+    List<Producto> listaProductosAlmacenTemporal = [];
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -369,12 +367,17 @@ class ArticuloProvider {
       if (decodedData['status'] == 1) {
         for (int x = 0; x < decodedData['data'].length; x++) {
           Producto productoTemp = Producto();
-          // ... (mapeo igual a tu original) ...
           productoTemp.id = decodedData['data'][x]['id'];
           productoTemp.producto = decodedData['data'][x]['nombre'];
-          // ...
+          productoTemp.idCategoria = decodedData['data'][x]['categoria_id'];
+          productoTemp.descripcion = decodedData['data'][x]['descripcion'];
+          productoTemp.unidad = decodedData['data'][x]['unidad'].toString();
+          productoTemp.clave = decodedData['data'][x]['clave'];
+          productoTemp.codigoBarras = decodedData['data'][x]['codigo_barras'];
+
           productoTemp.cantidad =
               double.tryParse(decodedData['data'][x]['cantidad'].toString());
+
           listaProductosAlmacenTemporal.add(productoTemp);
         }
         // Actualizar la lista global después de cargar todo
@@ -429,6 +432,7 @@ class ArticuloProvider {
         'Authorization': 'Bearer ${sesion.token}',
       });
       final decodedData = jsonDecode(resp.body);
+
       if (decodedData['status'] == 1) {
         listaProductosSucursal.clear();
         for (int x = 0; x < decodedData['data'].length; x++) {
@@ -460,7 +464,7 @@ class ArticuloProvider {
           productoTemp.apartado =
               int.parse(decodedData['data'][x]['aplica_apartado']);
 
-          productoTemp.idInv = decodedData['data'][x]['id_inv'];
+          productoTemp.idInv = decodedData['data'][x]['id_inv_suc'];
 
           productoTemp.cantidadInv =
               double.parse(decodedData['data'][x]['cantidad_inv']);
@@ -487,6 +491,7 @@ class ArticuloProvider {
     // Endpoint actualizado: inventario/sucursal/nuevo (POST)
     // Ya no se envía idUser en la URL
     var url = Uri.parse('$baseUrl/inventario/sucursal/nuevo');
+    print(url);
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
@@ -498,6 +503,9 @@ class ArticuloProvider {
         'cantidad': producto.cantidadInv.toString()
       });
       final decodedData = jsonDecode(resp.body);
+      print(
+          ' ================================== Nuevo Inventario ================================== ');
+      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -515,17 +523,23 @@ class ArticuloProvider {
   Future<Resultado> inventarioSucAgregar(Producto producto) async {
     // Endpoint actualizado: inventario/sucursal/agregar (PUT)
     var url = Uri.parse('$baseUrl/inventario/sucursal/agregar');
+
+    print(url);
+    print(sesion.token);
+    print(producto.idInv);
+    print(producto.cantidadInv);
     try {
-      // ... (lógica igual a tu original, solo la URL cambia si es necesario) ...
-      // Mantengo tu formato de body
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
       }, body: {
         'inventario_id': producto.idInv.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
-      // ...
+
       final decodedData = jsonDecode(resp.body);
+      print(
+          ' ================================== Agregar Inventario ================================== ');
+      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -544,6 +558,7 @@ class ArticuloProvider {
       String idInventario, String cantidad) async {
     // Endpoint actualizado: inventario/sucursal/quitar (PUT)
     var url = Uri.parse('$baseUrl/inventario/sucursal/quitar');
+    print(url);
     try {
       // ... (lógica igual a tu original, solo la URL cambia si es necesario) ...
       // Mantengo tu formato de body
@@ -572,8 +587,8 @@ class ArticuloProvider {
     // Debería apuntar a la misma ruta que nvoInventarioSuc si la funcionalidad es la misma.
     var url =
         Uri.parse('$baseUrl/inventario/sucursal/nuevo'); // Asumiendo misma ruta
+    print(url);
     try {
-      // ... (lógica igual a tu original) ...
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
       }, body: {
@@ -581,8 +596,11 @@ class ArticuloProvider {
         'producto_id': producto.id.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
-      // ...
+
       final decodedData = jsonDecode(resp.body);
+      print(
+          ' ================================== Quitar Inventario ================================== ');
+      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];

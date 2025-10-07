@@ -15,7 +15,7 @@ class _PlanesScreenState extends State<PlanesScreen> {
   final _suscripcionProvider = SuscripcionProvider();
   final _usuarioProvider = UsuarioProvider();
   bool _isLoadingPlanes = true;
-  bool _isLoadingPaymentMethod = false;
+  final bool _isLoadingPaymentMethod = false;
   String? _errorPlanes;
 
   @override
@@ -144,8 +144,7 @@ class _PlanesScreenState extends State<PlanesScreen> {
   }
 
   // ¡NUEVA FUNCIÓN AYUDANTE! Encapsula la llamada a la API para cambiar de plan.
-  Future<void> _ejecutarCambioDeSuscripcion(PlanSuscripcion plan,
-      {String? paymentMethodId}) async {
+  Future<void> _ejecutarCambioDeSuscripcion(PlanSuscripcion plan) async {
     if (!mounted) return;
     setState(() => _isLoadingPlanes = true);
 
