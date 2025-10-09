@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/julio/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/julio/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/julio/Documents/Flutter/vendo_facil/android/app/.cxx/Debug/22724n36/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/julio/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/julio/Documents/Flutter/vendo_facil/android/app/.cxx/Debug/22724n36/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

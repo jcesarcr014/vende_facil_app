@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/router/app_routes.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:vende_facil/providers/globals.dart' as globals;
 import 'app_theme.dart';
 
-void main() {
+void main() async  {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = globals.stripePublishableKey;
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  
   const MyApp({super.key});
 
   @override

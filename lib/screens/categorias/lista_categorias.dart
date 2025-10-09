@@ -243,7 +243,7 @@ class _CategoriasScreensState extends State<CategoriasScreens> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: colorCategoria.withOpacity(0.2),
+                          color: colorCategoria.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(

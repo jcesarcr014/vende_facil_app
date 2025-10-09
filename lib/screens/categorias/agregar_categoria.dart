@@ -153,7 +153,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
+      onPopInvokedWithResult: (didpop, result) {
         if (!didpop) Navigator.pushReplacementNamed(context, 'categorias');
       },
       child: Scaffold(
@@ -251,7 +251,7 @@ class _AgregaCategoriaScreenState extends State<AgregaCategoriaScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

@@ -41,7 +41,7 @@ class VariablesProvider {
 
   Future<Resultado> modificarVariable(int id, String valor) async {
     var url = Uri.parse('$baseUrl/variable');
-    print(' ====== $url : $id : $valor   ======  ');
+
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',

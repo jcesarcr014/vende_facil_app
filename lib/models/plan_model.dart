@@ -1,25 +1,33 @@
 class PlanSuscripcion {
   int? id;
-  String? monto;
-  String? idPlanOp;
   String? nombrePlan;
+  String? monto;
   String? periodicidad;
+  String? divisa;
   int? sucursales;
   int? empleados;
-  String? divisa;
-  bool? activo;
+  int? productos;
+  int? ventas;
+  String? idStripe;
+
+
 
   PlanSuscripcion({
     this.id,
-    this.monto,
-    this.idPlanOp,
     this.nombrePlan,
+    this.monto,
     this.periodicidad,
+    this.divisa,
     this.sucursales,
     this.empleados,
-    this.divisa,
-    this.activo,
+    this.productos,
+    this.ventas,
+    this.idStripe,
+  
   });
 }
+ 
+
+
 
 List<PlanSuscripcion> listaPlanes = [];

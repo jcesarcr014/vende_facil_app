@@ -14,6 +14,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   bool isLoading = false;
   String textLoading = '';
   final cantidadController = TextEditingController();
+  final _folioFacturaController = TextEditingController();
   final _actualizaMontos = totales.ActualizaMontos();
   final sinDescuento = Descuento(id: 0, nombre: 'Sin descuento', valor: 0.0);
 
@@ -23,6 +24,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       .id!;
 
   bool _ventaDomicilio = false;
+  bool _requiereFactura = false;
 
   @override
   void initState() {
@@ -130,6 +132,8 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       total: totalVT,
       tipoVenta: _ventaDomicilio ? 1 : 0,
       nombreCliente: clienteVentaActual.nombre,
+      factura: _requiereFactura ? 1 : 0,
+      folioFactura: _folioFacturaController.text,
     );
 
     Navigator.pushNamed(context, 'venta', arguments: venta);
@@ -183,8 +187,10 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           const SizedBox(height: 16),
           _buildClientSection(),
           const SizedBox(height: 16),
-          _buildSaleTypeToggle(),
+          _buildFacturaSection(), // NUEVA SECCIÓN
           const SizedBox(height: 16),
+          _buildSaleTypeToggle(),
+          const SizedBox(height: 24),
           _buildActionButtons(),
         ],
       ),
@@ -307,7 +313,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     ];
 
     return DropdownButtonFormField<int>(
-      value: _descuentoId,
+      initialValue: _descuentoId,
       items: discountItems,
       onChanged: (value) {
         setState(() {
@@ -358,7 +364,7 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
     ];
 
     return DropdownButtonFormField<int>(
-      value: _clienteId,
+      initialValue: _clienteId,
       items: clientItems,
       onChanged: (value) {
         setState(() {
@@ -370,6 +376,53 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
       },
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildFacturaSection() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+            16, 4, 16, 16), // Menos padding superior para el Switch
+        child: Column(
+          children: [
+            SwitchListTile(
+              title: const Text('¿Requiere Factura?',
+                  style: TextStyle(fontWeight: FontWeight.w500)),
+              value: _requiereFactura,
+              onChanged: (value) {
+                setState(() {
+                  _requiereFactura = value;
+                  if (!value) {
+                    _folioFacturaController
+                        .clear(); // Limpiar el folio si se desactiva
+                  }
+                });
+              },
+              activeThumbColor: Theme.of(context).primaryColor,
+              contentPadding:
+                  EdgeInsets.zero, // Para controlar el padding nosotros
+            ),
+            // El campo de texto para el folio solo aparece si el switch está activado
+            if (_requiereFactura) ...[
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _folioFacturaController,
+                decoration: const InputDecoration(
+                  labelText: 'Folio de Factura',
+                  hintText: 'Ingrese el folio...',
+                  prefixIcon: Icon(Icons.receipt_long_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                textCapitalization:
+                    TextCapitalization.characters, // Para que sea en mayúsculas
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

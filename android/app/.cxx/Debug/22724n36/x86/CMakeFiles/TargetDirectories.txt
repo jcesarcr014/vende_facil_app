@@ -1,0 +1,2 @@
+/Users/julio/Documents/Flutter/vendo_facil/android/app/.cxx/Debug/22724n36/x86/CMakeFiles/edit_cache.dir
+/Users/julio/Documents/Flutter/vendo_facil/android/app/.cxx/Debug/22724n36/x86/CMakeFiles/rebuild_cache.dir

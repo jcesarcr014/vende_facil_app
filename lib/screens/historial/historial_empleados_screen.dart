@@ -53,6 +53,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
         textLoading = '';
       });
       if (value.status == 1) {
+        sesion.caja = false;
         if (varEmpleadoCorte) {
           setState(() {
             body = 2;
@@ -62,6 +63,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
           mostrarAlerta(context, '', 'Corte generado correctamente');
         }
       } else {
+        sesion.caja = true;
         mostrarAlerta(context, 'ERROR',
             'Ocurrio un error al solicitar el corte ${value.mensaje}');
       }
@@ -195,10 +197,20 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
           ),
         ),
         SizedBox(height: windowHeight * 0.02),
+        // Display the initial cash value
         Text(
-          'Efectivo en caja:  \$${corteActual.efectivoInicial}',
+          'Efectivo inicial: \$${corteActual.efectivoInicial}',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: windowHeight * 0.01),
+        // Add the new efectivoCaja display
+        Text(
+          'Efectivo en caja: \$${corteActual.efectivoCaja}',
+          style: TextStyle(
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -262,7 +274,8 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
                   'Ventas con Tarjeta', corteActual.ventasTarjeta ?? '0.0'),
               _buildTotalRow(
                   'Total Ingresos', corteActual.totalIngresos ?? '0.0'),
-              if (corteActual.diferencia != null && corteActual.diferencia != 0)
+              if (corteActual.diferencia != null &&
+                  corteActual.diferencia != '0')
                 _buildDiferenciaRow(corteActual.diferencia ?? '0.0',
                     corteActual.tipoDiferencia ?? ''),
             ],

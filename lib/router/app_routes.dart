@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vende_facil/screens/screens.dart';
 
-import '../models/producto_model.dart';
-
 class AppRoutes {
   static const initialRoute = 'splash';
 
@@ -14,6 +12,7 @@ class AppRoutes {
     'agregar-producto-sucursal': (BuildContext context) =>
         const AgregarProductoSucursal(),
     'products-menu': (BuildContext context) => const ProductsScreen(),
+    'iventario-almacen': (BuildContext context) => const AlmacenInventoryPage(),
     'splash': (BuildContext context) => const SplashScreen(),
     'select-branch-office': (BuildContext context) => const SucursalesScreen(),
     'home': (BuildContext context) => const HomeScreen(),
@@ -35,9 +34,6 @@ class AppRoutes {
     'menu-negocio': (BuildContext context) => const MenuEmpresaScreen(),
     'negocio': (BuildContext context) => const AgregarEmpresa(),
     'menu': (BuildContext context) => const MenuScreen(),
-    'suscripcion': (BuildContext context) => const SuscripcionScreen(),
-    'tarjetas': (BuildContext context) => const TarjetaScreen(),
-    'nvo-tarjetas': (BuildContext context) => const AgregaTarjetaScreen(),
     "ventasD": (BuildContext context) => const VentaDetallesScreen(),
     'perfil': (BuildContext context) => const PerfilScreen(),
     'abono_detalle': (BuildContext context) =>
@@ -54,6 +50,8 @@ class AppRoutes {
     'nva-sucursal': (BuildContext context) => const RegistroSucursalesScreen(),
     'ticket': (BuildContext context) => const TicketScreen(),
     'InventoryPage': (BuildContext context) => const InventoryPage(),
+    'inventarioUnisucursal': (BuildContext context) =>
+        const InventarioUnicaSucScreen(),
     'abonosPagos': (BuildContext context) =>
         const AbonoScreenpago(), //realizar abono
     'listaCotizaciones': (BuildContext context) =>

@@ -9,12 +9,8 @@ class ActualizaMontos {
     if (ventaTemporal.isEmpty) return;
     final distribuidor = clienteVentaActual.distribuidor == 1;
     final descuentoActivo = descuentoVentaActual.id != 0;
-    final mayoreoActivo =
-        listaVariables.firstWhere((v) => v.nombre == "aplica_mayoreo").valor ==
-            '1';
-    final cantidadMayoreo = int.parse(listaVariables
-        .firstWhere((v) => v.nombre == 'productos_mayoreo')
-        .valor!);
+    final mayoreoActivo = varAplicaMayoreo;
+    final cantidadMayoreo = varProductosMayoreo;
 
     for (ItemVenta item in ventaTemporal) {
       double precio = _seleccionarPrecio(item,
@@ -22,11 +18,10 @@ class ActualizaMontos {
           mayoreoActivo: mayoreoActivo,
           cantidadMayoreo: cantidadMayoreo);
       item.precioUtilizado = precio;
-
       double descuentoAplicado =
           _calcularDescuento(item, precio, descuentoActivo: descuentoActivo);
 
-      item.subTotalItem = item.precioPublico * item.cantidad;
+      item.subTotalItem = precio * item.cantidad;
       item.descuento = descuentoAplicado;
       item.totalItem = item.subTotalItem - item.descuento;
 
@@ -51,7 +46,6 @@ class ActualizaMontos {
     if (mayoreoActivo && item.cantidad >= cantidadMayoreo) {
       return item.precioMayoreo != 0 ? item.precioMayoreo : item.precioPublico;
     }
-
     return item.precioPublico;
   }
 

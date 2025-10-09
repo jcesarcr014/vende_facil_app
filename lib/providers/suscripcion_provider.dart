@@ -1,198 +1,202 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/globals.dart' as globals;
-import 'package:http/http.dart' as http;
-import 'package:openpay_bbva/openpay_bbva.dart';
 
 class SuscripcionProvider {
-  final baseUrl = globals.baseUrl;
+  final String baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
-  Future<Resultado> nvaTarjetaOP(TarjetaOP tarjeta) async {
-    var url = Uri.parse('$baseUrl/tarjeta/${sesion.idUsuario}');
-    final openpay = OpenpayBBVA(
-        merchantId: globals.opMerchantId,
-        publicApiKey: globals.opPublicKey,
-        productionMode: false);
-    String? deviceID = '';
-    String token = '';
-    try {
-      deviceID = await openpay.getDeviceID();
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error al obtener el token de la tarjeta. $e';
-    }
-
-    try {
-      token = await openpay.getCardToken(
-        CardInformation(
-          holderName: tarjeta.titular!,
-          cardNumber: tarjeta.numero!,
-          expirationYear: tarjeta.fechaA!,
-          expirationMonth: tarjeta.fechaM!,
-          cvv2: tarjeta.ccv!,
-        ),
-      );
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error al obtener el token de la tarjeta. $e';
-    }
-    String ultimos4Digitos =
-        tarjeta.numero!.substring(tarjeta.numero!.length - 4);
-
-    try {
-      final resp = await http.post(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      }, body: {
-        'numero': ultimos4Digitos,
-        'device_id': deviceID,
-        'token': token,
-      });
-      final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-      } else {
-        respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
-      }
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion. $e';
-    }
-    return respuesta;
-  }
-
-  Future<Resultado> listarTarjetas() async {
-    var url = Uri.parse('$baseUrl/tarjetas/${sesion.idUsuario}');
-    try {
-      final resp = await http.get(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      });
-      final decodedData = jsonDecode(resp.body);
-
-      if (decodedData['status'] == 1) {
-        listaTarjetas.clear();
-        for (int x = 0; x < decodedData['data'].length; x++) {
-          TarjetaOP tarjetaTemp = TarjetaOP();
-          tarjetaTemp.id = decodedData['data'][x]['id'];
-          tarjetaTemp.numero = decodedData['data'][x]['num_tarjeta'];
-
-          listaTarjetas.add(tarjetaTemp);
-        }
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-      }
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion: $e';
-    }
-    return respuesta;
-  }
-
-  Future<Resultado> eliminarTarjeta(int idTarjeta) async {
-    var url = Uri.parse('$baseUrl/tarjeta/$idTarjeta');
-    try {
-      final resp = await http.delete(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-      });
-      final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-      } else {
-        respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
-      }
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion: $e';
-    }
-    return respuesta;
-  }
+  //======================================================================
+  // GESTIÓN DE PLANES
+  //======================================================================
 
   Future<Resultado> obtienePlanes() async {
     var url = Uri.parse('$baseUrl/planes');
+
+    listaPlanes.clear();
+
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
+        'Accept': 'application/json',
       });
+
+      if (resp.statusCode != 200) {
+        respuesta.status = 0;
+        respuesta.mensaje = 'Error del servidor: ${resp.statusCode}';
+        return respuesta;
+      }
+
       final decodedData = jsonDecode(resp.body);
-
-      if (decodedData['status'] == 1) {
-        listaPlanes.clear();
-        listaDetalles.clear();
-        for (int x = 0; x < decodedData['planes'].length; x++) {
-          PlanSuscripcion planTemp = PlanSuscripcion();
-          planTemp.id = decodedData['planes'][x]['id'];
-          planTemp.monto = decodedData['planes'][x]['monto'];
-          planTemp.idPlanOp = decodedData['planes'][x]['id_plan_op'];
-          planTemp.nombrePlan = decodedData['planes'][x]['nombre_plan'];
-          planTemp.periodicidad = decodedData['planes'][x]['periodicidad'];
-          planTemp.sucursales = decodedData['planes'][x]['sucursales'];
-          planTemp.empleados = decodedData['planes'][x]['empleados'];
-          planTemp.divisa = decodedData['planes'][x]['divisa'];
-          if (suscripcionActual.idPlan == planTemp.id) {
-            planTemp.activo = true;
-          } else {
-            planTemp.activo = false;
-          }
-
+      print(decodedData);
+      if (decodedData['status'] == 1 && decodedData['data'] is List) {
+        for (final planData in decodedData['data']) {
+          PlanSuscripcion planTemp = PlanSuscripcion(
+            id: planData['id'],
+            nombrePlan: planData['nombre_plan'],
+            monto: planData['monto'],
+            periodicidad: planData['periodicidad'],
+            divisa: planData['divisa'],
+            sucursales: planData['sucursales'],
+            empleados: planData['empleados'],
+            productos: planData['productos'],
+            ventas: planData['ventas'],
+            idStripe: planData['stripe_price_id'],
+          );
           listaPlanes.add(planTemp);
-        }
-
-        for (int x = 0; x < decodedData['detalles'].length; x++) {
-          DetallePlan detalleTemp = DetallePlan();
-          detalleTemp.id = decodedData['detalles'][x]['id'];
-          detalleTemp.idPlan = decodedData['detalles'][x]['plan_id'];
-          detalleTemp.descripcion = decodedData['detalles'][x]['descripcion'];
-          listaDetalles.add(detalleTemp);
         }
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
       } else {
         respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
+        respuesta.mensaje = decodedData['msg'] ??
+            'La respuesta de la API no tiene el formato esperado.';
       }
     } catch (e) {
       respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion: $e';
+      respuesta.mensaje = 'Error en la petición (obtienePlanes): $e';
     }
     return respuesta;
   }
 
-  Future<Resultado> leeSuscripcion() async {
-    var url = Uri.parse('$baseUrl/suscripcion/${sesion.idUsuario}');
+  //======================================================================
+  // GESTIÓN DE SUSCRIPCIONES
+  //======================================================================
+
+  Future<Resultado> cambiarSuscripcion(String stripePriceId,
+      {String? paymentMethodId}) async {
+    var url = Uri.parse('$baseUrl/suscripcion/cambiar');
+
+    final Map<String, dynamic> body = {
+      'stripe_price_id': stripePriceId,
+    };
+
+    if (paymentMethodId != null) {
+      body['payment_method_id'] = paymentMethodId;
+    }
+
+    try {
+      final resp = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${sesion.token}',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      final decodedData = jsonDecode(resp.body);
+      print(decodedData);
+      respuesta.status = decodedData['status'] ?? 0;
+      respuesta.mensaje = decodedData['msg'] ?? 'Error desconocido.';
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición (cambiarSuscripcion): $e';
+    }
+    return respuesta;
+  }
+
+  // --- NUEVA FUNCIÓN ---
+  Future<Resultado> cancelarSuscripcion() async {
+    var url = Uri.parse('$baseUrl/suscripcion/cancelar');
+    try {
+      final resp = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${sesion.token}',
+          'Accept': 'application/json',
+        },
+      );
+      final decodedData = jsonDecode(resp.body);
+      respuesta.status = decodedData['status'] ?? 0;
+      respuesta.mensaje =
+          decodedData['msg'] ?? 'Error desconocido al cancelar.';
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición (cancelarSuscripcion): $e';
+    }
+    return respuesta;
+  }
+
+  //======================================================================
+  // GESTIÓN DE MÉTODOS DE PAGO
+  //======================================================================
+
+  Future<String?> prepararSetupDePago() async {
+    var url = Uri.parse('$baseUrl/pago/preparar-setup');
     try {
       final resp = await http.get(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
+        'Accept': 'application/json',
+      });
+
+      if (resp.statusCode == 200) {
+        final decodedData = jsonDecode(resp.body);
+        return decodedData['clientSecret'];
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // --- NUEVA FUNCIÓN ---
+  Future<Resultado> obtenerMetodoPago() async {
+    var url = Uri.parse('$baseUrl/usuario/metodo-pago');
+    metodoPagoActual = null; // Limpiar antes de la consulta
+
+    try {
+      final resp = await http.get(url, headers: {
+        'Authorization': 'Bearer ${sesion.token}',
+        'Accept': 'application/json',
       });
       final decodedData = jsonDecode(resp.body);
-      if (decodedData['status'] == 1) {
-        detallesSuscripcion.clear();
-        suscripcionActual.id = decodedData['suscripcion']['id'];
-        suscripcionActual.idUsuario =
-            decodedData['suscripcion']['id_usuario_app'];
-        suscripcionActual.idTarjeta ?? decodedData['suscripcion']['id_tarjeta'];
-        suscripcionActual.idPlan = decodedData['suscripcion']['id_plan'];
-        suscripcionActual.idSuscripcionOP ??
-            decodedData['suscripcion']['id_suscripcion_op'];
-        for (int x = 0; x < decodedData['detalles'].length; x++) {
-          DetallePlan detalleTemp = DetallePlan();
-          detalleTemp.id = decodedData['detalles'][x]['id'];
-          detalleTemp.idPlan = decodedData['detalles'][x]['id_plan'];
-          detalleTemp.descripcion = decodedData['detalles'][x]['descripcion'];
-          detallesSuscripcion.add(detalleTemp);
-        }
+
+      if (decodedData['status'] == 1 && decodedData['data'] != null) {
+        final pagoData = decodedData['data'];
+        metodoPagoActual = MetodoPago(
+          marca: pagoData['marca'] ?? 'Desconocida',
+          ultimos4: pagoData['ultimos_4'] ?? 'XXXX',
+          mesExp: pagoData['mes_exp'] ?? 0,
+          anoExp: pagoData['ano_exp'] ?? 0,
+        );
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
       } else {
+        // status 0 es un resultado esperado (no hay método de pago), no un error de app.
         respuesta.status = 0;
-        respuesta.mensaje = decodedData['msg'];
+        respuesta.mensaje =
+            decodedData['msg'] ?? 'No se encontró método de pago.';
       }
     } catch (e) {
       respuesta.status = 0;
-      respuesta.mensaje = 'Error en la peticion: $e';
+      respuesta.mensaje = 'Error en la petición (obtenerMetodoPago): $e';
+    }
+    return respuesta;
+  }
+
+  // --- NUEVA FUNCIÓN ---
+  Future<Resultado> actualizarMetodoPago(String paymentMethodId) async {
+    var url = Uri.parse('$baseUrl/usuario/metodo-pago');
+    try {
+      final resp = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${sesion.token}',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({'payment_method_id': paymentMethodId}),
+      );
+      final decodedData = jsonDecode(resp.body);
+      respuesta.status = decodedData['status'] ?? 0;
+      respuesta.mensaje =
+          decodedData['msg'] ?? 'Error desconocido al actualizar.';
+    } catch (e) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'Error en la petición (actualizarMetodoPago): $e';
     }
     return respuesta;
   }

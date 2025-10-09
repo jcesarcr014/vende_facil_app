@@ -9,6 +9,7 @@ class CuentaSesion {
   String? telefono;
   bool? cotizar;
   String? sucursal;
+  bool? caja;
 
   CuentaSesion(
       {this.idUsuario,
@@ -20,7 +21,8 @@ class CuentaSesion {
       this.email,
       this.telefono,
       this.cotizar,
-      this.sucursal});
+      this.sucursal,
+      this.caja});
 
   void limpiar() {
     idUsuario = null;
@@ -33,6 +35,7 @@ class CuentaSesion {
     telefono = null;
     cotizar = null;
     sucursal = null;
+    caja = null;
   }
 }
 

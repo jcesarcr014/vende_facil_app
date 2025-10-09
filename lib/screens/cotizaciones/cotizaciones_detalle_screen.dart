@@ -678,7 +678,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
 
     return DropdownButtonFormField<String>(
       items: listaClien,
-      value: _valueIdcliente,
+      initialValue: _valueIdcliente,
       onChanged: (value) {
         if (value != null) {
           setState(() {

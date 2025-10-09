@@ -111,7 +111,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
 
     if (cantidadRetirar > cantidadDisponible) {
       mostrarAlerta(context, 'Error',
-          'La cantidad a retirar no puede ser mayor que la disponible (${cantidadDisponible})');
+          'La cantidad a retirar no puede ser mayor que la disponible ($cantidadDisponible)');
       return;
     }
 
@@ -278,7 +278,7 @@ class _EliminarProductoSucursalState extends State<EliminarProductoSucursal> {
                 ),
                 prefixIcon: const Icon(Icons.storefront_outlined, size: 20),
               ),
-              value: _selectedSucursal,
+              initialValue: _selectedSucursal,
               isExpanded: true,
               validator: (value) {
                 if (value == null) {

@@ -4,7 +4,7 @@ import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/providers/providers.dart';
 
 class AjustesApartadoScreen extends StatefulWidget {
-  const AjustesApartadoScreen({Key? key}) : super(key: key);
+  const AjustesApartadoScreen({super.key});
 
   @override
   State<AjustesApartadoScreen> createState() => _AjustesApartadoScreenState();
@@ -96,7 +96,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
         case 'empleado_corte':
           empleadoCorte = variable.valor == '1';
           break;
-        case 'aplica_iventario':
+        case 'aplica_inventario':
           aplicaInventario = variable.valor == '1';
           break;
       }
@@ -149,7 +149,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('$textLoading'),
+                  Text(textLoading),
                   const SizedBox(height: 10),
                   const CircularProgressIndicator(),
                 ],
@@ -485,7 +485,7 @@ class _AjustesApartadoScreenState extends State<AjustesApartadoScreen> {
                             value: aplicaInventario,
                             onChanged: (value) async {
                               await _guardarVariable(
-                                  'aplica_iventario', value ? '1' : '0');
+                                  'aplica_inventario', value ? '1' : '0');
                               setState(() {
                                 aplicaInventario = value;
                               });

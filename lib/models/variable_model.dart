@@ -38,7 +38,7 @@ class VariableConf {
         case 'empleado_corte':
           varEmpleadoCorte = variable.valor == '1';
           break;
-        case 'aplica_iventario':
+        case 'aplica_inventario':
           varAplicaInventario = variable.valor == '1';
           break;
       }

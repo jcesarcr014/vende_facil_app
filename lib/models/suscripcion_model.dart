@@ -1,17 +1,17 @@
-class SuscripcionOP {
-  int? id;
-  int? idUsuario;
-  String? idTarjeta;
+class Suscripcion {
+  int? idSuscripcion;
   int? idPlan;
-  String? idSuscripcionOP;
+  int? limiteSucursales;
+  int? limiteEmpleados;
+  bool unisucursal;
 
-  SuscripcionOP({
-    this.id,
-    this.idUsuario,
-    this.idTarjeta,
+  Suscripcion({
+    this.idSuscripcion,
     this.idPlan,
-    this.idSuscripcionOP,
+    this.limiteSucursales,
+    this.limiteEmpleados,
+    required this.unisucursal,
   });
 }
 
-SuscripcionOP suscripcionActual = SuscripcionOP();
+Suscripcion suscripcionActual = Suscripcion(unisucursal: true);

@@ -1,5 +1,4 @@
 export 'package:vende_facil/models/detalles_dia_model.dart';
-
 export 'package:vende_facil/models/venta_dia_model.dart';
 export 'package:vende_facil/models/ticket_model.dart';
 export 'package:vende_facil/models/apartado_cab_model.dart';
@@ -19,7 +18,6 @@ export 'package:vende_facil/models/usuario_model.dart';
 export 'package:vende_facil/models/venta_cab_model.dart';
 export 'package:vende_facil/models/venta_detalle.dart';
 export 'package:vende_facil/models/variable_model.dart';
-export 'package:vende_facil/models/suscripcion_model.dart';
 export 'package:vende_facil/models/plan_model.dart';
 export 'package:vende_facil/models/detalle_plan_model.dart';
 export 'package:vende_facil/models/sucursales_model.dart';
@@ -28,3 +26,5 @@ export 'package:vende_facil/models/cotizacion_model.dart';
 export 'package:vende_facil/models/cotizacion_detalle_model.dart';
 export 'package:vende_facil/models/corte_model.dart';
 export 'package:vende_facil/models/movimiento_model.dart';
+export 'package:vende_facil/models/suscripcion_model.dart';
+export 'package:vende_facil/models/metodo_pago_stripe.dart';
