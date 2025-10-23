@@ -145,7 +145,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
+      onPopInvokedWithResult: (didpop, result) {
         if (!didpop) {
           Navigator.pushReplacementNamed(context, 'menu-historial');
         }
@@ -198,7 +198,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
                         horizontal: windowWidth * 0.04, vertical: 16),
                     child: Column(
                       children: [
-                        // Selector de fecha (un solo día)
                         TextFormField(
                           controller: _dateController,
                           onTap: () async {
@@ -217,7 +216,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                     .format(_selectedDate);
                               });
 
-                              // Consultar movimientos con la nueva fecha
                               await _consultarMovimientos();
                             }
                           },
@@ -243,7 +241,6 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                             .format(_selectedDate);
                                   });
 
-                                  // Consultar movimientos con la nueva fecha
                                   await _consultarMovimientos();
                                 }
                               },

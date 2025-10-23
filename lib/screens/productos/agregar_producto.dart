@@ -375,7 +375,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
       canPop: !_camposHanCambiado
           ? false
           : true, // Prevenir pop si hay cambios sin guardar
-      onPopInvoked: (bool didPop) async {
+      onPopInvokedWithResult: (bool didPop, result) async {
         // Hacerla async
         if (didPop) {
           return; // Si se permitió el pop (ej. canPop = true), no hacer nada más

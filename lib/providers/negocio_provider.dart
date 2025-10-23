@@ -26,6 +26,7 @@ class NegocioProvider {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
         sesion.idNegocio = decodedData['negocio']['id'];
+        sesion.idSucursal = decodedData['sucursal']['id'];
       } else {
         respuesta.status = 0;
         respuesta.mensaje = decodedData['msg'];

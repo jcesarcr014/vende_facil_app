@@ -9,7 +9,7 @@ class ConfigScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) Navigator.pushReplacementNamed(context, 'menu');
       },
       child: Scaffold(
@@ -63,9 +63,11 @@ class ConfigScreen extends StatelessWidget {
               context: context,
               title: 'Mi Suscripción', // Nueva opción
               subtitle: 'Ver y administrar tu plan actual',
-              icon: Icons.workspace_premium_outlined, // Icono para suscripción/premium
+              icon: Icons
+                  .workspace_premium_outlined, // Icono para suscripción/premium
               iconColor: Colors.deepOrange.shade600,
-              onTap: () => Navigator.pushNamed(context, 'planes'), // Navega a la nueva pantalla
+              onTap: () => Navigator.pushNamed(
+                  context, 'planes'), // Navega a la nueva pantalla
             ),
             const SizedBox(height: 16),
             _buildMenuCard(
@@ -85,17 +87,16 @@ class ConfigScreen extends StatelessWidget {
               iconColor: Colors.amber,
               onTap: () => Navigator.pushNamed(context, 'ticket'),
             ),
-            
+            const SizedBox(height: 16),
+            _buildMenuCard(
+              context: context,
+              title: 'Impresora',
+              subtitle: 'Configura tu impresora de tickets',
+              icon: CupertinoIcons.printer,
+              iconColor: Colors.teal,
+              onTap: () => Navigator.pushNamed(context, 'config-impresora'),
+            ),
           ],
-          const SizedBox(height: 16),
-          _buildMenuCard(
-            context: context,
-            title: 'Impresora',
-            subtitle: 'Configura tu impresora de tickets',
-            icon: CupertinoIcons.printer,
-            iconColor: Colors.teal,
-            onTap: () => Navigator.pushNamed(context, 'config-impresora'),
-          ),
         ],
       ),
     );

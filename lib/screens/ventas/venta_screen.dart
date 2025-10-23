@@ -26,7 +26,6 @@ class _VentaScreenState extends State<VentaScreen> {
   bool _isPrinted = false;
   bool _x2ticket = false;
 
-  // Variables para almacenar los valores numéricos y evitar parsing repetitivo
   double _efectivoValue = 0.0;
   double _tarjetaValue = 0.0;
   double _totalValue = 0.0;
@@ -34,7 +33,6 @@ class _VentaScreenState extends State<VentaScreen> {
   @override
   void initState() {
     super.initState();
-    // Asignar valor inicial al _totalValue también
     _totalValue = totalVT;
     _totalController.text = _totalValue.toStringAsFixed(2);
 
@@ -68,10 +66,6 @@ class _VentaScreenState extends State<VentaScreen> {
   }
 
   void _calculateAndSetCambio() {
-    // No necesitamos setState aquí para actualizar los _efectivoValue y _tarjetaValue,
-    // ya que los listeners se encargan de eso.
-    // Solo necesitamos setState si el TEXTO del _cambioController va a cambiar.
-
     final totalPago = _efectivoValue + _tarjetaValue;
     double cambioCalculado = totalPago - _totalValue;
 
@@ -81,21 +75,15 @@ class _VentaScreenState extends State<VentaScreen> {
 
     final nuevoCambioTexto = cambioCalculado.toStringAsFixed(2);
 
-    // Solo actualiza el texto del controlador y llama a setState si el valor realmente cambió
-    // para evitar bucles innecesarios si el InputFieldMoney también tiene listeners.
     if (_cambioController.text != nuevoCambioTexto) {
-      // Para evitar el error "setState() or markNeedsBuild() called during build":
       if (mounted &&
           SchedulerBinding.instance.schedulerPhase == SchedulerPhase.idle) {
-        // Si estamos 'idle', es seguro llamar a setState.
         setState(() {
           _cambioController.text = nuevoCambioTexto;
         });
       } else if (mounted) {
-        // Si no estamos 'idle' (estamos en build, layout o paint), programar para después del frame.
         SchedulerBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            // Verificar nuevamente porque el callback se ejecuta después
             setState(() {
               _cambioController.text = nuevoCambioTexto;
             });
@@ -152,10 +140,7 @@ class _VentaScreenState extends State<VentaScreen> {
       return;
     }
 
-    // Usar los valores numéricos ya parseados
     final total = _totalValue;
-    // Asegurarse de que los valores de efectivo y tarjeta estén actualizados antes de usarlos
-    // Los listeners deberían haberlos actualizado, pero una lectura directa es más segura aquí.
     final efectivoActual =
         double.tryParse(_efectivoController.text.replaceAll(',', '')) ?? 0.0;
     final tarjetaActual =
@@ -193,8 +178,7 @@ class _VentaScreenState extends State<VentaScreen> {
     });
 
     venta.importeTarjeta = tarjetaPagada;
-    venta.importeEfectivo =
-        efectivoNetoEnCaja; // Este es el efectivo que se queda en caja
+    venta.importeEfectivo = efectivoNetoEnCaja;
     venta.cambio = cambioEntregado;
     venta.id_sucursal = sesion.idSucursal;
 
@@ -204,11 +188,9 @@ class _VentaScreenState extends State<VentaScreen> {
               idProd: item.idArticulo,
               cantidad: item.cantidad,
               precioUnitario: item.precioUnitario,
-              precio: item
-                  .precioPublico, // Asumo que este es el precio final con descuentos aplicados por item
-              idDesc:
-                  venta.idDescuento, // Si el descuento es general a la venta
-              cantidadDescuento: venta.descuento, // Valor del descuento general
+              precio: item.precioPublico,
+              idDesc: venta.idDescuento,
+              cantidadDescuento: venta.descuento,
               total: item.totalItem,
               subtotal: item.subTotalItem,
               id_sucursal: sesion.idSucursal,
@@ -226,7 +208,6 @@ class _VentaScreenState extends State<VentaScreen> {
           _textLoading = 'Imprimiendo ticket';
         });
 
-        // Pasar efectivoRecibido a imprimirVenta, ya que es lo que el cliente dio
         final respuestaImp = await _impresionesTickets.imprimirVenta(
             venta, tarjetaPagada, efectivoRecibido, cambioEntregado, _x2ticket);
 
@@ -237,13 +218,13 @@ class _VentaScreenState extends State<VentaScreen> {
         }
       }
 
-      // Limpiar estado global después de una venta exitosa
       setState(() {
-        // Asegurar que este setState es seguro
         ventaTemporal.clear();
         totalVT = 0.0;
-        // Podrías también resetear _efectivoController, _tarjetaController, _cambioController aquí si esta pantalla permaneciera.
-        // Pero como se hace pushReplacementNamed, no es estrictamente necesario para esta instancia.
+        subtotalVT = 0.0;
+        descuentoVT = 0.0;
+        ahorroVT = 0.0;
+        ventaDomicilio = false;
       });
 
       if (!mounted) return;
@@ -290,8 +271,7 @@ class _VentaScreenState extends State<VentaScreen> {
       ),
       body: _isLoading
           ? _buildLoadingScreen()
-          : _buildPaymentForm(
-              MediaQuery.of(context).size, venta), // Pasar la venta obtenida
+          : _buildPaymentForm(MediaQuery.of(context).size, venta),
     );
   }
 
@@ -357,13 +337,11 @@ class _VentaScreenState extends State<VentaScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(
-                          Icons.cancel_outlined), // Icono más adecuado
+                      icon: const Icon(Icons.cancel_outlined),
                       label: const Text('Cancelar'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        side: BorderSide(
-                            color: Colors.grey.shade400), // Borde más sutil
+                        side: BorderSide(color: Colors.grey.shade400),
                       ),
                     ),
                   ),
@@ -371,12 +349,10 @@ class _VentaScreenState extends State<VentaScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _checkVenta(venta),
-                      icon: const Icon(
-                          Icons.check_circle_outline), // Icono más adecuado
+                      icon: const Icon(Icons.check_circle_outline),
                       label: const Text('Completar Venta'),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.green.shade600, // Tono de verde
+                          backgroundColor: Colors.green.shade600,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           textStyle:
@@ -397,7 +373,7 @@ class _VentaScreenState extends State<VentaScreen> {
     return Row(
       children: [
         Expanded(
-          flex: 2, // Dar un poco más de espacio a la etiqueta
+          flex: 2,
           child: Text(
             label,
             style: const TextStyle(
@@ -407,16 +383,13 @@ class _VentaScreenState extends State<VentaScreen> {
           ),
         ),
         Expanded(
-          flex: 3, // Dar un poco más de espacio al campo
+          flex: 3,
           child: inputMoney
-              ? InputFieldMoney(
-                  controller:
-                      controller) // Asumiendo que InputFieldMoney ya está refactorizado
+              ? InputFieldMoney(controller: controller)
               : TextField(
                   controller: controller,
                   enabled: enabled,
-                  textAlign:
-                      TextAlign.right, // Alinear a la derecha para montos
+                  textAlign: TextAlign.right,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
@@ -424,9 +397,7 @@ class _VentaScreenState extends State<VentaScreen> {
                         borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 12),
-                    prefixText: !enabled
-                        ? '\$ '
-                        : null, // Mostrar '$' solo si está deshabilitado
+                    prefixText: !enabled ? '\$ ' : null,
                     filled: !enabled,
                     fillColor: !enabled ? Colors.grey[200] : null,
                   ),
@@ -446,11 +417,11 @@ class _VentaScreenState extends State<VentaScreen> {
           controlAffinity: ListTileControlAffinity.leading,
           activeColor: Colors.green.shade600,
           dense: true,
-          contentPadding: EdgeInsets.zero, // Ajustar padding
+          contentPadding: EdgeInsets.zero,
         ),
         if (_isPrinted)
           Padding(
-            padding: const EdgeInsets.only(left: 16.0), // Ajustar indentación
+            padding: const EdgeInsets.only(left: 16.0),
             child: CheckboxListTile(
               title: const Text('Imprimir copia para cliente'),
               subtitle:

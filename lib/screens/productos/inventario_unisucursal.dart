@@ -154,7 +154,7 @@ class _InventarioUnicaSucScreenState extends State<InventarioUnicaSucScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           Navigator.pushReplacementNamed(context, 'products-menu');
         }

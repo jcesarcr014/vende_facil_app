@@ -488,24 +488,16 @@ class ArticuloProvider {
   }
 
   Future<Resultado> nvoInventarioSuc(Producto producto) async {
-    // Endpoint actualizado: inventario/sucursal/nuevo (POST)
-    // Ya no se envía idUser en la URL
     var url = Uri.parse('$baseUrl/inventario/sucursal/nuevo');
-    print(url);
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}',
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       }, body: {
-        // Mantengo tu formato de body
         'sucursal_id': producto.idSucursal.toString(),
         'producto_id': producto.id.toString(),
         'cantidad': producto.cantidadInv.toString()
       });
       final decodedData = jsonDecode(resp.body);
-      print(
-          ' ================================== Nuevo Inventario ================================== ');
-      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -521,13 +513,8 @@ class ArticuloProvider {
   }
 
   Future<Resultado> inventarioSucAgregar(Producto producto) async {
-    // Endpoint actualizado: inventario/sucursal/agregar (PUT)
     var url = Uri.parse('$baseUrl/inventario/sucursal/agregar');
 
-    print(url);
-    print(sesion.token);
-    print(producto.idInv);
-    print(producto.cantidadInv);
     try {
       final resp = await http.put(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
@@ -537,9 +524,7 @@ class ArticuloProvider {
       });
 
       final decodedData = jsonDecode(resp.body);
-      print(
-          ' ================================== Agregar Inventario ================================== ');
-      print(decodedData);
+
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
@@ -556,12 +541,8 @@ class ArticuloProvider {
 
   Future<Resultado> inventarioSucQuitar(
       String idInventario, String cantidad) async {
-    // Endpoint actualizado: inventario/sucursal/quitar (PUT)
     var url = Uri.parse('$baseUrl/inventario/sucursal/quitar');
-    print(url);
     try {
-      // ... (lógica igual a tu original, solo la URL cambia si es necesario) ...
-      // Mantengo tu formato de body
       final resp = await http.put(url,
           headers: {'Authorization': 'Bearer ${sesion.token}'},
           body: {'inventario_id': idInventario, 'cantidad': cantidad});
@@ -587,7 +568,6 @@ class ArticuloProvider {
     // Debería apuntar a la misma ruta que nvoInventarioSuc si la funcionalidad es la misma.
     var url =
         Uri.parse('$baseUrl/inventario/sucursal/nuevo'); // Asumiendo misma ruta
-    print(url);
     try {
       final resp = await http.post(url, headers: {
         'Authorization': 'Bearer ${sesion.token}'
@@ -598,9 +578,6 @@ class ArticuloProvider {
       });
 
       final decodedData = jsonDecode(resp.body);
-      print(
-          ' ================================== Quitar Inventario ================================== ');
-      print(decodedData);
       if (decodedData['status'] == 1) {
         respuesta.status = 1;
         respuesta.mensaje = decodedData['msg'];
