@@ -7,10 +7,6 @@ class SuscripcionProvider {
   final String baseUrl = globals.baseUrl;
   Resultado respuesta = Resultado();
 
-  //======================================================================
-  // GESTIÓN DE PLANES
-  //======================================================================
-
   Future<Resultado> obtienePlanes() async {
     var url = Uri.parse('$baseUrl/planes');
 
@@ -29,7 +25,6 @@ class SuscripcionProvider {
       }
 
       final decodedData = jsonDecode(resp.body);
-      print(decodedData);
       if (decodedData['status'] == 1 && decodedData['data'] is List) {
         for (final planData in decodedData['data']) {
           PlanSuscripcion planTemp = PlanSuscripcion(
@@ -66,57 +61,15 @@ class SuscripcionProvider {
 
   Future<Resultado> cambiarSuscripcion(String stripePriceId,
       {String? paymentMethodId}) async {
-    var url = Uri.parse('$baseUrl/suscripcion/cambiar');
-
-    final Map<String, dynamic> body = {
-      'stripe_price_id': stripePriceId,
-    };
-
-    if (paymentMethodId != null) {
-      body['payment_method_id'] = paymentMethodId;
-    }
-
-    try {
-      final resp = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${sesion.token}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode(body),
-      );
-
-      final decodedData = jsonDecode(resp.body);
-      print(decodedData);
-      respuesta.status = decodedData['status'] ?? 0;
-      respuesta.mensaje = decodedData['msg'] ?? 'Error desconocido.';
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la petición (cambiarSuscripcion): $e';
-    }
+    respuesta.status = 0;
+    respuesta.mensaje = 'Función no implementada.';
     return respuesta;
   }
 
   // --- NUEVA FUNCIÓN ---
   Future<Resultado> cancelarSuscripcion() async {
-    var url = Uri.parse('$baseUrl/suscripcion/cancelar');
-    try {
-      final resp = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${sesion.token}',
-          'Accept': 'application/json',
-        },
-      );
-      final decodedData = jsonDecode(resp.body);
-      respuesta.status = decodedData['status'] ?? 0;
-      respuesta.mensaje =
-          decodedData['msg'] ?? 'Error desconocido al cancelar.';
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la petición (cancelarSuscripcion): $e';
-    }
+    respuesta.status = 0;
+    respuesta.mensaje = 'Función no implementada.';
     return respuesta;
   }
 
@@ -124,80 +77,19 @@ class SuscripcionProvider {
   // GESTIÓN DE MÉTODOS DE PAGO
   //======================================================================
 
-  Future<String?> prepararSetupDePago() async {
-    var url = Uri.parse('$baseUrl/pago/preparar-setup');
-    try {
-      final resp = await http.get(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-        'Accept': 'application/json',
-      });
-
-      if (resp.statusCode == 200) {
-        final decodedData = jsonDecode(resp.body);
-        return decodedData['clientSecret'];
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
+  Future<String?> prepararSetupDePago() async {}
 
   // --- NUEVA FUNCIÓN ---
   Future<Resultado> obtenerMetodoPago() async {
-    var url = Uri.parse('$baseUrl/usuario/metodo-pago');
-    metodoPagoActual = null; // Limpiar antes de la consulta
-
-    try {
-      final resp = await http.get(url, headers: {
-        'Authorization': 'Bearer ${sesion.token}',
-        'Accept': 'application/json',
-      });
-      final decodedData = jsonDecode(resp.body);
-
-      if (decodedData['status'] == 1 && decodedData['data'] != null) {
-        final pagoData = decodedData['data'];
-        metodoPagoActual = MetodoPago(
-          marca: pagoData['marca'] ?? 'Desconocida',
-          ultimos4: pagoData['ultimos_4'] ?? 'XXXX',
-          mesExp: pagoData['mes_exp'] ?? 0,
-          anoExp: pagoData['ano_exp'] ?? 0,
-        );
-        respuesta.status = 1;
-        respuesta.mensaje = decodedData['msg'];
-      } else {
-        // status 0 es un resultado esperado (no hay método de pago), no un error de app.
-        respuesta.status = 0;
-        respuesta.mensaje =
-            decodedData['msg'] ?? 'No se encontró método de pago.';
-      }
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la petición (obtenerMetodoPago): $e';
-    }
+    respuesta.status = 0;
+    respuesta.mensaje = 'Función no implementada.';
     return respuesta;
   }
 
   // --- NUEVA FUNCIÓN ---
   Future<Resultado> actualizarMetodoPago(String paymentMethodId) async {
-    var url = Uri.parse('$baseUrl/usuario/metodo-pago');
-    try {
-      final resp = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${sesion.token}',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({'payment_method_id': paymentMethodId}),
-      );
-      final decodedData = jsonDecode(resp.body);
-      respuesta.status = decodedData['status'] ?? 0;
-      respuesta.mensaje =
-          decodedData['msg'] ?? 'Error desconocido al actualizar.';
-    } catch (e) {
-      respuesta.status = 0;
-      respuesta.mensaje = 'Error en la petición (actualizarMetodoPago): $e';
-    }
+    respuesta.status = 0;
+    respuesta.mensaje = 'Función no implementada.';
     return respuesta;
   }
 }

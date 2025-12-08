@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_stripe/flutter_stripe.dart' hide Card; // Renombrar Card para evitar conflicto
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/widgets.dart';
@@ -45,83 +44,6 @@ class _PlanesScreenState extends State<PlanesScreen> {
     setState(() => _isLoadingPlanes = false);
   }
 
-  // Future<void> _cargarMetodoPago() async {
-  //   if (!mounted) return;
-  //   setState(() => _isLoadingPaymentMethod = true);
-  //   await _suscripcionProvider.obtenerMetodoPago();
-  //   if (!mounted) return;
-  //   setState(() => _isLoadingPaymentMethod = false);
-  // }
-
-  // Future<void> _iniciarProcesoDePago(
-  //     {PlanSuscripcion? planSeleccionado}) async {
-  //   if (!mounted) return;
-  //   setState(() => _isLoadingPaymentMethod = true);
-
-  //   try {
-  //     // 1. Siempre preparamos un SetupIntent. Es necesario para añadir o actualizar la tarjeta.
-  //     final clientSecret = await _suscripcionProvider.prepararSetupDePago();
-  //     if (clientSecret == null) {
-  //       throw Exception('No se pudo preparar el formulario de pago.');
-  //     }
-
-  //     // 2. Inicializamos y mostramos el Payment Sheet
-  //     await Stripe.instance.initPaymentSheet(
-  //       paymentSheetParameters: SetupPaymentSheetParameters(
-  //         merchantDisplayName: 'Vende Fácil',
-  //         setupIntentClientSecret: clientSecret,
-  //         style: ThemeMode.system,
-  //       ),
-  //     );
-
-  //     await Stripe.instance.presentPaymentSheet();
-
-  //     // ¡ÉXITO! El usuario completó el sheet. Ahora la lógica se divide.
-
-  //     if (planSeleccionado != null) {
-  //       // --- CASO 1: El usuario venía de seleccionar un plan ---
-  //       // Después de guardar la tarjeta, procedemos a cambiar la suscripción.
-  //       // PERO ahora necesitamos el ID del método de pago. La forma oficial es
-  //       // recuperar el SetupIntent para obtener el paymentMethodId.
-  //       final setupIntent =
-  //           await Stripe.instance.retrieveSetupIntent(clientSecret);
-  //       final paymentMethodId = setupIntent.paymentMethodId;
-
-  //       // Llamamos a cambiarSuscripcion PASÁNDOLE el nuevo método de pago
-  //       await _ejecutarCambioDeSuscripcion(planSeleccionado,
-  //           paymentMethodId: paymentMethodId);
-  //     } else {
-  //       // --- CASO 2: El usuario solo quería añadir/actualizar su tarjeta ---
-  //       // desde la tarjeta de "Método de Pago".
-  //       // Actualizamos el método de pago por defecto en el backend.
-  //       final setupIntent =
-  //           await Stripe.instance.retrieveSetupIntent(clientSecret);
-  //       final paymentMethodId = setupIntent.paymentMethodId;
-
-  //       final resultado =
-  //           await _suscripcionProvider.actualizarMetodoPago(paymentMethodId);
-
-  //       if (resultado.status == 1 && mounted) {
-  //         mostrarAlerta(context, 'Éxito',
-  //             resultado.mensaje ?? 'Tu método de pago ha sido guardado.');
-  //         await _cargarMetodoPago(); // Refrescamos la UI para mostrar la nueva tarjeta
-  //       } else if (mounted) {
-  //         mostrarAlerta(context, 'Error',
-  //             resultado.mensaje ?? 'No se pudo guardar el método de pago.');
-  //       }
-  //     }
-  //   } on StripeException catch (e) {
-  //     if (e.error.code != FailureCode.Canceled && mounted) {
-  //       mostrarAlerta(context, 'Error de pago',
-  //           e.error.localizedMessage ?? 'Ocurrió un error.');
-  //     }
-  //   } catch (e) {
-  //     if (mounted) mostrarAlerta(context, 'Error', e.toString());
-  //   } finally {
-  //     if (mounted) setState(() => _isLoadingPaymentMethod = false);
-  //   }
-  // }
-
   // ¡FUNCIÓN REFACTORIZADA! Separamos la lógica de selección de la de pago.
   Future<void> _seleccionarPlan(PlanSuscripcion planSeleccionado) async {
     if (planSeleccionado.idStripe == null ||
@@ -133,14 +55,6 @@ class _PlanesScreenState extends State<PlanesScreen> {
     }
 
     await _ejecutarCambioDeSuscripcion(planSeleccionado);
-
-    // if (metodoPagoActual == null) {
-    //   // Si no hay método de pago, iniciamos el flujo completo de pago.
-    //   await _iniciarProcesoDePago(planSeleccionado: planSeleccionado);
-    // } else {
-    //   // Si YA hay un método de pago, cambiamos el plan directamente.
-    //   await _ejecutarCambioDeSuscripcion(planSeleccionado);
-    // }
   }
 
   // ¡NUEVA FUNCIÓN AYUDANTE! Encapsula la llamada a la API para cambiar de plan.
