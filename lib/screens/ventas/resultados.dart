@@ -13,195 +13,51 @@ class Resultados extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text('Resultados'),
+        title: const Text('Selecciona un producto'),
       ),
       body: ListView.builder(
         itemCount: resultados.length,
         itemBuilder: (context, index) {
-          Producto producto = resultados[index]; // Obtén el producto actual
+          Producto producto = resultados[index];
 
+          // Buscamos la categoría y color para el ícono
           Categoria categoria = listaCategorias.firstWhere(
               (categoria) => categoria.id == producto.idCategoria,
-              orElse: () =>
-                  Categoria(id: resultados[index].idCategoria, categoria: ""));
+              orElse: () => Categoria(
+                  id: producto.idCategoria, categoria: "Sin categoría"));
 
           ColorCategoria color = listaColores.firstWhere(
               (color) => color.id == categoria.idColor,
               orElse: () => ColorCategoria(
                   id: categoria.idColor, nombreColor: "", color: Colors.grey));
+
           return ListTile(
             leading: Icon(Icons.category, color: color.color),
-            onTap: (() async {
-              if (resultados[index].disponibleInv! > 0) {
-                final cantidad =
-                    await obtenerCantidad(context, producto.producto ?? '');
-                if (cantidad == -1) return;
-                if (ventaTemporal.isEmpty) {
-                  _agregaProductoVenta(resultados[index], cantidad, context);
-                } else {
-                  ItemVenta? descue = ventaTemporal.firstWhere(
-                    (descuento) => descuento.idArticulo == resultados[index].id,
-                    orElse: () => ItemVenta(
-                        idArticulo: -1,
-                        articulo: "",
-                        apartado: true,
-                        cantidad: 1,
-                        descuento: 1,
-                        idDescuento: 1,
-                        precioUnitario: 10,
-                        precioPublico: 10,
-                        precioDistribuidor: 10,
-                        precioMayoreo: 10,
-                        precioUtilizado: 10,
-                        subTotalItem: 10,
-                        totalItem: 10),
-                  );
-                  var catidad = descue.cantidad + 1;
-                  if (catidad > resultados[index].disponibleInv!) {
-                    mostrarAlerta(context, "AVISO",
-                        "Nose puede agregar mas articulos de este producto :${resultados[index].producto}");
-                  } else {
-                    _agregaProductoVenta(resultados[index], cantidad, context);
-                  }
-                }
-              }
-            }),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: screenWidth * 0.45,
-                  child: Text(
-                    producto.producto ?? 'Nombre no disponible',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            title: SizedBox(
+              width: screenWidth * 0.45,
+              child: Text(
+                producto.producto ?? 'Nombre no disponible',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             subtitle: Text(categoria.categoria ?? 'Categoría no disponible'),
+            trailing: Text(
+                '\$${producto.precioPublico?.toStringAsFixed(2) ?? '0.00'}'),
+            onTap: () {
+              // Validamos rápido si hay inventario antes de mandarlo de regreso
+              if (!varAplicaInventario || (producto.disponibleInv ?? 0) > 0) {
+                // MAGIA: Simplemente devolvemos el producto a la pantalla anterior
+                Navigator.pop(context, producto);
+              } else {
+                mostrarAlerta(
+                    context, "AVISO", "Producto agotado en inventario");
+              }
+            },
           );
         },
       ),
     );
-  }
-
-  _agregaProductoVenta(Producto producto, cantidad, BuildContext context) {
-    bool existe = false;
-    if (producto.unidad == "1") {
-      for (ItemVenta item in ventaTemporal) {
-        if (item.idArticulo == producto.id) {
-          existe = true;
-          item.cantidad++;
-          item.subTotalItem = item.precioPublico * item.cantidad;
-          item.totalItem = item.subTotalItem - item.descuento;
-        }
-      }
-      if (!existe) {
-        ventaTemporal.add(ItemVenta(
-            idArticulo: producto.id!,
-            articulo: producto.producto!,
-            cantidad: cantidad,
-            precioUnitario: producto.costo!,
-            precioPublico: producto.precioPublico!,
-            precioDistribuidor: producto.precioDist!,
-            precioMayoreo: producto.precioMayoreo!,
-            precioUtilizado: producto.precioPublico!,
-            idDescuento: 0,
-            descuento: 0,
-            subTotalItem: producto.precioPublico!,
-            totalItem: producto.precioPublico!,
-            apartado: (producto.apartado == 1) ? true : false));
-      }
-      _actualizaTotalTemporal();
-      Navigator.pushReplacementNamed(context, 'home');
-      mostrarAlerta(context, '', 'Producto añadido');
-    } else {
-      if (producto.unidad == "0") {
-        for (ItemVenta item in ventaTemporal) {
-          if (item.idArticulo == producto.id) {
-            existe = true;
-            item.cantidad++;
-            item.subTotalItem = item.precioPublico * cantidad;
-            item.totalItem = item.subTotalItem - item.descuento;
-          }
-        }
-        if (!existe) {
-          ventaTemporal.add(ItemVenta(
-              idArticulo: producto.id!,
-              articulo: producto.producto!,
-              cantidad: cantidad.toDouble(),
-              precioUnitario: producto.costo!,
-              precioPublico: producto.precioPublico!,
-              precioDistribuidor: producto.precioDist!,
-              precioMayoreo: producto.precioMayoreo!,
-              precioUtilizado: producto.precioPublico!,
-              idDescuento: 0,
-              descuento: 0,
-              subTotalItem: producto.precioPublico!,
-              totalItem: producto.precioPublico! * cantidad,
-              apartado: (producto.apartado == 1) ? true : false));
-        }
-        _actualizaTotalTemporal();
-        mostrarAlerta(context, '', 'Producto añadido');
-        Navigator.pushReplacementNamed(context, 'home');
-      } else {}
-      _actualizaTotalTemporal();
-    }
-  }
-
-  _actualizaTotalTemporal() {
-    totalVT = 0;
-    for (ItemVenta item in ventaTemporal) {
-      totalVT += item.totalItem;
-    }
-  }
-
-  Future<double> obtenerCantidad(
-      BuildContext context, String nombreProducto) async {
-    final TextEditingController cantidadController = TextEditingController()
-      ..text = '1';
-    double cantidad = -1;
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Cantidad para $nombreProducto'),
-          content: TextField(
-            controller: cantidadController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Ingrese la cantidad'),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (cantidadController.text.isNotEmpty &&
-                    double.parse(cantidadController.text) > 0) {
-                  cantidad = double.parse(cantidadController.text);
-                }
-                Navigator.of(context).pop();
-              },
-              child: const Text('Aceptar'),
-            ),
-          ],
-        );
-      },
-    );
-
-    return cantidad;
   }
 }

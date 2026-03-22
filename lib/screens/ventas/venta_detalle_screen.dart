@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/widgets/widgets.dart';
 import 'package:vende_facil/util/actualiza_venta.dart' as totales;
@@ -53,7 +54,15 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
   }
 
   void _mostrarDialogCantidad(ItemVenta item, Producto producto) {
-    cantidadController.text = item.cantidad.toString();
+    final esEntero = producto.unidad == '1';
+
+    cantidadController.text =
+        esEntero ? item.cantidad.toInt().toString() : item.cantidad.toString();
+
+    double disponibleMaximo = double.infinity;
+    if (varAplicaInventario) {
+      disponibleMaximo = producto.disponibleInv ?? 0;
+    }
 
     showDialog(
       context: context,
@@ -61,8 +70,20 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
         title: const Text('Editar Cantidad'),
         content: TextField(
           controller: cantidadController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Cantidad'),
+          autofocus: true,
+          keyboardType: esEntero
+              ? TextInputType.number
+              : const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(
+                esEntero ? RegExp(r'^[1-9]\d*') : RegExp(r'^\d+(\.\d{0,4})?$'))
+          ],
+          decoration: InputDecoration(
+            labelText: 'Nueva Cantidad',
+            helperText: (varEmpleadoInventario && varAplicaInventario)
+                ? 'Stock máximo: $disponibleMaximo'
+                : '',
+          ),
         ),
         actions: [
           TextButton(
@@ -71,21 +92,31 @@ class _VentaDetalleScreenState extends State<VentaDetalleScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              final nuevaCantidad = double.tryParse(cantidadController.text);
-              if (nuevaCantidad != null && nuevaCantidad > 0) {
-                if (nuevaCantidad <= producto.disponibleInv!) {
-                  setState(() {
-                    item.cantidad = nuevaCantidad;
-                    _actualizaMontos.actualizaTotalVenta();
-                  });
-                  Navigator.pop(context);
-                } else {
-                  mostrarAlerta(context, 'AVISO',
-                      'No hay suficiente inventario. Disponibles: ${producto.disponibleInv}');
-                }
-              } else {
+              final nuevaCantidad =
+                  double.tryParse(cantidadController.text) ?? 0;
+
+              if (nuevaCantidad <= 0) {
                 mostrarAlerta(context, 'AVISO', 'Cantidad inválida');
+                return;
               }
+
+              if (esEntero && nuevaCantidad % 1 != 0) {
+                mostrarAlerta(context, "AVISO",
+                    "Este producto solo se vende por piezas enteras.");
+                return;
+              }
+
+              if (varAplicaInventario && nuevaCantidad > disponibleMaximo) {
+                mostrarAlerta(context, 'AVISO',
+                    'Supera el stock disponible. Máximo: $disponibleMaximo');
+                return;
+              }
+
+              setState(() {
+                item.cantidad = nuevaCantidad;
+                _actualizaMontos.actualizaTotalVenta();
+              });
+              Navigator.pop(context);
             },
             child: const Text('Aceptar'),
           ),

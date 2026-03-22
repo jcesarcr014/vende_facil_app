@@ -39,7 +39,7 @@ android {
     
     namespace "com.vendo_facil"
     
-    compileSdk 34 
+    compileSdk 36 
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -58,9 +58,9 @@ android {
     defaultConfig {
         applicationId "com.vendo_facil" 
         
-        minSdk 30 
+        minSdk 26 
 
-        targetSdk 34 
+        targetSdk 35 
 
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

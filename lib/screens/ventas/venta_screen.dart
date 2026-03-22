@@ -66,10 +66,13 @@ class _VentaScreenState extends State<VentaScreen> {
   }
 
   void _calculateAndSetCambio() {
-    final totalPago = _efectivoValue + _tarjetaValue;
-    double cambioCalculado = totalPago - _totalValue;
+    final totalPago =
+        double.parse((_efectivoValue + _tarjetaValue).toStringAsFixed(2));
+    final totalVentaR = double.parse(_totalValue.toStringAsFixed(2));
 
-    if (cambioCalculado < 0) {
+    double cambioCalculado = totalPago - totalVentaR;
+
+    if (cambioCalculado < 0.01) {
       cambioCalculado = 0.0;
     }
 
@@ -140,7 +143,6 @@ class _VentaScreenState extends State<VentaScreen> {
       return;
     }
 
-    final total = _totalValue;
     final efectivoActual =
         double.tryParse(_efectivoController.text.replaceAll(',', '')) ?? 0.0;
     final tarjetaActual =
@@ -148,18 +150,26 @@ class _VentaScreenState extends State<VentaScreen> {
     final cambioActual =
         double.tryParse(_cambioController.text.replaceAll(',', '')) ?? 0.0;
 
-    final totalPagadoConMedios = efectivoActual + tarjetaActual;
+    final totalR = double.parse(_totalValue.toStringAsFixed(2));
+    final tarjetaR = double.parse(tarjetaActual.toStringAsFixed(2));
+    final efectivoR = double.parse(efectivoActual.toStringAsFixed(2));
+    final totalPagadoConMedios =
+        double.parse((efectivoR + tarjetaR).toStringAsFixed(2));
 
-    if (tarjetaActual > total) {
-      _mostrarError('El pago con tarjeta no puede ser mayor al total.');
+    if (tarjetaR > totalR) {
+      _mostrarError(
+          'El pago con tarjeta no puede ser mayor al total de la venta.\n\nTotal: \$${totalR.toStringAsFixed(2)}');
       return;
     }
-    if (totalPagadoConMedios < total) {
-      _mostrarError('El monto pagado es menor al importe total de la venta.');
+
+    if (totalPagadoConMedios < totalR) {
+      _mostrarError(
+          'Falta dinero. El monto pagado es menor al total de la venta.');
       return;
     }
 
-    final efectivoNetoParaCaja = efectivoActual - cambioActual;
+    final efectivoNetoParaCaja =
+        double.parse((efectivoR - cambioActual).toStringAsFixed(2));
 
     await _procesarCompra(venta, efectivoActual, tarjetaActual,
         efectivoNetoParaCaja, cambioActual);
