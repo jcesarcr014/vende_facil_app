@@ -90,7 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _mostrarDialogoCantidad(Producto producto) {
     final cantidadController = TextEditingController(text: '1');
+
     final esEntero = producto.unidad == '1';
+
+    double disponibleRestante =
+        _actualizaMontos.inventarioDisponibleReal(producto);
 
     showDialog(
       context: context,
@@ -101,15 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
           autofocus: true,
           keyboardType: esEntero
               ? TextInputType.number
-              : TextInputType.numberWithOptions(decimal: true),
+              : const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(
                 esEntero ? RegExp(r'^[1-9]\d*') : RegExp(r'^\d+(\.\d{0,4})?$'))
           ],
           decoration: InputDecoration(
             labelText: 'Cantidad',
-            helperText: (varEmpleadoInventario)
-                ? 'Disponibles: ${producto.disponibleInv}'
+            helperText: (varEmpleadoInventario && varAplicaInventario)
+                ? 'Disponible para agregar: $disponibleRestante'
                 : '',
           ),
         ),
@@ -121,17 +125,24 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton(
             onPressed: () {
               final cantidad = double.tryParse(cantidadController.text) ?? 0;
+
               if (cantidad <= 0) {
                 mostrarAlerta(context, "AVISO", "Cantidad inválida");
                 return;
               }
-              if (!varAplicaInventario) {
-                if (cantidad > producto.disponibleInv!) {
-                  mostrarAlerta(context, "AVISO",
-                      "No hay suficientes productos disponibles");
-                  return;
-                }
+
+              if (esEntero && cantidad != cantidad.truncateToDouble()) {
+                mostrarAlerta(context, "AVISO",
+                    "Este producto solo se vende por piezas enteras.");
+                return;
               }
+
+              if (varAplicaInventario && cantidad > disponibleRestante) {
+                mostrarAlerta(context, "AVISO",
+                    "Stock insuficiente. Solo puedes agregar $disponibleRestante más.");
+                return;
+              }
+
               _procesarAgregarProducto(producto, cantidad);
               Navigator.pop(context);
             },
@@ -339,23 +350,38 @@ class _HomeScreenState extends State<HomeScreen> {
   void _scanQR() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QRScannerScreen()),
+      MaterialPageRoute(builder: (context) => const QRScannerScreen()),
     );
 
-    if (result == null) return;
+    if (result == null || result.isEmpty) return;
 
     final resultados = listaProductosSucursal
         .where((producto) =>
-            producto.producto?.toLowerCase().contains(result.toLowerCase()) ??
+            producto.codigoBarras
+                ?.toLowerCase()
+                .contains(result.toLowerCase()) ??
             false)
         .toList();
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Resultados(resultados: resultados),
-      ),
-    );
+    if (resultados.isEmpty) {
+      mostrarAlerta(context, "AVISO", "Producto no encontrado");
+      return;
+    }
+
+    if (resultados.length == 1) {
+      _agregarProducto(resultados.first);
+    } else {
+      final Producto? productoSeleccionado = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Resultados(resultados: resultados),
+        ),
+      );
+
+      if (productoSeleccionado != null) {
+        _agregarProducto(productoSeleccionado);
+      }
+    }
   }
 
   void _mostrarDialogoEliminarVenta() {

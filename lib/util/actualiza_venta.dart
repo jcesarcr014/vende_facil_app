@@ -6,7 +6,9 @@ class ActualizaMontos {
     descuentoVT = 0.0;
     totalVT = 0.0;
     ahorroVT = 0.0;
+
     if (ventaTemporal.isEmpty) return;
+
     final distribuidor = clienteVentaActual.distribuidor == 1;
     final descuentoActivo = descuentoVentaActual.id != 0;
     final mayoreoActivo = varAplicaMayoreo;
@@ -17,7 +19,9 @@ class ActualizaMontos {
           distribuidor: distribuidor,
           mayoreoActivo: mayoreoActivo,
           cantidadMayoreo: cantidadMayoreo);
+
       item.precioUtilizado = precio;
+
       double descuentoAplicado =
           _calcularDescuento(item, precio, descuentoActivo: descuentoActivo);
 
@@ -28,7 +32,8 @@ class ActualizaMontos {
       subtotalVT += item.subTotalItem;
       descuentoVT += item.descuento;
       totalVT += item.totalItem;
-      ahorroVT += ahorroVT += (item.precioPublico - precio) * item.cantidad;
+
+      ahorroVT += (item.precioPublico - precio) * item.cantidad;
     }
   }
 
@@ -58,5 +63,18 @@ class ActualizaMontos {
     }
 
     return descuento;
+  }
+
+  double inventarioDisponibleReal(Producto producto) {
+    if (!varAplicaInventario) return double.infinity;
+
+    double cantidadEnCarrito = 0.0;
+    final index =
+        ventaTemporal.indexWhere((item) => item.idArticulo == producto.id);
+    if (index != -1) {
+      cantidadEnCarrito = ventaTemporal[index].cantidad;
+    }
+
+    return (producto.disponibleInv ?? 0) - cantidadEnCarrito;
   }
 }
