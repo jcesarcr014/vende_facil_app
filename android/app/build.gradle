@@ -64,6 +64,12 @@ android {
 
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-Wl,-z,common-page-size=16384 -Wl,-z,max-page-size=16384"
+            }
+        }
         
        
     }
@@ -88,6 +94,12 @@ android {
             
         }
         
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 }
 

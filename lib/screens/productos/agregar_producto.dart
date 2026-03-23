@@ -772,13 +772,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               suffixIcon: IconButton(
                 icon: const Icon(Icons.qr_code_scanner_outlined),
                 onPressed: () async {
-                  final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => QRScannerScreen()));
-                  if (result != null && mounted) {
-                    setState(() => _controllerCodigoB.text = result);
-                  }
+                  // final result = await Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => QRScannerScreen()));
+                  // if (result != null && mounted) {
+                  //   setState(() => _controllerCodigoB.text = result);
+                  // }
                 },
                 tooltip: 'Escanear código',
               ),

@@ -348,6 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _scanQR() async {
+    // String result = ""; // QUItar añ descomentar la siguiente linea
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const QRScannerScreen()),
