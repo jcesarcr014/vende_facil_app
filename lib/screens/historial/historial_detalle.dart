@@ -193,7 +193,7 @@ class _ReporteDetalleDiaScreenState extends State<ReporteDetalleDiaScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
+      onPopInvokedWithResult: (didpop, result) {
         if (!didpop) {
           Navigator.pushReplacementNamed(context, 'menu-historial');
         }
@@ -860,8 +860,6 @@ class _ReporteDetalleDiaScreenState extends State<ReporteDetalleDiaScreen> {
       final PdfFont boldFont = PdfStandardFont(PdfFontFamily.helvetica, 12,
           style: PdfFontStyle.bold);
       final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 10);
-      final PdfFont italicFont = PdfStandardFont(PdfFontFamily.helvetica, 10,
-          style: PdfFontStyle.italic);
       final PdfBrush brush = PdfSolidBrush(PdfColor(0, 0, 0));
 
       // Obtener información de la sucursal

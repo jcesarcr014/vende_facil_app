@@ -10,7 +10,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:vende_facil/util/imprime_tickets.dart';
 
-import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
+import 'package:flutter/services.dart' show ByteData, rootBundle;
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -323,7 +323,7 @@ class _InventoryPageState extends State<InventoryPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.color!.withOpacity(0.1),
+                    color: color.color!.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(

@@ -28,9 +28,6 @@ class ProductsScreen extends StatelessWidget {
     final bool esPropietario = sesion.tipoUsuario == 'P';
     final bool esMonoSucursal = suscripcionActual.unisucursal;
 
-
-
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -243,7 +240,7 @@ class ProductsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(

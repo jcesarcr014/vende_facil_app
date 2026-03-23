@@ -88,8 +88,8 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
-        if (!didpop) {
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
           Navigator.pop(context);
         }
       },
@@ -295,7 +295,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -310,7 +310,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
                   label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: color.withOpacity(0.8),
+                    color: color.withValues(alpha: 0.8),
                   ),
                 ),
                 Text(
@@ -336,11 +336,11 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
         color: isHighlighted
-            ? Colors.blue.withOpacity(0.1)
-            : Colors.grey.withOpacity(0.05),
+            ? Colors.blue.withValues(alpha: 0.1)
+            : Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: isHighlighted
-            ? Border.all(color: Colors.blue.withOpacity(0.3))
+            ? Border.all(color: Colors.blue.withValues(alpha: 0.3))
             : null,
       ),
       child: Column(
@@ -436,7 +436,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -448,7 +448,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 5,
                   spreadRadius: 1,
                 ),
@@ -494,8 +494,8 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isHighlighted
-                ? Colors.green.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -537,7 +537,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -584,7 +584,7 @@ class _CorteDetalleScreenState extends State<CorteDetalleScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

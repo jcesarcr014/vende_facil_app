@@ -386,7 +386,7 @@ class _ProductosScreenState extends State<ProductosScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                    color: colorDeCategoria.withOpacity(0.15),
+                    color: colorDeCategoria.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8)),
                 child: Icon(Icons.style_outlined,
                     color: colorDeCategoria, size: 24), // Icono de catálogo

@@ -76,20 +76,4 @@ class SuscripcionProvider {
   //======================================================================
   // GESTIÓN DE MÉTODOS DE PAGO
   //======================================================================
-
-  Future<String?> prepararSetupDePago() async {}
-
-  // --- NUEVA FUNCIÓN ---
-  Future<Resultado> obtenerMetodoPago() async {
-    respuesta.status = 0;
-    respuesta.mensaje = 'Función no implementada.';
-    return respuesta;
-  }
-
-  // --- NUEVA FUNCIÓN ---
-  Future<Resultado> actualizarMetodoPago(String paymentMethodId) async {
-    respuesta.status = 0;
-    respuesta.mensaje = 'Función no implementada.';
-    return respuesta;
-  }
 }

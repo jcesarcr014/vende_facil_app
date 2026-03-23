@@ -58,17 +58,17 @@ class ConfigScreen extends StatelessWidget {
             onTap: () => Navigator.pushNamed(context, 'perfil'),
           ),
           if (sesion.tipoUsuario == "P" && sesion.idNegocio != 0) ...[
-            const SizedBox(height: 16),
-            _buildMenuCard(
-              context: context,
-              title: 'Mi Suscripción', // Nueva opción
-              subtitle: 'Ver y administrar tu plan actual',
-              icon: Icons
-                  .workspace_premium_outlined, // Icono para suscripción/premium
-              iconColor: Colors.deepOrange.shade600,
-              onTap: () => Navigator.pushNamed(
-                  context, 'planes'), // Navega a la nueva pantalla
-            ),
+            // const SizedBox(height: 16),
+            // _buildMenuCard(
+            //   context: context,
+            //   title: 'Mi Suscripción', // Nueva opción
+            //   subtitle: 'Ver y administrar tu plan actual',
+            //   icon: Icons
+            //       .workspace_premium_outlined, // Icono para suscripción/premium
+            //   iconColor: Colors.deepOrange.shade600,
+            //   onTap: () => Navigator.pushNamed(
+            //       context, 'planes'), // Navega a la nueva pantalla
+            // ),
             const SizedBox(height: 16),
             _buildMenuCard(
               context: context,

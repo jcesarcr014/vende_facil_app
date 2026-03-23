@@ -76,7 +76,7 @@ class _HistorialEmpleadoScreenState extends State<HistorialEmpleadoScreen> {
     windowHeight = MediaQuery.of(context).size.height;
     return PopScope(
       canPop: false,
-      onPopInvoked: (didpop) {
+      onPopInvokedWithResult: (didpop, result) {
         if (!didpop) {
           Navigator.pushReplacementNamed(context, 'menu');
         }

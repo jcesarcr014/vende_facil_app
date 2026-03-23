@@ -393,14 +393,18 @@ class _AbonoDetallesScreen extends State<AbonoDetallesScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  RadioListTile(
+                  RadioListTile<String>(
                     title: const Text('Efectivo'),
                     value: 'E',
                     groupValue: metodoDevolucion,
-                    onChanged: (value) {
-                      setState(() => metodoDevolucion = value!);
+                    onChanged: (String? value) {
+                      if (value != null) {
+                        setState(() => metodoDevolucion = value);
+                      }
                     },
                     activeColor: Colors.green,
+                    // Esta propiedad asegura que se vea bien en Material 3
+                    controlAffinity: ListTileControlAffinity.leading,
                   ),
                   RadioListTile(
                     title: const Text('Bancaria'),

@@ -39,9 +39,6 @@ class MenuEmpresaScreen extends StatelessWidget {
 
   Widget _buildMenuOptions(
       BuildContext context, bool esMonoSucursal, int limiteEmpleados) {
-        print('esMonoSucursal: $esMonoSucursal');
-        print('limiteEmpleados: $limiteEmpleados');
-        print('sesion.idNegocio: ${sesion.idNegocio}');
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
@@ -100,7 +97,7 @@ class MenuEmpresaScreen extends StatelessWidget {
             ),
           ] else ...[
             // Multi-Sucursal
-            if(sesion.idNegocio != 0) ...[
+            if (sesion.idNegocio != 0) ...[
               _buildMenuCard(
                 context: context,
                 title: 'Sucursales',
@@ -111,21 +108,20 @@ class MenuEmpresaScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-          // 3. "Empleados" - Visible solo si limiteEmpleados > 0
-          if (limiteEmpleados > 0) ...[
-            _buildMenuCard(
-              context: context,
-              title: 'Empleados',
-              subtitle: 'Agrega o gestiona tus empleados',
-              icon: Icons.people_alt_outlined,
-              iconColor: Colors.orange.shade700,
-              onTap: () => Navigator.pushNamed(context, 'empleados'),
-            ),
-            const SizedBox(height: 16),
-          ],
+              // 3. "Empleados" - Visible solo si limiteEmpleados > 0
+              if (limiteEmpleados > 0) ...[
+                _buildMenuCard(
+                  context: context,
+                  title: 'Empleados',
+                  subtitle: 'Agrega o gestiona tus empleados',
+                  icon: Icons.people_alt_outlined,
+                  iconColor: Colors.orange.shade700,
+                  onTap: () => Navigator.pushNamed(context, 'empleados'),
+                ),
+                const SizedBox(height: 16),
+              ],
             ]
           ],
-          
         ],
       ),
     );
@@ -156,7 +152,7 @@ class MenuEmpresaScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(

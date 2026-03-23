@@ -35,7 +35,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
   bool _valueApartado = false;
 
   Producto _args = Producto(id: 0); // Producto que se está editando o creando
-  String? _rutaOrigen; // Para saber de dónde se llamó esta pantalla
+// Para saber de dónde se llamó esta pantalla
 
   bool _camposHanCambiado =
       false; // Para detectar si hubo cambios en modo edición
@@ -495,7 +495,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
             style: TextStyle(fontSize: 12, color: Colors.grey[700])),
         value: _valuePieza,
         onChanged: _onUnidadChanged, // LLAMAR A LA FUNCIÓN
-        activeColor: Colors.blue,
+        activeThumbColor: Colors.blue,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -587,7 +587,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
                 ),
                 value: _valueApartado,
                 onChanged: _onApartadoChanged, // LLAMAR A LA FUNCIÓN
-                activeColor: Colors.blue,
+                activeThumbColor: Colors.blue,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(
@@ -822,7 +822,7 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
         Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8)),
             child: Icon(icon, color: color, size: 24)),
         const SizedBox(width: 12),

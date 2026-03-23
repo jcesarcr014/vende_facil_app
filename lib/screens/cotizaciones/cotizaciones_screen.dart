@@ -13,7 +13,6 @@ class HomeCotizarScreen extends StatefulWidget {
 
 class _HomeCotizarScreenState extends State<HomeCotizarScreen> {
   final _articulosProvider = ArticuloProvider();
-  final _categoriasProvider = CategoriaProvider();
   final _descuentoProvider = DescuentoProvider();
   final _clienteProvider = ClienteProvider();
   final _busquedaController = TextEditingController();

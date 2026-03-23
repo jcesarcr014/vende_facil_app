@@ -23,7 +23,6 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
 
   Producto? _productoSeleccionado;
   int? _selectedSucursalId;
-  int _inventarioId = 0;
   String _cantidadEnSucursal = '0';
   bool _productoYaExisteEnSucursal = false;
 
@@ -290,7 +289,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 prefixIcon: const Icon(Icons.storefront_outlined, size: 20),
               ),
-              value: _selectedSucursalId,
+              initialValue: _selectedSucursalId,
               isExpanded: true,
               validator: (value) =>
                   value == null ? 'Seleccione una sucursal' : null,
@@ -381,7 +380,7 @@ class _AgregarProductoSucursalState extends State<AgregarProductoSucursal> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 24),

@@ -320,7 +320,7 @@ class _ListaSucursalesScreenState extends State<ListaSucursalesScreen> {
                       color: Theme.of(context)
                           .colorScheme
                           .secondary
-                          .withOpacity(0.1),
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(

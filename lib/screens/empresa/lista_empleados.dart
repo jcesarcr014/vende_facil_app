@@ -285,7 +285,7 @@ class _ListaEmpleadosScreenState extends State<ListaEmpleadosScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context)
                       .primaryColor
-                      .withOpacity(0.1), // Usar color primario
+                      .withValues(alpha: 0.1), // Usar color primario
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

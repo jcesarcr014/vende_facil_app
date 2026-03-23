@@ -33,7 +33,7 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
   double _subTotalItem = 0.0;
   double _descuento = 0.0;
 
-  int _idcliente = 0;
+  // int _idcliente = 0;
   int _idDescuento = 0;
 
   String? _nombreCliente;
@@ -365,8 +365,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
       headerRow.cells[1].value = 'Cantidad';
       headerRow.cells[2].value = 'Total';
 
-      double total = 0;
-
       // Usar los items copiados para el PDF
       for (var item in items) {
         // Buscar nombre del producto en listaProductosSucursal si es necesario
@@ -378,7 +376,6 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
         row.cells[0].value = nombreProducto;
         row.cells[1].value = cantidad.toString();
         row.cells[2].value = totalItem.toStringAsFixed(2);
-        total += totalItem;
       }
 
       final PdfGridRow subtotalRow = grid.rows.add();
@@ -711,10 +708,10 @@ class _CotizarDetalleScreenState extends State<CotizacionDetalleScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).bottomAppBarTheme.color ??
-            Theme.of(context).primaryColor.withOpacity(0.1),
+            Theme.of(context).primaryColor.withValues(alpha: 0.1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
