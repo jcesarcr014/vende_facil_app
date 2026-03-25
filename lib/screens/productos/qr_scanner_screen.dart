@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qr_mobile_vision/qr_camera.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -15,35 +15,36 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Escáner de Código QR"),
+        title: const Text("Escáner de Código / QR"),
       ),
       body: Center(
         child: _isScanning
-            ? QrCamera(
-                onError: (context, error) => Center(
-                  child: Text(
-                    error.toString(),
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-                qrCodeCallback: (code) {
-                  if (code != null && _isScanning) {
-                    setState(() {
-                      _isScanning = false; // Detenemos el escaneo
-                    });
-                    Navigator.pop(context,
-                        code); // Devolvemos el código y cerramos la pantalla
+            ? MobileScanner(
+                // Opcional: Si quieres que sea más rápido, puedes decirle que
+                // busque solo códigos de barras y QR, pero por defecto lee todo muy bien.
+                onDetect: (BarcodeCapture capture) {
+                  // Prevenimos que se ejecute múltiples veces
+                  if (!_isScanning) return;
+
+                  // capture.barcodes trae una lista de códigos detectados
+                  final List<Barcode> barcodes = capture.barcodes;
+
+                  if (barcodes.isNotEmpty) {
+                    // Tomamos el primer código que encuentre
+                    final String? code = barcodes.first.rawValue;
+
+                    if (code != null) {
+                      setState(() {
+                        _isScanning = false; // Detenemos el escaneo visualmente
+                      });
+
+                      // Devolvemos el código y cerramos la pantalla
+                      Navigator.pop(context, code);
+                    }
                   }
                 },
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  color: Colors.transparent,
-                ),
               )
-            : const Center(
-                child:
-                    CircularProgressIndicator()), // Indicador de carga si el escaneo se detiene
+            : const CircularProgressIndicator(), // Indicador de carga al leer el código
       ),
     );
   }

@@ -477,10 +477,6 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
     );
   }
 
-  // Los _build...Card y _buildFormField se mantienen iguales,
-  // pero el _buildUnidadSelector y _buildCategoriaSelector deben llamar a _onUnidadChanged y _onCategoriaChanged
-  // y el SwitchListTile para Apartado a _onApartadoChanged.
-
   Widget _buildUnidadSelector() {
     return Container(
       /* ... (estilo como antes) ... */
@@ -772,13 +768,13 @@ class _AgregaProductoScreenState extends State<AgregaProductoScreen> {
               suffixIcon: IconButton(
                 icon: const Icon(Icons.qr_code_scanner_outlined),
                 onPressed: () async {
-                  // final result = await Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => QRScannerScreen()));
-                  // if (result != null && mounted) {
-                  //   setState(() => _controllerCodigoB.text = result);
-                  // }
+                  final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => QRScannerScreen()));
+                  if (result != null && mounted) {
+                    setState(() => _controllerCodigoB.text = result);
+                  }
                 },
                 tooltip: 'Escanear código',
               ),
