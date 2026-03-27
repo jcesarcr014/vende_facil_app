@@ -1,10 +1,13 @@
 // ignore_for_file: unused_local_variable
 
+import 'dart:typed_data'; // Importante para mandar los bytes a la nueva librería
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vende_facil/providers/providers.dart';
 import 'package:vende_facil/widgets/mostrar_alerta_ok.dart';
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+
+// NUEVA LIBRERÍA
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,9 +22,16 @@ class ImpresoraScreen extends StatefulWidget {
 class _ImpresoraScreenState extends State<ImpresoraScreen> {
   final ticketProvider = TicketProvider();
   TicketModel datosTicket = TicketModel();
+
+  // Instancia principal de la nueva librería
+  BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+
   bool isLoading = false;
   String textLoading = '';
-  List<BluetoothInfo> items = [];
+
+  // Ahora usamos BluetoothDevice en lugar de BluetoothInfo
+  List<BluetoothDevice> items = [];
+
   String _msj = 'Dispositivos disponibles.';
   bool connected = false;
   String connectedDeviceMac = '';
@@ -48,7 +58,6 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       textLoading = 'Validando permisos';
     });
 
-    // Solicitar permisos de Bluetooth y ubicación
     var statusNearbyDevices = await Permission.nearbyWifiDevices.status;
     var statusBluetoothConnect = await Permission.bluetoothConnect.status;
     var statusBluetoothScan = await Permission.bluetoothScan.status;
@@ -70,8 +79,9 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       statusLocation = await Permission.location.request();
     }
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
-    connected = conexionStatus;
+    // Nueva forma de checar conexión
+    bool? conexionStatus = await bluetooth.isConnected;
+    connected = conexionStatus ?? false;
 
     setState(() {
       isLoading = false;
@@ -82,7 +92,7 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
         statusBluetoothConnect.isGranted &&
         statusBluetoothScan.isGranted &&
         statusLocation.isGranted) {
-      // Permisos concedidos, continuamos
+      // Permisos concedidos
     } else {
       mostrarAlerta(context, 'Atención',
           'Debe otorgar los permisos necesarios para poder imprimir. Vendo Facil es compatible con impresoras de 58 mm.');
@@ -96,8 +106,13 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       items = [];
     });
 
-    final List<BluetoothInfo> listResult =
-        await PrintBluetoothThermal.pairedBluetooths;
+    // Nueva forma de obtener dispositivos vinculados
+    List<BluetoothDevice> listResult = [];
+    try {
+      listResult = await bluetooth.getBondedDevices();
+    } catch (e) {
+      print("Error obteniendo dispositivos: $e");
+    }
 
     setState(() {
       isLoading = false;
@@ -116,24 +131,26 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
     });
   }
 
-  connect(String mac) async {
+  // Ahora recibe un BluetoothDevice en lugar de un String con la MAC
+  connect(BluetoothDevice device) async {
     setState(() {
       isLoading = true;
       textLoading = "Conectando a la impresora...";
     });
 
-    final bool result =
-        await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-
-    if (result) {
+    try {
+      // La nueva librería maneja errores con try-catch
+      await bluetooth.connect(device);
       connected = true;
-      connectedDeviceMac = mac;
+      connectedDeviceMac = device.address ?? '';
+
       await SharedPreferences.getInstance().then((prefs) {
-        prefs.setString('macPrinter', mac);
+        prefs.setString('macPrinter', connectedDeviceMac);
       });
-    } else {
+    } catch (e) {
       connected = false;
       connectedDeviceMac = '';
+      mostrarAlerta(context, 'Error', 'No se pudo conectar a la impresora.');
     }
 
     setState(() {
@@ -148,7 +165,11 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       textLoading = "Desconectando...";
     });
 
-    final bool status = await PrintBluetoothThermal.disconnect;
+    try {
+      await bluetooth.disconnect();
+    } catch (e) {
+      print("Error al desconectar: $e");
+    }
 
     await SharedPreferences.getInstance().then((prefs) {
       prefs.remove('macPrinter');
@@ -167,22 +188,26 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
       textLoading = "Imprimiendo ticket de prueba...";
     });
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-    if (conexionStatus) {
-      bool result = false;
-      List<int> ticket = await testTicket();
-      result = await PrintBluetoothThermal.writeBytes(ticket);
+    if (conexionStatus == true) {
+      try {
+        List<int> ticket = await testTicket();
+        // La nueva librería necesita Uint8List para imprimir bytes en crudo
+        bluetooth.writeBytes(Uint8List.fromList(ticket));
 
-      setState(() {
-        isLoading = false;
-        textLoading = '';
-      });
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
 
-      if (result) {
         mostrarAlerta(
             context, 'Éxito', 'Impresión de prueba enviada correctamente');
-      } else {
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+          textLoading = '';
+        });
         mostrarAlerta(
             context, 'Error', 'No se pudo enviar la impresión de prueba');
       }
@@ -199,6 +224,8 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
   }
 
   Future<List<int>> testTicket() async {
+    // ESTA FUNCIÓN QUEDA EXACTAMENTE IGUAL.
+    // El formato del ticket no se toca porque flutter_esc_pos_utils hace el trabajo perfecto.
     await leeDatosTicket();
     List<int> bytes = [];
 
@@ -498,14 +525,13 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
               itemCount: items.length,
               separatorBuilder: (context, index) => const Divider(height: 1),
               itemBuilder: (context, index) {
-                BluetoothInfo device = items[index];
-                bool isConnected =
-                    connected && device.macAdress == connectedDeviceMac;
+                BluetoothDevice device = items[index];
+                String macStr = device.address ?? ''; // Evitar nulos
+                bool isConnected = connected && macStr == connectedDeviceMac;
 
                 return ListTile(
                   onTap: () {
-                    String mac = device.macAdress;
-                    connect(mac);
+                    connect(device);
                   },
                   leading: Container(
                     padding: const EdgeInsets.all(8),
@@ -522,13 +548,13 @@ class _ImpresoraScreenState extends State<ImpresoraScreen> {
                     ),
                   ),
                   title: Text(
-                    device.name,
+                    device.name ?? 'Desconocido',
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   subtitle: Text(
-                    "MAC: ${device.macAdress}",
+                    "MAC: $macStr",
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,

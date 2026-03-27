@@ -1,12 +1,27 @@
-
 plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-def localProperties = new Properties()
+// --- ESTO DEBE ESTAR AQUÍ AFUERA ---
+configurations.all {
+    resolutionStrategy {
+        // Forzamos versiones modernas de AndroidX
+        force 'androidx.core:core:1.15.0'
+        force 'androidx.core:core-ktx:1.15.0'
+        force 'androidx.activity:activity:1.9.3'
+        force 'androidx.activity:activity-ktx:1.9.3'
+        
+        // FORZAMOS el uso de la versión de Google Play Services para ML Kit
+        force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
+    }
+    // ESTO ES LO MÁS IMPORTANTE: 
+    // Buscamos la librería que trae el archivo libbarhopper_v3.so y la expulsamos
+    exclude group: 'com.google.mlkit', module: 'barcode-scanning'
+}
 
+def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader("UTF-8") { reader ->
@@ -14,31 +29,17 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-
-
-def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
-if (flutterVersionCode == null) {
-    flutterVersionCode = "1"
-}
-
-def flutterVersionName = localProperties.getProperty("flutter.versionName")
-if (flutterVersionName == null) {
-    flutterVersionName = "1.0"
-}
-
-
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
 def keystoreProperties = new Properties()
-
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
 android {
-    
     namespace "com.vendo_facil"
-    
     compileSdk 35 
 
     compileOptions {
@@ -53,30 +54,26 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-    
 
     defaultConfig {
         applicationId "com.vendo_facil" 
-        
         minSdk 26 
-
         targetSdk 35 
-
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        ndkVersion = "27.0.12077973" 
 
         externalNativeBuild {
             cmake {
                 cppFlags "-Wl,-z,common-page-size=16384 -Wl,-z,max-page-size=16384"
             }
         }
-        
-       
     }
 
     signingConfigs {
         release {
-            if (keystorePropertiesFile.exists()) { // Solo configura si key.properties existe
+            if (keystorePropertiesFile.exists()) {
                 keyAlias = keystoreProperties['keyAlias']
                 keyPassword = keystoreProperties['keyPassword']
                 storeFile = keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
@@ -87,30 +84,19 @@ android {
     
     buildTypes {
         release {
-            
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.release
-            
         }
-        
     }
 
+    // Configuración para 16KB (Correcta para AGP 8.3+)
     packaging {
         jniLibs {
             useLegacyPackaging = false
         }
     }
-    configurations.all {
-        resolutionStrategy {
-            force 'androidx.core:core:1.15.0'
-            force 'androidx.core:core-ktx:1.15.0'
-            force 'androidx.activity:activity:1.9.3'
-            force 'androidx.activity:activity-ktx:1.9.3'
-        }
-    }
 }
-
 
 flutter {
     source '../..'
@@ -120,4 +106,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.guava:guava:31.1-android'
     implementation 'androidx.concurrent:concurrent-futures:1.1.0'
+    
+    // Esta versión NO trae los archivos .so dentro, los descarga de la Play Store
+    implementation 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
 }

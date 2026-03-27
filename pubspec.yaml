@@ -4,7 +4,7 @@ description: A new Flutter project.
 publish_to: 'none'
 
 
-version: 1.1.1+50
+version: 1.1.1+52
 
 environment:
   sdk: '>=2.18.1 <4.0.0'
@@ -29,10 +29,10 @@ dependencies:
   dropdown_search: ^5.0.6
   syncfusion_flutter_pdf: ^27.1.51
   open_file: ^3.5.3
-  print_bluetooth_thermal: ^1.1.6
   permission_handler: ^11.3.1
   flutter_esc_pos_utils: ^1.0.1
-  mobile_scanner: ^5.0.3
+  mobile_scanner: ^6.0.0
+  blue_thermal_printer: ^1.2.3 
   
   
 

@@ -1,9 +1,6 @@
-
-
 buildscript {
-    
     ext {
-        kotlin_version = '2.1.0' // <-- IMPORTANTE: VERSIÓN DE KOTLIN
+        kotlin_version = '2.1.0' 
         compileSdkVersion = 35
         minSdkVersion = 26
         targetSdkVersion = 35
@@ -13,7 +10,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2' // <-- IMPORTANTE: VERSIÓN DE AGP
+        classpath 'com.android.tools.build:gradle:8.6.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -22,7 +19,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        
     }
 }
 
@@ -30,7 +26,17 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
+    }
 }
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

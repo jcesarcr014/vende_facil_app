@@ -1,4 +1,5 @@
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'dart:typed_data'; // <-- NUEVO: Necesario para manejar los bytes
+import 'package:blue_thermal_printer/blue_thermal_printer.dart'; // <-- NUEVA LIBRERÍA
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart';
 import 'package:vende_facil/models/models.dart';
 import 'package:vende_facil/providers/providers.dart';
@@ -17,23 +18,48 @@ class ImpresionesTickets {
   String telefonoSucursal = '';
   int cantidadArticulos = 0;
 
-  Future<Resultado> imprimirCorte(int bandera) async {
-    await SharedPreferences.getInstance().then((prefs) async {
+  // Instancia de la nueva librería
+  final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+
+  // =====================================================================
+  // NUEVA FUNCIÓN OPTIMIZADA: Maneja la reconexión automática a la impresora
+  // =====================================================================
+  Future<bool> _conectarImpresora() async {
+    try {
+      bool? isConnected = await bluetooth.isConnected;
+      if (isConnected == true) return true;
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
+
+      if (mac.isEmpty) return false;
+
+      List<BluetoothDevice> devices = await bluetooth.getBondedDevices();
+      BluetoothDevice? deviceToConnect;
+
+      for (var d in devices) {
+        if (d.address == mac) {
+          deviceToConnect = d;
+          break;
         }
       }
-    });
+
+      if (deviceToConnect == null) return false;
+
+      await bluetooth.connect(deviceToConnect);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<Resultado> imprimirCorte(int bandera) async {
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
 
     (bandera == 1)
         ? await obtieneDatosTicket(sesion.idSucursal.toString())
@@ -57,7 +83,6 @@ class ImpresionesTickets {
         'Hora corte: ${DateFormat('HH-mm-ss').format(DateTime.parse(corteActual.fecha!))} \n');
     bytes +=
         generator.text('Efectivo inicial: ${corteActual.efectivoInicial!} \n');
-    // Add the new efectivoCaja line
     bytes +=
         generator.text('Efectivo en caja: ${corteActual.efectivoCaja!} \n');
 
@@ -88,36 +113,27 @@ class ImpresionesTickets {
       }
       bytes += generator.row([
         PosColumn(
-          text: tipoMov,
-          width: 12,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: tipoMov, width: 12, styles: PosStyles(align: PosAlign.left)),
       ]);
-
       bytes += generator.row([
         PosColumn(
-          text: '${item.folio}',
-          width: 12,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: '${item.folio}',
+            width: 12,
+            styles: PosStyles(align: PosAlign.left)),
       ]);
-
       bytes += generator.row([
         PosColumn(
-          text: 'E: \$${item.montoEfectivo}',
-          width: 4,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'E: \$${item.montoEfectivo}',
+            width: 4,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: 'T: \$${item.montoTarjeta}',
-          width: 4,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'T: \$${item.montoTarjeta}',
+            width: 4,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: '\$${item.total}',
-          width: 4,
-          styles: PosStyles(align: PosAlign.right),
-        ),
+            text: '\$${item.total}',
+            width: 4,
+            styles: PosStyles(align: PosAlign.right)),
       ]);
       bytes += generator.feed(1);
     }
@@ -125,81 +141,63 @@ class ImpresionesTickets {
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Total de movimientos: ',
-        width: 10,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total de movimientos: ',
+          width: 10,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: corteActual.numVentas.toString(),
-        width: 2,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: corteActual.numVentas.toString(),
+          width: 2,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Ventas en Efectivo',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Ventas en Efectivo',
+          width: 8,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${corteActual.ventasEfectivo}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${corteActual.ventasEfectivo}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Ventas en Tarjeta',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Ventas en Tarjeta',
+          width: 8,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${corteActual.ventasTarjeta}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${corteActual.ventasTarjeta}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${corteActual.totalIngresos} \n',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${corteActual.totalIngresos} \n',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Diferencia(${corteActual.tipoDiferencia})',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Diferencia(${corteActual.tipoDiferencia})',
+          width: 8,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text:
-            '\$${double.parse(corteActual.diferencia!).abs().toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text:
+              '\$${double.parse(corteActual.diferencia!).abs().toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.feed(3);
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-    if (conexionStatus) {
-      bool result = false;
-
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (result) {
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir el ticket';
       }
@@ -212,22 +210,12 @@ class ImpresionesTickets {
 
   Future<Resultado> imprimirVenta(VentaCabecera venta, double tarjeta,
       double efectivo, double cambio, bool copia) async {
-    await SharedPreferences.getInstance().then((prefs) async {
-      String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
-        }
-      }
-    });
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
 
     await obtieneDatosTicket(venta.id_sucursal.toString());
     List<int> bytes = [];
@@ -242,163 +230,122 @@ class ImpresionesTickets {
         styles: PosStyles(align: PosAlign.left, bold: false));
     bytes += generator.row([
       PosColumn(
-        text: 'Atendio: ',
-        width: 4,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Atendio: ', width: 4, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '${sesion.nombreUsuario}',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: '${sesion.nombreUsuario}',
+          width: 8,
+          styles: PosStyles(align: PosAlign.left)),
     ]);
     bytes += generator.feed(1);
     bytes += generator.text('CLIENTE: ${venta.nombreCliente} \n',
         styles: PosStyles(align: PosAlign.left, bold: false));
-
     bytes += generator.text(
         'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
     bytes += generator
         .text('Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())}');
     bytes += generator.text(
         'Tipo compra: ${(venta.tipoVenta == 0) ? 'Tienda' : 'Domicilio'} \n');
-
     bytes += generator.text('Detalles de la venta \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
+    cantidadArticulos = 0;
     for (ItemVenta item in ventaTemporal) {
       if (item.cantidad < 0.5) {
         cantidadArticulos++;
       } else {
         cantidadArticulos += item.cantidad.toInt();
       }
-
       bytes += generator.row([
         PosColumn(
-          text: item.cantidad.toString(),
-          width: 2,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: item.cantidad.toString(),
+            width: 2,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: item.articulo,
-          width: 7,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: item.articulo,
+            width: 7,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: '\$${item.totalItem.toStringAsFixed(2)}',
-          width: 3,
-          styles: PosStyles(align: PosAlign.right),
-        ),
+            text: '\$${item.totalItem.toStringAsFixed(2)}',
+            width: 3,
+            styles: PosStyles(align: PosAlign.right)),
       ]);
     }
 
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Artículos vendidos: ',
-        width: 10,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Artículos vendidos: ',
+          width: 10,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: cantidadArticulos.toString(),
-        width: 2,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: cantidadArticulos.toString(),
+          width: 2,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Subtotal',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Subtotal', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${venta.subtotal!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${venta.subtotal!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Descuento',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Descuento', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${venta.descuento!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${venta.descuento!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${venta.total!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${venta.total!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Tarjeta',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Tarjeta', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${tarjeta.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${tarjeta.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Efectivo',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Efectivo', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${efectivo.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${efectivo.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Cambio',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Cambio', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${cambio.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${cambio.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.feed(1);
-
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-    if (conexionStatus) {
-      bool result = false;
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
+        if (copia) bluetooth.writeBytes(Uint8List.fromList(bytes));
 
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (copia) result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (result) {
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir el ticket';
       }
@@ -416,22 +363,13 @@ class ImpresionesTickets {
       double tarjeta,
       double efectivo,
       bool copia) async {
-    await SharedPreferences.getInstance().then((prefs) async {
-      String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
-        }
-      }
-    });
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
+
     cantidadArticulos = 0;
     await obtieneDatosTicket(sesion.idSucursal.toString());
     List<int> bytes = [];
@@ -446,7 +384,6 @@ class ImpresionesTickets {
         'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
     bytes += generator.text(
         'Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
-
     bytes += generator.text('Detalles de Apartado \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
@@ -456,149 +393,105 @@ class ImpresionesTickets {
       } else {
         cantidadArticulos += item.cantidad.toInt();
       }
-
       bytes += generator.row([
         PosColumn(
-          text: item.cantidad.toString(),
-          width: 2,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: item.cantidad.toString(),
+            width: 2,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: item.articulo,
-          width: 7,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: item.articulo,
+            width: 7,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: '\$${item.totalItem.toStringAsFixed(2)}',
-          width: 3,
-          styles: PosStyles(align: PosAlign.right),
-        ),
+            text: '\$${item.totalItem.toStringAsFixed(2)}',
+            width: 3,
+            styles: PosStyles(align: PosAlign.right)),
       ]);
     }
 
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Total de articulos: ',
-        width: 10,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total de articulos: ',
+          width: 10,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: cantidadArticulos.toString(),
-        width: 2,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: cantidadArticulos.toString(),
+          width: 2,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Subtotal',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Subtotal', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${apartado.subtotal!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.subtotal!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Descuento',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Descuento', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${apartado.descuento!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.descuento!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${apartado.total!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.total!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-    bytes += generator.feed(2);
-
-    bytes += generator.row([
-      PosColumn(
-        text: 'Anticipo',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: '\$${apartado.total!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
-    bytes += generator.row([
-      PosColumn(
-        text: 'Faltante',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: '\$${totalFaltante.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Tarjeta',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Anticipo', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${tarjeta.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.total!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Efectivo',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Faltante', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${efectivo.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${totalFaltante.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
+    bytes += generator.feed(2);
+    bytes += generator.row([
+      PosColumn(
+          text: 'Tarjeta', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: '\$${tarjeta.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+          text: 'Efectivo', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: '\$${efectivo.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
+    ]);
     bytes += generator.feed(1);
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
-    if (copia) {
-      conexionStatus = await PrintBluetoothThermal.connectionStatus;
-    }
-    if (conexionStatus) {
-      bool result = false;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (result) {
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
+        if (copia) bluetooth.writeBytes(Uint8List.fromList(bytes));
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir el ticket';
       }
@@ -616,22 +509,13 @@ class ImpresionesTickets {
       double tarjeta,
       double efectivo,
       bool copia) async {
-    await SharedPreferences.getInstance().then((prefs) async {
-      String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
-        }
-      }
-    });
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
+
     cantidadArticulos = 0;
     await obtieneDatosTicket(sesion.idSucursal.toString());
     List<int> bytes = [];
@@ -646,7 +530,6 @@ class ImpresionesTickets {
         'Fecha compra: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
     bytes += generator.text(
         'Hora compra: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
-
     bytes += generator.text('Detalles de Apartado \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
@@ -656,149 +539,105 @@ class ImpresionesTickets {
       } else {
         cantidadArticulos += item.cantidad.toInt();
       }
-
       bytes += generator.row([
         PosColumn(
-          text: item.cantidad.toString(),
-          width: 2,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: item.cantidad.toString(),
+            width: 2,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: item.articulo,
-          width: 7,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: item.articulo,
+            width: 7,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: '\$${item.totalItem.toStringAsFixed(2)}',
-          width: 3,
-          styles: PosStyles(align: PosAlign.right),
-        ),
+            text: '\$${item.totalItem.toStringAsFixed(2)}',
+            width: 3,
+            styles: PosStyles(align: PosAlign.right)),
       ]);
     }
 
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Total de articulos: ',
-        width: 10,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total de articulos: ',
+          width: 10,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: cantidadArticulos.toString(),
-        width: 2,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: cantidadArticulos.toString(),
+          width: 2,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Subtotal',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Subtotal', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${apartado.subtotal!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.subtotal!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Descuento',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Descuento', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${apartado.descuento!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.descuento!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${apartado.total!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.total!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-    bytes += generator.feed(2);
-
-    bytes += generator.row([
-      PosColumn(
-        text: 'Anticipo',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: '\$${apartado.total!.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
-    bytes += generator.row([
-      PosColumn(
-        text: 'Faltante',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: '\$${totalFaltante.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
-
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
-        text: 'Tarjeta',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Anticipo', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${tarjeta.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${apartado.total!.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
-        text: 'Efectivo',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Faltante', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${efectivo.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${totalFaltante.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
+    bytes += generator.feed(2);
+    bytes += generator.row([
+      PosColumn(
+          text: 'Tarjeta', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: '\$${tarjeta.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
+    ]);
+    bytes += generator.row([
+      PosColumn(
+          text: 'Efectivo', width: 8, styles: PosStyles(align: PosAlign.left)),
+      PosColumn(
+          text: '\$${efectivo.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
+    ]);
     bytes += generator.feed(1);
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
-    if (copia) {
-      conexionStatus = await PrintBluetoothThermal.connectionStatus;
-    }
-    if (conexionStatus) {
-      bool result = false;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (result) {
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
+        if (copia) bluetooth.writeBytes(Uint8List.fromList(bytes));
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir el ticket';
       }
@@ -811,22 +650,13 @@ class ImpresionesTickets {
 
   Future<Resultado> imprimirAbono(Abono venta, double abono, double tarjeta,
       double efectivo, double total, bool copia) async {
-    await SharedPreferences.getInstance().then((prefs) async {
-      String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
-        }
-      }
-    });
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
+
     double pendiente = total - abono;
     await obtieneDatosTicket(sesion.idSucursal.toString());
     List<int> bytes = [];
@@ -848,72 +678,58 @@ class ImpresionesTickets {
           width: 8,
           styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${total.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${total.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
           text: 'Abono', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${abono.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${abono.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.feed(2);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Pendiente',
-        width: 8,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Pendiente', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${pendiente.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${pendiente.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.feed(2);
     bytes += generator.row([
       PosColumn(
           text: 'Tarjeta', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${tarjeta.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${tarjeta.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
     bytes += generator.row([
       PosColumn(
           text: 'Efectivo', width: 8, styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${efectivo.toStringAsFixed(2)}',
-        width: 4,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${efectivo.toStringAsFixed(2)}',
+          width: 4,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.feed(1);
     bytes += generator.text('$mensajeTicket ',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(2);
 
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-    if (conexionStatus) {
-      bool result = false;
-
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (copia) result = await PrintBluetoothThermal.writeBytes(bytes);
-      if (result) {
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
+        if (copia) bluetooth.writeBytes(Uint8List.fromList(bytes));
         respuesta.status = 1;
         respuesta.mensaje = 'Ticket impreso correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir el ticket';
       }
@@ -927,110 +743,77 @@ class ImpresionesTickets {
   Future<void> obtieneDatosTicket(String idSuc) async {
     datosTicket =
         await ticketProvider.getData(sesion.idNegocio.toString(), null);
-
     sucursal = await negocioProvider.consultaSucursal(idSuc);
     nombreSucursal = sucursal!.nombreSucursal ?? 'Vendo Facil';
     direccionSucursal = sucursal!.direccion ?? '';
     telefonoSucursal = sucursal!.telefono ?? '';
-
     mensajeTicket = datosTicket!.message ?? 'Gracias por su compra';
   }
 
   Future<Resultado> imprimirInventario(
       String idSucursal, List<Producto> productos) async {
-    await SharedPreferences.getInstance().then((prefs) async {
-      String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
-        }
-      }
-    });
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
 
     await obtieneDatosTicket(idSucursal);
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
-
-    // Resetear impresora
     bytes += generator.reset();
 
-    // Encabezado
     bytes += generator.text(' $nombreSucursal \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('Direccion: $direccionSucursal ',
         styles: PosStyles(align: PosAlign.left, bold: false));
     bytes += generator.text('Telefono: $telefonoSucursal ',
         styles: PosStyles(align: PosAlign.left, bold: false));
-
-    // Fecha y hora del reporte
     bytes += generator.text(
         'Fecha reporte: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}');
     bytes += generator.text(
         'Hora reporte: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
-
-    // Título del reporte
     bytes += generator.text('REPORTE DE INVENTARIO \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
-
-    // Encabezado de lista de productos
     bytes += generator.text('Productos en inventario: ${productos.length} \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
-    // Imprimir cada producto
     for (Producto producto in productos) {
-      // Nombre del producto (truncado si es necesario)
       String nombre = producto.producto ?? 'Sin nombre';
       if (nombre.length > 20) {
         nombre = '${nombre.substring(0, 17)}...';
       }
-
       bytes += generator.text(nombre,
           styles: PosStyles(align: PosAlign.left, bold: true));
 
-      // Clave y código de barras
       if (producto.clave != null && producto.clave!.isNotEmpty) {
         bytes += generator.text('Clave: ${producto.clave}',
             styles: PosStyles(align: PosAlign.left));
       }
 
-      // Cantidades
       bytes += generator.row([
         PosColumn(
-          text: 'Cant: ${producto.cantidadInv ?? 0}',
-          width: 4,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'Cant: ${producto.cantidadInv ?? 0}',
+            width: 4,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: 'Apar: ${producto.apartadoInv ?? 0}',
-          width: 4,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'Apar: ${producto.apartadoInv ?? 0}',
+            width: 4,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: 'Disp: ${producto.disponibleInv ?? 0}',
-          width: 4,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'Disp: ${producto.disponibleInv ?? 0}',
+            width: 4,
+            styles: PosStyles(align: PosAlign.left)),
       ]);
-
-      // Separador entre productos
       bytes += generator.feed(1);
     }
 
-    // Resumen de inventario
     bytes += generator.feed(1);
     bytes += generator.text('RESUMEN DE INVENTARIO',
         styles: PosStyles(align: PosAlign.center, bold: true));
 
-    // Calcular totales
     int totalCantidad = 0;
     int totalApartado = 0;
     int totalDisponible = 0;
@@ -1044,63 +827,50 @@ class ImpresionesTickets {
     bytes += generator.feed(1);
     bytes += generator.row([
       PosColumn(
-        text: 'Total Cantidad:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total Cantidad:',
+          width: 6,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: totalCantidad.toString(),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: totalCantidad.toString(),
+          width: 6,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total Apartado:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total Apartado:',
+          width: 6,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: totalApartado.toString(),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: totalApartado.toString(),
+          width: 6,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total Disponible:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total Disponible:',
+          width: 6,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: totalDisponible.toString(),
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: totalDisponible.toString(),
+          width: 6,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
 
-    // Pie de página
     bytes += generator.feed(1);
     bytes += generator.text(mensajeTicket,
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('VENDE FACIL',
         styles: PosStyles(align: PosAlign.center));
-    bytes += generator.feed(4); // Espacio para cortar el papel
+    bytes += generator.feed(4);
 
-    // Imprimir
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-    if (conexionStatus) {
-      bool result = false;
-
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-
-      if (result) {
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
         respuesta.status = 1;
         respuesta.mensaje = 'Inventario impreso correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir el inventario';
       }
@@ -1108,67 +878,44 @@ class ImpresionesTickets {
       respuesta.status = 0;
       respuesta.mensaje = 'No se pudo conectar a la impresora';
     }
-
     return respuesta;
   }
 
   Future<Resultado> imprimirTicketMovimientos(String idSucursal,
       List<MovimientoCorte> movimientos, String fecha) async {
-    await SharedPreferences.getInstance().then((prefs) async {
-      String mac = prefs.getString('macPrinter') ?? '';
-      if (mac.isEmpty) {
-        respuesta.status = 0;
-        respuesta.mensaje = 'No se pudo conectar a la impresora';
-        return respuesta;
-      } else {
-        try {
-          await PrintBluetoothThermal.connect(macPrinterAddress: mac);
-        } catch (e) {
-          respuesta.status = 0;
-          respuesta.mensaje = 'No se pudo conectar a la impresora';
-          return respuesta;
-        }
-      }
-    });
+    bool conectado = await _conectarImpresora();
+    if (!conectado) {
+      respuesta.status = 0;
+      respuesta.mensaje = 'No se pudo conectar a la impresora';
+      return respuesta;
+    }
 
     await obtieneDatosTicket(idSucursal);
     List<int> bytes = [];
     final profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
-
-    // Resetear impresora
     bytes += generator.reset();
 
-    // Encabezado
     bytes += generator.text(' $nombreSucursal \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('Direccion: $direccionSucursal ',
         styles: PosStyles(align: PosAlign.left, bold: false));
     bytes += generator.text('Telefono: $telefonoSucursal ',
         styles: PosStyles(align: PosAlign.left, bold: false));
-
-    // Fecha del reporte
     bytes += generator.text(
         'Fecha reporte: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fecha))}');
     bytes += generator.text(
         'Hora impresion: ${DateFormat('HH:mm:ss').format(DateTime.now())} \n');
-
-    // Título del reporte
     bytes += generator.text('REPORTE DE MOVIMIENTOS \n',
         styles: PosStyles(align: PosAlign.center, bold: true));
-
-    // Encabezado de lista de movimientos
     bytes += generator.text('Total movimientos: ${movimientos.length} \n',
         styles: PosStyles(align: PosAlign.left, bold: true));
 
-    // Variables para totales
     double totalEfectivo = 0;
     double totalTarjeta = 0;
     double totalGeneral = 0;
 
-    // Imprimir cada movimiento
     for (MovimientoCorte movimiento in movimientos) {
-      // Determinar tipo de movimiento
       String tipoMov = '';
       switch (movimiento.tipoMovimiento) {
         case 'VT':
@@ -1197,131 +944,101 @@ class ImpresionesTickets {
           break;
       }
 
-      // Sumar totales
       totalEfectivo += double.parse(movimiento.montoEfectivo ?? '0');
       totalTarjeta += double.parse(movimiento.montoTarjeta ?? '0');
       totalGeneral += double.parse(movimiento.total ?? '0');
 
-      // Imprimir información del movimiento
       bytes += generator.text(tipoMov,
           styles: PosStyles(align: PosAlign.left, bold: true));
-
       bytes += generator.text('Folio: ${movimiento.folio ?? ''}',
           styles: PosStyles(align: PosAlign.left));
-
       bytes += generator.text('Hora: ${movimiento.hora ?? ''}',
           styles: PosStyles(align: PosAlign.left));
 
-      // Montos
       bytes += generator.row([
         PosColumn(
-          text: 'Efectivo:',
-          width: 6,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'Efectivo:',
+            width: 6,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: '\$${movimiento.montoEfectivo ?? '0.00'}',
-          width: 6,
-          styles: PosStyles(align: PosAlign.right),
-        ),
+            text: '\$${movimiento.montoEfectivo ?? '0.00'}',
+            width: 6,
+            styles: PosStyles(align: PosAlign.right)),
       ]);
-
       bytes += generator.row([
         PosColumn(
-          text: 'Tarjeta:',
-          width: 6,
-          styles: PosStyles(align: PosAlign.left),
-        ),
+            text: 'Tarjeta:',
+            width: 6,
+            styles: PosStyles(align: PosAlign.left)),
         PosColumn(
-          text: '\$${movimiento.montoTarjeta ?? '0.00'}',
-          width: 6,
-          styles: PosStyles(align: PosAlign.right),
-        ),
+            text: '\$${movimiento.montoTarjeta ?? '0.00'}',
+            width: 6,
+            styles: PosStyles(align: PosAlign.right)),
       ]);
-
       bytes += generator.row([
         PosColumn(
-          text: 'Total:',
-          width: 6,
-          styles: PosStyles(align: PosAlign.left, bold: true),
-        ),
+            text: 'Total:',
+            width: 6,
+            styles: PosStyles(align: PosAlign.left, bold: true)),
         PosColumn(
-          text: '\$${movimiento.total ?? '0.00'}',
-          width: 6,
-          styles: PosStyles(align: PosAlign.right, bold: true),
-        ),
+            text: '\$${movimiento.total ?? '0.00'}',
+            width: 6,
+            styles: PosStyles(align: PosAlign.right, bold: true)),
       ]);
-
-      // Separador entre movimientos
       bytes += generator.feed(1);
       bytes += generator.hr();
     }
 
-    // Resumen de totales
     bytes += generator.feed(1);
     bytes += generator.text('RESUMEN DE TOTALES',
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.feed(1);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total Efectivo:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total Efectivo:',
+          width: 6,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${totalEfectivo.toStringAsFixed(2)}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${totalEfectivo.toStringAsFixed(2)}',
+          width: 6,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'Total Tarjeta:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left),
-      ),
+          text: 'Total Tarjeta:',
+          width: 6,
+          styles: PosStyles(align: PosAlign.left)),
       PosColumn(
-        text: '\$${totalTarjeta.toStringAsFixed(2)}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.right),
-      ),
+          text: '\$${totalTarjeta.toStringAsFixed(2)}',
+          width: 6,
+          styles: PosStyles(align: PosAlign.right)),
     ]);
-
     bytes += generator.row([
       PosColumn(
-        text: 'TOTAL GENERAL:',
-        width: 6,
-        styles: PosStyles(align: PosAlign.left, bold: true),
-      ),
+          text: 'TOTAL GENERAL:',
+          width: 6,
+          styles: PosStyles(align: PosAlign.left, bold: true)),
       PosColumn(
-        text: '\$${totalGeneral.toStringAsFixed(2)}',
-        width: 6,
-        styles: PosStyles(align: PosAlign.right, bold: true),
-      ),
+          text: '\$${totalGeneral.toStringAsFixed(2)}',
+          width: 6,
+          styles: PosStyles(align: PosAlign.right, bold: true)),
     ]);
 
-    // Pie de página
     bytes += generator.feed(1);
     bytes += generator.text(mensajeTicket,
         styles: PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('VENDE FACIL',
         styles: PosStyles(align: PosAlign.center));
-    bytes += generator.feed(4); // Espacio para cortar el papel
+    bytes += generator.feed(4);
 
-    // Imprimir
-    bool conexionStatus = await PrintBluetoothThermal.connectionStatus;
+    bool? conexionStatus = await bluetooth.isConnected;
 
-    if (conexionStatus) {
-      bool result = false;
-
-      result = await PrintBluetoothThermal.writeBytes(bytes);
-
-      if (result) {
+    if (conexionStatus == true) {
+      try {
+        bluetooth.writeBytes(Uint8List.fromList(bytes));
         respuesta.status = 1;
         respuesta.mensaje = 'Movimientos impresos correctamente';
-      } else {
+      } catch (e) {
         respuesta.status = 0;
         respuesta.mensaje = 'No se pudo imprimir los movimientos';
       }
